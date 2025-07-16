@@ -1,0 +1,17 @@
+export const scColors = [
+    { value: "white", chineseName: "白色" },
+    { value: "red", chineseName: "红色" },
+    { value: "orange", chineseName: "橙色" },
+    { value: "yellow", chineseName: "黄色" },
+    { value: "green", chineseName: "绿色" },
+    { value: "cyan", chineseName: "青色" },
+    { value: "blue", chineseName: "蓝色" },
+    { value: "purple", chineseName: "紫色" },
+    { value: "silver", chineseName: "银色" },
+    { value: "gold", chineseName: "金色" },
+    { value: "burlywood", chineseName: "原木色" },
+    { value: "brown", chineseName: "棕色" },
+    { value: "gray", chineseName: "棕色" },
+    { value: "indigo", chineseName: "靛蓝色" },
+    { value: "black", chineseName: "黑色" },
+];

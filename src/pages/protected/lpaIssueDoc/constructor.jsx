@@ -1,0 +1,212 @@
+import dayjs from "../../../utils/myDayjs";
+import store from "../../../store";
+import { PeriodDisplay } from "../../../storage/dataTypes";
+import { CellCreateTime, CellCreateUser, CellModifyTime, CellModifyUser, CellConfirmTime, CellConfirmUser, CellVoucherStatus, CellDescription } from "../pub";
+
+const rowCopyAddDisabled = (row) => {
+    return false;
+}
+const rowDelDisabled = (row) => {
+    const { user } = store.getState();
+    return !(row.status === 0 && row.createuser.id === user.id);
+};
+
+const rowViewDisabled = () => {
+    return false;
+};
+const rowEditDisabled = (row) => {
+    const { user } = store.getState();
+    return !(row.status === 0 && row.createuser.id === user.id);
+};
+
+//确认按钮是否可用
+const rowStartDisabled = (row) => {
+    return !(row.status === 0);
+};
+
+const rowStopDisabled = (row) => {
+    const { user } = store.getState();
+    return !(row.status === 1 && row.confirmuser.id === user.id);
+};
+
+//单据日期显示
+const CellBilldate = (row, column) => {
+    return dayjs(row.billdate).format("YYYY-MM-DD");
+};
+
+//开始时间显示
+const CellStartDate = (row, column) => {
+    return dayjs(row.startdate).format("YY-MM-DD");
+};
+//结束时间显示
+const CellEndDate = (row, column) => {
+    return dayjs(row.enddate).format("YY-MM-DD");
+};
+
+//部门显示
+const CellDept = (row, column) => {
+    return row.department.name;
+};
+
+//周期显示
+const CellPeriod = (row, column) => {
+    return PeriodDisplay.get(row.period);
+};
+
+//批量删除按钮是否可用
+export function delMultipleDisabled(selectedRows) {
+    return false;
+};
+//行按钮定义
+export const rowActionsDefine = {
+    rowCopyAdd: {
+        visible: false,
+        disabled: rowCopyAddDisabled,
+        color: "success",
+        tips: "复制新增",
+        icon: "CopyNewIcon",
+    },
+    rowViewDetail: {
+        visible: true,
+        disabled: rowViewDisabled,
+        color: "secondary",
+        tips: "详情",
+        icon: "DetailIcon",
+    },
+    rowEdit: {
+        visible: true,
+        disabled: rowEditDisabled,
+        color: "warning",
+        tips: "编辑",
+        icon: "EditIcon",
+    },
+    rowDelete: {
+        visible: true,
+        disabled: rowDelDisabled,
+        color: "error",
+        tips: "删除",
+        icon: "DeleteIcon",
+    },
+    rowStart: {
+        visible: true,
+        disabled: rowStartDisabled,
+        color: "success",
+        tips: "确认",
+        icon: "StartIcon",
+    },
+    rowStop: {
+        visible: true,
+        disabled: rowStopDisabled,
+        color: "error",
+        tips: "取消确认",
+        icon: "CancelConfirmIcon",
+    },
+};
+//列定义
+export const columns = [
+    { id: "id", label: "ID", alignment: "left", minWidth: 20, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
+    { id: "billnumber", label: "单据编号", alignment: "center", minWidth: 40, visible: true, sortField: "billnumber", sort: true, display: { type: 0, cell1: null } },
+    { id: "billdate", label: "单据日期", alignment: "center", minWidth: 30, visible: true, sortField: "billdate", sort: true, display: { type: 1, cell1: CellBilldate } },
+    { id: "department", label: "部门", alignment: "center", minWidth: 40, visible: true, sortField: "department.id", sort: true, display: { type: 1, cell1: CellDept } },
+    { id: "description", label: "说明", alignment: "center", minWidth: 100, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
+    { id: "period", label: "期间", alignment: "center", minWidth: 40, visible: true, sortField: "period", sort: true, display: { type: 1, cell1: CellPeriod } },
+    { id: "startdate", label: "开始日期", alignment: "center", minWidth: 30, visible: true, sortField: "starttime", sort: true, display: { type: 1, cell1: CellStartDate } },
+    { id: "enddate", label: "结束日期", alignment: "center", minWidth: 30, visible: true, sortField: "endtime", sort: true, display: { type: 1, cell1: CellEndDate } },
+    { id: "sourcetype", label: "来源", alignment: "center", minWidth: 50, visible: true, sortField: "sourcetype", sort: true, display: { type: 0, cell1: null } },
+    { id: "status", label: "状态", alignment: "center", minWidth: 50, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellVoucherStatus } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createdate", label: "创建日期", alignment: "center", minWidth: 30, visible: false, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
+    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 30, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
+    { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
+    { id: "confirmuser", label: "确认人", alignment: "center", minWidth: 30, visible: false, sortField: "confirmuser.name", sort: true, display: { type: 1, cell1: CellConfirmUser } },
+    { id: "confirmdate", label: "确认日期", alignment: "center", minWidth: 60, visible: false, sortField: "confirmdate", sort: true, display: { type: 1, cell1: CellConfirmTime } },
+];
+//查询字段定义
+export const ldQueryFields = [
+    { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
+    { id: 2, value: "h.billnumber", label: "单据编号", inputType: 301, resultType: "string", resultfield: "" },
+    { id: 3, value: "h.dept_id", label: "部门ID", inputType: 520, resultType: "object", resultfield: "id" },
+    { id: 4, value: "h.status", label: "单据状态", inputType: 405, resultType: "int", resultfield: "" },
+    { id: 5, value: "h.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+];
+
+//生成默认查询条件
+export function generateLDConditions() {
+    const { user } = store.getState();
+    const currentPerson = user.person;
+    let conditions = [
+        {
+            logic: "and",
+            field: { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
+            compare: { id: "greaterthanequal", label: '大于等于', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            value: dayjs().weekday(0).format("YYYYMMDD"),
+            isNecessary: true
+        },
+        {
+            logic: "and",
+            field: { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
+            compare: { id: "lessthanequal", label: '小于等于', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            value: dayjs(new Date()).format("YYYYMMDD"),
+            isNecessary: true
+        },
+        {
+            logic: "and",
+            field: { id: 5, value: "h.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+            compare: { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            value: currentPerson,
+            isNecessary: false
+        }
+    ];
+    return conditions;
+}
+//默认表头附件
+export const headFiles = {
+    id: 0,
+    billbid: 0,
+    billhid: 0,
+    file: { fileid: 0, filehash: "" },
+    dr: 0,
+};
+
+//默认行附件
+const bodyFiles = {
+    id: 0,
+    billbid: 0,
+    billhid: 0,
+    file: { fileid: 0, filehash: "" },
+    dr: 0,
+};
+
+//默认新增行
+export const voucherRow = {
+    id: 0,
+    hid: 0,
+    rownumber: 10,
+    recipient: { id: 0, code: "", name: "", avatar: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" },
+    opname: "",
+    deptname: "",
+    lpcode: "",
+    lp: { id: 0, code: "", name: "", model: "", unit: "", description: "" },
+    lpmodel: "",
+    lpunit: "",
+    quantity: 1.0,
+    description: "",
+    status: 0,
+    files: [bodyFiles],
+    dr: 0
+};
+export const bodyColumns = [
+    { id: "action", label: "操作", alignment: "center", width: 80, maxWidth: 80, minWidth: 80, visible: true, allowNul: true, sortField: "action", sort: true, display: { type: 0, cell1: null } },
+    { id: "rownumber", label: "行号", alignment: "left", width: 60, maxWidth: 60, minWidth: 60, visible: true, allowNul: true, sortField: "rownumber", sort: true, display: { type: 0, cell1: null } },
+    { id: "recipient", label: "领用人", alignment: "left", width: 128, maxWidth: 512, minWidth: 80, visible: true, allowNul: false, sortField: "student.name", sort: true, display: { type: 0, cell1: null } },
+    { id: "opname", label: "岗位", alignment: "left", width: 128, maxWidth: 256, minWidth: 80, visible: true, allowNul: true, sortField: "opname", sort: true, display: { type: 0, cell1: null } },
+    { id: "deptname", label: "部门", alignment: "left", width: 128, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "deptname", sort: true, display: { type: 0, cell1: null } },
+    { id: "lpcode", label: "劳保用品编码", alignment: "left", width: 128, maxWidth: 256, minWidth: 80, visible: true, allowNul: true, sortField: "lpcode", sort: true, display: { type: 0, cell1: null } },
+    { id: "lp", label: "劳保用品名称", alignment: "left", width: 128, maxWidth: 512, minWidth: 80, visible: true, allowNul: false, sortField: "lp.name", sort: true, display: { type: 0, cell1: null } },
+    { id: "lpmodel", label: "规格型号", alignment: "left", width: 128, maxWidth: 256, minWidth: 80, visible: true, allowNul: true, sortField: "lpmodel", sort: true, display: { type: 0, cell1: null } },
+    { id: "lpunit", label: "计量单位", alignment: "left", width: 64, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "lpunit", sort: true, display: { type: 0, cell1: null } },
+    { id: "quantity", label: "数量", alignment: "left", width: 128, maxWidth: 512, minWidth: 20, visible: true, allowNul: false, sortField: "examinescore", sort: true, display: { type: 0, cell1: null } },
+    { id: "files", label: "附件", alignment: "left", width: 96, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "files", sort: true, display: { type: 0, cell1: null } },
+    { id: "status", label: "状态", alignment: "left", width: 100, maxWidth: 120, minWidth: 20, visible: true, allowNul: true, sortField: "status", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "说明", alignment: "left", width: 256, maxWidth: 256, minWidth: 20, visible: true, allowNul: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+];
