@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import DownloadQR from "./DownloadQR";
 import AppBar from "./AppBar";
 import Introduction from "./Introduction";
-import Advantages from "./Advantages";
 import About from "./About";
 
 function Presentation() {
@@ -10,8 +9,7 @@ function Presentation() {
     <Fragment>
         <DownloadQR />
         <AppBar />
-        <Introduction />
-        <Advantages />
+        <Introduction /> 
         <About />
     </Fragment>
   );

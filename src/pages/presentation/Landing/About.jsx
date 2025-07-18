@@ -4,11 +4,9 @@ import styled from "@emotion/styled";
 import {
   Container,
   Grid,
-  Link,
   Typography as MuiTypography,
 } from "@mui/material";
 import { spacing } from "@mui/system";
-
 import { author} from "../../../constants";
 
 const Typography = styled(MuiTypography)(spacing);
@@ -32,11 +30,7 @@ function About() {
     <Wrapper pt={8} pb={8}>
       <Container>
         <Grid container alignItems="center" justifyContent="center">
-          <Grid item xs={12} md={6} lg={6} xl={6}>
-            <Typography variant="h2" gutterBottom>
-              周口市海云信息技术有限公司
-            </Typography>
-            <Link variant="h5" href="http://www.zkseacloud.cn" target="_blank">http://www.zkseacloud.cn</Link>   
+          <Grid item xs={12} md={6} lg={6} xl={6}>            
             <Subtitle variant="h5" gutterBottom>
               Copyright © 2023 {author}. All rights reserved.
             </Subtitle>
@@ -45,6 +39,6 @@ function About() {
       </Container>
     </Wrapper>
   );
-}
+};
 
 export default About;
