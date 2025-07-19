@@ -1,138 +1,120 @@
-import { Fragment, useEffect } from "react";
-import styled from "@emotion/styled";
-import { spacing } from "@mui/system";
+import { Box, AppBar, Toolbar, Button, Container, Tooltip, IconButton, Typography } from '@mui/material';
 import { Link } from "react-router-dom";
-
-import {
-    AppBar,
-    Button as MuiButton,
-    Container,
-    Grid,
-    Box,
-    Toolbar,
-    Tooltip,
-    IconButton,
-    ListItemButton
-} from "@mui/material";
-
-import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from 'react-i18next';
 
 import { LoginIcon, LogoutIcon } from "../../../component/PubIcon/PubIcon";
-// import { ReactComponent as Logo } from "../../../vendor/logo.svg";
-import { getUserInfo, logout, getDynamicData } from "../../../store/actions";
-const Button = styled(MuiButton)(spacing);
+import { logout } from "../../../store/pub";
+import NavbarLanguagesDropdown from '../../../layouts/components/navbar/NavbarLanguagesDropdown';
 
-/* const Brand = styled.div`
-  font-size: ${(props) => props.theme.typography.h5.fontSize};
-  font-weight: ${(props) => props.theme.typography.fontWeightMedium};
-  font-family: ${(props) => props.theme.typography.fontFamily};
-`; */
+const logoStyle = {
+    width: '32px',
+    height: 'auto',
+    cursor: 'pointer',
+};
 
-const Brand = styled(ListItemButton)`
-  font-size: ${(props) => props.theme.typography.h5.fontSize};
-  font-weight: ${(props) => props.theme.typography.fontWeightMedium};
-  font-family: ${(props) => props.theme.typography.fontFamily};
-  min-height: 56px;
-  padding-left: ${(props) => props.theme.spacing(6)};
-  padding-right: ${(props) => props.theme.spacing(6)};
-  justify-content: center;
-  cursor: pointer;
-  flex-grow: 0;
-
-  ${(props) => props.theme.breakpoints.up("sm")} {
-    min-height: 64px;
-  }
-
-  &:hover {
-    background-color:transparent;
-  }
-`;
-
-/* const BrandIcon = styled(Logo)`
-  margin-right: ${(props) => props.theme.spacing(2)};
-  margin-top: -2px;
-  color: ${(props) => props.theme.sidebar.header.brand.color};
-  fill: ${(props) => props.theme.sidebar.header.brand.color};
-  width: 32px;
-  height: 32px;
-  vertical-align: middle;
-  display: inline;
-`; */
-
-function AppBarComponent(props) {
-    const user = useSelector(state => state.user);
-    const dispatch = useDispatch();
-    const isLogin = (user !== undefined && JSON.stringify(user) !== '{}' && user.name !== '');
-
-    useEffect(() => {
-        async function initUserInfo() {
-            const { token } = user;
-            if (!!token) {
-                dispatch(getUserInfo(token));
-                dispatch(getDynamicData);
-            }
-        }
-        initUserInfo();
-        // eslint-disable-next-line
-    }, []);
-
-    const handleSignout = () => {
-        dispatch(logout(user.token));
+function AIAppBar({ user, isLogin }) {
+    const { t } = useTranslation();
+    const handleSignout = async () => {
+        logout();
     };
     return (
-        <Fragment>
-            <AppBar position="relative" color="transparent" elevation={0}>
-                <Toolbar>
-                    <Container>
-                        <Grid container alignItems="center">
-                            <Grid item>
-                                <Brand component={Link} to="https://www.zkseacloud.cn" target="_blank">
-                                    {/* <BrandIcon/> */}
-                                    SeaCloud
-                                </Brand>
-                            </Grid>
-                            <Grid item xs>
-                            </Grid>
-                            <Grid item>
-                                {isLogin
-                                    ? <Box sx={{ display: "flex", direction: "row", alignItems: "center" }} p={2}>
-                                        <Box sx={{ display: "flex", direction: "row", alignItems: "center" }} p={2}>
-                                            欢迎,{user.name}
-                                        </Box>
-                                        <Tooltip title="进入">
-                                            <IconButton
-                                                component={Link}
-                                                to="/private/dashboard"
-                                            >
-                                                <LoginIcon color="primary" />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="注销">
-                                            <IconButton
-                                                onClick={handleSignout}
-                                            >
-                                                <LogoutIcon color="info" />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                    : <Button
-                                        ml={2}
-                                        color="primary"
-                                        variant="contained"
-                                        component={Link}
-                                        to="/auth/signin"
-                                        target="_self"
-                                    >
-                                        登录
-                                    </Button>
-                                }
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </Toolbar>
+        <div>
+            <AppBar
+                position="fixed"
+                sx={{
+                    boxShadow: 0,
+                    bgcolor: 'transparent',
+                    backgroundImage: 'none',
+                    mt: 2,
+                }}
+            >
+                <Container >
+                    <Toolbar
+                        variant="regular"
+                        sx={(theme) => ({
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexShrink: 0,
+                            borderRadius: '999px',
+                            bgcolor:
+                                theme.palette.mode === 'light'
+                                    ? 'rgba(255, 255, 255, 0.4)'
+                                    : 'rgba(0, 0, 0, 0.4)',
+                            backdropFilter: 'blur(24px)',
+                            maxHeight: 40,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            boxShadow:
+                                theme.palette.mode === 'light'
+                                    ? `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
+                                    : '0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)',
+                        })}
+                    >
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: 'flex',
+                                ml: 0,
+                                alignItems: 'center',
+                            }}
+                        >
+                            <img
+                                src={"/static/img/brands/seacloud_round.png"}
+                                style={logoStyle}
+                                alt="logo of sitemark"
+                            />
+                            <Typography color={"primary"} p={2} sx={{ display: { xs: "none", md: "flex" }, fontSize: "18px" }}>
+                                SeaCloud
+                            </Typography>
+                        </Box>
+                        <NavbarLanguagesDropdown />
+                        <Box
+                            sx={{
+                                display: { md: 'flex' },
+                                gap: 0.5,
+                                alignItems: 'center',
+                                mr: "18px"
+                            }}
+                        >
+                            {isLogin
+                                ? <Box sx={{ display: "flex", direction: "row", alignItems: "center" }} p={2}>
+                                    <Typography color={"primary"} p={2} sx={{ display: { xs: "none", md: "flex" } }}>
+                                        {t("welcome") + "," + user.name}
+                                    </Typography>
+                                    <Tooltip title={t("goBackend")}>
+                                        <IconButton
+                                            component={Link}
+                                            to="/private/dashboard"
+                                        >
+                                            <LoginIcon color="primary" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={t("logout")}>
+                                        <IconButton
+                                            onClick={handleSignout}
+                                        >
+                                            <LogoutIcon color="primary" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                                : <Button
+                                    ml={2}
+                                    color="primary"
+                                    size="small"
+                                    variant="contained"
+                                    component={Link}
+                                    to="/auth/signin"
+                                    target="_self"
+                                >
+                                    {t("login")}
+                                </Button>
+                            }
+                        </Box>
+                    </Toolbar>
+                </Container>
             </AppBar>
-        </Fragment>
-    )
+        </div>
+    );
 }
-
-export default AppBarComponent;
+export default AIAppBar;

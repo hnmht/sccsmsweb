@@ -2,7 +2,7 @@ import { useState, Fragment } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout } from "../../../store/actions";
+import { logout } from "../../../store/pub";
 
 import {
   Avatar,

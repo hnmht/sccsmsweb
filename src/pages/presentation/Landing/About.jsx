@@ -1,43 +1,63 @@
-import React from "react";
-import styled from "@emotion/styled";
-
 import {
   Container,
-  Grid,
-  Typography as MuiTypography,
+  Link,
+  Typography,
+  Box,
+  Stack,
 } from "@mui/material";
-import { spacing } from "@mui/system";
-import { author} from "../../../constants";
+import { useTranslation } from 'react-i18next';
 
-const Typography = styled(MuiTypography)(spacing);
-const Wrapper = styled.div`
-  ${spacing};
-  text-align: center;
-  position: relative;
-  background: #181d2d;
-  color: ${(props) => props.theme.palette.common.white};
-`;
-
-const Subtitle = styled(Typography)`
-  font-size: ${(props) => props.theme.typography.h6.fontSize};
-  font-weight: ${(props) => props.theme.typography.fontWeightRegular};
-  font-family: ${(props) => props.theme.typography.fontFamily};
-  opacity: 0.75;
-`;
+function Copyright() {
+  const { t } = useTranslation();
+  return (
+    <Typography variant="body2" color="text.secondary" mt={1}>
+      {'Copyright © '}
+      <Link href="https://github.com/hnmht" target="_blank">{t("author")}&nbsp;</Link>
+      {new Date().getFullYear()}
+    </Typography>
+  );
+}
 
 function About() {
   return (
-    <Wrapper pt={8} pb={8}>
-      <Container>
-        <Grid container alignItems="center" justifyContent="center">
-          <Grid item xs={12} md={6} lg={6} xl={6}>            
-            <Subtitle variant="h5" gutterBottom>
-              Copyright © 2023 {author}. All rights reserved.
-            </Subtitle>
-          </Grid>
-        </Grid>
-      </Container>
-    </Wrapper>
+    <Container
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: { xs: 2, sm: 2 },
+        py: { xs: 2, sm: 2 },
+        textAlign: { sm: 'center', md: 'left' },
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: { xs: "center", md: 'space-between' },
+          pt: 2,
+          width: '100%',
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          textAlign: { xs: 'center', md: 'left' },
+        }}
+      >
+        <Copyright />
+        <Stack
+          direction="row"
+          justifyContent="left"
+          spacing={1}
+          sx={{
+            display: { xs: "none", md: "flex" },
+            color: 'text.secondary',
+          }}
+        >
+          <Typography variant="body2">
+            Make the world a better place.
+          </Typography>
+        </Stack>
+      </Box>
+    </Container>
+
   );
 };
 

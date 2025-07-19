@@ -1,7 +1,9 @@
 import axios from "axios";
 import { getToken, removeToken } from "../storage/token";
 import store from "../store";
-import { resetUser, requestStart, requestEnd, resetDynamicData } from "../store/actions";
+import { resetUser } from "../store/slice/user";
+import { requestStart, requestEnd} from "../store/slice/reqStatus";
+import { resetDynamicData } from "../store/slice/dynamicData";
 import { message } from "mui-message";
 
 const service = axios.create({

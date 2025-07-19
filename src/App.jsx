@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { MessageBox } from "mui-message";
-import "./i18n";
+import "./i18n/i18n";
 import "./storage/db/db";
 import createTheme from "./theme";
 import useTheme from "./hooks/useTheme";
