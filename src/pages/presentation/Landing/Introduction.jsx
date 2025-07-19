@@ -73,9 +73,7 @@ function Introduction() {
               width: { sm: '100%', md: '80%' },
             }}
           >
-            Explore our cutting-edge dashboard, delivering high-quality solutions
-            tailored to your needs. Elevate your experience with top-tier features
-            and services.
+            Seacloud现场管理系统是一款针对现场进行管理的系统.
           </Typography>
         </Stack>
         <StyledBox id="image" />
