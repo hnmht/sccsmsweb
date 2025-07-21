@@ -19,6 +19,7 @@ function Copyright() {
 }
 
 function About() {
+  const {t} = useTranslation();
   return (
     <Container
       sx={{
@@ -52,7 +53,7 @@ function About() {
           }}
         >
           <Typography variant="body2">
-            Make the world a better place.
+            {t("slogan")}
           </Typography>
         </Stack>
       </Box>

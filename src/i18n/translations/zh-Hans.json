@@ -1,6 +1,10 @@
 {
     "company": "Zhoukou Sea&Cloud InfoTech Co., Ltd.",
     "login": "登录",
+    "logout":"注销",
     "systemName": "海云现场管理系统",
-    "author":"孟海涛"
+    "introductionContent":"海云现场管理系统是一款针对施工现场进行管理的系统.",
+    "author":"孟海涛",
+    "slogan": "让世界更美好",
+    "downloadQRTip": "扫码下载安卓APP"
 }

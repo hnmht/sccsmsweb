@@ -14,9 +14,11 @@ const logoStyle = {
 
 function AIAppBar({ user, isLogin }) {
     const { t } = useTranslation();
+
     const handleSignout = async () => {
         logout();
     };
+    
     return (
         <div>
             <AppBar

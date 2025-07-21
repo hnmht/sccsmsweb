@@ -1,6 +1,10 @@
 {
     "company": "Zhoukou Sea&Cloud InfoTech Co., Ltd.",
     "login":"Login",
-    "systemName":"Sea&Cloud Construction Site Management",
-    "author":"HaiTao Meng"
+    "logout": "Logout",
+    "systemName":"SeaCloud Construction Site Management",
+    "introductionContent": "SeaCloud Construction Site Management is a visual ",
+    "author":"HaiTao Meng",
+    "slogan":"Make the world a better place.",
+    "downloadQRTip":"Scan to download the Android app."
 }

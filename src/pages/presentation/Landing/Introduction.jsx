@@ -1,9 +1,10 @@
 import { Box, Container, Typography, Stack } from "@mui/material";
-import {useTheme} from "@mui/material";
-import useContentHeight from "../../../hooks/useContentHeight";
+import { useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 function Introduction() {
   const theme = useTheme();
+  const { t } = useTranslation();
   return (
     <Box
       id="introduction"
@@ -44,7 +45,7 @@ function Introduction() {
               fontSize: 'clamp(1.5rem, 10vw, 2rem)',
             }}
           >
-            Seacloud Construction Site Management System
+            {t("systemName")}
           </Typography>
           <Typography
             sx={{
@@ -53,12 +54,12 @@ function Introduction() {
               width: { sm: '100%', md: '80%' },
             }}
           >
-            Seacloud现场管理系统是一款针对现场进行管理的系统.
+            {t("introductionContent")}
           </Typography>
         </Stack>
         <Stack
           sx={{
-            flex: 1,            
+            flex: 1,
             width: "100%",
           }}
         >
@@ -66,15 +67,15 @@ function Introduction() {
             src="/static/img/screenshots/dashboard.jpg"
             alt="controduce"
             style={{
-              alignSelf:"center",
-              marginTop:theme.spacing(8),
-              width:"70%",
-              borderRadius:theme.shape.borderRadius,
-              outline:"6px solid",
-              outlineColor:"hsla(220,25%,80%,0.2)",
-              border:"1px solid",
-              borderColor:theme.palette.grey[200],
-              boxShadow:"0 0 12px 8px hsla(220, 25%,80%,0.2)"
+              alignSelf: "center",
+              marginTop: theme.spacing(8),
+              width: "75%",
+              borderRadius: theme.shape.borderRadius,
+              outline: "6px solid",
+              outlineColor: "hsla(220,25%,80%,0.2)",
+              border: "1px solid",
+              borderColor: theme.palette.grey[200],
+              boxShadow: "0 0 12px 8px hsla(220, 25%,80%,0.2)"
             }} />
         </Stack>
       </Container>
