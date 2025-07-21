@@ -1,32 +1,9 @@
-import { Box, Container, Typography,Stack } from "@mui/material";
-import { styled } from '@mui/material/styles';
-
-const StyledBox = styled('div')(({ theme }) => ({
-  alignSelf: 'center',
-  width: '100%',
-  height: 400,
-  marginTop: theme.spacing(8),
-  borderRadius: (theme.vars || theme).shape.borderRadius,
-  outline: '6px solid',
-  outlineColor: 'hsla(220, 25%, 80%, 0.2)',
-  border: '1px solid',
-  borderColor: (theme.vars || theme).palette.grey[200],
-  boxShadow: '0 0 12px 8px hsla(220, 25%, 80%, 0.2)',
-  backgroundImage: `url('/static/img/screenshots/dashboard.jpg')`,
-  backgroundSize: 'cover',
-  [theme.breakpoints.up('sm')]: {
-    marginTop: theme.spacing(10),
-    height: 700,
-  },
-  ...theme.applyStyles('dark', {
-    boxShadow: '0 0 24px 12px hsla(210, 100%, 25%, 0.2)',
-    backgroundImage: `url('/static/img/screenshots/dashboard.jpg')`,
-    outlineColor: 'hsla(220, 20%, 42%, 0.1)',
-    borderColor: (theme.vars || theme).palette.grey[700],
-  }),
-}));
+import { Box, Container, Typography, Stack } from "@mui/material";
+import {useTheme} from "@mui/material";
+import useContentHeight from "../../../hooks/useContentHeight";
 
 function Introduction() {
+  const theme = useTheme();
   return (
     <Box
       id="introduction"
@@ -47,6 +24,8 @@ function Introduction() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          width: "100%",
+          height: "100%",
           pt: { xs: 14, sm: 20 },
           pb: { xs: 8, sm: 12 },
         }}>
@@ -60,7 +39,8 @@ function Introduction() {
             sx={{
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
-              alignItems: 'center',
+              alignSelf: "center",
+              textAlign: "center",
               fontSize: 'clamp(1.5rem, 10vw, 2rem)',
             }}
           >
@@ -76,7 +56,27 @@ function Introduction() {
             Seacloud现场管理系统是一款针对现场进行管理的系统.
           </Typography>
         </Stack>
-        <StyledBox id="image" />
+        <Stack
+          sx={{
+            flex: 1,            
+            width: "100%",
+          }}
+        >
+          <img
+            src="/static/img/screenshots/dashboard.jpg"
+            alt="controduce"
+            style={{
+              alignSelf:"center",
+              marginTop:theme.spacing(8),
+              width:"70%",
+              borderRadius:theme.shape.borderRadius,
+              outline:"6px solid",
+              outlineColor:"hsla(220,25%,80%,0.2)",
+              border:"1px solid",
+              borderColor:theme.palette.grey[200],
+              boxShadow:"0 0 12px 8px hsla(220, 25%,80%,0.2)"
+            }} />
+        </Stack>
       </Container>
     </Box>
   );

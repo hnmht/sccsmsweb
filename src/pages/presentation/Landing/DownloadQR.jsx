@@ -1,7 +1,7 @@
 import { Box, Typography,useTheme,useMediaQuery } from "@mui/material";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
-const displayTop = { display: "block", position: "fixed", right: 32, top: 60, zIndex: 9 };
+const displayTop = { display: "block", position: "fixed", right: 32, top: 80, zIndex: 9 };
 const displayBottom = { display: "block", position: "fixed", right: 8, bottom: 64, zIndex: 9 };
 
 function DownloadQR() {
