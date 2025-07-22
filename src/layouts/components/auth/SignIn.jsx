@@ -17,7 +17,7 @@ import { message } from "mui-message";
 import jsencrypt from "jsencrypt";
 
 import { reqGetPublicKey } from "../../../api/security";
-import { setUserInfo, setUserToken} from "../../../store/slice/user";
+import { setUserInfo, setUserToken } from "../../../store/slice/user";
 import { initLocalDb } from "../../../storage/db/db";
 
 const TextField = styled(MuiTextField)(spacing);
@@ -26,27 +26,19 @@ const Box = styled(MuiBox)(spacing);
 
 const SignIn = (props) => {
     const { t } = useTranslation();
-    const [username, setUsername] = useState("");
+    const [userCode, setUserCode] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const [usernameError, setUsernameError] = useState({ isError: false, errText: "" });
+    const canLogin = userCode && userCode !== "" && password && password !== "";
+
+    const [userCodeError, setUserCodeError] = useState({ isError: false, errText: "" });
     const [passwordError, setPasswordError] = useState({ isError: false, errText: "" });
 
     const navigate = useNavigate();
 
     const handleLogin = async (event) => {
-        event.preventDefault();
-        //检查输入内容是否合格
-        if (!username) {
-            setUsernameError({ isError: true, errText: "用户编码不能为空" });
-        }
-        if (!password) {
-            setPasswordError({ isError: true, errText: "密码不能为空" });
-        }
-        if (!username && !password) {
-            return
-        }
+        event.preventDefault();        
 
         try {
             const keyRes = await reqGetPublicKey();
@@ -54,8 +46,7 @@ const SignIn = (props) => {
                 message.error(`${t("errGetPublicKeyFailed")}:${t("bm" + keyRes.data.status)}!`)
                 return
             }
-
-            const pubKey = keyRes.data.data;
+            const publicKey = keyRes.data.data;
             //使用jsencrypt创建加密对象实例
             let encryptor = new jsencrypt();
             encryptor.setPublicKey(publickey);
@@ -87,22 +78,28 @@ const SignIn = (props) => {
 
         catch (err) {
             return
-        }        
+        }
     };
 
     return (
-        <Box component="form" onSubmit={handleLogin} noValidate method="post" my={2}>
+        <Box
+            component="form"
+            onSubmit={handleLogin}
+            noValidate
+            method="post"
+            my={2}
+            alignItems="center"
+        >
             <TextField
                 margin={"normal"}
                 required
                 fullWidth
                 autoComplete="true"
-                id="username"
-                inputProps={{name:"username"}}
-                label="用户编码"
-                name="username"
-                placeholder="请输入用户编码"
-               
+                id="userCode"
+                inputProps={{ name: "userCode" }}
+                label={t("labelUserCode")}
+                name="userCode"
+                placeholder={t("tipInputUserCode")}
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
@@ -111,21 +108,21 @@ const SignIn = (props) => {
                     ),
                 }}
                 autoFocus
-                onChange={(event) => { setUsername(event.target.value) }}
-                onInput={() => setUsernameError({ isError: false, errText: "" })}
-                error={usernameError.isError}
-                helperText={usernameError.errText}
+                onChange={(event) => { setUserCode(event.target.value) }}
+                onInput={() => setUserCodeError({ isError: false, errText: "" })}
+                error={userCodeError.isError}
+                helperText={userCodeError.errText}
             />
             <TextField
                 margin="normal"
                 required
                 fullWidth
                 name="password"
-                label="密码"
+                label={t("labelPassword")}
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="current-password"
-                placeholder="请输入密码"
+                placeholder={t("tipInputPassword")}
                 InputLabelProps={{
                     shrink: true,
                 }}
@@ -153,9 +150,10 @@ const SignIn = (props) => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                mt={4}
+                mt={4}                
+                disabled={!canLogin}
             >
-                登录
+                {t("login")}
             </Button>
         </Box>
     );

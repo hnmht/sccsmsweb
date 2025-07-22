@@ -37,7 +37,7 @@ function DownloadQR() {
                         textAlign:"center"
                     }}
                 >
-                    {t("downloadQRTip")}
+                    {t("tipDownloadQR")}
                 </Typography>
             </Container>
         </Box>

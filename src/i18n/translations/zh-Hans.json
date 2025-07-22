@@ -6,5 +6,11 @@
     "introductionContent":"海云现场管理系统是一款针对施工现场进行管理的系统.",
     "author":"孟海涛",
     "slogan": "让世界更美好",
-    "downloadQRTip": "扫码下载安卓APP"
+    "tipDownloadQR": "扫码下载安卓APP",
+    "tipUserCodeEmpty": "用户编码不能为空",
+    "tipPasswordEmpty": "密码不能为空",
+    "tipInputUserCode": "请输入用户编码",
+    "tipInputPassword": "请输入密码",
+    "labelUserCode": "用户编码",
+    "labelPassword": "密码"
 }
