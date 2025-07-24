@@ -32,24 +32,35 @@ const SignIn = (props) => {
 
     const canLogin = userCode && userCode !== "" && password && password !== "";
 
+
+
     const [userCodeError, setUserCodeError] = useState({ isError: false, errText: "" });
     const [passwordError, setPasswordError] = useState({ isError: false, errText: "" });
 
     const navigate = useNavigate();
 
     const handleLogin = async (event) => {
-        event.preventDefault();        
+        event.preventDefault();   
 
-        try {
+        const keyRes = await reqGetPublicKey();
+        console.log("keyRes:", keyRes);
+        if (keyRes.data.status !== 0) {
+            message.error(`${t("errGetPublicKeyFailed")}:${t("bm" + keyRes.data.status)}!`)
+            return
+        }
+     /*    try {
             const keyRes = await reqGetPublicKey();
+            console.log("keyRes:", keyRes);
             if (keyRes.data.status !== 0) {
+                
                 message.error(`${t("errGetPublicKeyFailed")}:${t("bm" + keyRes.data.status)}!`)
                 return
             }
             const publicKey = keyRes.data.data;
+            console.log("keyRes:", keyRes);
             //使用jsencrypt创建加密对象实例
             let encryptor = new jsencrypt();
-            encryptor.setPublicKey(publickey);
+            encryptor.setPublicKey(publicKey);
             let rsaPassword = encryptor.encrypt(password);
             //获取token
             let loginRes = await reqLogin({ usercode: usercode.trim(), password: rsaPassword });
@@ -73,12 +84,12 @@ const SignIn = (props) => {
             initLocalDb(); //初始化本地数据库
             getDynamicData();// 获取动态数据
             //初始化redux           
-            navigate("/private/dashboard");
+            navigate("/private/dashboard"); 
         }
-
         catch (err) {
+            console.log("Error:", err);
             return
-        }
+        } */
     };
 
     return (

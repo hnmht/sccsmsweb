@@ -2,19 +2,22 @@ import axios from "axios";
 import { getToken, removeToken } from "../storage/token";
 import store from "../store";
 import { resetUser } from "../store/slice/user";
-import { requestStart, requestEnd} from "../store/slice/reqStatus";
+import { requestStart, requestEnd } from "../store/slice/reqStatus";
 import { resetDynamicData } from "../store/slice/dynamicData";
 import { message } from "mui-message";
+import i18n from "../i18n/i18n";
 
 const service = axios.create({
     baseURL: "/api/v1", //"http://localhost:8080/api/v1"
     timeout: 15000,
 });
 
+const removeTokenCodes = ["CodeInvalidToken", "CodeNeedLogin", "CodeTokenDestroy", "CodeLoginOther"];
+const successCode = "CodeSuccess"
+
 //请求拦截器
 service.interceptors.request.use(
     (config) => {
-        // console.log("config:",config);
         if (config.isLoading) {
             store.dispatch(requestStart());
         }
@@ -23,6 +26,7 @@ service.interceptors.request.use(
             config.headers.Authorization = "Bearer " + userToken;
         }
         config.headers.XClientType = "sceneweb";
+        config.headers["Accept-Language"] = i18n.language;
         return config;
     },
     (error) => {
@@ -34,32 +38,36 @@ service.interceptors.request.use(
 //响应拦截器
 service.interceptors.response.use(
     (response) => {
+        console.log("response:", response);
         if (response.config.isLoading) {
             store.dispatch(requestEnd());
         }
         const res = response.data;
-        if (res.code !== 1000) {
-            if (res.code === 1100 || res.code === 1101 || res.code === 1104 || res.code === 1105) {
-                message.error(res.msg);
+        if (res.resKey === successCode) {
+            // Add a boolean field for easier future checks
+            res.status = true;
+        } else {
+            res.status = false;
+            message.error(res.msg);
+            if (removeTokenCodes.includes(res.resKey)) {
                 //从本地存储移除已经过期的token
                 removeToken();
                 //清空redux本地用户信息
                 store.dispatch(resetUser());
                 store.dispatch(resetDynamicData());
-                return response;
-            } else {
-                message.error(res.msg);
             }
-            return Promise.reject('error');
-        } else {
-            return response;
         }
+        return res;
     },
     (error) => {
+        message.error(error.message);
         store.dispatch(requestEnd());
-        // console.log("响应拦截器错误信息:" , error); //for debug     
-        // message.error(error);  
-        return Promise.reject(error);
+        return {
+            resKey: "httpServerError",
+            status: false,
+            msg: error.message,
+            data: ""
+        };
     }
 );
 
