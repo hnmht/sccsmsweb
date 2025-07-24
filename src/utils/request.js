@@ -15,7 +15,7 @@ const service = axios.create({
 const removeTokenCodes = ["CodeInvalidToken", "CodeNeedLogin", "CodeTokenDestroy", "CodeLoginOther"];
 const successCode = "CodeSuccess"
 
-//请求拦截器
+// Request interceptor
 service.interceptors.request.use(
     (config) => {
         if (config.isLoading) {
@@ -35,10 +35,9 @@ service.interceptors.request.use(
     }
 );
 
-//响应拦截器
+// Response interceptor
 service.interceptors.response.use(
     (response) => {
-        console.log("response:", response);
         if (response.config.isLoading) {
             store.dispatch(requestEnd());
         }
@@ -50,10 +49,11 @@ service.interceptors.response.use(
             res.status = false;
             message.error(res.msg);
             if (removeTokenCodes.includes(res.resKey)) {
-                //从本地存储移除已经过期的token
+                // Remove token from local storage
                 removeToken();
-                //清空redux本地用户信息
+                // Clear user information in Redux
                 store.dispatch(resetUser());
+                // Clear Dynamic data in Redux
                 store.dispatch(resetDynamicData());
             }
         }
