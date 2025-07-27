@@ -7,7 +7,7 @@ const initialState = {
     name: "",
     avatar: {},
     token: "",
-    menulist: [],
+    menuList: [],
     person: {},
     department: {},
 };
@@ -28,7 +28,7 @@ export const userSlice = createSlice({
             state.code = userInfo.code;
             state.name = userInfo.name;
             state.avatar = userInfo.avatar;
-            state.menulist = userInfo.menulist;
+            state.menuList = userInfo.menuList;
             state.person = userInfo.person;
             state.department = userInfo.department;
         },
@@ -51,7 +51,7 @@ export const userSlice = createSlice({
             state.code = userInfo.code;
             state.name = userInfo.name;
             state.avatar = userInfo.avatar;
-            state.menulist = userInfo.menulist;
+            state.menuList = userInfo.menuList;
             state.person = userInfo.person;
             state.department = userInfo.department;
         }

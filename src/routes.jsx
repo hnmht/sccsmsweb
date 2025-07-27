@@ -134,7 +134,7 @@ const routes = [
                 element: <AddressBook />
             },
             {
-                path: "/private/workOrder/workOrderDoc",
+                path: "/private/workOrder/workOrder",
                 element: <WorkOrderDoc />
             },
            

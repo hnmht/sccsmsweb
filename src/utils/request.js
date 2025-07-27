@@ -13,7 +13,7 @@ const service = axios.create({
 });
 
 const removeTokenCodes = ["CodeInvalidToken", "CodeNeedLogin", "CodeTokenDestroy", "CodeLoginOther"];
-const successCode = "CodeSuccess"
+const successCode = "StatusOK"
 
 // Request interceptor
 service.interceptors.request.use(
@@ -30,14 +30,14 @@ service.interceptors.request.use(
         return config;
     },
     (error) => {
-        console.log("axios请求拦截器错误信息:", error);
+        console.error("axios Request interceptor failed:", error);
         Promise.reject(error);
     }
 );
 
 // Response interceptor
 service.interceptors.response.use(
-    (response) => {
+    (response) => {          
         if (response.config.isLoading) {
             store.dispatch(requestEnd());
         }

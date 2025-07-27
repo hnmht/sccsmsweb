@@ -142,13 +142,12 @@ const transEITsToFrontend = async (eits) => {
         }
     }
     await transEITs();
-    // console.log("执行模板批量转换耗费时间:", new Date() - startTime, "ms");
     return eits;
 };
 
 //本地数据库表定义
 export const docTable = new Map([
-    ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
+   /*  ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
     ["person", { description: "人员档案", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
     ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
     ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
@@ -162,7 +161,7 @@ export const docTable = new Map([
     ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
     ["operatingpost", { description: "岗位档案", reqAllFunc: reqGetOPList, reqCacheFunc: reqGetOPCache, transToFrontFunc: commonTransDoc }],
     ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
-    ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }],
+    ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
 ]);
 
 //本地缓存初始化
@@ -170,6 +169,7 @@ export const initLocalDb = async () => {
     //访问服务器获取dbid
     let newDbid;
     const res = await reqPubSysInfo(false);
+    console.log("res:",res);
     if (res.data.status === 0) {
         newDbid = res.data.data.dbid;
     } else {

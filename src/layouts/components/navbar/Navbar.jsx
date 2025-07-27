@@ -14,7 +14,7 @@ import {
 import { MenuIcon } from "../../../component/PubIcon/PubIcon";
 import NavbarNotificationsDropdown from "./NavbarNotificationsDropdown";
 import NavbarMessagesDropdown from "./NavbarMessagesDropdown";
-// import NavbarLanguagesDropdown from "./NavbarLanguagesDropdown";
+import NavbarLanguagesDropdown from "./NavbarLanguagesDropdown";
 import NavbarUserDropdown from "./NavbarUserDropdown";
 
 import { reqPubSysInfo } from "../../../api/pub";
@@ -72,7 +72,7 @@ const Navbar = ({ onDrawerToggle }) => {
             <Grid item>
               <NavbarMessagesDropdown />
               <NavbarNotificationsDropdown />
-              {/* <NavbarLanguagesDropdown /> */}
+              <NavbarLanguagesDropdown />
               <NavbarUserDropdown />
             </Grid>
           </Grid>

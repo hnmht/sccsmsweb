@@ -20,7 +20,7 @@ import Masks from '@mui/icons-material/Masks';
 import Streetview from '@mui/icons-material/Streetview';
 
 import { toTree } from "../../../utils/tree";
-
+import i18n from "../../../i18n/i18n";
 const iconMap = new Map([
     ["Home", Home],
     ["Bookmark", Bookmark],
@@ -44,51 +44,50 @@ const iconMap = new Map([
     ["Streetview", Streetview]
 ]);
 
-function transItems(menulist) {
-    let sceneManagementSection = [];
-    let sysManagementSection = [];
-    let mySection = [];
+function transItems(menuList) {
+    let managementSection = [];
+    let systemSection = [];
+    let mySection = [];   
 
-    menulist.forEach((item) => {
+    menuList.forEach((item) => {
         let routeitem = {
-            id: item.id,
-            fatherid: item.fatherid,
+            id: item.ID,
+            fatherid: item.fatherID,
             href: item.path,
-            title: item.title,
+            title: i18n.t(item.title),
             icon: iconMap.get(item.icon),
         };
 
-        if (item.id < 9000) {
-            sceneManagementSection.push(routeitem);
-        } else if (item.id >= 9000 && item.id < 9900) {
-            sysManagementSection.push(routeitem);
+        if (item.ID < 9000) {
+            managementSection.push(routeitem);
+        } else if (item.ID >= 9000 && item.ID < 9900) {
+            systemSection.push(routeitem);
         } else {
             mySection.push(routeitem);
         }
     });
     let navItems = [];
-    if (sceneManagementSection.length > 0) {
+    if (managementSection.length > 0) {
         navItems.push({
-            title: "日常业务",
-            pages: toTree(sceneManagementSection, 0),
+            title: "Business Operations",
+            pages: toTree(managementSection, 0),
         });
     };
 
-    if (sysManagementSection.length > 0) {
+    if (systemSection.length > 0) {
         navItems.push({
-            title: "系统管理",
-            pages: toTree(sysManagementSection, 0),
+            title: "System Administration",
+            pages: toTree(systemSection, 0),
         });
     };
 
     if (mySection.length > 0) {
         navItems.push({
-            title: "我的",
+            title: "My",
             pages: toTree(mySection, 0),
         });
     }
     return navItems;
-
 }
 
 export default transItems;

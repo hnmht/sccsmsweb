@@ -53,7 +53,7 @@ const MainContent = styled(Paper)`
 
 const Dashboard = ({ user, reqLoading, children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const menuItems = transItems(user.menulist);
+  const menuItems = transItems(user.menuList);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

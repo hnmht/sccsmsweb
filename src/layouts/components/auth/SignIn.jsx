@@ -1,95 +1,90 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
+
 import { useNavigate } from "react-router-dom";
 import { spacing } from "@mui/system";
 
 import {
-    Button as MuiButton,
     TextField as MuiTextField,
     Box as MuiBox,
     InputAdornment,
     IconButton,
+    CircularProgress
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { useTranslation } from 'react-i18next';
 
 import { AccountIcon, PasswordIcon, VisibilityIcon, VisibilityOffIcon } from "../../../component/PubIcon/PubIcon";
-import { message } from "mui-message";
+import LoginIcon from '@mui/icons-material/Login';
+
 import jsencrypt from "jsencrypt";
 
+import store from "../../../store";
 import { reqGetPublicKey } from "../../../api/security";
+import { reqLogin } from "../../../api/login";
+import { reqUserInfo } from "../../../api/user";
 import { setUserInfo, setUserToken } from "../../../store/slice/user";
 import { initLocalDb } from "../../../storage/db/db";
 
 const TextField = styled(MuiTextField)(spacing);
-const Button = styled(MuiButton)(spacing);
+const Button = styled(LoadingButton)(spacing);
 const Box = styled(MuiBox)(spacing);
 
-const SignIn = (props) => {
+const SignIn = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
     const [userCode, setUserCode] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const canLogin = userCode && userCode !== "" && password && password !== "";
 
-
-
-    const [userCodeError, setUserCodeError] = useState({ isError: false, errText: "" });
-    const [passwordError, setPasswordError] = useState({ isError: false, errText: "" });
-
-    const navigate = useNavigate();
-
     const handleLogin = async (event) => {
-        event.preventDefault();   
-
+        setLoading(true);
+        event.preventDefault();
+        // Request RSA public key from the server.
         const keyRes = await reqGetPublicKey();
-        console.log("keyRes:", keyRes);
-        if (keyRes.data.status !== 0) {
-            message.error(`${t("errGetPublicKeyFailed")}:${t("bm" + keyRes.data.status)}!`)
+        if (!keyRes.status) {
+            setLoading(false);
             return
         }
-     /*    try {
-            const keyRes = await reqGetPublicKey();
-            console.log("keyRes:", keyRes);
-            if (keyRes.data.status !== 0) {
-                
-                message.error(`${t("errGetPublicKeyFailed")}:${t("bm" + keyRes.data.status)}!`)
-                return
-            }
-            const publicKey = keyRes.data.data;
-            console.log("keyRes:", keyRes);
-            //使用jsencrypt创建加密对象实例
-            let encryptor = new jsencrypt();
-            encryptor.setPublicKey(publicKey);
-            let rsaPassword = encryptor.encrypt(password);
-            //获取token
-            let loginRes = await reqLogin({ usercode: usercode.trim(), password: rsaPassword });
-            if (loginRes.data.status !== 0) {
-                message.error(`${t("errGetTokenFailed")}: ${t("bm" + loginRes.data.status)}!`)
-                return
-            }
+        
+        const publicKey = keyRes.data;
+        // Create an encryption object instance user jsencrypt
+        let encryptor = new jsencrypt();
+        encryptor.setPublicKey(publicKey);
+        let rsaPassword = encryptor.encrypt(password);
 
-            const token = loginRes.data.data;
-            dispatch(setUserToken(token));
-
-            //获取userInfo
-            const userInfoRes = await reqUserInfo(token);
-            if (userInfoRes.data.status !== 0) {
-                message.error(`${t("errGetUserInfoFailed")}:${userInfoRes.data.statusMsg}!`)
-                return
-            }
-            const latestUserInfo = userInfoRes.data.data;
-            dispatch(setUserInfo(latestUserInfo));
-
-            initLocalDb(); //初始化本地数据库
-            getDynamicData();// 获取动态数据
-            //初始化redux           
-            navigate("/private/dashboard"); 
-        }
-        catch (err) {
-            console.log("Error:", err);
+        // Request user token from the server        
+        let loginRes = await reqLogin({ userCode: userCode.trim(), password: rsaPassword });
+        if (!loginRes.status) {
+            setLoading(false);
             return
-        } */
+        }
+        const token = loginRes.data;
+        //Set user token in Redux
+        store.dispatch(setUserToken(token));
+
+        // Request user information from the server
+        const userInfoRes = await reqUserInfo(token);
+
+        if (!userInfoRes.status) {
+            setLoading(false);
+            return
+        }
+        const latestUserInfo = userInfoRes.data;
+        // console.log("latestUserInfo:",latestUserInfo);
+        // Set user information in Redux
+        store.dispatch(setUserInfo(latestUserInfo));
+        // Initialize the local database.
+        initLocalDb();
+        // Fetch dynamic data from the server and store in the local database. 
+        // getDynamicData();
+        setLoading(false);
+        // Navigate to the dashboard         
+        navigate("/private/dashboard");
     };
 
     return (
@@ -120,9 +115,6 @@ const SignIn = (props) => {
                 }}
                 autoFocus
                 onChange={(event) => { setUserCode(event.target.value) }}
-                onInput={() => setUserCodeError({ isError: false, errText: "" })}
-                error={userCodeError.isError}
-                helperText={userCodeError.errText}
             />
             <TextField
                 margin="normal"
@@ -153,16 +145,17 @@ const SignIn = (props) => {
                     )
                 }}
                 onChange={(event) => { setPassword(event.target.value) }}
-                onInput={() => setPasswordError({ isError: false, errText: "" })}
-                error={passwordError.isError}
-                helperText={passwordError.errText}
+
             />
             <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                mt={4}                
+                mt={4}
                 disabled={!canLogin}
+                endIcon={loading ? <CircularProgress size={16}/> : <LoginIcon fontSize="16px"/>}
+                loading={loading}
+                loadingPosition="end"
             >
                 {t("login")}
             </Button>
