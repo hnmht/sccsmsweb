@@ -29,7 +29,14 @@
     "haveMessage_zero": "没有未读消息.",
     "haveMessage_other": "你有{{count}}条未读消息.",
     "viewAllMessages": "查看所有消息",
-
+    "tasks": "任务",
+    "viewSchedule": "查看日程",
+    "haveNewWO_zero": "没有工作指令.",
+    "haveNewWO_other": "你有{{count}} 条工作指令待执行.",
+    "haveNewIssue_zero": "没有待处理问题.",
+    "haveNewwIssue_other": "你有 {{count}} 条问题待处理.",
+    "valueIs": "值为:",
+    
     "MenuDashboard": "首页",
     "MenuCalendar": "日程",
     "MenuMessage": "消息",

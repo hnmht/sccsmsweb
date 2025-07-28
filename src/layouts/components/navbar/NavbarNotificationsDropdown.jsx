@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
+import { useTranslation } from "react-i18next";
 import dayjs from "../../../utils/myDayjs";
 import {
   Avatar as MuiAvatar,
@@ -62,6 +63,7 @@ function Notification({ title, description, avatar }) {
 
 function NavbarNotificationsDropdown() {
   const ref = useRef(null);
+  const { t } = useTranslation();
   const [isOpen, setOpen] = useState(false);
   const edrefs = useSelector(state => state.dynamicData.edrefs);
   const worefs = useSelector(state => state.dynamicData.worefs);
@@ -80,7 +82,7 @@ function NavbarNotificationsDropdown() {
 
   return (
     <>
-      <Tooltip title="任务">
+      <Tooltip title={t("tasks")}>
         <IconButton color="inherit" ref={ref} onClick={handleOpen} size="large">
           <Indicator badgeContent={taskNumber}>
             <Notifications />
@@ -100,7 +102,7 @@ function NavbarNotificationsDropdown() {
           ? <>
             <NotificationHeader p={2}>
               <Typography variant="subtitle1" color="textPrimary">
-                {worefs.length} 待执行指令
+                {t("haveNewWO", worefs.length)}
               </Typography>
             </NotificationHeader>
             <List disablePadding>
@@ -121,14 +123,14 @@ function NavbarNotificationsDropdown() {
           ? <>
             <NotificationHeader p={2}>
               <Typography variant="subtitle1" color="textPrimary">
-                {edrefs.length} 待处理问题
+                {t("haveNewIssue", edrefs.length)}
               </Typography>
             </NotificationHeader>
             <List disablePadding>
               {filterEdr.map(edr =>
                 <Notification
                   title={edr.sceneitem.name}
-                  description={edr.eid.name + "检查值：" + edr.exectivevaluedisp}
+                  description={edr.eid.name + t("valueIs") + edr.exectivevaluedisp}
                   avatar={edr.execperson.avatar}
                   key={edr.id}
                 />
@@ -139,7 +141,7 @@ function NavbarNotificationsDropdown() {
         }
         <Box p={1} display="flex" justifyContent="center">
           <Button size="small" component={Link} to="/private/calendar" onClick={handleClose}>
-            查看日程
+            {t("viewSchedule")}
           </Button>
         </Box>
       </Popover>
