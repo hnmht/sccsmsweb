@@ -15,8 +15,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { MessageIcon } from "../../../component/PubIcon/PubIcon";
 import { useSelector } from "react-redux";
+
 const Popover = styled(MuiPopover)`
   .MuiPaper-root {
     width: 300px;
@@ -65,6 +67,7 @@ function NavbarMessagesDropdown() {
   const [isOpen, setOpen] = useState(false);
   const messages = useSelector(state => state.dynamicData.messages);
   const partMsgs = messages.length > 3 ? messages.slice(0, 3) : messages;
+  const { t } = useTranslation();
   const handleOpen = () => {
     setOpen(true);
   };
@@ -75,7 +78,7 @@ function NavbarMessagesDropdown() {
 
   return (
     <React.Fragment>
-      <Tooltip title="消息">
+      <Tooltip title={t("messages")}>
         <IconButton color="inherit" ref={ref} onClick={handleOpen} size="large">
           <Indicator badgeContent={messages.length}>
             <MessageIcon />
@@ -92,8 +95,8 @@ function NavbarMessagesDropdown() {
         open={isOpen}
       >
         <MessageHeader p={2}>
-          <Typography variant="subtitle1" color="textPrimary">
-            {messages.length}条新消息
+          <Typography variant="subtitle1" color="textPrimary">            
+            {t("haveMessage", { count: messages.length })}
           </Typography>
         </MessageHeader>
         <React.Fragment>
@@ -106,11 +109,11 @@ function NavbarMessagesDropdown() {
                 key={msg.id}
               />
             )}
-          
+
           </List>
           <Box p={1} display="flex" justifyContent="center">
             <Button size="small" component={Link} to="/private/message" onClick={handleClose}>
-              查看所有消息
+              {t("viewAllMessages")}
             </Button>
           </Box>
         </React.Fragment>

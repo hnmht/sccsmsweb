@@ -8,7 +8,8 @@ import {
 import { Divider } from "../../../component/ScMui/ScMui";
 import { useDispatch } from "react-redux";
 import { message } from "mui-message";
-import { getDynamicMessages } from "../../../store/actions";
+// import { getDynamicMessages } from "../../../store/actions";
+
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import MessageToolBar from "./messageToolBar";
@@ -36,7 +37,7 @@ const Message = () => {
     };
     //刷新未读消息
     const handleRefreshUnReadMsg = () => {
-        dispatch(getDynamicMessages());
+        // dispatch(getDynamicMessages());
     };
     //将消息标记为已读
     const handleToReadMessage = async (msg) => {

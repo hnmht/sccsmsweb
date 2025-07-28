@@ -11,7 +11,6 @@ export const appinfoSlice = createSlice({
     reducers: {
         setAppinfo: (state, action) => {
             let appInfo = action.payload;
-            //修改state内容
             state.appinfo = appInfo;
         }
     }

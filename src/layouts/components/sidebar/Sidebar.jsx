@@ -1,23 +1,19 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { NavLink } from "react-router-dom";
-
 import { spacing } from "@mui/system";
-
 import {
   Box as MuiBox,
   Drawer as MuiDrawer,
   ListItemButton,
 } from "@mui/material";
 
-// import { ReactComponent as Logo } from "../../../vendor/logo.svg";
 import SidebarNav from "./SidebarNav";
 
 const Box = styled(MuiBox)(spacing);
 
 const Drawer = styled(MuiDrawer)`
   border-right: 0;
-
   > div {
     border-right: 0;
   }
@@ -39,25 +35,25 @@ const Brand = styled(ListItemButton)`
   ${(props) => props.theme.breakpoints.up("sm")} {
     min-height: 64px;
   }
-
   &:hover {
     background-color: ${(props) => props.theme.sidebar.header.background};
   }
 `;
 
-/* const BrandIcon = styled(Logo)`
-  margin-right: ${(props) => props.theme.spacing(2)};
-  color: ${(props) => props.theme.sidebar.header.brand.color};
-  fill: ${(props) => props.theme.sidebar.header.brand.color};
-  width: 32px;
-  height: 32px;
-`; */
-
 const Sidebar = ({ items, showFooter = true, ...rest }) => {
   return (
     <Drawer variant="permanent" {...rest}>
-      <Brand component={NavLink} to="/">
-        {/* <BrandIcon />{" "} */}
+      <Brand component={NavLink} to="/">       
+        <img
+          src={"/static/img/brands/seacloud.png"}
+          style={{
+            width: '24px',
+            height: 'auto',
+            cursor: 'pointer',
+            margin:"4px"
+          }}
+          alt="logo"
+        />
         <Box ml={1}>
           SeaCloud
         </Box>

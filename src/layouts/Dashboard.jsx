@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import { useTranslation } from "react-i18next";
 
 import { Box, CssBaseline, Paper as MuiPaper } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { spacing } from "@mui/system";
-import { connect } from "react-redux";
 
 import GlobalStyle from "./components/GlobalStyle";
 import Navbar from "./components/navbar/Navbar";
-// import dashboardItems from "./components/sidebar/dashboardItems";
 import transItems from "./components/sidebar/transItems";
 import Sidebar from "./components/sidebar/Sidebar";
 import Footer from "./components/Footer";
@@ -51,9 +52,12 @@ const MainContent = styled(Paper)`
   }
 `;
 
-const Dashboard = ({ user, reqLoading, children }) => {
+const Dashboard = ({  children }) => {
+  const user = useSelector(state => state.user);
+  const reqLoading = useSelector(state => state.reqStatus.reqLoading);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const menuItems = transItems(user.menuList);
+  const { t } = useTranslation();
+  const menuItems = transItems(user.menuList, t);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -83,7 +87,7 @@ const Dashboard = ({ user, reqLoading, children }) => {
           />
         </Box>
       </Drawer>
-      <AppContent style={{ maxWidth: isLgUp ? "calc(100vw - 258px)" : "100vw"}}>
+      <AppContent style={{ maxWidth: isLgUp ? "calc(100vw - 258px)" : "100vw" }}>
         <Navbar onDrawerToggle={handleDrawerToggle} />
         <MainContent p={isLgUp ? 6 : 2}>
           {reqLoading
@@ -91,7 +95,7 @@ const Dashboard = ({ user, reqLoading, children }) => {
             : null
           }
           {children}
-          <Outlet/>          
+          <Outlet />
         </MainContent>
         <Footer />
       </AppContent>
@@ -100,11 +104,6 @@ const Dashboard = ({ user, reqLoading, children }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    reqLoading: state.reqStatus.reqLoading
-  }
-}
 
-export default connect(mapStateToProps, null)(Dashboard);
+
+export default Dashboard;

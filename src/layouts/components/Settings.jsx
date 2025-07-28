@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
-import { Link } from "react-router-dom";
 import { green, grey, indigo } from "@mui/material/colors";
 import PaletteIcon from "@mui/icons-material/Palette";
+import { useTranslation } from "react-i18next";
 import {
   Box,
-  Button,
   Drawer,
   Fab as MuiFab,
   Grid,
@@ -80,8 +79,8 @@ const DemoTitle = styled(Typography)`
 
 const Fab = styled(MuiFab)`
   position: fixed;
-  right: ${(props) => props.theme.spacing(8)};
-  bottom: ${(props) => props.theme.spacing(8)};
+  right: ${(props) => props.theme.spacing(2)};
+  bottom: ${(props) => props.theme.spacing(2)};
   z-index: 1;
 `;
 
@@ -120,32 +119,20 @@ function Demo({ title, themeVariant }) {
 }
 
 function Demos() {
+  const {t} = useTranslation();
   return (
     <Wrapper>
-      <Heading>选择主题</Heading> 
+      <Heading>{t("labelChooseTheme")}</Heading> 
       <Box px={4} my={3}>
         <Grid container spacing={3}>
-          <Demo title="Dark" themeVariant={THEMES.DARK} />
-          <Demo title="Light" themeVariant={THEMES.LIGHT} />
-          <Demo title="Default" themeVariant={THEMES.DEFAULT} />
-          <Demo title="Blue" themeVariant={THEMES.BLUE} />
-          <Demo title="Green" themeVariant={THEMES.GREEN} />
-          <Demo title="Indigo" themeVariant={THEMES.INDIGO} />
+          <Demo title={t("labelThemeDark")} themeVariant={THEMES.DARK} />
+          <Demo title={t("labelThemeLight")} themeVariant={THEMES.LIGHT} />
+          <Demo title={t("labelThemeDefault")} themeVariant={THEMES.DEFAULT} />
+          <Demo title={t("labelThemeBlue")} themeVariant={THEMES.BLUE} />
+          <Demo title={t("labelThemeGreen")} themeVariant={THEMES.GREEN} />
+          <Demo title={t("labelThemeIndigo")} themeVariant={THEMES.INDIGO} />
         </Grid>
-      </Box>
-
-      <Box my={3} mx={4}>
-        <Button
-          component={Link}
-          to="/helps/intro"
-          variant="outlined"
-          size="large"
-          target="_blank"
-          fullWidth={true}
-        >
-          帮助文档
-        </Button>
-      </Box>     
+      </Box> 
     </Wrapper>
   );
 }
@@ -161,7 +148,7 @@ function Settings() {
 
   return (
     <React.Fragment>
-      <Fab color="primary" aria-label="Edit" onClick={toggleDrawer(true)}>
+      <Fab color="primary" aria-label="Edit" onClick={toggleDrawer(true)} size="small">
         <PaletteIcon />
       </Fab>
       <Drawer anchor="right" open={state.isOpen} onClose={toggleDrawer(false)}>

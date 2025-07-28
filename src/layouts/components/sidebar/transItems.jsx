@@ -20,7 +20,7 @@ import Masks from '@mui/icons-material/Masks';
 import Streetview from '@mui/icons-material/Streetview';
 
 import { toTree } from "../../../utils/tree";
-import i18n from "../../../i18n/i18n";
+
 const iconMap = new Map([
     ["Home", Home],
     ["Bookmark", Bookmark],
@@ -44,7 +44,7 @@ const iconMap = new Map([
     ["Streetview", Streetview]
 ]);
 
-function transItems(menuList) {
+function transItems(menuList,t) {
     let managementSection = [];
     let systemSection = [];
     let mySection = [];   
@@ -54,7 +54,7 @@ function transItems(menuList) {
             id: item.ID,
             fatherid: item.fatherID,
             href: item.path,
-            title: i18n.t(item.title),
+            title: t(item.title),
             icon: iconMap.get(item.icon),
         };
 
@@ -66,24 +66,25 @@ function transItems(menuList) {
             mySection.push(routeitem);
         }
     });
+
     let navItems = [];
     if (managementSection.length > 0) {
         navItems.push({
-            title: "Business Operations",
+            title: t("labelBusinessOperations"),
             pages: toTree(managementSection, 0),
         });
     };
 
     if (systemSection.length > 0) {
         navItems.push({
-            title: "System Administration",
+            title: t("labelSystemAdministration"),
             pages: toTree(systemSection, 0),
         });
     };
 
     if (mySection.length > 0) {
         navItems.push({
-            title: "My",
+            title: t("labelMy"),
             pages: toTree(mySection, 0),
         });
     }

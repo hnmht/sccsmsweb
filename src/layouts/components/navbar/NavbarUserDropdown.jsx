@@ -1,7 +1,8 @@
 import { useState, Fragment } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
-import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { logout } from "../../../store/pub";
 
 import {
@@ -21,8 +22,9 @@ const IconButton = styled(MuiIconButton)`
   }
 `;
 
-function NavbarUserDropdown(props) {
-  const { logout, user } = props;
+function NavbarUserDropdown() {
+  const user = useSelector(state => state.user);
+  const {t} = useTranslation();
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [diagStatus, setDiagStatus] = useState({
     isOpen: false
@@ -60,7 +62,6 @@ function NavbarUserDropdown(props) {
 
   //退出
   const handleSignOut = async () => {
-
     await logout();    
     navigate("/");
   };
@@ -84,9 +85,9 @@ function NavbarUserDropdown(props) {
         open={Boolean(anchorMenu)}
         onClose={closeMenu}
       >
-        <MenuItem onClick={handleChangePassword}>修改密码</MenuItem>
-        <MenuItem onClick={handleSetProfile}>设置</MenuItem>
-        <MenuItem onClick={handleSignOut}>退出</MenuItem>
+        <MenuItem onClick={handleChangePassword}>{t("labelChangePassword")}</MenuItem>
+        <MenuItem onClick={handleSetProfile}>{t("labelSetup")}</MenuItem>
+        <MenuItem onClick={handleSignOut}>{t("logout")}</MenuItem>
       </Menu>
       <Dialog
         maxWidth="sm"
@@ -101,10 +102,4 @@ function NavbarUserDropdown(props) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-  };
-};
-
-export default connect(mapStateToProps, { logout })(NavbarUserDropdown);
+export default NavbarUserDropdown;

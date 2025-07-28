@@ -27,19 +27,19 @@ db.version(1).stores({
     tsinfo: "docname",
     department: "id,ts",
     person: "id,deptid,op_id,status,ts",
-    userdefineclass: "id,ts",
-    userdefinedoc: "id,docclass.id,ts",
-    exectiveitemclass: "id,ts",
-    sceneitemclass: "id,ts",
-    exectiveitem: "id,code,itemclass.id,resulttype.id",
-    exectivetemplate: "id,code",
-    sceneitemoption: "id,code",
-    sceneitem: "id,code,itemclass.id",
+    udc: "id,ts",
+    ud: "id,docclass.id,ts",
+    epc: "id,ts",
+    csc: "id,ts",
+    ep: "id,code,epc.id,resulttype.id",
+    ept: "id,code",
+    cso: "id,code",
+    cs: "id,code,csc.id",
     risklevel: "id,ts",
-    documentclass: "id,ts",
-    operatingpost: "id,ts",
-    traincourse: "id,ts",
-    laborprotection: "id,ts",
+    dc: "id,ts",
+    postion: "id,ts",
+    tc: "id,ts",
+    ppe: "id,ts",
 });
 
 //根据id获取缓存档案
@@ -147,21 +147,21 @@ const transEITsToFrontend = async (eits) => {
 
 //本地数据库表定义
 export const docTable = new Map([
-   /*  ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
-    ["person", { description: "人员档案", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
-    ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
-    ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
-    ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
-    ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
-    ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-    ["sceneitemclass", { description: "现场档案类别", reqAllFunc: reqGetSimpSICList, reqCacheFunc: reqGetSimpSICCache, transToFrontFunc: commonTransDoc }],
-    ["sceneitemoption", { description: "现场档案选项", reqAllFunc: reqSIOs, reqCacheFunc: reqGetSIOCache, transToFrontFunc: commonTransDoc }],
-    ["sceneitem", { description: "现场档案", reqAllFunc: reqGetSIList, reqCacheFunc: reqGetSICache, transToFrontFunc: commonTransDoc }],
-    ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
-    ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
-    ["operatingpost", { description: "岗位档案", reqAllFunc: reqGetOPList, reqCacheFunc: reqGetOPCache, transToFrontFunc: commonTransDoc }],
-    ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
-    ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
+    /*  ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
+     ["person", { description: "人员档案", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
+     ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+     ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
+     ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
+     ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
+     ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
+     ["sceneitemclass", { description: "现场档案类别", reqAllFunc: reqGetSimpSICList, reqCacheFunc: reqGetSimpSICCache, transToFrontFunc: commonTransDoc }],
+     ["sceneitemoption", { description: "现场档案选项", reqAllFunc: reqSIOs, reqCacheFunc: reqGetSIOCache, transToFrontFunc: commonTransDoc }],
+     ["sceneitem", { description: "现场档案", reqAllFunc: reqGetSIList, reqCacheFunc: reqGetSICache, transToFrontFunc: commonTransDoc }],
+     ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
+     ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
+     ["operatingpost", { description: "岗位档案", reqAllFunc: reqGetOPList, reqCacheFunc: reqGetOPCache, transToFrontFunc: commonTransDoc }],
+     ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
+     ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
 ]);
 
 //本地缓存初始化
@@ -169,17 +169,15 @@ export const initLocalDb = async () => {
     //访问服务器获取dbid
     let newDbid;
     const res = await reqPubSysInfo(false);
-    console.log("res:",res);
-    if (res.data.status === 0) {
-        newDbid = res.data.data.dbid;
-    } else {
-        message.error("获取sysinfo失败,初始化缓存失败");
+    if (!res.status) {
         return
     }
+    newDbid = res.data.dbID;
     let dbId;
 
     //查询dbinfo表中是否存在dbid内容
     const dbidInfo = await db["dbinfo"].where("infoname").equals("dbid").toArray();
+    console.log("dbidInfo:",dbidInfo);
     if (dbidInfo.length === 0) { //如果没有数据，表示是第一次初始化
         dbId = newDbid
         //向server表中写入数据库id
@@ -209,7 +207,7 @@ export const initLocalDb = async () => {
     }
 
     //请求所有本地缓存
-    await reqAllDocCache();
+    // await reqAllDocCache(); //暂时不用,待基本档案完成后再做
 };
 //清理所有本地缓存
 export const clearAllDocCache = async () => {
