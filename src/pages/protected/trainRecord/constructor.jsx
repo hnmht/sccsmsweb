@@ -1,6 +1,6 @@
 import dayjs from "../../../utils/myDayjs";
 import store from "../../../store";
-import { CellCreateTime, CellCreateUser, CellModifyTime, CellModifyUser, CellConfirmTime, CellConfirmUser, CellVoucherStatus, CellDescription } from "../pub";
+import { CellCreateTime, CellCreator, CellModifyTime, CellModifier, CellConfirmTime, CellConfirmer, CellVoucherStatus, CellDescription } from "../pub";
 
 const rowCopyAddDisabled = (row) => {
     return false;
@@ -129,11 +129,11 @@ export const columns = [
     { id: "classhour", label: "课时", alignment: "center", minWidth: 30, visible: true, sortField: "classhour", sort: true, display: { type: 0, cell1: null } },
     { id: "isexamine", label: "是否考核", alignment: "center", minWidth: 30, visible: true, sortField: "isexamine", sort: true, display: { type: 1, cell1: CellIsExamine } },
     { id: "status", label: "状态", alignment: "center", minWidth: 50, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellVoucherStatus } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createdate", label: "创建日期", alignment: "center", minWidth: 30, visible: false, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-     { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 30, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
+     { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 30, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
     { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
-    { id: "confirmuser", label: "确认人", alignment: "center", minWidth: 30, visible: false, sortField: "confirmuser.name", sort: true, display: { type: 1, cell1: CellConfirmUser } },
+    { id: "confirmuser", label: "确认人", alignment: "center", minWidth: 30, visible: false, sortField: "confirmuser.name", sort: true, display: { type: 1, cell1: CellConfirmer } },
     { id: "confirmdate", label: "确认日期", alignment: "center", minWidth: 60, visible: false, sortField: "confirmdate", sort: true, display: { type: 1, cell1: CellConfirmTime } },
 ];
 //查询字段定义

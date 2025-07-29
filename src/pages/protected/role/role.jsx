@@ -3,12 +3,12 @@ import {
     Dialog,
 } from "@mui/material";
 import { message } from "mui-message";
-import { reqGetRoles, reqDeleteRole, reqDeleteRoles } from "../../../../api/role";
+import { reqGetRoles, reqDeleteRole, reqDeleteRoles } from "../../../api/role";
 
-import { Divider } from "../../../../component/ScMui/ScMui";
-import PageTitle from "../../../../component/PageTitle/PageTitle";
+import { Divider } from "../../../component/ScMui/ScMui";
+import PageTitle from "../../../component/PageTitle/PageTitle";
 import EditRole from "./editRole";
-import DocList from "../../../../component/DocList/DocList";
+import DocList from "../../../component/DocList/DocList";
 import { rowActionsDefine, columns, delMultipleDisabled } from "./constructor";
 
 const Role = () => {
@@ -30,11 +30,10 @@ const Role = () => {
     const handleReqRoleList = async () => {
         const res = await reqGetRoles();
         let newRoles = [];
-        if (res.data.status === 0) {
-            newRoles = res.data.data;
-        } else {
-            message.error(res.data.statusMsg);
-        }
+        if (res.status) {
+            newRoles = res.data;
+        } 
+        console.log("roles:", newRoles)
         setRows(newRoles);
     };
     //表头增加按钮
@@ -116,7 +115,7 @@ const Role = () => {
 
     return (
         <React.Fragment>
-            <PageTitle pageName="角色管理" displayHelp={true} helpUrl="/helps/role"/>
+            <PageTitle pageName="MenuRole" displayHelp={true} helpUrl="/helps/role"/>
             <Divider my={2} />
             <DocList
                 rows={rows}

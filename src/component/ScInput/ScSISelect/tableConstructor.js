@@ -42,7 +42,7 @@ const CellRespPerson = (row) => {
 
 
 //创建人显示
-const CellCreateUser = (row, column) => {
+const CellCreator = (row, column) => {
     return row.createuser.name;
 }
 
@@ -129,7 +129,7 @@ export const columns = [
     { id: "finishdate", label: "完工日期", alignment: "center", minWidth: 30, visible: false, sortField: "finishdate", sort: true, display: { type: 0, cell1: null } },
     { id: "longitude", label: "经度", alignment: "center", minWidth: 30, visible: false, sortField: "longitude", sort: true, display: { type: 0, cell1: null } },
     { id: "latitude", label: "纬度", alignment: "center", minWidth: 30, visible: false, sortField: "latitude", sort: true, display: { type: 0, cell1: null } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: false, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: false, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createdate", label: "创建时间", alignment: "center", minWidth: 60, visible: false, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
 ];
 

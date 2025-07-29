@@ -1,5 +1,5 @@
 import dayjs from "../../../../utils/myDayjs";
-import { CellCreateUser,  CellVoucherStatus } from "../../pub";
+import { CellCreator,  CellVoucherStatus } from "../../pub";
 
 //现场列显示
 const CellSceneItem = (row) => {
@@ -43,5 +43,5 @@ export const columns = [
     { id: "department", label: "部门", alignment: "center", minWidth: 60, visible: false, sort: true, display: { type: 1, cell1: CellDepartment } },
     { id: "hdescription", label: "单据说明", alignment: "center", minWidth: 160, visible: false, sort: true, display: { type: 0, cell1: null } },
     { id: "workdate", label: "执行日期", alignment: "center", minWidth: 30, visible: false, sort: true, display: { type: 0, cell1: null } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: false, sort: true, display: { type: 1, cell1: CellCreateUser} },   
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: false, sort: true, display: { type: 1, cell1: CellCreator} },   
 ];

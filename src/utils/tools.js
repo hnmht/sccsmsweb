@@ -150,7 +150,6 @@ export const DateTimeFormat = (date = new Date()) => {
     let hour = date.getHours();
     let min = date.getMinutes();
     let sec = date.getSeconds();
-
     if (day < 10) {
         day = '0' + day;
     }
@@ -166,7 +165,6 @@ export const DateTimeFormat = (date = new Date()) => {
     if (sec < 10) {
         sec = '0' + sec;
     }
-
     const dateTimeFMT = `${year}-${month}-${day} ${hour}:${min}:${sec}`;
 
     return dateTimeFMT
@@ -350,16 +348,7 @@ function getQuarterStartMonth(month) {
     }
     return quarterStartMonth;
 }
-//获取指定日期所在周周一
-// function GetMondayAndSunday(date) {
-//     let week = date.getDay(); //获取时间的星期数
-//     let minus = week ? week - 1 : 6;
-//     date.setDate(date.getDate() - minus); //获取minus天前的日期
-//     var y = dd.getFullYear();
-//     var m = dd.getMonth() + 1; //获取月份
-//     var d = dd.getDate();
-//     return y + "-" + formatDate(m) + "-" + formatDate(d);
-// }
+
 
 
 

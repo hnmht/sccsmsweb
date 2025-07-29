@@ -1,7 +1,7 @@
 import {
     Typography,
 } from "@mui/material";
-import { CellCreateUser, CellCreateTime, CellModifyTime, CellModifyUser, CellStatus,CellDescription } from "../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus,CellDescription } from "../pub";
 
 
 //执行项目分类显示
@@ -121,8 +121,8 @@ export const columns = [
     { id: "ischeckerror", label: "是否自动检查问题", alignment: "center", minWidth: 60, visible: true, sortField: "ischeckerror", sort: true, display: { type: 1, cell1: CellIsCheckError } },
     { id: "errorvaluedisp", label: "错误值", alignment: "center", minWidth: 30, visible: true, sortField: "errorvaluedisp", sort: true, display: { type: 0, cell1: null } },
     { id: "risklevel", label: "风险等级", alignment: "center", minWidth: 60, visible: true, sortField: "risklevel.name", sort: true, display: { type: 1, cell1: CellRiskLevel } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: false, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: false, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createdate", label: "创建日期", alignment: "center", minWidth: 30, visible: false, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
+    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
     { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];

@@ -1,7 +1,7 @@
 import {
     Typography,
 } from "@mui/material";
-import { CellCreateUser, CellCreateTime, CellModifyTime, CellModifyUser, CellStatus} from "../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus} from "../pub";
 
 //档案名称显示
 const CellName = (row) => {
@@ -91,8 +91,8 @@ export const columns = [
     { id: "name", label: "档案名称", alignment: "center", minWidth: 100, visible: true, sortField: "name", sort: true, display: { type: 1, cell1: CellName } },
     { id: "description", label: "说明", alignment: "center", minWidth: 240, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
     { id: "status", label: "状态", alignment: "center", minWidth: 60, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createdate", label: "创建日期", alignment: "center", minWidth: 60, visible: true, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
+    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
     { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];

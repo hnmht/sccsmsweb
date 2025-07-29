@@ -1,6 +1,6 @@
 import dayjs from "../../../utils/myDayjs";
 import store from "../../../store";
-import { CellCreateUser, CellCreateTime, CellModifyTime, CellModifyUser, CellDescription } from "../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellDescription } from "../pub";
 
 //文档类别显示
 const CellDCName = (row) => {
@@ -104,8 +104,8 @@ export const columns = [
     { id: "releasedate", label: "生效日期", alignment: "center", minWidth: 80, visible: true, sortField: "releasedate", sort: true, display: { type: 1, cell1: CellReleaseDate } },
     { id: "description", label: "说明", alignment: "center", minWidth: 120, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "dc", label: "分类", alignment: "center", minWidth: 60, visible: false, sortField: "dc.name", sort: true, display: { type: 1, cell1: CellDCName } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createdate", label: "创建日期", alignment: "center", minWidth: 30, visible: false, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
+    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
     { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];

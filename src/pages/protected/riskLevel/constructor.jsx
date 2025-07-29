@@ -1,4 +1,4 @@
-import { CellCreateUser, CellCreateTime, CellModifyTime, CellModifyUser, CellStatus, CellDescription } from "../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus, CellDescription } from "../pub";
 
 const rowCopyAddDisabled = (row) => {
     return false;
@@ -84,8 +84,8 @@ export const columns = [
     { id: "color", label: "颜色", alignment: "center", minWidth: 60, visible: true, sortField: "color", sort: true, display: { type: 1, cell1: CellColor } },
     { id: "description", label: "说明", alignment: "center", minWidth: 150, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "status", label: "状态", alignment: "center", minWidth: 30, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
+    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createdate", label: "创建日期", alignment: "center", minWidth: 30, visible: true, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
+    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
     { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];

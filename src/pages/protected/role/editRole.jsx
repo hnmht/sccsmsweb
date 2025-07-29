@@ -7,15 +7,15 @@ import {
     Button,
 } from "@mui/material";
 import { message } from "mui-message";
-import dayjs from "../../../../utils/myDayjs";
+import dayjs from "../../../utils/myDayjs";
 import { cloneDeep } from "lodash";
 
-import { Divider } from "../../../../component/ScMui/ScMui";
-import ScInput from "../../../../component/ScInput";
-import { reqValidateRoleName, reqEditRole, reqAddRole } from "../../../../api/role";
-import { getCurrentPerson } from "../../pub";
-import Loader from "../../../../component/Loader/Loader";
-import MoreInfo from "../../../../component/MoreInfo/MoreInfo";
+import { Divider } from "../../../component/ScMui/ScMui";
+import ScInput from "../../../component/ScInput";
+import { reqValidateRoleName, reqEditRole, reqAddRole } from "../../../api/role";
+import { getCurrentPerson } from "../pub";
+import Loader from "../../../component/Loader/Loader";
+import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
 //生成初始数据
 const getInitialValue = async (oriRole, isNew, isModify) => {

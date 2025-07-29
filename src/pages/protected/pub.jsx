@@ -1,6 +1,7 @@
 import store from "../../store";
-import { DateTimeFormat } from "../../utils/tools";
+// import { DateTimeFormat } from "../../utils/tools";
 import { VoucherStatus } from "../../storage/dataTypes";
+import { DateTimeFormat } from "../../i18n/dayjs";
 
 //获取当前操作人员
 export const getCurrentPerson = () => {
@@ -52,31 +53,31 @@ export const checkVoucherNoBodyErrors = (errors) => {
 };
 
 //创建人显示
-export const CellCreateUser = (row, column) => {
-    return row.createuser.name;
+export const CellCreator = (row, column) => {
+    return row.creator.name;
 };
 //创建日期显示
 export const CellCreateTime = (row, column) => {
-    let date = new Date(row.createdate);
-    return DateTimeFormat(date);
+    let date = new Date(row.createDate);
+    return DateTimeFormat(date,"LLL");
 };
 //修改人显示
-export const CellModifyUser = (row, column) => {
-    return row.modifyuser.name;
+export const CellModifier = (row, column) => {
+    return row.modifier.name;
 };
 //修改日期显示
 export const CellModifyTime = (row, column) => {
-    let date = new Date(row.modifydate);
+    let date = new Date(row.modifyDate);
     return DateTimeFormat(date);
 };
 
 //确认人显示
-export const CellConfirmUser = (row, column) => {
-    return row.confirmuser.name;
+export const CellConfirmer = (row, column) => {
+    return row.confirmer.name;
 };
 //修改日期显示
 export const CellConfirmTime = (row, column) => {
-    let date = new Date(row.confirmdate);
+    let date = new Date(row.confirmDate);
     return DateTimeFormat(date);
 };
 

@@ -1,4 +1,4 @@
-import { CellCreateUser, CellCreateTime, CellModifyTime, CellModifyUser } from "../../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier } from "../pub";
 
 const rowCopyAddDisabled = (row) => {
     return row.systemflag === 1;
@@ -87,12 +87,12 @@ export const rowActionsDefine = {
 };
 
 export const columns = [
-    { id: "id", label: "编号", alignment: "left", minWidth: 100, visible: false,sortField:"id", sort: true, display: { type: 0, cell1: null } },
-    { id: "name", label: "名称", alignment: "center", minWidth: 200, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
-    { id: "description", label: "说明", alignment: "center", minWidth: 360, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
-    { id: "systemflag", label: "系统预置", alignment: "center", minWidth: 60, visible: true, sortField: "systemflag", sort: true, display: { type: 1, cell1:displaySystemFlag } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreateUser } },
-    { id: "createdate", label: "创建日期", alignment: "center", minWidth: 60, visible: true, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifyUser } },
-    { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
+    { id: "id", label: "id", alignment: "left", minWidth: 100, visible: false,sortField:"id", sort: true, display: { type: 0, cell1: null } },
+    { id: "name", label: "name", alignment: "center", minWidth: 200, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "description", alignment: "center", minWidth: 360, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "systemflag", label: "systemflag", alignment: "center", minWidth: 60, visible: true, sortField: "systemflag", sort: true, display: { type: 1, cell1:displaySystemFlag } },
+    { id: "creator", label: "creator", alignment: "center", minWidth: 60, visible: true, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },
+    { id: "createDate", label: "createDate", alignment: "center", minWidth: 60, visible: true, sortField: "createDate", sort: true, display: { type: 1, cell1: CellCreateTime } },
+    { id: "modifier", label: "modifier", alignment: "center", minWidth: 60, visible: false, sortField: "modifier.name", sort: true, display: { type: 1, cell1: CellModifier } },
+    { id: "modifyDate", label: "modifyDate", alignment: "center", minWidth: 60, visible: false, sortField: "modifyDate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];

@@ -51,7 +51,7 @@ function transItems(menuList,t) {
 
     menuList.forEach((item) => {
         let routeitem = {
-            id: item.ID,
+            id: item.id,
             fatherid: item.fatherID,
             href: item.path,
             title: t(item.title),

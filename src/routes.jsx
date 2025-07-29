@@ -52,14 +52,13 @@ const WorkOrderDoc = Loadable(lazy(() => import("./pages/protected/workOrder/wor
 const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); //首页
 const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); //日程
 const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  //通讯录
-const OnlineUser = Loadable(lazy(() => import("./pages/protected/permission/onlineUser/onlineUser")));   //在线用户
-
 //问题处理单
 const DisposeDoc = Loadable(lazy(() => import("./pages/protected/disposeDoc/disposeDoc")));
 //系统管理
-const Role = Loadable(lazy(() => import("./pages/protected/permission/role/role")));
-const User = Loadable(lazy(() => import("./pages/protected/permission/user/user")));
-const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permission/permissionAssignment/permissionAssignment")));
+const Role = Loadable(lazy(() => import("./pages/protected/role/role")));
+const User = Loadable(lazy(() => import("./pages/protected/user/user")));
+const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permissionAssignment/permissionAssignment")));
+const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); 
 //设置
 const SceneItemOptions = Loadable(lazy(() => import("./pages/protected/sceneItemOptions/sceneItemOptions")));
 const Registration = Loadable(lazy(() => import("./pages/protected/registration/registration")));
