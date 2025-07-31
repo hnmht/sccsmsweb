@@ -1,8 +1,6 @@
-import React, { memo } from "react";
-import PropTypes from 'prop-types';
+import { memo } from "react";
 import {
     IconButton,
-    Tooltip,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import {
@@ -26,6 +24,7 @@ import {
     ConfirmAllIcon,
     CancelConfirmIcon,
 } from "../PubIcon/PubIcon";
+import ScTooltip from "../ScTooltip/ScTooltip";
 
 function Icon(props) {
     const { iconString, color, fontSize } = props;
@@ -73,34 +72,26 @@ function Icon(props) {
     }
 }
 
-const TableButton = memo(({ visible, disabled, color, icon, tips, action, fontSize, placement = "top" }) => {
+const TableButton = memo(({
+    visible,
+    disabled,
+    color,
+    icon,
+    tips = "",
+    action = () => { },
+    fontSize = "small",
+    placement = "top" }) => {
     if (!visible) {
         return null;
     } else {
         return (
-            <Tooltip title={tips} disableFocusListener={disabled} placement={placement}>
-                <span>
+            <ScTooltip title={tips} disableFocusListener={disabled} placement={placement}>                
                     <IconButton onClick={action} disabled={disabled} >
                         <Icon iconString={icon} fontSize={fontSize} color={!disabled ? color : grey[100]} />
-                    </IconButton>
-                </span>
-            </Tooltip>
+                    </IconButton>             
+            </ScTooltip>
         );
     }
 })
-
-TableButton.prototype = {
-    visible: PropTypes.bool.isRequired,
-    disabled: PropTypes.bool,
-    icon: PropTypes.string.isRequired,
-    tips: PropTypes.string.isRequired,
-    action: PropTypes.func.isRequired,
-    fontSize: PropTypes.string,
-};
-
-TableButton.defaultProps = {
-    fontSize: "small",
-    disabled: false,
-}
 
 export default TableButton;

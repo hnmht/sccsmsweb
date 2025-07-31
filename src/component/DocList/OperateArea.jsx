@@ -8,51 +8,52 @@ import {
     Tooltip,
 } from "@mui/material";
 import { getSortColumns, getOrderBy } from "./tools";
-import { CloseIcon,CheckIcon } from "../PubIcon/PubIcon";
+import { CloseIcon, CheckIcon } from "../PubIcon/PubIcon";
 import TableButton from "./TableButton";
 import SetSortView from "./SetSortView";
 import SetColumnView from "./SetColumnView";
+import ScTooltip from "../ScTooltip/ScTooltip";
 const keytext = "operateButton_";
 
 function OperateArea(props) {
     const {
-        Columns,//表头列定义
-        OriginColumns,//原始列定义
-        //表头增加按钮
-        headAddVisible, //是否显示
-        headAddDisabled, //是否可用
-        addAction,  //点击动作
-        //表头参照增加按钮
-        headRefAddVisible, //是否可见
-        headRefAddDisabled, //是否可用
-        addRefAction,//点击动作
-        //表头过滤按钮
-        headFilterVisible, //是否显示
-        headFilterDisabled, //是否可用
-        filterAction, //点击动作
-        //表头刷新按钮
-        headRefreshVisible, //是否显示
-        headRefreshDisabled,//是否可用
-        refreshAction, //点击动作
-        //表头批量删除
-        headDelMultipleVisible,//是否显示 
-        delMultipleDisabled, //批量删除按钮是否可用
-        delMultipleAction, //点击动作
-        //表头批量确认按钮
-        headConfirmVisible,//是否可见
-        headConfirmDisabled,//是否可用
-        confirmMultipleAction,//点击动作
-        //表头批量取消确认按钮
-        headCancelConfirmVisible,//是否可见
-        headCancelConfirmDisabled,//是否可用
-        cancelConfirmMultipleAction,//点击动作
+        Columns,
+        OriginColumns,
 
-        downloadAction, //下载按钮函数
-        printAction, //打印按钮函数
+        headAddVisible,
+        headAddDisabled,
+        addAction,
 
-        getOrderByAction, //排序结果传输到父组件
-        getSetColumnAction,//列设置结果传输到父组件
-        getKeyWordAction,//搜索关键字传父组件        
+        headRefAddVisible,
+        headRefAddDisabled,
+        addRefAction,
+
+        headFilterVisible,
+        headFilterDisabled,
+        filterAction,
+
+        headRefreshVisible,
+        headRefreshDisabled,
+        refreshAction,
+
+        headDelMultipleVisible,
+        delMultipleDisabled,
+        delMultipleAction,
+
+        headConfirmVisible,
+        headConfirmDisabled,
+        confirmMultipleAction,
+
+        headCancelConfirmVisible,
+        headCancelConfirmDisabled,
+        cancelConfirmMultipleAction,
+
+        downloadAction,
+        printAction,
+
+        getOrderByAction,
+        getSetColumnAction,
+        getKeyWordAction,
     } = props;
 
     //popover相关
@@ -144,7 +145,7 @@ function OperateArea(props) {
                 value={keyword}
                 onChange={(event) => keyWordInputChange(event)}
                 startAdornment={
-                    <Tooltip title="清空">
+                    <ScTooltip title="clear">
                         <span>
                             <IconButton
                                 onClick={handleKeyWordClear}
@@ -153,10 +154,10 @@ function OperateArea(props) {
                                 <CloseIcon color={keyword === "" ? "divider" : "warning"} fontSize="small" />
                             </IconButton>
                         </span>
-                    </Tooltip>
+                    </ScTooltip>
                 }
                 endAdornment={
-                    <Tooltip title="开始搜索">
+                    <ScTooltip title="startSearch">
                         <span>
                             <IconButton
                                 onClick={handleSearch}
@@ -165,7 +166,7 @@ function OperateArea(props) {
                                 <CheckIcon color={keyword === "" ? "divider" : "success"} fontSize="small" />
                             </IconButton>
                         </span>
-                    </Tooltip>
+                    </ScTooltip>
                 }
                 inputProps={{
                     id: "doclistSearchkeyWord"
@@ -178,7 +179,7 @@ function OperateArea(props) {
                     disabled={headAddDisabled}
                     color="primary"
                     icon="AddIcon"
-                    tips="新增"
+                    tips="add"
                     action={addAction}
                     fontSize="medium"
                     id="Add"
@@ -190,7 +191,7 @@ function OperateArea(props) {
                     disabled={headRefAddDisabled}
                     color="primary"
                     icon="AddRefIcon"
-                    tips="参照新增"
+                    tips="addReference"
                     action={addRefAction}
                     fontSize="medium"
                     id="AddRef"
@@ -202,30 +203,30 @@ function OperateArea(props) {
                     disabled={headRefreshDisabled}
                     color="primary"
                     icon="RefreshIcon"
-                    tips="刷新"
+                    tips="refresh"
                     action={refreshAction}
                     fontSize="medium"
                     id="Refresh"
                     aria-describedby="Refresh"
                 />
-                  <TableButton
+                <TableButton
                     key={keytext + "Filter"}
                     visible={headFilterVisible}
                     disabled={headFilterDisabled}
                     color="primary"
                     icon="FilterIcon"
-                    tips="过滤"
+                    tips="filter"
                     action={filterAction}
                     fontSize="medium"
                     id="Filter"
                     aria-describedby="Filter"
-                />  
+                />
                 <TableButton
                     key={keytext + "Sort"}
                     color="primary"
                     visible={true}
                     icon="SortIcon"
-                    tips="排序"
+                    tips="sorting"
                     action={handleSort}
                     fontSize="medium"
                     id="Sort"
@@ -236,7 +237,7 @@ function OperateArea(props) {
                     color="primary"
                     visible={true}
                     icon="DownloadIcon"
-                    tips="下载Excel"
+                    tips="downloadExcel"
                     action={downloadAction}
                     fontSize="medium"
                     id="Download"
@@ -247,7 +248,7 @@ function OperateArea(props) {
                     color="primary"
                     visible={true}
                     icon="PrintIcon"
-                    tips="打印"
+                    tips="print"
                     action={printAction}
                     fontSize="medium"
                     id="Print"
@@ -258,7 +259,7 @@ function OperateArea(props) {
                     color="primary"
                     visible={true}
                     icon="SelectColumnIcon"
-                    tips="选择列"
+                    tips="selectColumn"
                     action={handleSelectColumn}
                     fontSize="medium"
                     id="SelectColumn"
@@ -270,7 +271,7 @@ function OperateArea(props) {
                     visible={headDelMultipleVisible}
                     disabled={delMultipleDisabled}
                     icon="DelMultipleIcon"
-                    tips="批量删除"
+                    tips="batchDelete"
                     action={delMultipleAction}
                     fontSize="medium"
                     id="Delmultiple"
@@ -282,7 +283,7 @@ function OperateArea(props) {
                     visible={headConfirmVisible}
                     disabled={headConfirmDisabled}
                     icon="ConfirmAllIcon"
-                    tips="批量确认"
+                    tips="batchConfirm"
                     action={confirmMultipleAction}
                     fontSize="medium"
                     id="ConfirmMultiple"
@@ -294,7 +295,7 @@ function OperateArea(props) {
                     visible={headCancelConfirmVisible}
                     disabled={headCancelConfirmDisabled}
                     icon="CancelConfirmAllIcon"
-                    tips="批量取消确认"
+                    tips="batchUnconfirm"
                     action={cancelConfirmMultipleAction}
                     fontSize="medium"
                     id="CancelConfirmMultiple"

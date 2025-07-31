@@ -177,7 +177,6 @@ export const initLocalDb = async () => {
 
     //查询dbinfo表中是否存在dbid内容
     const dbidInfo = await db["dbinfo"].where("infoname").equals("dbid").toArray();
-    console.log("dbidInfo:",dbidInfo);
     if (dbidInfo.length === 0) { //如果没有数据，表示是第一次初始化
         dbId = newDbid
         //向server表中写入数据库id

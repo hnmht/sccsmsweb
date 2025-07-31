@@ -13,18 +13,21 @@ import {
 } from "@mui/material";
 import { spacing } from "@mui/system";
 import styled from "@emotion/styled";
-import PropTypes from "prop-types";
 import { utils, writeFileXLSX } from "xlsx";
 import { useReactToPrint } from "react-to-print";
 import { matchSorter } from "match-sorter";
 import { cloneDeep } from "lodash";
+import { useTranslation } from "react-i18next";
 
 import OperateArea from "./OperateArea";
 import RowActions from "./RowActions";
 
 import { getOrderBy, getSortColumns, getColumnsKey, excelColumns, excelRows } from "./tools";
-import { MultiSortByArr, DateFormat } from "../../utils/tools";
+import { MultiSortByArr } from "../../utils/tools";
+import { DateTimeFormat } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
+import { t } from "i18next";
+
 const Paper = styled(MuiPaper)(spacing);
 
 const TableHead = styled(MuiTableHead)`
@@ -34,63 +37,59 @@ const TableHead = styled(MuiTableHead)`
 `;
 
 function DocList({
-    columns, //列定义
-    rows = [], //行
-    selectColumnVisible, //选择列是否显示
-    //表头增加按钮
-    headAddVisible, //是否可见
-    headAddDisabled, //是否可用
-    addAction, //点击动作
-    //表头参照增加按钮
-    headRefAddVisible, //是否可见
-    headRefAddDisabled, //是否可用
-    addRefAction,//点击动作
-    //表头过滤按钮
-    headFilterVisible, //是否可见
-    headFilterDisabled, //是否可用
-    filterAction, //点击动作
-    //表头刷新按钮
-    headRefreshVisible, //是否可见
-    headRefreshDisabled,//是否可用
-    refreshAction, //点击动作
-    //表头批量删除按钮
-    headDelMultipleVisible, //是否可见
-    delMultipleDisabled, //是否可用
-    delMultipleAction, //点击动作
-    //表头确认按钮
-    headConfirmVisible,//是否可见
-    headConfirmDisabled,//是否可用
-    confirmMultipleAction,//点击动作
-    //表头取消确认按钮
-    headCancelConfirmVisible,//是否可见
-    headCancelConfirmDisabled,//是否可用
-    cancelConfirmMultipleAction,//点击动作
-    //行按钮
-    rowActionsDefine, //行按钮定义对象 
-    rowCopyAdd, //行复制新增动作
-    rowViewDetail,//行查看详情动作
-    rowEdit,//行编辑动作
-    rowDelete,//行删除动作
-    rowStart, //行启用动作
-    rowStop, //行停用动作
-
-    docListTitle, //列表名称,输出文件名称
-
-    adjustContainerHeight,//表格高度
+    columns = [],
+    rows = [],
+    selectColumnVisible = true,
+    // Header Add Button
+    headAddVisible = true,
+    headAddDisabled = false,
+    addAction = () => { },
+    // Header add Refrence Button
+    headRefAddVisible = false,
+    headRefAddDisabled = false,
+    addRefAction = () => { },
+    // Header Filter Button
+    headFilterVisible = false,
+    headFilterDisabled = false,
+    filterAction = () => { },
+    // Header Refresh Button
+    headRefreshVisible = true,
+    headRefreshDisabled = false,
+    refreshAction = () => { },
+    // Header Delete Button
+    headDelMultipleVisible = true,
+    delMultipleDisabled = () => true,
+    delMultipleAction = () => { },
+    // Header Confirm Button 
+    headConfirmVisible = false,
+    headConfirmDisabled = () => false,
+    confirmMultipleAction = () => { },
+    // Header Unconfirm Button
+    headCancelConfirmVisible = false,
+    headCancelConfirmDisabled = () => true,
+    cancelConfirmMultipleAction = () => { },
+    // Row Button
+    rowActionsDefine = defaultRowActions,
+    rowCopyAdd = () => { },
+    rowViewDetail = () => { },
+    rowEdit = () => { },
+    rowDelete = () => { },
+    rowStart = () => { },
+    rowStop = () => { },
+    // Output file default name
+    docListTitle = "Document",
+    // Height Adjustment Value
+    adjustContainerHeight = 102,
 }) {
+    const { t } = useTranslation();
     const list = useRef(null);
     const [currentRows, setCurrentRows] = useState(rows);
     const [selectedRows, setSelectedRows] = useState([]);
-    //列定义相关
     const [currentColumns, setCurrentColumns] = useState(columns);
-    //TablePagination相关
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    //排序相关
     const [orderBy, setOrderBy] = useState(getOrderBy(getSortColumns(columns)));
-
-    const containerHeight = useContentHeight() - 102 - adjustContainerHeight;
-    
+    const containerHeight = useContentHeight() - adjustContainerHeight;
 
     useEffect(() => {
         setCurrentRows(rows);
@@ -106,35 +105,29 @@ function DocList({
         }
         setPage(newPage);
     }, [rows, rowsPerPage, page]);
-    //变更页数
+    // Change Page
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-    //修改每页行数
+    // Modify lines per page display
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
-    //列设置结果返回列表界面
+    // Action after column setup is complete
     const handleGetSetColumnResult = (setColumnResult) => {
         setCurrentColumns(setColumnResult);
     };
 
-    //排序设置结果返回列表界面
+    // Action after filter setup is complete
     const handleGetSortReuslt = (sortResult) => {
         setOrderBy(sortResult);
     };
 
-    //下载excel
+    // Download Excel file
     const handleDownload = () => {
-        const fileName = docListTitle + DateFormat() + ".xlsx";
-        //使用XLSX库导出html当前页面的数据
-        // const elt = list.current.getElementsByTagName("table")[0];
-        // const wb = utils.table_to_book(elt);      
-        // writeFileXLSX(wb, fileName);
-
-        //使用xlsx库导出全部数据,这是真正的excel表
+        const fileName = docListTitle + DateTimeFormat("LLLL") + ".xlsx";
+        // Export all data using xlsx library
         const eHeader = excelColumns(currentColumns);
         const eRows = excelRows(currentRows, currentColumns);
         let ws = utils.json_to_sheet(eRows, {
@@ -143,56 +136,42 @@ function DocList({
         let wb = utils.book_new();
         utils.book_append_sheet(wb, ws, docListTitle);
         writeFileXLSX(wb, fileName);
-
-        //使用Blob导出html格式数据，使用excel打开
-        // const excelHtml = ListToExcel(currentColumns, currentRows);
-        // let excelBlob = new Blob([excelHtml],{type:'application/vnd.ms-excel'});
-        // let oA = document.createElement('a');
-        // oA.href = URL.createObjectURL(excelBlob);
-        // oA.download = fileName;
-        // oA.click();
     };
-    //打印列表
+    // Print List
     const handlePrint = useReactToPrint({
         documentTitle: docListTitle,
         content: () => list.current.getElementsByTagName("table")[0],
     });
 
-    //设置搜索关键词
+    // Action after Search Keyword setup is complete
     const handleGetKeyWord = (word) => {
-        /* console.log("rows:", rows);
-        console.log("word:", word);
-        console.log("columns:", getColumnsKey(columns)); */
         const searchedRows = matchSorter(rows, word, { keys: getColumnsKey(columns) });
         setCurrentRows(searchedRows);
     };
 
-    //表头全选选择框变化
+    // Action after header "Select All" checkbox changes
     const handleAllSelectChange = () => {
         let newSelectedRows = [];
-        //如果已选择行数等于0,则选择全部当前行
+        // If the number of selected rows is 0, select all rows.
         if (selectedRows.length === 0) {
             newSelectedRows = currentRows;
         }
         setSelectedRows(newSelectedRows);
     };
 
-    //行选择框变化
+    // Action after body "Select" checkbox changes.
     const handleRowSelectChange = (row) => {
         let newSelectedRows = cloneDeep(selectedRows);
-        let currentIndex = newSelectedRows.findIndex((value) => value.id === row.id);
-        //如果从已选列表中找到当前行
-        if (currentIndex >= 0) {
-            //从数组中删除当前行
+        let currentIndex = newSelectedRows.findIndex((value) => value.id === row.id);       
+        if (currentIndex >= 0) { // if the current row is already selected, remove it from  the array.
             newSelectedRows.splice(currentIndex, 1);
-        } else {
-            //在数组中增加当前行
+        } else { // Otherwise, add the current row to the array.            
             newSelectedRows.push(row);
         }
         setSelectedRows(newSelectedRows);
     };
 
-    //删除多行
+    // Delete multiple rows.
     const handleDeleteMultipleRow = () => {
         delMultipleAction(selectedRows);
     }
@@ -223,11 +202,10 @@ function DocList({
                 delMultipleDisabled={delMultipleDisabled(selectedRows)}
                 delMultipleAction={handleDeleteMultipleRow}
 
-                //表头确认按钮
                 headConfirmVisible={headConfirmVisible}
                 headConfirmDisabled={headConfirmDisabled(selectedRows)}
                 confirmMultipleAction={() => confirmMultipleAction(selectedRows)}
-                //表头取消确认按钮
+
                 headCancelConfirmVisible={headCancelConfirmVisible}
                 headCancelConfirmDisabled={headCancelConfirmDisabled(selectedRows)}
                 cancelConfirmMultipleAction={() => cancelConfirmMultipleAction(selectedRows)}
@@ -252,27 +230,25 @@ function DocList({
                                         checked={selectedRows.length > 0 && selectedRows.length === currentRows.length}
                                         onChange={handleAllSelectChange}
                                         inputProps={{
-                                            'aria-label': "全选or全消"
+                                            'aria-label': "Select All or Deselect All"
                                         }}
                                     />
                                 </TableCell>
                                 : null
                             }
-
                             {
                                 currentColumns.map((column) => {
                                     if (!column.visible) {
                                         return undefined;
                                     }
                                     return (<TableCell key={"head" + column.id} align={column.alignment} style={{ minWidth: column.minWidth, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                        {column.label}
+                                        {t(column.label)}
                                     </TableCell>);
                                 })
                             }
-                            <TableCell key={"headActons"} align={"center"} style={{ minwidth: 200 }}>操作</TableCell>
+                            <TableCell key={"headActons"} align={"center"} style={{ minwidth: 200 }}>{t("action")}</TableCell>
                         </TableRow>
                     </TableHead>
-
                     <TableBody>
                         {currentRows
                             .sort(MultiSortByArr(orderBy))
@@ -337,7 +313,7 @@ function DocList({
                     showLastButton
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    labelRowsPerPage="每页"
+                    labelRowsPerPage={t("perPage")}
                     sx={{ borderBottom: "none" }}
                     SelectProps={{ name: "tablePaginationInput" }}
                 />
@@ -346,128 +322,49 @@ function DocList({
     );
 }
 
-DocList.prototype = {
-    columns: PropTypes.object.isRequired,
-    rows: PropTypes.object,
-    selectColumnVisible: PropTypes.bool,
-    //表头增加按钮
-    headAddVisible: PropTypes.bool,
-    headAddDisabled: PropTypes.bool,
-    addAction: PropTypes.func,
-    //表头参照增加按钮
-    headRefAddVisible: PropTypes.bool,
-    headRefAddDisabled: PropTypes.bool,
-    addRefAction: PropTypes.func,
-    //表头过滤按钮
-    headFilterVisible: PropTypes.bool,
-    headFilterDisabled: PropTypes.bool,
-    filterAction: PropTypes.func,
-    //表头刷新按钮
-    headRefreshVisible: PropTypes.bool,
-    headRefreshDisabled: PropTypes.bool,
-    refreshAction: PropTypes.func,
-    //表头批量删除按钮
-    headDelMultipleVisible: PropTypes.bool,
-    delMultipleDisabled: PropTypes.func.isRequired,
-    delMultipleAction: PropTypes.func,
-    //行按钮
-    rowActionsDefine: PropTypes.object.isRequired,
-    rowCopyAdd: PropTypes.func,
-    rowViewDetail: PropTypes.func,
-    rowEdit: PropTypes.func,
-    rowDelete: PropTypes.func,
-    rowStart: PropTypes.func,
-    rowStop: PropTypes.func,
-
-    docListTitle: PropTypes.string,
-    adjustContainerHeight: PropTypes.number //表体高度（表头60+表行）
-};
-
 const defaultRowActions = {
     rowCopyAdd: {
         visible: true,
         disabled: () => { return false },
         color: "success",
-        tips: "复制新增",
+        tips:"copyAdd",
         icon: "CopyNewIcon",
     },
     rowViewDetail: {
         visible: true,
         disabled: () => { return false },
         color: "secondary",
-        tips: "详情",
+        tips: "detail",
         icon: "DetailIcon",
     },
     rowEdit: {
         visible: true,
         disabled: () => { return false },
         color: "warning",
-        tips: "编辑",
+        tips:"edit",
         icon: "EditIcon",
     },
     rowDelete: {
         visible: true,
         disabled: () => { return false },
         color: "error",
-        tips: "删除",
+        tips: "delete",
         icon: "DeleteIcon",
     },
     rowStart: {
         visible: false,
         disabled: () => { return true },
         color: "success",
-        tips: "启用",
+        tips: "enable",
         icon: "StartIcon",
     },
     rowStop: {
         visible: false,
         disabled: () => { return true },
         color: "error",
-        tips: "停用",
+        tips: "disable",
         icon: "StopIcon",
     },
 };
 
-DocList.defaultProps = {
-    rows: [],
-    selectColumnVisible: true,
-    //表头增加按钮
-    headAddVisible: true,
-    headAddDisabled: false,
-    addAction: () => { },
-    //表头参照增加按钮
-    headRefAddVisible: false,
-    headRefAddDisabled: false,
-    addRefAction: () => { },
-    //表头过滤按钮
-    headFilterVisible: false,
-    headFilterDisabled: false,
-    filterAction: () => { },
-    //表头刷新按钮
-    headRefreshVisible: true,
-    headRefreshDisabled: false,
-    refreshAction: () => { },
-    //表头批量删除按钮
-    headDelMultipleVisible: true,
-    delMultipleDisabled: () => { return true },
-    delMultipleAction: () => { },
-    //表头确认按钮
-    headConfirmVisible: false,//是否可见
-    headConfirmDisabled: () => { return true },//是否可用
-    confirmMultipleAction: () => { },//点击动作
-    //表头取消确认按钮
-    headCancelConfirmVisible: false, //是否可见
-    headCancelConfirmDisabled: () => { return true },//是否可用
-    cancelConfirmMultipleAction: () => { },//点击动作    
-
-    rowActionsDefine: defaultRowActions,
-    rowCopyAdd: () => { }, //行复制新增函数
-    rowViewDetail: () => { },//行查看详情函数
-    rowEdit: () => { },//行编辑函数
-    rowDelete: () => { },//行删除函数
-    rowStart: () => { }, //行启用函数
-    rowStop: () => { },//行停用函数
-
-    adjustContainerHeight: 0,
-};
 export default DocList;

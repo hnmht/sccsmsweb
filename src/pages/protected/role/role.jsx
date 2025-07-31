@@ -26,14 +26,14 @@ const Role = () => {
         }
         getData();
     }, []);
-    //从服务器获取角色列表
+    // Get Role list from server
     const handleReqRoleList = async () => {
         const res = await reqGetRoles();
         let newRoles = [];
         if (res.status) {
             newRoles = res.data;
-        } 
-        console.log("roles:", newRoles)
+        }
+        console.log("newRoles:",newRoles); 
         setRows(newRoles);
     };
     //表头增加按钮
