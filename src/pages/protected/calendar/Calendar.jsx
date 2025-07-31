@@ -15,7 +15,7 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import ExperimentalStyled from "./calendarStyled";
 import CalendarToolbar from "./calendarToolbar";
 import { reqGetEvents } from "../../../api/event";
-import { getCurrentPerson } from '../pub';
+import { getCurrentPerson } from '../pub/pubFunction';
 import { GetCacheDocById } from '../../../storage/db/db';
 import ViewEvent from './viewEvent';
 import useContentHeight from '../../../hooks/useContentHeight';

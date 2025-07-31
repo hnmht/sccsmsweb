@@ -4,7 +4,7 @@ import {
     CardHeader,
     CardActions,
     Grid,
-    Button, 
+    Button,
     ListItem,
     ListItemText,
     ListItemButton,
@@ -14,26 +14,22 @@ import {
     ListItemIcon,
     Checkbox,
 } from "@mui/material";
-import { Divider,List } from "../ScMui/ScMui";
+import { useTranslation } from "react-i18next";
+import { Divider, List } from "../ScMui/ScMui";
 import { DownOneIcon, UpOneIcon, ToBottomIcon, ToTopIcon } from "../PubIcon/PubIcon";
-import PropTypes from "prop-types";
 import { getSortColumns } from "./tools";
 import { DeepCloneJSON, ArrayElementDownOne, ArrayElementToTop, ArrayElementUpOne, ArrayElementToBottom } from "../../utils/tools";
 
+function SetSortView({
+    sortColumns,
+    sortOk,
+    sortCancel,
+    originColumns
+}) {
+    const { t } = useTranslation();
 
-// border: 1px solid ${ (props) => props.theme.palette.divider };
-
-function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [columns, setColumns] = useState(sortColumns);
-
-    // useEffect(() => {
-    //     if (isEqual(columns,sortColumns)) {
-    //         return
-    //     }
-    //     console.log("props.sortColumns 改变");
-    //     setColumns(sortColumns);
-    // }, [sortColumns]);
 
     //点击字段排序按钮
     const handleSortLabeClick = (sortDirection, column, index) => {
@@ -74,13 +70,13 @@ function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
     return (
         <Card sx={{ minWidth: 256, maxHeight: 512 }}>
             <CardHeader
-                title="定义排序列"
+                title={t("sortingSettings")}                
             />
             <Divider />
             <Grid container>
                 <Grid container>
                     <Grid item xs={2} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                        <Tooltip title="向下" placement="top">
+                        <Tooltip title={t("down")} placement="top">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[columns.length - 1].id} m={1}
                                     onClick={handleDownOne}
@@ -89,7 +85,7 @@ function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
                                 </IconButton>
                             </span>
                         </Tooltip>
-                        <Tooltip title="置底" placement="bottom">
+                        <Tooltip title={t("moveToBottom")} placement="bottom">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[columns.length - 1].id} m={1}
                                     onClick={handleToBottom}
@@ -125,7 +121,7 @@ function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
                                                         disableRipple
                                                     />
                                                 </ListItemIcon>
-                                                <ListItemText primary={column.label} />
+                                                <ListItemText primary={t(column.label)} />
                                             </ListItemButton>
                                         </ListItem>
                                     );
@@ -134,7 +130,7 @@ function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
                         </List>
                     </Grid>
                     <Grid item xs={2} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                        <Tooltip title="向上" placement="top">
+                        <Tooltip title={t("up")} placement="top">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[0].id} m={1}
                                     onClick={handleUpOne}
@@ -143,7 +139,7 @@ function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
                                 </IconButton>
                             </span>
                         </Tooltip>
-                        <Tooltip title="置顶" placement="bottom">
+                        <Tooltip title={t("moveToTop")} placement="bottom">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[0].id} m={1}
                                     onClick={handleToTop}
@@ -157,19 +153,12 @@ function SetSortView({ sortColumns, sortOk, sortCancel, originColumns }) {
             </Grid>
             <Divider />
             <CardActions sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                <Button variant="text" sx={{ m: 2 }} onClick={handleReset}>重置</Button>
-                <Button variant="text" sx={{ m: 2 }} onClick={() => sortOk(columns)}>确定</Button>
-                <Button variant="text" sx={{ m: 2 }} onClick={sortCancel}>取消</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={handleReset}>{t("reset")}</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={() => sortOk(columns)}>{t("ok")}</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={sortCancel}>{t("cancel")}</Button>
             </CardActions>
         </Card>
     );
 }
-
-SetSortView.prototype = {
-    sortColumns: PropTypes.object.isRequired,
-    sortOk: PropTypes.func.isRequired,
-    sortCancel: PropTypes.func.isRequired,
-    originColumns: PropTypes.object.isRequired,
-};
 
 export default SetSortView;

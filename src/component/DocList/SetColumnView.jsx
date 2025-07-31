@@ -14,12 +14,14 @@ import {
     IconButton,
     ListItemButton,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Divider } from "../ScMui/ScMui";
 import { DownOneIcon, UpOneIcon, ToBottomIcon, ToTopIcon } from "../PubIcon/PubIcon";
 import { cloneDeep } from "lodash";
 import { ArrayElementDownOne, ArrayElementToTop, ArrayElementUpOne, ArrayElementToBottom } from "../../utils/tools";
 
 function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColumns }) {
+    const { t } = useTranslation();
     const [columns, setColumns] = useState(tableColumns);
     const [currentItem, setCurrentItem] = useState(null);
 
@@ -56,12 +58,12 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
 
     return (
         <Card sx={{ minWidth: 256, maxHeight: 512 }}>
-            <CardHeader title="定义显示列" />
+            <CardHeader title={t("columnSettings")} />
             <Divider />
             <Grid container>
                 <Grid container>
                     <Grid item xs={2} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                        <Tooltip title="向下" placement="top">
+                        <Tooltip title={t("down")} placement="top">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[columns.length - 1].id} m={1}
                                     onClick={handleDownOne}
@@ -70,7 +72,7 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
                                 </IconButton>
                             </span>
                         </Tooltip>
-                        <Tooltip title="置底" placement="bottom">
+                        <Tooltip title={t("moveToBottom")} placement="bottom">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[columns.length - 1].id} m={1}
                                     onClick={handleToBottom}
@@ -98,7 +100,7 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
                                             }
                                         >
                                             <ListItemButton onClick={() => handleItemClick(column, index)} sx={{ bgcolor: currentItem && currentItem.id === column.id ? "divider" : "transparent" }}>
-                                                <ListItemText primary={column.label} />
+                                                <ListItemText primary={t(column.label)} />
                                             </ListItemButton>
                                         </ListItem>
                                     );
@@ -107,7 +109,7 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
                         </List>
                     </Grid>
                     <Grid item xs={2} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                        <Tooltip title="向上" placement="top">
+                        <Tooltip title={t("up")} placement="top">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[0].id} m={1}
                                     onClick={handleUpOne}
@@ -116,7 +118,7 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
                                 </IconButton>
                             </span>
                         </Tooltip>
-                        <Tooltip title="置顶" placement="bottom">
+                        <Tooltip title={t("moveToTop")} placement="bottom">
                             <span style={{ margin: 5 }}>
                                 <IconButton size="small" color="secondary" disabled={currentItem === null || currentItem.id === columns[0].id} m={1}
                                     onClick={handleToTop}
@@ -130,9 +132,9 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
             </Grid>
             <Divider />
             <CardActions sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                <Button variant="text" sx={{ m: 2 }} onClick={handleRestColumn}>重置</Button>
-                <Button variant="text" sx={{ m: 2 }} onClick={() => setColumnOk(columns)}>确定</Button>
-                <Button variant="text" sx={{ m: 2 }} onClick={setColumnCancel}>取消</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={handleRestColumn}>{t("reset")}</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={() => setColumnOk(columns)}>{t("ok")}</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={setColumnCancel}>{t("cancel")}</Button>
             </CardActions>
         </Card>
     );

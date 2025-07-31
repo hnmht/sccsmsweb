@@ -13,7 +13,7 @@ import { cloneDeep } from "lodash";
 import { Divider } from "../../../component/ScMui/ScMui";
 import ScInput from "../../../component/ScInput";
 import { reqValidateRoleName, reqEditRole, reqAddRole } from "../../../api/role";
-import { getCurrentPerson } from "../pub";
+import { getCurrentPerson } from "../pub/pubFunction";
 import Loader from "../../../component/Loader/Loader";
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 

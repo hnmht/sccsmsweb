@@ -1,4 +1,4 @@
-import { CellCreator, CellCreateTime, CellModifyTime, CellModifier } from "../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier } from "../pub/pubFunction";
 
 const rowCopyAddDisabled = (row) => {
     return row.systemflag === 1;

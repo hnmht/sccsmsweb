@@ -1,14 +1,12 @@
-import store from "../../store";
-// import { DateTimeFormat } from "../../utils/tools";
-import { VoucherStatus } from "../../storage/dataTypes";
-import { DateTimeFormat } from "../../i18n/dayjs";
+import store from "../../../store";
+import { VoucherStatus } from "../../../storage/dataTypes";
+import { DateTimeFormat } from "../../../i18n/dayjs";
 
 //获取当前操作人员
 export const getCurrentPerson = () => {
     const { user } = store.getState();
     return user.person;
 };
-
 //生成单据错误信息
 export const generateVoucherErrors = (rowNumber) => {
     let voucherErrors = {
@@ -59,7 +57,7 @@ export const CellCreator = (row, column) => {
 //创建日期显示
 export const CellCreateTime = (row, column) => {
     let date = new Date(row.createDate);
-    return DateTimeFormat(date,"LLL");
+    return DateTimeFormat(date, "LLL");
 };
 //修改人显示
 export const CellModifier = (row, column) => {
@@ -89,9 +87,4 @@ export const CellStatus = (row, column) => {
 //单据状态列显示
 export const CellVoucherStatus = (row, column) => {
     return VoucherStatus[row.status];
-};
-
-//说明列显示
-export const CellDescription = (row,column) => {
-    return <span style={{ width: column.minWidth, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>{row.description}</span>;
 };

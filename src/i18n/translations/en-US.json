@@ -40,6 +40,12 @@
     "batchConfirm":"Batch Confirm",
     "batchUnconfirm":"Batch Unconfirm",
 
+    "sortingSettings":"Sorting Settings",
+    "down":"Down",
+    "moveToBottom":"Move to bottom",
+    "up":"Up",
+    "moveToTop":"Move to top",
+    "columnSettings":"Column Settings",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

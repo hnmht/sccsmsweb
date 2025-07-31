@@ -39,8 +39,13 @@
     "downloadExcel": "下载Excel文件",
     "batchConfirm": "批量确认",
     "batchUnconfirm": "批量取消确认",
+    "sortingSettings": "排序设置",
+    "down": "向下",
+    "moveToBottom": "置底",
+    "up": "向上",
+    "moveToTop": "置顶",
+    "columnSettings": "列设置",
     
-
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",
     "author": "孟海涛",

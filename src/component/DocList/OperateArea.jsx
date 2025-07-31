@@ -5,14 +5,14 @@ import {
     Input,
     IconButton,
     Popover,
-    Tooltip,
 } from "@mui/material";
 import { getSortColumns, getOrderBy } from "./tools";
 import { CloseIcon, CheckIcon } from "../PubIcon/PubIcon";
 import TableButton from "./TableButton";
 import SetSortView from "./SetSortView";
 import SetColumnView from "./SetColumnView";
-import ScTooltip from "../ScTooltip/ScTooltip";
+import ScTooltip from "../ScMui/ScTooltip";
+import ScInput from "../ScMui/ScInput";
 const keytext = "operateButton_";
 
 function OperateArea(props) {
@@ -139,8 +139,8 @@ function OperateArea(props) {
             alignItems={"center"}
             sx={{ p: 2, width: "100%", height: 50 }}
         >
-            <Input
-                placeholder="输入关键字搜索"
+            <ScInput
+                placeholder="enterToSearch"
                 id="doclistSearchkeyWord"
                 value={keyword}
                 onChange={(event) => keyWordInputChange(event)}

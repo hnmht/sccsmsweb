@@ -24,7 +24,7 @@ import {
     ConfirmAllIcon,
     CancelConfirmIcon,
 } from "../PubIcon/PubIcon";
-import ScTooltip from "../ScTooltip/ScTooltip";
+import ScTooltip from "../ScMui/ScTooltip";
 
 function Icon(props) {
     const { iconString, color, fontSize } = props;
