@@ -25,9 +25,9 @@ const rowStopDisabled = (row) => {
 
 //显示是否系统预置
 function displaySystemFlag(row) {
-    return row.systemflag === 1 ? "是" : "否";
+    return row.systemflag === 1 ? "Y" : "N";
 }
-//批量删除按钮是否可用
+// 批量删除按钮是否可用
 export function delMultipleDisabled(selectedRows) {
     if (selectedRows.length === 0) {
         return true;

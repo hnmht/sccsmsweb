@@ -7,7 +7,7 @@ import "./i18n/i18n";
 import "./storage/db/db";
 import createTheme from "./theme";
 import useTheme from "./hooks/useTheme";
-import routes from "./routes";
+import routes from "./routes.jsx";
 import store from "./store";
 
 import createEmotionCache from "./utils/createEmotionCache";

@@ -119,7 +119,7 @@ function DocList({
         setCurrentColumns(setColumnResult);
     };
 
-    // Action after filter setup is complete
+    // Action after sorting setup is complete
     const handleGetSortReuslt = (sortResult) => {
         setOrderBy(sortResult);
     };
@@ -143,7 +143,7 @@ function DocList({
         content: () => list.current.getElementsByTagName("table")[0],
     });
 
-    // Action after Search Keyword setup is complete
+    // Action after Search Keyword input
     const handleGetKeyWord = (word) => {
         const searchedRows = matchSorter(rows, word, { keys: getColumnsKey(columns) });
         setCurrentRows(searchedRows);
