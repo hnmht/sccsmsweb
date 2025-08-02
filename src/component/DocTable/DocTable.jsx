@@ -57,7 +57,7 @@ function DocTable({
     // Can ite be edited?
     isEdit = true,
 }) {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const list = useRef(null);
     const [currentRows, setCurrentRows] = useState(rows);
     const [selectedRows, setSelectedRows] = useState(selectRows);
@@ -251,12 +251,11 @@ function DocTable({
                                             if (!column.visible) {
                                                 return undefined;
                                             }
-                                            const value = row[column.id];
                                             return (
                                                 <TableCell key={column.id} align={column.alignment} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} >
                                                     {column.display.type === 0
-                                                        ? value
-                                                        : column.display.cell1(row, column)
+                                                        ? row[column.id]
+                                                        : t(column.display.cell1(row, column))
                                                     }
                                                 </TableCell>
                                             );

@@ -195,7 +195,7 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                             dataType={502}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="成员"
+                            itemShowName="member"
                             itemKey="member"
                             initValue={currentRole.member}
                             pickDone={handleGetValue}

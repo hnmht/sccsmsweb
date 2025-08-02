@@ -25,21 +25,21 @@ const db = new Dexie('sceneDb');
 db.version(1).stores({
     dbinfo: "infoname",
     tsinfo: "docname",
-    department: "id,ts",
-    person: "id,deptid,op_id,status,ts",
-    udc: "id,ts",
-    ud: "id,docclass.id,ts",
-    epc: "id,ts",
-    csc: "id,ts",
-    ep: "id,code,epc.id,resulttype.id",
-    ept: "id,code",
-    cso: "id,code",
-    cs: "id,code,csc.id",
-    risklevel: "id,ts",
-    dc: "id,ts",
-    postion: "id,ts",
-    tc: "id,ts",
-    ppe: "id,ts",
+    department: "id,status,ts",
+    person: "id,deptID,positionID,status,ts",
+    udc: "id,status,ts",
+    ud: "id,docclass.id,status,ts",
+    epc: "id,status,ts",
+    csc: "id,status,ts",
+    ep: "id,code,epc.id,resulttype.id,status,ts",
+    ept: "id,code,status,ts",
+    cso: "id,code,status,ts",
+    cs: "id,code,csc.id,status,ts",
+    risklevel: "id,status,ts",
+    dc: "id,status,ts",
+    postion: "id,status,ts",
+    tc: "id,status,ts",
+    ppe: "id,status,ts",
 });
 
 //根据id获取缓存档案
@@ -147,8 +147,8 @@ const transEITsToFrontend = async (eits) => {
 
 //本地数据库表定义
 export const docTable = new Map([
-    /*  ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
-     ["person", { description: "人员档案", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
+    ["person", { description: "人员档案", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
+    /*  ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],     
      ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
      ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
@@ -206,7 +206,7 @@ export const initLocalDb = async () => {
     }
 
     //请求所有本地缓存
-    // await reqAllDocCache(); //暂时不用,待基本档案完成后再做
+    await reqAllDocCache(); //暂时不用,待基本档案完成后再做
 };
 //清理所有本地缓存
 export const clearAllDocCache = async () => {
@@ -227,22 +227,23 @@ export const clearLocalDb = async (docName) => {
     //清理tsinfo中的ts内容
     await db["tsinfo"].delete(docName);
 };
-//向服务器请求档案缓存
+// 向服务器请求档案缓存
 export const InitDocCache = async (docName) => {
-    //获取档案最新ts
+    // Get Master Data latest TimeStamp
     const latestTsRes = await db.tsinfo.where("docname").equals(docName).toArray();
-    //获取本地数据库表定义
+    // 获取本地数据库表定义
     const docInfo = docTable.get(docName);
-    //获取档案列表
+    // 获取档案列表
     if (latestTsRes.length === 0) { //如果tsinfo表中没有档案的ts
         const res = await docInfo.reqAllFunc(false);
-        if (res.data.status === 0) {
-            const latestTs = res.data.data[0].ts;
-            const itemAll = await docInfo.transToFrontFunc(res.data.data);
+        if (res.status) {
+            const latestTs = res.data[0].ts;
+            const itemAll = await docInfo.transToFrontFunc(res.data);
             //存储最新ts                        
-            db.tsinfo.add({ docname: docName, ts: latestTs }).then(res => {
-                console.log("存储" + docInfo.description + "最新ts成功:", res);
-            })
+            db.tsinfo.add({ docname: docName, ts: latestTs })
+                .then(res => {
+                    console.log("存储" + docInfo.description + "最新ts成功:", res);
+                })
                 .catch((err) => {
                     console.error("存储" + docInfo.description + "最新ts失败:", err);
                 })
@@ -253,28 +254,26 @@ export const InitDocCache = async (docName) => {
         //获取最新档案列表        
         const queryTs = latestTsRes[0].ts;
         const cacheRes = await docInfo.reqCacheFunc({ queryTs: queryTs }, false);
-        // console.log("获取的cacheRes:",cacheRes);
-        if (cacheRes.data.status === 0) {
-            const docCache = cacheRes.data.data;
-            if (docCache.resultnum > 0) {
-                if (docCache.delitems !== null) {
+        if (cacheRes.status) {
+            const docCache = cacheRes.data;
+            if (docCache.resultNumber > 0) {
+                if (docCache.delItems !== null) {
                     let keys = [];
-                    docCache.delitems.forEach(item => {
+                    docCache.delItems.forEach(item => {
                         keys.push(item.id);
                     });
                     //删除档案
                     db[docName].bulkDelete(keys);
                 }
-
                 //如果存在新增档案
-                if (docCache.newitems !== null) {
-                    let newItems = await docInfo.transToFrontFunc(docCache.newitems);
+                if (docCache.newItems !== null) {
+                    let newItems = await docInfo.transToFrontFunc(docCache.newItems);
                     db[docName].bulkAdd(newItems);
                 }
 
                 //如果存在待更新档案
-                if (docCache.updateitems !== null) {
-                    let transUpdateItems = await docInfo.transToFrontFunc(docCache.updateitems);
+                if (docCache.updateItems !== null) {
+                    let transUpdateItems = await docInfo.transToFrontFunc(docCache.updateItems);
                     transUpdateItems.forEach(item => {
                         db[docName].update(item.id, item);
                     })
@@ -287,9 +286,9 @@ export const InitDocCache = async (docName) => {
         }
     }
 };
-//获取本地档案缓存
-export const GetLocalCache = async (docName) => {
-    return await db[docName].toArray();
+// Get Local Master Data Cache
+export const GetLocalCache = async (archive) => {
+    return await db[archive].toArray();
 };
 //anyof获取档案缓存
 export const GetCacheAnyOf = async (cacheName, key, arr) => {

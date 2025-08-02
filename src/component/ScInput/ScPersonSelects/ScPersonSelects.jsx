@@ -3,48 +3,51 @@ import {
     InputLabel,
     Tooltip
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./constructor";
 const personName = "person";
 
-//502 人员多选组件
+//502 Person multi-select component
 const ScPersonSelects = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [persons, setPersons] = useState([]);
     const [selectedPersons, setSelectedPersons] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
 
+    const {t} = useTranslation();
+
     useEffect(() => {
         async function getData() {
-            //获取本地缓存
+            // Get Local Person Master Data cache
             const newPersons = await GetLocalCache(personName);
-            //更新
+            // Update persons
             setPersons(newPersons);
         }
         getData();
     }, []);
 
 
-    //刷新人员
+    // Update Person Master data
     const handleRefreshPersons = async () => {
-        //向服务器请求最新人员缓存
+        // Request the latest Person Master Data from the server 
         await InitDocCache(personName);
-        //获取本地缓存
+        // Get Local Person Master Data cache
         const newPersons = await GetLocalCache(personName);
-        //更新
+        // Update persons
         setPersons(newPersons);
     };
 
-    //向父组件传送数据
+    // Send Data to the parent component
     const handleTransfer = async (items = selectedPersons) => {
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (items.length === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(items);
         }
@@ -53,7 +56,7 @@ const ScPersonSelects = (props) => {
         pickDone(items, itemKey, positionID, rowIndex, err);
     };
 
-    //人员列表选择框发生变化
+    // Action after person chackbox change.
     const handleSelectPersons = (items) => {
         setSelectedPersons(items);
         handleTransfer(items);
@@ -62,9 +65,9 @@ const ScPersonSelects = (props) => {
     return (
         <>
             <InputLabel key={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>
-                {itemShowName}
+                {t(itemShowName)}
                 {errInfo.isErr
-                    ? <Tooltip id={`${itemKey}${positionID}${rowIndex}`} title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                    ? <Tooltip id={`${itemKey}${positionID}${rowIndex}`} title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                     : null
                 }
             </InputLabel>
@@ -74,7 +77,7 @@ const ScPersonSelects = (props) => {
                 columns={columns}
                 refreshAction={handleRefreshPersons}
                 rows={persons}
-                docListTitle="选择人员"
+                docListTitle="persons"
                 selectItem={handleSelectPersons}
                 isMultiple={true}
                 selectRows={selectedPersons}

@@ -46,6 +46,8 @@ const ScRoleSelect = memo((props) => {
         let newRoles = [];
         //向服务器请求角色列表
         const res = await reqGetRoles();
+        console.log(res);
+
         if (res.data.status === 0) {
             newRoles = res.data.data;
         } else {
@@ -123,7 +125,4 @@ const ScRoleSelect = memo((props) => {
     );
 });
 
-ScRoleSelect.defaultProps = {
-    pickDone: () => { }
-}
 export default ScRoleSelect;
