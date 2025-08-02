@@ -23,11 +23,11 @@ const rowStopDisabled = (row) => {
     return false;
 };
 
-//显示是否系统预置
+// SystemFlag column display content 
 function displaySystemFlag(row) {
     return row.systemflag === 1 ? "Y" : "N";
 }
-// 批量删除按钮是否可用
+// Determine if the batch delete button is avaliable
 export function delMultipleDisabled(selectedRows) {
     if (selectedRows.length === 0) {
         return true;
@@ -41,6 +41,7 @@ export function delMultipleDisabled(selectedRows) {
         return noDeleteRowNumber > 0 ? true : false;
     }    
 }
+// Determine the row action button
 export const rowActionsDefine = {
     rowCopyAdd:{
         visible: true,
@@ -85,7 +86,7 @@ export const rowActionsDefine = {
         icon: "StopIcon",
     },
 };
-
+// Determine the person list column
 export const columns = [
     { id: "id", label: "id", alignment: "left", minWidth: 100, visible: false,sortField:"id", sort: true, display: { type: 0, cell1: null } },
     { id: "name", label: "name", alignment: "center", minWidth: 200, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
