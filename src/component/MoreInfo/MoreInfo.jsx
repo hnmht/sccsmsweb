@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IconButton, Collapse, Grid, Box, Typography } from "@mui/material";
 import styled from "@emotion/styled";
 import { ExpandMoreIcon } from "../PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -15,6 +16,7 @@ const ExpandMore = styled((props) => {
 }));
 
 const MoreInfo = ({ children }) => {
+    const {t} = useTranslation();
     const [expanded, setExpanded] = useState(false);
 
     const handleExpandClick = () => {
@@ -23,7 +25,7 @@ const MoreInfo = ({ children }) => {
     return (
         <>
             <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <Typography component="label" variant="body3">{expanded ? "" : "更多..."}</Typography>
+                <Typography component="label" variant="body3">{expanded ? "" : t("more")}</Typography>
                 <ExpandMore
                     expand={expanded}
                     onClick={handleExpandClick}

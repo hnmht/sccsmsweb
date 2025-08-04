@@ -7,9 +7,10 @@ import {
     Button,
 } from "@mui/material";
 import { message } from "mui-message";
-import dayjs from "../../../utils/myDayjs";
 import { cloneDeep } from "lodash";
+import { useTranslation } from "react-i18next";
 
+import { DateTimeFormat } from "../../../i18n/dayjs";
 import { Divider } from "../../../component/ScMui/ScMui";
 import ScInput from "../../../component/ScInput";
 import { reqValidateRoleName, reqEditRole, reqAddRole } from "../../../api/role";
@@ -17,56 +18,57 @@ import { getCurrentPerson } from "../pub/pubFunction";
 import Loader from "../../../component/Loader/Loader";
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
-//生成初始数据
+// General initialization data.
 const getInitialValue = async (oriRole, isNew, isModify) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newRole = {};
-    if (isNew) { //新增or复制新增
-        if (oriRole) {  //复制新增
+    if (isNew) {
+        if (oriRole) {  // Copy Add New
             newRole = cloneDeep(oriRole);
             newRole.id = 0;
             newRole.name = "";
-            newRole.createuser = person;
-            newRole.modifyuser = { id: 0, code: "", name: "" };
-            newRole.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newRole.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+            newRole.creator = person;
+            newRole.modifier = { id: 0, code: "", name: "" };
+            newRole.createDate = DateTimeFormat(currentDate, "LLL");
+            newRole.modifyDate = DateTimeFormat(currentDate, "LLL");
             newRole.member = newRole.member === null ? [] : newRole.member;
-        } else { //新增
+        } else { // Add New
             newRole = {
                 id: 0,
                 name: "",
                 description: "",
                 dr: 0,
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(currentDate, "LLL"),
+                modifyDate: DateTimeFormat(currentDate, "LLL"),
                 alluserflag: 0,
                 systemflag: 0,
                 member: [],
             };
         }
-    } else { //编辑or查看            
-        if (!oriRole) { //错误
+    } else { // Modify or View
+        if (!oriRole) {
             return
         } else {
-            if (isModify) { //编辑
+            if (isModify) {
                 newRole = cloneDeep(oriRole);
                 newRole.member = newRole.member ? newRole.member : [];
-                newRole.createdate = dayjs(newRole.createdate).format("YYYYMMDDHHmm");
-                newRole.modifyuser = person;
-                newRole.modifydate = dayjs(newRole.modifydate).format("YYYYMMDDHHmm");
-            } else { //查看
+                newRole.createDate = DateTimeFormat(newRole.createDate, "LLL");
+                newRole.modifier = person;
+                newRole.modifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
+            } else { // View
                 newRole = cloneDeep(oriRole);
                 newRole.member = newRole.member ? newRole.member : [];
-                newRole.createdate = dayjs(newRole.createdate).format("YYYYMMDDHHmm");
-                newRole.modifydate = dayjs(newRole.modifydate).format("YYYYMMDDHHmm");
+                newRole.createDate = DateTimeFormat(newRole.createDate, "LLL");
+                newRole.modifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
             }
         }
     }
     return newRole;
 };
-//检查错误
+// Check errors
 const checkErrors = (errors) => {
     let number = 0;
     for (let key in errors) {
@@ -74,12 +76,15 @@ const checkErrors = (errors) => {
             number = number + 1;
         }
     }
-    return number > 0 ;
+    return number > 0;
 };
 
+// Add/Modify/View Role Master Data
 const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
     const [currentRole, setCurrentRole] = useState(undefined);
     const [errors, setErrors] = useState({});
+    const { t } = useTranslation();
+
     const isEdit = !(!isModify && !isNew);
 
     useEffect(() => {
@@ -112,61 +117,59 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                 [itemkey]: value,
             })
         })
-    }, [isOpen,isEdit,currentRole]);
+    }, [isOpen, isEdit, currentRole]);
 
-    //角色增加(修改)
+    // Add or Modify Role
     const handleAddRole = async () => {
         let thisRole = cloneDeep(currentRole);
-        delete thisRole.createdate;
-        delete thisRole.modifydate;
-
+        delete thisRole.createDate;
+        delete thisRole.modifyDate;
         if (isModify) {
             const editRes = await reqEditRole(thisRole);
-            if (editRes.data.status === 0) {
-                message.success("修改角色'" + thisRole.name + "'成功");
+            if (editRes.status) {
+                message.success(t("modifyRoleSuccessful"));
                 onOk();
             } else {
-                message.error("修改角色'" + thisRole.name + "'失败:" + editRes.data.statusMsg);
+                message.error(t("modifyRoleFailed") + editRes.msg);
             }
         } else {
             const addRes = await reqAddRole(thisRole);
-            if (addRes.data.status === 0) {
-                message.success("增加角色'" + thisRole.name + "'成功");
+            if (addRes.status) {
+                message.success(t("addRoleSuccessful"));
                 onOk()
             } else {
-                message.error("增加角色'" + thisRole.name + "'失败:" + addRes.data.statusMsg);
+                message.error(t("addRoleFailed") + addRes.msg);
             }
         }
     };
-    //验证名称
+    // Request the backend server to validate if the name is a duplicate.
     const handleBackendTestName = async (value) => {
         let err = { isErr: false, msg: "" };
         let res = await reqValidateRoleName({ id: currentRole.id, name: value });
-
-        if (res.data.status === 0) {
+        if (res.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: res.data.statusMsg };
+            err = { isErr: true, msg: res.msg };
         }
         return err;
     };
-   
+
     return (currentRole
         ? <>
-            <DialogTitle>{isNew ? "增加角色" : isModify ? "修改角色" : "角色详情"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addRole") : isModify ? t("modifyRole") : t("viewRole")}</DialogTitle>
             <Divider />
-            <DialogContent sx={{ p: 2, maxHeight: 768 }}> 
+            <DialogContent sx={{ p: 2, maxHeight: 768 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <ScInput
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="角色名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={currentRole.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入角色名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
                             positionID={0}
@@ -178,11 +181,11 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="角色说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={currentRole.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入角色说明"
+                            placeholder="descriptionPlaceholder"
                             isMultiline={true}
                             rowNumber={2}
                             isBackendTest={false}
@@ -199,7 +202,7 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                             itemKey="member"
                             initValue={currentRole.member}
                             pickDone={handleGetValue}
-                            placeholder="请选择成员"
+                            placeholder="memberPlaceholder"
                             isBackendTest={false}
                             key="member"
                         />
@@ -211,25 +214,25 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentRole.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentRole.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentRole.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentRole.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -237,25 +240,25 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentRole.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentRole.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentRole.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentRole.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -264,10 +267,10 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
             <DialogActions>
                 {isEdit
                     ? <>
-                        <Button color="error" onClick={onCancel} >取消</Button>
-                        <Button variant="contained" disabled={checkErrors(errors)} onClick={handleAddRole}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                        <Button variant="contained" disabled={checkErrors(errors)} onClick={handleAddRole}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>

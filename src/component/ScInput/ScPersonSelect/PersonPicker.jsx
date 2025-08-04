@@ -9,6 +9,7 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { RefreshIcon } from "../../PubIcon/PubIcon";
 import { InitDocCache, GetLocalCache, GetCacheAnyOf } from "../../../storage/db/db";
 import PubTree from "../ScPub/PubTree";
@@ -16,10 +17,12 @@ import DocTable from "../../DocTable/DocTable";
 import { treeToArr } from "../../../utils/tree";
 import { columns } from "./tableConstructor";
 
+
 const personName = "person";
 const deptName = "department";
 
-const PersonPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
+const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+    const { t } = useTranslation();
     const [persons, setPersons] = useState([]);
     const [depts, setDepts] = useState([]);
     const [selectedDeptIds, setSelectedDeptIds] = useState([]);
@@ -29,14 +32,17 @@ const PersonPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction
             const newDepts = await GetLocalCache(deptName);
             setDepts(newDepts);
         }
-        getLocalDepts();     
+        getLocalDepts();
     }, []);
 
-    //选中部门
-    const handleDeptClick = async (item,type) => {
-        //type 0 末级; 1父级; 3 全部;
+    // Actions after clicking Department
+    const handleDeptClick = async (item, type) => {
+        // type mmeanings:
+        // 0: Leaf
+        // 1: Parent 
+        // 3: All
         let deptIds = [];
-        if (type === 0 ) {
+        if (type === 0) {
             deptIds.push(item.id);
         } else if (type === 1) {
             const tree = [];
@@ -51,27 +57,25 @@ const PersonPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction
             })
             deptIds.push(0);
         }
-        //获取本地人员档案
-        const localPersons = await GetCacheAnyOf(personName,"deptid",deptIds);
+        // Get Local Person Master Data cache
+        const localPersons = await GetCacheAnyOf(personName, "deptID", deptIds);
         setPersons(localPersons);
         setSelectedDeptIds(deptIds);
     };
-    //刷新部门
-    const handleRefreshDepts =  async () => {        
-        //向服务器请求最新部门缓存
+    // Refresh department tree.
+    const handleRefreshDepts = async () => {
+        // Request the latest Person Master Data from the server
         await InitDocCache(deptName);
-        //获取本地缓存
-        const newDepts = await GetLocalCache(deptName);
-        //更新
+        // Get Local Person Master Data
+        const newDepts = await GetLocalCache(deptName);       
         setDepts(newDepts);
     };
-    //刷新人员
+    // Refresh Person Master Data List
     const handleRefreshPersons = async () => {
-        //向服务器请求最新人员缓存
+        // Request the latest Person Master Data from the server
         await InitDocCache(personName);
-        //获取本地缓存
-        const newPersons = await GetCacheAnyOf(personName, "deptid", selectedDeptIds);
-        //更新
+        // Get Local Person Master Data.
+        const newPersons = await GetCacheAnyOf(personName, "deptid", selectedDeptIds);  
         setPersons(newPersons);
     };
 
@@ -98,7 +102,7 @@ const PersonPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction
                                 </Tooltip>
                             </ListSubheader>
                         }
-                        sx={{ width: "100%", height: 700, overflow: "auto", p: 0,ml:1,borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
+                        sx={{ width: "100%", height: 700, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
                             docName="部门"
@@ -123,7 +127,7 @@ const PersonPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction
                         tableContainerHeight={596}
                     />
                 </Grid>
-            </Grid>         
+            </Grid>
             <DialogActions sx={{ m: 1 }}>
                 <Button key="personPickerCancel" color="error" onClick={cancelClickAction} id="personPickerCancel">取消</Button>
                 <Button key="personPickerOk" variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>

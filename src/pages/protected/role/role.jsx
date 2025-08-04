@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import {
     Dialog,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { message } from "mui-message";
 import { reqGetRoles, reqDeleteRole, reqDeleteRoles } from "../../../api/role";
 
@@ -11,6 +12,7 @@ import EditRole from "./editRole";
 import DocList from "../../../component/DocList/DocList";
 import { rowActionsDefine, columns, delMultipleDisabled } from "./constructor";
 
+
 const Role = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
@@ -19,6 +21,7 @@ const Role = () => {
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getData() {
@@ -33,7 +36,6 @@ const Role = () => {
         if (res.status) {
             newRoles = res.data;
         }
-        console.log("newRoles:",newRoles); 
         setRows(newRoles);
     };
     //表头增加按钮
@@ -85,10 +87,10 @@ const Role = () => {
     //表体删除
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteRole(item);
-        if (delRes.data.status === 0) {
-            message.success("删除角色'" + item.name + "'成功");
+        if (delRes.status) {
+            message.success(t("delRoleSuccessful"));
         } else {
-            message.error("删除角色'" + item.name + "'失败:" + delRes.data.statusMsg);
+            message.error(t("delRoleFailed") + delRes.msg);
         }
         handleReqRoleList();
     };
@@ -114,8 +116,8 @@ const Role = () => {
     }, []);
 
     return (
-        <React.Fragment>
-            <PageTitle pageName="MenuRole" displayHelp={true} helpUrl="/helps/role"/>
+        <Fragment>
+            <PageTitle pageName="MenuRole" displayHelp={true} helpUrl="/helps/role" />
             <Divider my={2} />
             <DocList
                 rows={rows}
@@ -146,7 +148,7 @@ const Role = () => {
                     onOk={handleAddRoleOk}
                 />
             </Dialog>
-        </React.Fragment>
+        </Fragment>
     );
 };
 

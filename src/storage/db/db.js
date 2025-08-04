@@ -42,7 +42,7 @@ db.version(1).stores({
     ppe: "id,status,ts",
 });
 
-//根据id获取缓存档案
+// Get Archive by ID
 export const GetCacheDocById = async (cacheName, id) => {
     let value = await db[cacheName].get(id);
     return value;

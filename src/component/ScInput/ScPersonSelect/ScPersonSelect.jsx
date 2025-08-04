@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     IconButton,
     Stack,
@@ -10,10 +10,24 @@ import {
 } from "@mui/material";
 import { PersonIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import PersonPicker from "./PersonPicker";
+import { useTranslation } from "react-i18next";
 const zeroValue = { id: 0, code: "", name: "", avater: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" };
-//510
-const ScPersonSelect = (props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+
+//510 Person Select Component
+const ScPersonSelect = ({
+    positionID = -1,
+    rowIndex = -1,
+    allowNull = false,
+    isEdit = true,
+    itemShowName = "",
+    itemKey,
+    initValue = zeroValue,
+    pickDone,
+    placeholder,
+    isBackendTest = false,
+    backendTestFunc,
+}) => {
+    const {t} = useTranslation();
     const [person, setPerson] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
@@ -27,53 +41,51 @@ const ScPersonSelect = (props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //关闭选择dialog
+    // Close the dialog window
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
 
-    //选中人员
+    // Actions after clicking a person
     const handlePersonClick = (item) => {
         setPerson(item);
     };
-    //双击选中人员
+    // Actions after double-clicking a person
     const handlePersonDoubleClick = (item) => {
         setPerson(item);
         handleOkClick();
     };
 
-    //检查值及向父组件传递数据
+    // Check the value and  pass it to the parent component
     const handleTransfer = async (doc = person) => {
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (doc.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(doc);
         }
         setErrInfo(err);
         pickDone(doc, itemKey, positionID, rowIndex, err);
     };
-    //点击清除按钮
+    // Acitons after clicking the clear button
     const handleClear = () => {
         setPerson(zeroValue);
         handleTransfer(zeroValue);
     };
-    //点击确定按钮
-    const handleOkClick = () => {
-        //向父组件传递数据
+    // Actions after clicking the ok button
+    const handleOkClick = () => {        
         handleTransfer();
-        //关闭对话框
         setDialogOpen(false);
     };
 
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -90,11 +102,11 @@ const ScPersonSelect = (props) => {
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {errInfo.isErr
-                                    ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                    ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
                                 {person.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -103,7 +115,7 @@ const ScPersonSelect = (props) => {
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择人员" placement="top" >
+                                <Tooltip title={t("choose")} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small" id="testId1">
                                             <PersonIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -125,11 +137,11 @@ const ScPersonSelect = (props) => {
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }} >
                             {errInfo.isErr
-                                ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
                             {person.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
                                             <ClearIcon fontSize="small" />
@@ -138,7 +150,7 @@ const ScPersonSelect = (props) => {
                                 </Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择人员" placement="top" >
+                            <Tooltip title={t("choose")} placement="top" >
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small" id="testId2">
                                         <PersonIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -153,7 +165,7 @@ const ScPersonSelect = (props) => {
                 fullWidth={true}
                 maxWidth={"lg"}
                 onClose={handleDiagClose}
-                closeAfterTransition={false}                
+                closeAfterTransition={false}
             >
                 <PersonPicker
                     clickItemAction={handlePersonClick}
@@ -168,7 +180,3 @@ const ScPersonSelect = (props) => {
 };
 
 export default memo(ScPersonSelect);
-
-ScPersonSelect.defaultProps = {
-    initValue: zeroValue,
-}
