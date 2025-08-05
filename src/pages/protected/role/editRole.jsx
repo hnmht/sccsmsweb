@@ -97,12 +97,12 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
         }
     }, [isOpen, oriRole, isNew, isModify]);
 
-    //获取值操作
+    // Actions after receiving the return value from the child component. 
     const handleGetValue = useCallback((value, itemkey, fieldIndex, rowIndex, errMsg) => {
         if (currentRole === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新errors
+        // Update errors
         setErrors((prevState) => {
             return ({
                 ...prevState,
@@ -110,7 +110,7 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
             });
         });
 
-        //更新用户输入的信息
+        // Update commponent's value
         setCurrentRole((prevState) => {
             return ({
                 ...prevState,
@@ -127,18 +127,18 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
         if (isModify) {
             const editRes = await reqEditRole(thisRole);
             if (editRes.status) {
-                message.success(t("modifyRoleSuccessful"));
+                message.success(t("modifySuccessful"));
                 onOk();
             } else {
-                message.error(t("modifyRoleFailed") + editRes.msg);
+                message.error(t("modifyFailed") + editRes.msg);
             }
         } else {
             const addRes = await reqAddRole(thisRole);
             if (addRes.status) {
-                message.success(t("addRoleSuccessful"));
+                message.success(t("addSuccessful"));
                 onOk()
             } else {
-                message.error(t("addRoleFailed") + addRes.msg);
+                message.error(t("addFailed") + addRes.msg);
             }
         }
     };

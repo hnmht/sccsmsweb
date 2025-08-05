@@ -11,8 +11,7 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import EditRole from "./editRole";
 import DocList from "../../../component/DocList/DocList";
 import { rowActionsDefine, columns, delMultipleDisabled } from "./constructor";
-
-
+// Role list
 const Role = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
@@ -38,7 +37,7 @@ const Role = () => {
         }
         setRows(newRoles);
     };
-    //表头增加按钮
+    // Actions after clicking the Add button in the table header.
     const handleAddRole = () => {
         setDiagStatus({
             currentRole: undefined,
@@ -47,17 +46,17 @@ const Role = () => {
             isModify: false
         });
     };
-    //表头批量删除
+    // Actions After clicking the batch delete button in the table header.
     const handleDelMultiple = async (items) => {
         const delRes = await reqDeleteRoles(items);
-        if (delRes.data.status === 0) {
-            message.success("批量删除角色成功");
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
         } else {
-            message.error("删除角色失败:" + delRes.data.statusMsg);
+            message.error(t("batchDeleteFailed") + delRes.msg);
         }
         handleReqRoleList();
     };
-    //表体复制新增
+    // Actions After clicking the CopyAdd button in the table body.
     const handleRowCopyAdd = (item) => {
         setDiagStatus({
             currentRole: item,
@@ -66,7 +65,7 @@ const Role = () => {
             isModify: false
         });
     };
-    //表体详情
+    // Actions after clicking the View button in the table body.
     const handleRowView = (item) => {
         setDiagStatus({
             currentRole: item,
@@ -75,7 +74,7 @@ const Role = () => {
             isModify: false
         });
     };
-    //表体编辑
+    // Actions after clicking the Edit button in the table body.
     const handleRowEdit = (item) => {
         setDiagStatus({
             currentRole: item,
@@ -84,17 +83,17 @@ const Role = () => {
             isModify: true
         });
     };
-    //表体删除
+    // Actions after clicking the Delete button in the table body.
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteRole(item);
         if (delRes.status) {
-            message.success(t("delRoleSuccessful"));
+            message.success(t("delSuccessful"));
         } else {
-            message.error(t("delRoleFailed") + delRes.msg);
+            message.error(t("delFailed") + delRes.msg);
         }
         handleReqRoleList();
     };
-    //对话框关闭
+    // Close dialog.
     const handleDiagClose = () => {
         setDiagStatus({
             currentRole: undefined,
@@ -103,7 +102,7 @@ const Role = () => {
             isModify: false
         });
     };
-    //对话框确定按钮
+    // Actions after clicking the Ok button in the dialog.
     const handleAddRoleOk = useCallback(() => {
         setDiagStatus({
             currentRole: undefined,
@@ -111,7 +110,7 @@ const Role = () => {
             isNew: false,
             isModify: false
         });
-        //刷新角色
+        // Refresh roles list.
         handleReqRoleList();
     }, []);
 
@@ -127,7 +126,7 @@ const Role = () => {
                 rowActionsDefine={rowActionsDefine}
                 delMultipleDisabled={delMultipleDisabled}
                 delMultipleAction={handleDelMultiple}
-                docListTitle="角色列表"
+                docListTitle="roleList"
                 rowCopyAdd={handleRowCopyAdd}
                 rowViewDetail={handleRowView}
                 rowEdit={handleRowEdit}

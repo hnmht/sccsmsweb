@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import ScDataTypeSelect from "./ScDataTypeSelect/ScDataTypeSelect"; //101 数据类型输入组件
 
@@ -116,46 +115,6 @@ const ScInput = (props) => {
         default:
             return null;
     }
-};
-
-ScInput.propTypes = {
-    dataType: PropTypes.oneOf(
-        [101, 301, 302, 303, 304, 305, 306, 307, 401, 402,
-        403, 404, 405, 406, 407,501, 502, 510, 520, 525, 
-        530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 
-        630, 901,902, 903]
-    ).isRequired,
-    positionID: PropTypes.number,
-    rowIndex: PropTypes.number,
-    allowNull: PropTypes.bool,
-    isEdit: PropTypes.bool,
-    itemShowName: PropTypes.string,
-    itemKey: PropTypes.string,
-    initValue: PropTypes.any,
-    pickDone: PropTypes.func,
-    placeholder: PropTypes.string,
-    isBackendTest: PropTypes.bool,
-    backendTestFunc: function (props, propName, componentName) {
-        if (props["isBackendTest"] && props["backendTestFunc"] === undefined) {
-            return new Error(props["itemShowName"] + "组件:在需要进行后端校验时,必须提供backendTestFunc函数");
-        } else if (props["backendTestFunc"] !== undefined && typeof props["backendTestFunc"] !== "function") {
-            return new Error(props["itemShowName"] + "组件:backendTestFunc必须是一个函数");
-        }
-        return null;
-    },
-    isMultiline: PropTypes.bool,
-    rowNumber: PropTypes.number,
-};
-
-ScInput.defaultProps = {
-    positionID: 0,
-    rowIndex: -1,
-    gridXs: 6,
-    allowNull: false,
-    isEdit: true,
-    isBackendTest: false,
-    isMultiline: false,
-    rowNumber: 1,
 };
 
 export default ScInput;
