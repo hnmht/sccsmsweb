@@ -8,39 +8,44 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../../utils/myDayjs";
 import jsencrypt from "jsencrypt";
+import { useTranslation } from 'react-i18next';
+import { DateTimeFormat } from "../../../i18n/dayjs";
 
-import { Divider } from '../../../../component/ScMui/ScMui';
-import ScInput from '../../../../component/ScInput';
-import Loader from '../../../../component/Loader/Loader';
-import MoreInfo from '../../../../component/MoreInfo/MoreInfo';
+import { Divider } from '../../../component/ScMui/ScMui';
+import ScInput from '../../../component/ScInput';
+import Loader from '../../../component/Loader/Loader';
+import MoreInfo from '../../../component/MoreInfo/MoreInfo';
 
-import { getCurrentPerson } from '../../pub';
-import { reqValidateUserCode, reqAddUser, reqEditUser } from '../../../../api/user';
-import { reqGetPublicKey } from '../../../../api/security';
-import { InitDocCache } from '../../../../storage/db/db';
-import { checkVoucherNoBodyErrors } from '../../pub';
+import { getCurrentPerson } from '../pub/pubFunction';
+import { reqValidateUserCode, reqAddUser, reqEditUser } from '../../../api/user';
+import { reqGetPublicKey } from '../../../api/security';
+import { InitDocCache } from '../../../storage/db/db';
+import { checkVoucherNoBodyErrors } from '../pub/pubFunction';
+
 const initRoles = [{
     id: 10001, name: "public", alluserflag: 1, systemflag: 1, description: "系统预置角色"
 }];
+
+// General initialization data
 const getInitialValues = async (oriUser, isNew, isModify) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newUser = {};
-    if (isNew) {//新增或者复制新增
-        if (oriUser) { //复制新增
+    if (isNew) { //Add New or Copy Add new
+        if (oriUser) { // Copy Add New
             newUser = cloneDeep(oriUser);
             newUser.id = 0;
-            delete newUser.menulist;
+            delete newUser.menuList;
             newUser.avatar = { fileid: 0, tempurl: "" };
             newUser.code = "";
             newUser.name = "";
             newUser.password = "";
             newUser.confirmPassword = "";
-            newUser.createuser = person;
-            newUser.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newUser.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
-        } else { //新增
+            newUser.creator = person;
+            newUser.createDate = DateTimeFormat(currentDate, "LLL");
+            newUser.modifyDate = DateTimeFormat(currentDate, "LLL");
+        } else { // Add New
             newUser = {
                 id: 0,
                 avatar: { fileid: 0, tempurl: "" },
@@ -50,38 +55,40 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
                 gender: 0,
                 mobile: "",
                 name: "",
-                systemflag: 0,
+                systemFlag: 0,
                 status: 0,
                 locked: 0,
                 password: "",
-                isoperator: 1,
-                operatingpost: { id: 0, name: "", description: "" },
+                isOerator: 1,
+                position: { id: 0, name: "", description: "" },
                 department: { id: 0, code: '', name: '' },
                 confirmPassword: "",
                 roles: initRoles,
-                createuser: person,
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+                creator: person,
+                createDate: DateTimeFormat(currentDate, "LLL"),
+                modifyDate: DateTimeFormat(currentDate, "LLL"),
             };
         }
-    } else { //编辑or查看详情
+    } else { // Modify or View
         if (!oriUser) {
             return
-        } else { //编辑
+        } else { // Edit
             if (isModify) {
                 newUser = cloneDeep(oriUser);
-                newUser.createdate = dayjs(newUser.createdate).format("YYYYMMDDHHmm");
-                newUser.modifyuser = person;
-                newUser.modifydate = dayjs(newUser.modifydate).format("YYYYMMDDHHmm");
+                newUser.createDate = DateTimeFormat(newRole.createDate, "LLL");
+                newUser.modifier = person;
+                newUser.ModifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
                 newUser.password = "";
                 newUser.confirmPassword = "";
-            } else {//查看详情
+            } else {// View Detail
                 newUser = cloneDeep(oriUser);
-                newUser.createdate = dayjs(newUser.createdate).format("YYYYMMDDHHmm");
-                newUser.modifydate = dayjs(newUser.modifydate).format("YYYYMMDDHHmm");
+                newUser.createdate = DateTimeFormat(newRole.createDate, "LLL");
+                newUser.ModifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
             }
         }
     }
+
+    console.log("newUser:",newUser);
 
     return newUser;
 };
@@ -89,6 +96,7 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
 const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
     const [currentUser, setCurrentUser] = useState(undefined);
     const [errors, setErrors] = useState({});
+    const { t } = useTranslation();
     const isEdit = !(!isModify && !isNew);
 
     useEffect(() => {
@@ -117,7 +125,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         setCurrentUser((prevState) => {
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
-            return newValue;        
+            return newValue;
         });
     }, [currentUser, isOpen, isEdit]);
 
@@ -129,31 +137,34 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         }
         return err;
     };
-    //检验用户编码是否重复
+    // Check if the user code exists.
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
         let uid = currentUser.id ? currentUser.id : 0;
-        let resp = await reqValidateUserCode({ id: uid, "code": value });
-        if (resp.data.data > 0) {
-            err = { isErr: true, msg: "已经存在相同的用户名" };
-        } else if (resp.data.data < 0) {
-            err = { isErr: true, msg: resp.data.msg };
+        let res = await reqValidateUserCode({ id: uid, "code": value });
+        if (res.status) {
+            err = { isErr: false, msg: "" };
+        } else {
+            err = { isErr: true, msg: res.msg };
         }
         return err;
     };
 
-    //增加或者修改用户
+    // Add or Edit user
     const handleAddUser = async () => {
         let thisUser = cloneDeep(currentUser);
         delete thisUser.createdate;
-        delete thisUser.modifydate;
-        //如果密码项目不为空(编辑状态下可以为空)
+        delete thisUser.ModifyDate;
+        // If the password field is not empty,
+        // it means the user needs to change their password.
         if (thisUser.password !== "") {
-            //获取公玥
+            // Get RSA Public key from the server
             const publicKeyRes = await reqGetPublicKey();
-            const publickey = publicKeyRes.data.data;
-
-            //使用jsencrypt创建加密对象实例
+            if (!publicKeyRes.status) {
+                return
+            }
+            const publickey = publicKeyRes.data;
+            // 使用jsencrypt创建加密对象实例
             let encryptor = new jsencrypt();
             encryptor.setPublicKey(publickey); //设置公玥
             let rsaPassword = encryptor.encrypt(currentUser.password); //加密
@@ -164,8 +175,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         delete thisUser.confirmPassword;
 
         if (isModify) { //修改用户
-            const resEdit = await reqEditUser(thisUser);
-            // console.log("editUser res:", resEdit);
+            const resEdit = await reqEditUser(thisUser);            
             if (resEdit.data.status === 0) {
                 message.success("修改用户'" + thisUser.name + "'成功");
                 onOk();
@@ -187,7 +197,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
 
     return currentUser
         ? <>
-            <DialogTitle>{isNew ? "增加用户" : isModify ? "修改用户" : "用户详情"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addUser") : isModify ? t("editUser") : t("userDetail")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2, maxHeight: 800 }}>
                 <Grid container spacing={3}>
@@ -196,11 +206,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                             dataType={901}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="头像"
+                            itemShowName="avatar"
                             itemKey="avatar"
                             initValue={currentUser.avatar}
                             pickDone={handleGetValue}
-                            placeholder="请选择头像"
+                            placeholder="selectAvatarPlaceholder"
                             isBackendTest={false}
                             key="avatar"
                         />
@@ -212,11 +222,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={301}
                                     allowNull={false}
                                     isEdit={isEdit}
-                                    itemShowName="用户编码"
+                                    itemShowName="code"
                                     itemKey="code"
                                     initValue={currentUser.code}
                                     pickDone={handleGetValue}
-                                    placeholder="请输入用户编码"
+                                    placeholder="codePlaceholder"
                                     isBackendTest={true}
                                     backendTestFunc={handleBackendTestCode}
                                     key="code"
@@ -227,11 +237,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={301}
                                     allowNull={false}
                                     isEdit={isEdit}
-                                    itemShowName="用户名称"
+                                    itemShowName="name"
                                     itemKey="name"
                                     initValue={currentUser.name}
                                     pickDone={handleGetValue}
-                                    placeholder="请输入用户名称"
+                                    placeholder="namePlaceholder"
                                     isBackendTest={false}
                                     key="name"
                                 />
@@ -241,11 +251,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={303}
                                     allowNull={isModify}
                                     isEdit={isEdit}
-                                    itemShowName="密码"
+                                    itemShowName="labelPassword"
                                     itemKey="password"
                                     initValue={currentUser.password}
                                     pickDone={handleGetValue}
-                                    placeholder="请输入用户密码"
+                                    placeholder="inputPasswordPlaceholder"
                                     isBackendTest={false}
                                     key="password"
                                 />
@@ -255,11 +265,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={303}
                                     allowNull={isModify}
                                     isEdit={isEdit}
-                                    itemShowName="确认密码"
+                                    itemShowName="confirmPassword"
                                     itemKey="confirmPassword"
                                     initValue={currentUser.confirmPassword}
                                     pickDone={handleGetValue}
-                                    placeholder="请重新输入一次密码"
+                                    placeholder="confirmPasswordPlaceholder"
                                     key="confirmPassword"
                                     isBackendTest={true}
                                     backendTestFunc={(value) => handleTestConfirmPassword(value)}
@@ -270,11 +280,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={304}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="手机号码"
+                                    itemShowName="mobile"
                                     itemKey="mobile"
                                     initValue={currentUser.mobile}
                                     pickDone={handleGetValue}
-                                    placeholder="请输入手机号码"
+                                    placeholder="mobilePlaceholder"
                                     key="mobile"
                                     isBackendTest={false}
                                 />
@@ -284,11 +294,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={305}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="电子邮件"
+                                    itemShowName="email"
                                     itemKey="email"
                                     initValue={currentUser.email}
                                     pickDone={handleGetValue}
-                                    placeholder="请输入电子邮件"
+                                    placeholder="emailPlaceholder"
                                     key="email"
                                     isBackendTest={false}
                                 />
@@ -298,11 +308,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={401}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="性别"
+                                    itemShowName="gender"
                                     itemKey="gender"
                                     initValue={currentUser.gender}
                                     pickDone={handleGetValue}
-                                    placeholder="请选择性别"
+                                    placeholder="choose"
                                     key="gender"
                                     isBackendTest={false}
                                 />
@@ -312,11 +322,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={520}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="所属部门"
+                                    itemShowName="department"
                                     itemKey="department"
                                     initValue={currentUser.department}
                                     pickDone={handleGetValue}
-                                    placeholder="请选择部门"
+                                    placeholder="deptPlaceholder"
                                     key="department"
                                     isBackendTest={false}
                                 />
@@ -326,12 +336,12 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={610}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="岗位"
-                                    itemKey="operatingpost"
-                                    initValue={currentUser.operatingpost}
+                                    itemShowName="position"
+                                    itemKey="position"
+                                    initValue={currentUser.position}
                                     pickDone={handleGetValue}
-                                    placeholder="请选择岗位"
-                                    key="operatingpost"
+                                    placeholder="positionPlaceholder"
+                                    key="position"
                                     isBackendTest={false}
                                 />
                             </Grid>
@@ -340,11 +350,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={301}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="用户说明"
+                                    itemShowName="description"
                                     itemKey="description"
                                     initValue={currentUser.description}
                                     pickDone={handleGetValue}
-                                    placeholder="请输入用户说明"
+                                    placeholder="descriptionPlaceholder"
                                     isBackendTest={false}
                                     isMultiline={true}
                                     rowNumber={2}
@@ -356,11 +366,11 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={501}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="所属角色"
+                                    itemShowName="role"
                                     itemKey="roles"
                                     initValue={currentUser.roles}
                                     pickDone={handleGetValue}
-                                    placeholder="请选择所属角色"
+                                    placeholder="rolePlaceholder"
                                     key="roles"
                                 />
                             </Grid>
@@ -369,12 +379,12 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={402}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="是否操作员"
-                                    itemKey="isoperator"
-                                    initValue={currentUser.isoperator}
+                                    itemShowName="isOperator"
+                                    itemKey="isOperator"
+                                    initValue={currentUser.isOperator}
                                     pickDone={handleGetValue}
-                                    placeholder=""
-                                    key="isoperator"
+                                    placeholder="isOperator"
+                                    key="isOperator"
                                     isBackendTest={false}
                                     color="success"
                                 />
@@ -384,7 +394,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={402}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="锁定"
+                                    itemShowName="locked"
                                     itemKey="locked"
                                     initValue={currentUser.locked}
                                     pickDone={handleGetValue}
@@ -399,7 +409,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                                     dataType={402}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="停用"
+                                    itemShowName="disable"
                                     itemKey="status"
                                     initValue={currentUser.status}
                                     pickDone={handleGetValue}
@@ -418,25 +428,25 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentUser.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentUser.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
+                            itemShowName="createDate"
+                            itemKey="createDate"
                             initValue={currentUser.createdate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -444,25 +454,25 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentUser.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentUser.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentUser.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentUser.ModifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -471,10 +481,10 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2.5 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' variant='contained' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddUser}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' variant='contained' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddUser}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>

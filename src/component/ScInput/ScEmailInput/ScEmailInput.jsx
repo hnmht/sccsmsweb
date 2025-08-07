@@ -1,11 +1,12 @@
-import React, { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     InputLabel,
     TextField,
     Tooltip,
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
-//电子邮件正则表达式
+import { useTranslation } from "react-i18next";
+// Email regular expression
 const mailRegex = new RegExp(/^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
 
 //305
@@ -13,6 +14,7 @@ const ScEmailInput = memo((props) => {
     const { positionID, fieldIndex, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const { t } = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -32,10 +34,10 @@ const ScEmailInput = memo((props) => {
         }
         let err = { isErr: false, msg: "" };
         if (textValue.trim() === "" && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (textValue.trim() !== "") {
             let isMoblie = mailRegex.test(textValue);
-            err = isMoblie ? { isErr: false, msg: "" } : { isErr: true, msg: "请输入正确的邮件地址" };
+            err = isMoblie ? { isErr: false, msg: "" } : { isErr: true, msg: "emailIncorrect" };
         } else if (isBackendTest) {
             err = await backendTestFunc(textValue);
         }
@@ -51,7 +53,7 @@ const ScEmailInput = memo((props) => {
 
     return (
         <>
-            <InputLabel htmlFor={`emailinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+            <InputLabel htmlFor={`emailinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
                 autoComplete="true"
@@ -59,13 +61,13 @@ const ScEmailInput = memo((props) => {
                 id={`emailinput${itemKey}${positionID}${rowIndex}`}
                 disabled={!isEdit}
                 name={itemKey}
-                placeholder={placeholder}
+                placeholder={t(placeholder)}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
                 onBlur={handleOnBlur}
                 error={errInfo.isErr}
                 InputProps={{
-                    endAdornment: errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
+                    endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
                 }}
             />
         </>

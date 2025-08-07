@@ -105,7 +105,7 @@ const SignIn = () => {
                 inputProps={{ name: "userCode" }}
                 label={t("labelUserCode")}
                 name="userCode"
-                placeholder={t("tipInputUserCode")}
+                placeholder={t("codePlaceholder")}
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
@@ -125,7 +125,7 @@ const SignIn = () => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="current-password"
-                placeholder={t("tipInputPassword")}
+                placeholder={t("inputPasswordPlaceholder")}
                 InputLabelProps={{
                     shrink: true,
                 }}

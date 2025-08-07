@@ -1,4 +1,4 @@
-import React,{memo,useState,useEffect} from "react";
+import  { memo, useState, useEffect } from "react";
 import {
     Tooltip,
     InputLabel,
@@ -9,12 +9,14 @@ import {
     OutlinedInput
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
 const zeroValue = 0;
-//401
-const ScSelectGender = memo((props)  => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone,isBackendTest, backendTestFunc } = props;
-    const [fieldValue, setFieldValue] = useState(initValue);  
+// 401 Select Gender component
+const ScSelectGender = memo((props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
+    const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const { t } = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -23,27 +25,27 @@ const ScSelectGender = memo((props)  => {
         updateInitvalue();
     }, [initValue]);
 
-    useEffect(() => {     
+    useEffect(() => {
         handleTransfer(fieldValue);
         // eslint-disable-next-line
-    }, [allowNull, isBackendTest]);    
+    }, [allowNull, isBackendTest]);
 
-    //向父组件传递数据
-    const handleTransfer = async(value = fieldValue) => { 
+    // Transfer data to the parent component.
+    const handleTransfer = async (value = fieldValue) => {
         if (!isEdit) {
             return
-        }       
+        }
         let err = { isErr: false, msg: "" };
         if (value === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(value);
-        }    
-        setErrInfo(err);        
+        }
+        setErrInfo(err);
         pickDone(value, itemKey, positionID, rowIndex, err);
     };
 
-    //选择变化
+    // Actions after select value change. 
     const handleOnChange = (event) => {
         let newValue = event.target.value;
         setFieldValue(newValue);
@@ -52,11 +54,11 @@ const ScSelectGender = memo((props)  => {
 
     return (
         <>
-            { positionID !== 1
-                ? <InputLabel htmlFor={`input${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+            {positionID !== 1
+                ? <InputLabel htmlFor={`input${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
-            <FormControl id={`${itemKey}${positionID}${rowIndex}`} fullWidth sx={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",alignContent:"space-between"}}>
+            <FormControl id={`${itemKey}${positionID}${rowIndex}`} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
                 <Select
                     disabled={!isEdit}
                     id={`select${itemKey}${positionID}${rowIndex}`}
@@ -65,21 +67,17 @@ const ScSelectGender = memo((props)  => {
                     value={fieldValue}
                     error={errInfo.isErr}
                     input={positionID !== 1
-                        ? <OutlinedInput id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
-                        : <InputBase id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}     
-                    sx={{flex:1}}
+                        ? <OutlinedInput id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
+                        : <InputBase id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
+                    sx={{ flex: 1 }}
                 >
                     <MenuItem key={0} value={0}></MenuItem>
-                    <MenuItem key={1} value={1}>男</MenuItem>
-                    <MenuItem key={2} value={2}>女</MenuItem>
+                    <MenuItem key={1} value={1}>{t("male")}</MenuItem>
+                    <MenuItem key={2} value={2}>{t("female")}</MenuItem>
                 </Select>
             </FormControl>
         </>
     );
 });
-
-ScSelectGender.defaultProps = {
-    initValue: zeroValue,
-};
 
 export default ScSelectGender;

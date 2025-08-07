@@ -162,7 +162,7 @@ function DocList({
     // Action after body "Select" checkbox changes.
     const handleRowSelectChange = (row) => {
         let newSelectedRows = cloneDeep(selectedRows);
-        let currentIndex = newSelectedRows.findIndex((value) => value.id === row.id);       
+        let currentIndex = newSelectedRows.findIndex((value) => value.id === row.id);
         if (currentIndex >= 0) { // if the current row is already selected, remove it from  the array.
             newSelectedRows.splice(currentIndex, 1);
         } else { // Otherwise, add the current row to the array.            
@@ -277,7 +277,7 @@ function DocList({
                                                 <TableCell key={column.id} align={column.alignment} sx={{ m: 2, p: 2 }} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} >
                                                     {column.display.type === 0
                                                         ? value
-                                                        : column.display.cell1(row, column)
+                                                        : t(column.display.cell1(row, column))
                                                     }
                                                 </TableCell>
                                             );
@@ -327,7 +327,7 @@ const defaultRowActions = {
         visible: true,
         disabled: () => { return false },
         color: "success",
-        tips:"copyAdd",
+        tips: "copyAdd",
         icon: "CopyNewIcon",
     },
     rowViewDetail: {
@@ -341,7 +341,7 @@ const defaultRowActions = {
         visible: true,
         disabled: () => { return false },
         color: "warning",
-        tips:"edit",
+        tips: "edit",
         icon: "EditIcon",
     },
     rowDelete: {

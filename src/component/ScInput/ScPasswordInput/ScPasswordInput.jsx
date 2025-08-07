@@ -5,11 +5,13 @@ import {
     Tooltip,
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
-//303
+import { useTranslation } from "react-i18next";
+// 303 Password Input component
 const ScPasswordInput = memo((props) => {
     const { positionID,fieldIndex, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [textValue, setTextValue] = useState("");
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const {t} = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -30,7 +32,7 @@ const ScPasswordInput = memo((props) => {
         }
         let err = { isErr: false, msg: "" };
         if (textValue.trim() === "" && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {            
             err = await backendTestFunc(textValue);
         }
@@ -45,20 +47,20 @@ const ScPasswordInput = memo((props) => {
 
     return (
         <>
-            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
                 type="password"
                 id={`${itemKey}${positionID}${rowIndex}`}
                 disabled={!isEdit}
                 name={itemKey}
-                placeholder={isEdit ? placeholder : ""}
+                placeholder={isEdit ? t(placeholder) : ""}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
                 onBlur={handleOnBlur}
                 error={errInfo.isErr}
                 InputProps={{
-                    endAdornment: errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
+                    endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
                 }}
             />
         </>

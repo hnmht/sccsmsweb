@@ -1,4 +1,4 @@
-import { CellCreator, CellCreateTime, CellModifyTime, CellModifier } from "../pub/pubFunction";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier,CellSystemFlag } from "../pub/pubFunction";
 
 const rowCopyAddDisabled = (row) => {
     return row.systemFlag === 1;
@@ -23,10 +23,6 @@ const rowStopDisabled = (row) => {
     return false;
 };
 
-// systemFlag column display content 
-function displaySystemFlag(row) {
-    return row.systemFlag === 1 ? "Y" : "N";
-}
 // Determine if the batch delete button is avaliable
 export function delMultipleDisabled(selectedRows) {
     if (selectedRows.length === 0) {
@@ -91,7 +87,7 @@ export const columns = [
     { id: "id", label: "id", alignment: "left", minWidth: 100, visible: false,sortField:"id", sort: true, display: { type: 0, cell1: null } },
     { id: "name", label: "name", alignment: "center", minWidth: 200, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
     { id: "description", label: "description", alignment: "center", minWidth: 360, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
-    { id: "systemFlag", label: "systemFlag", alignment: "center", minWidth: 60, visible: true, sortField: "systemFlag", sort: true, display: { type: 1, cell1:displaySystemFlag } },
+    { id: "systemFlag", label: "systemFlag", alignment: "center", minWidth: 60, visible: true, sortField: "systemFlag", sort: true, display: { type: 1, cell1: CellSystemFlag } },
     { id: "creator", label: "creator", alignment: "center", minWidth: 60, visible: true, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createDate", label: "createDate", alignment: "center", minWidth: 60, visible: true, sortField: "createDate", sort: true, display: { type: 1, cell1: CellCreateTime } },
     { id: "modifier", label: "modifier", alignment: "center", minWidth: 60, visible: false, sortField: "modifier.name", sort: true, display: { type: 1, cell1: CellModifier } },

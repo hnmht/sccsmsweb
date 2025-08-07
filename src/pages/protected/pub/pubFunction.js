@@ -81,10 +81,27 @@ export const CellConfirmTime = (row, column) => {
 
 //状态列显示
 export const CellStatus = (row, column) => {
-    return row.status === 0 ? "正常" : "停用";
+    return row.status === 0 ? "normal" : "disable";
 };
 
 //单据状态列显示
 export const CellVoucherStatus = (row, column) => {
     return VoucherStatus[row.status];
+};
+
+//部门显示
+export const CellDept = (row, column) => {
+    return row.department.name;
+};
+//岗位显示
+export const CellPosition = (row, column) => {
+    return row.position.name;
+};
+//性别列显示
+export const CellGender = (row) => {
+    return row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
+};
+//系统预置列显示
+export const CellSystemFlag = (row) => {
+    return row.systemflag === 0 ? "N" : "Y";
 };

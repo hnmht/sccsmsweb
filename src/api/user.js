@@ -62,7 +62,7 @@ export function reqModifyProfile(data, isLoading = true) {
 
 export function reqValidateUserCode(data, isLoading = true) {
     return request({
-        url: "/user/validatUserCode",
+        url: "/user/validatecode",
         method: "post",
         data,
         isLoading
@@ -71,7 +71,7 @@ export function reqValidateUserCode(data, isLoading = true) {
 
 export function reqValidateUserName(data, isLoading = true) {
     return request({
-        url: "/user/validatUserName",
+        url: "/user/validatename",
         method: "post",
         data,
         isLoading

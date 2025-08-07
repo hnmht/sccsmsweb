@@ -58,9 +58,9 @@ function transItems(menuList,t) {
             icon: iconMap.get(item.icon),
         };
 
-        if (item.ID < 9000) {
+        if (item.id < 9000) {
             managementSection.push(routeitem);
-        } else if (item.ID >= 9000 && item.ID < 9900) {
+        } else if (item.id >= 9000 && item.id < 9900) {
             systemSection.push(routeitem);
         } else {
             mySection.push(routeitem);

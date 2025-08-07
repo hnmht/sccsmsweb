@@ -3,17 +3,18 @@ import {
     Dialog,
 } from "@mui/material";
 import { message } from "mui-message";
-
-import { Divider } from "../../../../component/ScMui/ScMui";
-import PageTitle from "../../../../component/PageTitle/PageTitle";
-import DocList from "../../../../component/DocList/DocList";
+import { useTranslation } from "react-i18next";
+import { Divider } from "../../../component/ScMui/ScMui";
+import PageTitle from "../../../component/PageTitle/PageTitle";
+import DocList from "../../../component/DocList/DocList";
 import EditUser from "./editUser";
 
-import { InitDocCache } from "../../../../storage/db/db";
-import { reqGetUsers, reqDeleteUser, reqDeleteUsers } from "../../../../api/user";
+import { InitDocCache } from "../../../storage/db/db";
+import { reqGetUsers, reqDeleteUser, reqDeleteUsers } from "../../../api/user";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 
 const User = () => {
+    const { t } = useTranslation();
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         currentUser: undefined,
@@ -31,10 +32,10 @@ const User = () => {
     //获取用户列表
     const handleGetUsers = async () => {
         const resp = await reqGetUsers();
-        if (resp.data.status === 0) {
-            setRows(resp.data.data);
+        if (resp.status) {
+            setRows(resp.data);
         } else {
-            message.error(resp.data.statusMsg);
+            message.error(resp.msg);
         }
     };
     //点击增加按钮
@@ -122,7 +123,7 @@ const User = () => {
 
     return (
         <React.Fragment>
-            <PageTitle pageName="用户管理" displayHelp={true} helpUrl="/helps/user" />
+            <PageTitle pageName={t("user")} displayHelp={false} />
             <Divider my={2} />
             <DocList
                 columns={columns}
@@ -132,7 +133,7 @@ const User = () => {
                 rowActionsDefine={rowActionsDefine}
                 delMultipleDisabled={delMultipleDisabled}
                 delMultipleAction={handleDelMultipleAction}
-                docListTitle="用户列表"
+                docListTitle="userList"
                 rowCopyAdd={handelCopyAddUser}
                 rowViewDetail={handleUserDetail}
                 rowEdit={handleUserEdit}

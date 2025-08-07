@@ -17,6 +17,7 @@ import { reqValidateRoleName, reqEditRole, reqAddRole } from "../../../api/role"
 import { getCurrentPerson } from "../pub/pubFunction";
 import Loader from "../../../component/Loader/Loader";
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
+import { checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
 // General initialization data.
 const getInitialValue = async (oriRole, isNew, isModify) => {
@@ -67,16 +68,6 @@ const getInitialValue = async (oriRole, isNew, isModify) => {
         }
     }
     return newRole;
-};
-// Check errors
-const checkErrors = (errors) => {
-    let number = 0;
-    for (let key in errors) {
-        if (errors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
 };
 
 // Add/Modify/View Role Master Data
@@ -268,7 +259,7 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                 {isEdit
                     ? <>
                         <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
-                        <Button variant="contained" disabled={checkErrors(errors)} onClick={handleAddRole}>{isModify ? t("save") : t("add")}</Button>
+                        <Button variant="contained" disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddRole}>{isModify ? t("save") : t("add")}</Button>
                     </>
                     : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
