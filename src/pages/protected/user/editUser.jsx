@@ -88,8 +88,6 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
         }
     }
 
-    console.log("newUser:",newUser);
-
     return newUser;
 };
 
@@ -153,8 +151,8 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
     // Add or Edit user
     const handleAddUser = async () => {
         let thisUser = cloneDeep(currentUser);
-        delete thisUser.createdate;
-        delete thisUser.ModifyDate;
+        delete thisUser.createDate;
+        delete thisUser.modifyDate;
         // If the password field is not empty,
         // it means the user needs to change their password.
         if (thisUser.password !== "") {
@@ -175,7 +173,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         delete thisUser.confirmPassword;
 
         if (isModify) { //修改用户
-            const resEdit = await reqEditUser(thisUser);            
+            const resEdit = await reqEditUser(thisUser);
             if (resEdit.data.status === 0) {
                 message.success("修改用户'" + thisUser.name + "'成功");
                 onOk();
@@ -184,11 +182,13 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
             }
         } else { //新增用户
             const resAdd = await reqAddUser(thisUser);
-            if (resAdd.data.status === 0) {
+            console.log("thisUser:",thisUser);
+            console.log("resAdd:",resAdd);
+            if (resAdd.status) {
                 message.success("增加用户'" + thisUser.name + "'成功");
                 onOk();
             } else {
-                message.error("增加用户'" + thisUser.name + "'失败:" + resAdd.data.statusMsg);
+                message.error("增加用户'" + thisUser.name + "'失败:" + resAdd.msg);
             }
         }
         //更新缓存

@@ -9,16 +9,18 @@ import {
     InputLabel,
     Tooltip
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 import styled from "@emotion/styled";
 import { spacing } from "@mui/system";
 import { cloneDeep } from "lodash";
-import { message } from "mui-message";
 import { reqGetRoles } from "../../../api/role";
+
 const List = styled(MuiList)`
     ${spacing};   
 `;
-//将标准组件列表转换为本组件使用的角色列表,增加selected列
+// Convert the standard list component array to the array used by this commponent,
+// adding a selected field.
 function transRoles(roles, initValue) {
     if (initValue && initValue.length > 0) {
         roles.map(role => {
@@ -33,6 +35,7 @@ const ScRoleSelect = memo((props) => {
     const [roles, setRoles] = useState([]);
     const [selectedRoles, setSelectedRoles] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const {t} = useTranslation();
     const tRoles = transRoles(roles, selectedRoles);
     useEffect(() => {
         async function reqRoles() {
@@ -41,39 +44,36 @@ const ScRoleSelect = memo((props) => {
         reqRoles();
     }, []);
 
-    //从服务器获取角色列表
+    // Get the role list from the server
     const handleReqRoles = async () => {
         let newRoles = [];
-        //向服务器请求角色列表
+        // Request role list from server
         const res = await reqGetRoles();
-        console.log(res);
-
-        if (res.data.status === 0) {
-            newRoles = res.data.data;
-        } else {
-            message.error(res.data.statusMsg);
+        if (!res.status) {
+            return
         }
+        newRoles = res.data;
         setRoles(newRoles);
     };
 
-    //向父组件传递数据
+    // Transmit data to the parent component.
     const handleTransfer = async (items = selectedRoles) => {
         let err = { isErr: false, msg: "" };
         if (items.length === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(items);
         }
         setErrInfo(err);
         pickDone(items, itemKey, positionID, rowIndex, err);
     }
-    //选择角色列表
+    // Action after selecting the role
     const handleSelect = (item) => {
         if (!isEdit) {
             return
         }
         let newSelectedRoles = cloneDeep(selectedRoles);
-        let i = selectedRoles.findIndex(role => role.id === item.id);       
+        let i = selectedRoles.findIndex(role => role.id === item.id);
         if (i < 0) {
             newSelectedRoles.push(item);
         } else {
@@ -86,9 +86,9 @@ const ScRoleSelect = memo((props) => {
     return (
         <>
             <InputLabel sx={{ color: allowNull ? "primary" : "blue", marginBottom: 1.25 }}>
-                {itemShowName}
+                {t(itemShowName)}
                 {errInfo.isErr
-                    ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                    ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                     : null
                 }
             </InputLabel>
@@ -105,11 +105,11 @@ const ScRoleSelect = memo((props) => {
                             key={index}
                             disablePadding
                         >
-                            <ListItemButton disabled={role.alluserflag === 1 || !isEdit} onClick={() => handleSelect(role)}>
+                            <ListItemButton disabled={role.allUserFlag === 1 || !isEdit} onClick={() => handleSelect(role)}>
                                 <ListItemIcon>
                                     <Checkbox
                                         id={`rolecheckbox${itemKey}${positionID}${rowIndex}${index}`}
-                                        disabled={role.alluserflag === 1}
+                                        disabled={role.allUserFlag === 1}
                                         checked={role.selected}
                                         size="medium"
                                     />

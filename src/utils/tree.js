@@ -11,7 +11,7 @@ export function toTree(list, parId) {
         let res = [];
         for (let i = 0; i < len; i++) {
             let item = newList[i];
-            if (item.fatherid === parId) {
+            if (item.fatherID === parId) {
                 let child = loop(item.id)
                 if (child.length > 0) {
                     item.children = loop(item.id);

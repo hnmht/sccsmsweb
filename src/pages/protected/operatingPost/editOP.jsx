@@ -15,7 +15,7 @@ import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
-import { reqAddOP,reqEditOP,reqCheckOPName } from '../../../api/operatingPost';
+import { reqAddOP,reqEditOP,reqCheckOPName } from '../../../api/position';
 import { InitDocCache } from '../../../storage/db/db';
 import { getCurrentPerson } from '../pub';
 

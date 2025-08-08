@@ -97,6 +97,7 @@
     "locked":"Locked",
     "mobileIncorrect":"The phone number is incorrect.",
     "emailIncorrect":"The Email is incorrect.",
+    "chooseDept":"Choose Department",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

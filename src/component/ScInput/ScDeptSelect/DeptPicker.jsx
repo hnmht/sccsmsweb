@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
     List,
     ListSubheader,
@@ -9,17 +9,18 @@ import {
 } from "@mui/material";
 import { RefreshIcon } from "../../PubIcon/PubIcon";
 import PubTree from "../ScPub/PubTree";
-import { InitDocCache ,GetLocalCache} from "../../../storage/db/db";
+import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
+import { useTranslation } from "react-i18next";
 
 const docName = "department";
 
 const DeptPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [depts, setDepts] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getLocalDepts() {
             const newDepts = await GetLocalCache(docName);
-            // console.log("simpDepts from cache:",simpDepts);
             setDepts(newDepts);
         }
         getLocalDepts();
@@ -50,8 +51,8 @@ const DeptPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction,
                             display: "flex", flexDirection: "row", justifyContent: "space-between"
                         }}
                     >
-                        选择部门
-                        <Tooltip title="刷新" placement="top">
+                        {t("chooseDept")}
+                        <Tooltip title={t("refresh")} placement="top">
                             <IconButton onClick={handleDeptRefresh}>
                                 <RefreshIcon color="primary" />
                             </IconButton>
@@ -63,8 +64,8 @@ const DeptPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction,
                 <PubTree oriDocs={depts} selectDocIDs={transforDeptIDs(currentItem)} onDocClick={clickItemAction} onDocDoubleClick={doubleClickItemAction} />
             </List>
             <DialogActions sx={{ p: 2.5 }}>
-                <Button color='error' onClick={cancelClickAction}>取消</Button>
-                <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>确定</Button>
+                <Button color='error' onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );

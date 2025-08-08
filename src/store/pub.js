@@ -7,20 +7,20 @@ import { setAppinfo } from "./slice/appInfo";
 
 export const logout = async () => {
     const res = await reqLogout();
-    if (res.data.status !== 0) {
-        console.warn(res.data.statusMsg);
+    if (!res.status) {
+        console.warn(res.msg);
     }
     store.dispatch(resetUser());
 };
 
 export const getUserInfo = async (token) => {
     const userInfoRes = await reqUserInfo(token, false);
-    if (userInfoRes.data.status !== 0) {
+    if (!userInfoRes.status) {
         // message.error(`请求用户信息失败:${userInfoRes.data.statusMsg}!`)
         console.warn(userInfoRes.data.statusMsg);
         return false;
     }
-    const latestUserInfo = userInfoRes.data.data;
+    const latestUserInfo = userInfoRes.data;
     store.dispatch(setUserInfo(latestUserInfo));
     return true;
 };

@@ -8,17 +8,19 @@ import {
     IconButton,
     Dialog,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { OperatingPostIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import OpPicker from "./OpPicker";
+import PositionPicker from "./PositionPicker";
 
 const zeroValue = { id: 0, name: "", description: "", status: 0 };
 
-//610 岗位档案选择
+//610 Position
 const ScOpSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const {t} = useTranslation();
 
     useEffect(() => {
         setSelectItem(initValue);
@@ -33,7 +35,7 @@ const ScOpSelect = memo((props) => {
     const handleTransfer = async (item = selectItem) => {
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(item);
         }
@@ -75,7 +77,7 @@ const ScOpSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -157,7 +159,7 @@ const ScOpSelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <OpPicker
+                <PositionPicker
                     clickItemAction={handleClickItem}
                     doubleClickItemAction={handleDoubleClickItem}
                     cancelClickAction={handleDiagClose}
@@ -170,7 +172,3 @@ const ScOpSelect = memo((props) => {
 });
 
 export default ScOpSelect;
-
-ScOpSelect.defaultProps = {
-    initValue: zeroValue,
-}

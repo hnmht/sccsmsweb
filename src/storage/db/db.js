@@ -13,7 +13,7 @@ import { reqGetSIList, reqGetSICache, reqGetSIOCache, reqSIOs } from "../../api/
 import { reqGetSimpSICList, reqGetSimpSICCache } from "../../api/sceneItemClass";
 import { reqGetRLList, reqGetRLsCache } from "../../api/riskLevel";
 import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
-import { reqGetOPList, reqGetOPCache } from "../../api/operatingPost";
+import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
 import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 
@@ -37,7 +37,7 @@ db.version(1).stores({
     cs: "id,code,csc.id,status,ts",
     risklevel: "id,status,ts",
     dc: "id,status,ts",
-    postion: "id,status,ts",
+    position: "id,status,ts",
     tc: "id,status,ts",
     ppe: "id,status,ts",
 });
@@ -147,9 +147,11 @@ const transEITsToFrontend = async (eits) => {
 
 //本地数据库表定义
 export const docTable = new Map([
-    ["person", { description: "人员档案", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
-    /*  ["department", { description: "部门档案", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],     
-     ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
+    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
+    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
+
+    /* ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
      ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
@@ -288,6 +290,7 @@ export const InitDocCache = async (docName) => {
 };
 // Get Local Master Data Cache
 export const GetLocalCache = async (archive) => {
+    console.log("archive:",archive)
     return await db[archive].toArray();
 };
 //anyof获取档案缓存

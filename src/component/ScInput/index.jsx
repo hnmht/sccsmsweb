@@ -41,7 +41,7 @@ import ScImpageUpload from "./ScImageUpload/ScImageUpload"; //903 图像文件�
 
 const ScInput = (props) => {
     const {
-        dataType, //数据类型   
+        dataType
     } = props;
     switch (dataType) {
         case 101:

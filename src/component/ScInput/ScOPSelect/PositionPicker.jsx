@@ -8,15 +8,16 @@ import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 
-const docName = "operatingpost";
+const docName = "position";
 
-const OpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
+const PositionPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
     const [ops, setOps] = useState([]);
 
     //组件加载时加载本地档案
     useEffect(() => {
         async function reqLocalOps() {
             const localOps = await GetLocalCache(docName);
+            console.log("localOps:",localOps);
             setOps(localOps);
         }
         reqLocalOps();
@@ -26,9 +27,9 @@ const OpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, o
     const handleRefreshOps = async () => {
         //向服务器请求数据
         await InitDocCache(docName);
-        let newUdcs = await GetLocalCache(docName);
+        let newPosition = await GetLocalCache(docName);
         //刷新
-        setOps(newUdcs);
+        setOps(newPosition);
     };
 
     return (
@@ -51,4 +52,4 @@ const OpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, o
     );
 };
 
-export default OpPicker;
+export default PositionPicker;

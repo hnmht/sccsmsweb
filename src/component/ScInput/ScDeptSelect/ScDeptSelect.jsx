@@ -10,13 +10,15 @@ import {
 } from "@mui/material";
 import { DeptIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import DeptPicker from "./DeptPicker";
+import { useTranslation } from "react-i18next";
 const zeroValue = { id: 0, code: "", name: "", fatherid: 0, leader: { id: 0, code: "", name: "" }, description: "", status: 0 };
-// 520
+// 520 Department select component
 const ScDeptSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [currentDept, setCurrentDept] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const { t } = useTranslation();
 
     useEffect(() => {
         setCurrentDept(initValue);
@@ -44,13 +46,12 @@ const ScDeptSelect = memo((props) => {
     };
     //检查部门值
     const handleOnBlur = async (doc = currentDept) => {
-        // console.log("触发onBlur事件,currentDept:",currentDept);
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (doc.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(doc);
         }
@@ -76,7 +77,7 @@ const ScDeptSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -86,7 +87,7 @@ const ScDeptSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={isEdit ? placeholder : ""}
+                    placeholder={isEdit ? t(placeholder) : ""}
                     value={currentDept.name}
                     error={errInfo.isErr}
                     InputProps={{
@@ -97,14 +98,14 @@ const ScDeptSelect = memo((props) => {
                                     : null
                                 }
                                 {currentDept.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small"><ClearIcon fontSize="small" /></IconButton>
                                         </span>
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择部门" placement="top" >
+                                <Tooltip title={t("choose")} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <DeptIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -120,13 +121,13 @@ const ScDeptSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={isEdit ? placeholder : ""}
+                    placeholder={isEdit ? t(placeholder) : ""}
                     value={currentDept.name}
                     error={errInfo.isErr}
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {currentDept.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small"><ClearIcon fontSize="small" /></IconButton>
                                     </span>
@@ -134,10 +135,10 @@ const ScDeptSelect = memo((props) => {
                                 : null
                             }
                             {errInfo.isErr
-                                ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择部门" placement="top" >
+                            <Tooltip title={t("choose")} placement="top" >
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                         <DeptIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -165,9 +166,5 @@ const ScDeptSelect = memo((props) => {
         </>
     );
 });
-
 export default ScDeptSelect;
 
-ScDeptSelect.defaultProps = {
-    initValue: zeroValue,
-};

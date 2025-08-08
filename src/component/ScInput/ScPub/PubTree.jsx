@@ -11,12 +11,10 @@ import {
 import { ExpandMoreIcon,ExpandLessIcon,CheckIcon } from "../../PubIcon/PubIcon";
 import { toTree } from "../../../utils/tree";
 
-function PubTree({ docName, isDisplayAll, oriDocs, onDocClick, selectDocIDs, onDocDoubleClick,isEdit }) {   
-
+function PubTree({ docName, isDisplayAll, oriDocs, onDocClick, selectDocIDs, onDocDoubleClick,isEdit }) { 
     const [openAll, setOpenAll] = useState(true);
-
     const docTree = toTree(oriDocs, 0);
-
+    
     const handleClickItem = (item, event, type) => {//type 0 child 1 parent 3 all
         switch (event.detail) {
             case 1: { //单击

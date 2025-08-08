@@ -7,7 +7,7 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import EditOperatingPost from "./editOP";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
-import { reqGetOPList,reqDeleteOP,reqDeleteOPs } from "../../../api/operatingPost";
+import { reqGetOPList,reqDeleteOP,reqDeleteOPs } from "../../../api/position";
 import { InitDocCache } from "../../../storage/db/db";
 
 const  OperatingPost = () => {
