@@ -4,7 +4,6 @@ import { spacing } from "@mui/system";
 import styled from "@emotion/styled";
 import { useSelector } from "react-redux";
 import { green, red } from "@mui/material/colors";
-import { message } from "mui-message"
 import dayjs from "../../../utils/myDayjs";
 import { cloneDeep } from "lodash";
 
@@ -33,11 +32,10 @@ function Home() {
         async function initData() {
             const res = await reqGetDashboardData({ startdate: interval.startDate, enddate: interval.endDate });
             let newData = undefined;
-            if (res.data.status === 0) {
-                newData = res.data.data;
-            } else {
-                message.error("请求数据错误:" + res.data.statusMsg);
+            if (!res.status) {
+                return
             }
+            newData = res.data.data;
             setData(newData);
         }
         initData();

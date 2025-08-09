@@ -31,8 +31,8 @@ export const getAppInfo = async () => {
     let newInfo = undefined;
     if (res.data.status === 0) {
         newInfo = res.data.data;
-    }   
-    store.dispatch(setAppinfo(newInfo)); 
+    }
+    store.dispatch(setAppinfo(newInfo));
 }
 
 

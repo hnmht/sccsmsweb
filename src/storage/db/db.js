@@ -24,7 +24,7 @@ const db = new Dexie('sceneDb');
 
 db.version(1).stores({
     dbinfo: "infoname",
-    tsinfo: "docname",
+    tsinfo: "docname,ts",
     department: "id,status,ts",
     person: "id,deptID,positionID,status,ts",
     udc: "id,status,ts",
@@ -208,7 +208,7 @@ export const initLocalDb = async () => {
     }
 
     //请求所有本地缓存
-    await reqAllDocCache(); //暂时不用,待基本档案完成后再做
+    await reqAllDocCache();
 };
 //清理所有本地缓存
 export const clearAllDocCache = async () => {
@@ -222,58 +222,63 @@ export const reqAllDocCache = async () => {
         await InitDocCache(key);
     };
 }
-//清理本地缓存
+// Clear front-end  local cache
 export const clearLocalDb = async (docName) => {
-    //清理数据库表内容
+    // Clear all data from the table
     await db[docName].clear()
-    //清理tsinfo中的ts内容
+    // Delete record in tsinfo table
     await db["tsinfo"].delete(docName);
 };
-// 向服务器请求档案缓存
+// Get Archive list from server for front-end cache
 export const InitDocCache = async (docName) => {
     // Get Master Data latest TimeStamp
     const latestTsRes = await db.tsinfo.where("docname").equals(docName).toArray();
-    // 获取本地数据库表定义
+    // Get Local database table detail
     const docInfo = docTable.get(docName);
-    // 获取档案列表
-    if (latestTsRes.length === 0) { //如果tsinfo表中没有档案的ts
+    // Get Archive list from server
+    if (latestTsRes.length === 0) {
+        // If there are no records in the tsinfo table,
+        // this means that all records need to be retrieved
         const res = await docInfo.reqAllFunc(false);
         if (res.status) {
             const latestTs = res.data[0].ts;
             const itemAll = await docInfo.transToFrontFunc(res.data);
-            //存储最新ts                        
+            // Update the tsinfo table                         
             db.tsinfo.add({ docname: docName, ts: latestTs })
                 .then(res => {
-                    console.log("存储" + docInfo.description + "最新ts成功:", res);
+                    console.log("Update " + docInfo.description + " latest Ts successfull.");
                 })
                 .catch((err) => {
-                    console.error("存储" + docInfo.description + "最新ts失败:", err);
+                    console.error("Update " + docInfo.description + " latest Ts failed:", err);
                 })
             db[docName].bulkAdd(itemAll);
             return
         }
     } else {
-        //获取最新档案列表        
+        // If there are records in the tsinfo table,
+        // this means onle the latest changed data needs to be retrieved.        
         const queryTs = latestTsRes[0].ts;
+        console.log("queryTs:", queryTs);
         const cacheRes = await docInfo.reqCacheFunc({ queryTs: queryTs }, false);
         if (cacheRes.status) {
             const docCache = cacheRes.data;
             if (docCache.resultNumber > 0) {
+                // The most recently deleted data.
                 if (docCache.delItems !== null) {
                     let keys = [];
                     docCache.delItems.forEach(item => {
                         keys.push(item.id);
                     });
-                    //删除档案
+                    // Delete archive
                     db[docName].bulkDelete(keys);
                 }
-                //如果存在新增档案
+                // The most recently added data.
                 if (docCache.newItems !== null) {
                     let newItems = await docInfo.transToFrontFunc(docCache.newItems);
                     db[docName].bulkAdd(newItems);
                 }
 
-                //如果存在待更新档案
+                // The most recently modified data.
                 if (docCache.updateItems !== null) {
                     let transUpdateItems = await docInfo.transToFrontFunc(docCache.updateItems);
                     transUpdateItems.forEach(item => {
@@ -281,16 +286,15 @@ export const InitDocCache = async (docName) => {
                     })
                 }
             }
-            //更新最新ts
-            db.tsinfo.update(docName, { ts: docCache.resultts });
+            // update the tsinfo table
+            db.tsinfo.update(docName, { ts: docCache.resultTs });
         } else {
-            console.error("获取" + docInfo.description + "缓存失败:", cacheRes.data.statusMsg);
+            console.error("Get latest " + docInfo.description + " cache failed:", cacheRes.msg);
         }
     }
 };
 // Get Local Master Data Cache
 export const GetLocalCache = async (archive) => {
-    console.log("archive:",archive)
     return await db[archive].toArray();
 };
 //anyof获取档案缓存

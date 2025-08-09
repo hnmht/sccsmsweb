@@ -29,16 +29,17 @@ const User = () => {
         }
         getData();
     }, []);
-    //获取用户列表
+    // Get user list
     const handleGetUsers = async () => {
         const resp = await reqGetUsers();
-        if (resp.status) {
-            setRows(resp.data);
-        } else {
-            message.error(resp.msg);
+        let newRows = [];
+        if (!resp.status) {
+            return
         }
+        newRows = resp.data;
+        setRows(newRows);
     };
-    //点击增加按钮
+    // Actions after click the add button in the table header
     const handleAddUser = () => {
         setDiagStatus({
             currentUser: undefined,
@@ -48,7 +49,7 @@ const User = () => {
         });
     };
 
-    //增加用户对话框点击确定按钮
+    // Actions after click the ok button in the dialog
     const handelAddUserOk = () => {
         setDiagStatus({
             currentUser: undefined,
@@ -56,11 +57,11 @@ const User = () => {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求用户列表数据
+        // Get user list
         handleGetUsers();
     };
 
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentUser: undefined,
@@ -70,16 +71,14 @@ const User = () => {
         });
     };
 
-    //delMultipleAction 多选删除动作
+    // Action after click the batch delete button in the table header
     const handleDelMultipleAction = async (users) => {
         const delMultipleRes = await reqDeleteUsers(users);
-        if (delMultipleRes.data.status === 0) {
-            message.info("批量删除用户成功");
-            handleGetUsers();
-        } else {
-            message.error(delMultipleRes.data.statusMsg)
-        }
+        // if (!delMultipleRes.status) {
+        //     return
+        // }
         await InitDocCache("person");
+        handleGetUsers();
     };
     //rowCopyAdd 复制新增动作
     const handelCopyAddUser = (item) => {

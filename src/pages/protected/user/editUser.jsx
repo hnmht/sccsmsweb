@@ -24,7 +24,7 @@ import { InitDocCache } from '../../../storage/db/db';
 import { checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
 const initRoles = [{
-    id: 10001, name: "public", alluserflag: 1, systemflag: 1, description: "系统预置角色"
+    id: 10001, name: "public", alluserflag: 1, systemflag: 1, description: "System default"
 }];
 
 // General initialization data
@@ -75,15 +75,15 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
         } else { // Edit
             if (isModify) {
                 newUser = cloneDeep(oriUser);
-                newUser.createDate = DateTimeFormat(newRole.createDate, "LLL");
+                newUser.createDate = DateTimeFormat(newUser.createDate, "LLL");
                 newUser.modifier = person;
-                newUser.ModifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
+                newUser.modifyDate = DateTimeFormat(newUser.modifyDate, "LLL");
                 newUser.password = "";
                 newUser.confirmPassword = "";
             } else {// View Detail
                 newUser = cloneDeep(oriUser);
-                newUser.createdate = DateTimeFormat(newRole.createDate, "LLL");
-                newUser.ModifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
+                newUser.createdate = DateTimeFormat(newUser.createDate, "LLL");
+                newUser.modifyDate = DateTimeFormat(newUser.modifyDate, "LLL");
             }
         }
     }
@@ -172,26 +172,24 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         //删除数据中的confirmPassword内容
         delete thisUser.confirmPassword;
 
-        if (isModify) { //修改用户
-            const resEdit = await reqEditUser(thisUser);
-            if (resEdit.data.status === 0) {
-                message.success("修改用户'" + thisUser.name + "'成功");
+        if (isModify) { // Edit user
+            const resEdit = await reqEditUser(thisUser);        
+            if (resEdit.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
             } else {
-                message.error("修改用户'" + thisUser.name + "'失败:" + resEdit.data.statusMsg);
+                message.error(t("modifyFailed") + resEdit.msg);                  
             }
-        } else { //新增用户
+        } else { // Add user
             const resAdd = await reqAddUser(thisUser);
-            console.log("thisUser:",thisUser);
-            console.log("resAdd:",resAdd);
             if (resAdd.status) {
-                message.success("增加用户'" + thisUser.name + "'成功");
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("增加用户'" + thisUser.name + "'失败:" + resAdd.msg);
+            } else {               
+                message.error(t("addFailed") + resAdd.msg);             
             }
         }
-        //更新缓存
+        // Get latest person master data for front-end cache
         await InitDocCache("person");
     }
 
