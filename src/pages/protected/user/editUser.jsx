@@ -107,19 +107,19 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         }
 
     }, [isOpen, oriUser, isNew, isModify]);
-    //sc组件获取内容后传入
+    // Data processing actions after data is passed into the ScInput components 
     const handleGetValue = useCallback((value, itemkey, fieldIndex, rowIndex, errMsg) => {
         if (currentUser === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新errors
+        // Referesh errors
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的用户信息
+        // Update fields
         setCurrentUser((prevState) => {
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
@@ -127,7 +127,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
         });
     }, [currentUser, isOpen, isEdit]);
 
-    //检验密码是否一致
+    // Check if the passwords match.
     const handleTestConfirmPassword = (value) => {
         let err = { isErr: false, msg: "" };
         if (value !== currentUser.password) {

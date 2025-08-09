@@ -74,13 +74,15 @@ const User = () => {
     // Action after click the batch delete button in the table header
     const handleDelMultipleAction = async (users) => {
         const delMultipleRes = await reqDeleteUsers(users);
-        // if (!delMultipleRes.status) {
-        //     return
-        // }
+        if (delMultipleRes.status) {
+            message.success(t("batchDeleteSuccessful"));            
+        } else {
+            message.error(t("batchDeletefailed")+ delMultipleRes.msg);
+        }
         await InitDocCache("person");
         handleGetUsers();
     };
-    //rowCopyAdd 复制新增动作
+    // Actions after click the copy add button in the table body.
     const handelCopyAddUser = (item) => {
         setDiagStatus({
             currentUser: item,
@@ -89,7 +91,7 @@ const User = () => {
             isModify: false
         });
     }
-    //RowEdit 行编辑动作
+    // Actions after click the edit button in the table body.
     const handleUserEdit = (item) => {
         setDiagStatus({
             currentUser: item,
@@ -98,19 +100,19 @@ const User = () => {
             isModify: true
         });
     }
-    //RowDelete 行删除动作
+    // Actions after click the delete button in the table body.
     const handleUserDelete = async (item) => {
         const delRes = await reqDeleteUser(item);
-        if (delRes.data.status === 0) {
-            message.success("删除用户成功");
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
             handleGetUsers();
         } else {
-            message.error(delRes.data.statusMsg)
+            message.error(t("delFailed") + delRes.msg);
         }
-        //更新本地缓存
+        // Get latest front-end cache
         await InitDocCache("person");
     }
-    //RowViewDetail 行查看详情
+    // Actions after click the view button in the table body.
     const handleUserDetail = (item) => {
         setDiagStatus({
             currentUser: item,

@@ -15,12 +15,12 @@ import PositionPicker from "./PositionPicker";
 const zeroValue = { id: 0, name: "", description: "", status: 0 };
 
 //610 Position
-const ScOpSelect = memo((props) => {
+const ScPositionSelect = memo((props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         setSelectItem(initValue);
@@ -31,7 +31,7 @@ const ScOpSelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //向父组件传递数据
+    // Transmit data to parnent component
     const handleTransfer = async (item = selectItem) => {
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
@@ -45,32 +45,32 @@ const ScOpSelect = memo((props) => {
         }
         pickDone(item, itemKey, positionID, rowIndex, err);
     };
-    //单击项目
+    // Actions after click item.
     const handleClickItem = (item) => {
         setSelectItem(item);
     };
-    //双击项目
+    // Actions after double click item
     const handleDoubleClickItem = (item) => {
         setSelectItem(item);
         handleTransfer(item);
         setDialogOpen(false);
     };
-    //点击清除按钮
+    // Actions after click the clear button
     const handleClear = () => {
         setSelectItem(zeroValue);
         handleTransfer(zeroValue);
     };
 
-    //关闭选择dialog
+    // Close dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
-    //点击确定按钮
+    // Actions after click the ok button 
     const handleOkClick = () => {
-        // 向父组件传递数据
+        // Transmit data to parnent component
         handleTransfer();
-        //关闭对话框
+        // Close dialog
         setDialogOpen(false);
     };
 
@@ -87,7 +87,7 @@ const ScOpSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     InputProps={{
@@ -98,7 +98,7 @@ const ScOpSelect = memo((props) => {
                                     : null
                                 }
                                 {selectItem.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -107,7 +107,7 @@ const ScOpSelect = memo((props) => {
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择岗位" placement="top" >
+                                <Tooltip title={t("choosePosition")} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <OperatingPostIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -171,4 +171,4 @@ const ScOpSelect = memo((props) => {
     );
 });
 
-export default ScOpSelect;
+export default ScPositionSelect;

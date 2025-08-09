@@ -78,7 +78,6 @@
     "isOperator":"Operator",
     "position":"Position",
     "department":"Department",
-
     "user":"User",
     "addUser":"Add User",
     "editUser":"Edit User",
@@ -98,6 +97,9 @@
     "mobileIncorrect":"The phone number is incorrect.",
     "emailIncorrect":"The Email is incorrect.",
     "chooseDept":"Choose Department",
+    "passwordsMustMatch":"Passwords must match.",
+    "choosePosition":"Choose position.",
+  
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

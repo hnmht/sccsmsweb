@@ -31,7 +31,7 @@ import ScSISelect from "./ScSISelect/ScSISelect"; // 570 现场档案单选组�
 import ScEITSelect from "./ScEITSelect/ScEITSelect"; //580 执行模板档案
 import ScRLSelect from "./ScRiskLevelSelect/ScRiskLevelSelect"; //590 风险等级单选组件
 import ScDCSelect from "./ScDcSelect/ScDCSelect"; //600 文档类别单选组件
-import ScOpSelect from "./ScOPSelect/ScOpSelect"; //610 岗位选择组件
+import ScPositionSelect from "./ScPositionSelect/ScPositionSelect"; //610 岗位选择组件
 import ScTcSelect from "./ScTCSelect/ScTcSelect"; //620 课程选择
 import ScLpSelect from "./ScLPSelect/ScLpSelect"; //630 劳保用品选择
 
@@ -101,7 +101,7 @@ const ScInput = (props) => {
         case 600:
             return <ScDCSelect {...props} />;
         case 610:
-            return <ScOpSelect {...props} />;
+            return <ScPositionSelect {...props} />;
         case 620:
             return <ScTcSelect {...props} />;
         case 630:

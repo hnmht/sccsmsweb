@@ -4,49 +4,49 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
-
 const docName = "position";
 
-const PositionPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
+const PositionPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [ops, setOps] = useState([]);
+    const { t } = useTranslation();
 
-    //组件加载时加载本地档案
+    // Get local cache when the component loads.
     useEffect(() => {
         async function reqLocalOps() {
             const localOps = await GetLocalCache(docName);
-            console.log("localOps:",localOps);
             setOps(localOps);
         }
         reqLocalOps();
-    },[]);
+    }, []);
 
-    //刷新
+    // Actions after Click refresh button
     const handleRefreshOps = async () => {
-        //向服务器请求数据
+        // Request data from server
         await InitDocCache(docName);
         let newPosition = await GetLocalCache(docName);
-        //刷新
+        // Refresh
         setOps(newPosition);
     };
 
     return (
         <>
-            <DialogTitle>选择岗位</DialogTitle>
+            <DialogTitle>{t("selectPosition")}</DialogTitle>
             <DocTable
                 columns={columns}
                 refreshAction={handleRefreshOps}
                 rows={ops}
-                docListTitle="选择岗位"
+                docListTitle={t("selectPosition")}
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );
