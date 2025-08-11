@@ -84,7 +84,9 @@ function AuthTree({ menus, isEdit, selectedOk }) {
         // Calculate the values of the selected and indeterminate fileds for child nodes 
         // and the current node
         if (item.selected && !item.indeterminate) {
-            //selected=true 并且 isIndeter = false 说明下级节点全部被选择，则将下级全部取消选择
+            // selected=true && isIndeter=false 
+            // That means all lower-level nodes have been selected,
+            // so they will all be deselected.            
             childs.forEach(child => {
                 for (let i = 0; i < newAuths.length; i++) {
                     if (child.id === newAuths[i].id) {
@@ -94,7 +96,8 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     }
                 }
             })
-            // 本节点取消选择：设置本节点selected = false 和 isIndeter =false
+            // This node should also be deselected,
+            // set selected=false and isIndeter=false.
             for (let index = 0; index < newAuths.length; index++) {
                 if (item.id === newAuths[index].id) {
                     newAuths[index].selected = false;
@@ -103,7 +106,10 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                 }
             }
 
-        } else if (!item.selected && !item.indeterminate) {//selected=true并且 isIndeter = false 说明下级节点全部未被选择，则将下级全部选择
+        } else if (!item.selected && !item.indeterminate) {
+            // selected=false and isIndeter=false 
+            // That means all lower-level nodes have been deselected,
+            // so they will all be selected.
             childs.forEach(child => {
                 for (let i = 0; i < newAuths.length; i++) {
                     if (child.id === newAuths[i].id) {
@@ -113,7 +119,8 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     }
                 }
             })
-            //设置本节点selected = true 和 isIndeter =false
+            // This node should also be selected,
+            // set selected=true and indeterminate=false
             for (let index = 0; index < newAuths.length; index++) {
                 if (item.id === newAuths[index].id) {
                     newAuths[index].selected = true;
@@ -121,7 +128,10 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     break
                 }
             }
-        } else if (item.selected && item.indeterminate) {  //selected=true 并且 isIndeter = true 说明下级部分被选择，则将下级节全部取消选择
+        } else if (item.selected && item.indeterminate) { 
+            // selected=true && isIndeter=true 
+            // That means some of the lower-level nodes have been selected,
+            // so all of them should be deselected.
             childs.forEach(child => {
                 for (let i = 0; i < newAuths.length; i++) {
                     if (child.id === newAuths[i].id) {
@@ -131,7 +141,8 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     }
                 }
             })
-            //设置本节点selected = false 和 isIndeter =false
+            // This node should also be deselected,
+            // set selected=true and indeterminate=false
             for (let index = 0; index < newAuths.length; index++) {
                 if (item.id === newAuths[index].id) {
                     newAuths[index].selected = false;
@@ -141,11 +152,12 @@ function AuthTree({ menus, isEdit, selectedOk }) {
             }
         }
 
-        //2 查找处理该节点的所有父节点
+        // Find all parents node of the node
         let parents = findParents(newAuths, item.id);
-        //判断父节点的所有子节点是否全部选择,并更新父节点的selected,indeterminate
+        // Check if all child nodes of a parent node are selected 
+        // and update the parent node's selected and indeterminate fields.
         parents.forEach((parent) => {
-            //查找父节点的所有子节点
+            // Find all child node of the parents node
             const childrens = findChildrens(newAuths, parent.id);
             let selectedNum = 0;
             let isSelected = false;
@@ -155,7 +167,8 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     selectedNum++
                 }
             })
-            //根据子节点选择情况判定父节点的selected值和indecter值
+            // Based on the status of the child nodes,
+            // update the selected and isIndeter field value
             if (selectedNum === 0) {
                 isSelected = false;
                 isIndeter = false;
@@ -166,7 +179,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                 isSelected = true;
                 isIndeter = false;
             }
-            //更新newAuths中的父节点
+            // Update node's selected and indeterminate fieldvalue in newAuths Array 
             for (let i = 1; i < newAuths.length; i++) {
                 if (newAuths[i].id === parent.id) {
                     newAuths[i].selected = isSelected;
@@ -176,7 +189,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
             }
         })
         selectedOk(newAuths);
-        //更新auths
+        // Update auths
         setAuths(newAuths);
 
     };
@@ -215,7 +228,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
             selectAll();
         }
     };
-    //全选按钮Checked值
+    // Calculate the checked value for the "Select All" checkbox component.
     const allSelectedChecked = () => {
         let selectedNum = 0;
         auths.forEach(auth => {
@@ -229,7 +242,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
             return true
         }
     };
-    //全选按钮indeterminate值
+    // Calculate the indeterminate value for the "Select All" checkbox component.
     const allSelectedIndeterminate = () => {
         let selectedNum = 0;
         auths.forEach(auth => {
