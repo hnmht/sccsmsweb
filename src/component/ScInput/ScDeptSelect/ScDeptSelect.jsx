@@ -30,21 +30,21 @@ const ScDeptSelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //对话框关闭
+    // Clost dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleOnBlur();
     };
-    //对话框点击取消按钮
+    // Actions after click the cancel button in dialog.
     const handleDiagCancel = () => {
         setDialogOpen(false);
     };
-    //对话框点击确定按钮
+    // Actions after click the ok button in dialog.
     const handleDiagOk = () => {
         setDialogOpen(false);
         handleOnBlur();
     };
-    //检查部门值
+    // Transmit data to the parent component.
     const handleOnBlur = async (doc = currentDept) => {
         if (!isEdit) {
             return
@@ -58,18 +58,18 @@ const ScDeptSelect = memo((props) => {
         setErrInfo(err);
         pickDone(doc, itemKey, positionID, rowIndex, err);
     };
-    //点击清除按钮
+    // Actions after click the clear button.
     const handleClear = () => {
         setCurrentDept(zeroValue);
         handleOnBlur(zeroValue);
     }
-    //部门列表单击
-    const handleDeptClick = (item, type) => { //type:0 没有下级部门 1 有下级部门
+    // Actions after click item.
+    const handleDeptClick = (item, type) => { //type:0 No subordinate department 1 subordinate departments
         setCurrentDept(item);
         handleOnBlur(item);
     };
-    //部门列表双击
-    const handleDeptDoubleClick = (item, type) => {//type:0 没有下级部门 1 有下级部门
+    // Actions after double click item.
+    const handleDeptDoubleClick = (item, type) => {//type:0 No subordinate department 1 subordinate departments
         setCurrentDept(item);
         handleOnBlur(item);
         setDialogOpen(false);

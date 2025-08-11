@@ -48,7 +48,7 @@ export function findParents(arr1, id1) {
         let fatherId = -1;
         for (let index = 0; index < arr.length; index++) {
             if (arr[index].id === id) {
-                fatherId = arr[index].fatherid;
+                fatherId = arr[index].fatherID;
                 break
             }
         }
@@ -76,7 +76,7 @@ export function findChildrens(arr1, id1) {
     let forFn = function (arr, id) {
         //查找该节点的所有子节点
         for (let i = 1; i < arr.length; i++) {
-            if (arr[i].fatherid === id) {
+            if (arr[i].fatherID === id) {
                 childrens.push(arr[i]);
                 forFn(arr, arr[i].id);
             }

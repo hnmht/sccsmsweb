@@ -17,7 +17,6 @@ import DocTable from "../../DocTable/DocTable";
 import { treeToArr } from "../../../utils/tree";
 import { columns } from "./tableConstructor";
 
-
 const personName = "person";
 const deptName = "department";
 

@@ -97,7 +97,10 @@
     "emailIncorrect": "电子邮件格式错误",
     "chooseDept": "选择部门",
     "passwordsMustMatch": "密码必须一致",
-    "choosePosition": "选择岗位",
+    "selectPosition": "选择岗位",
+    "roleList": "角色列表",
+    "menuList": "菜单列表",
+    "allMenu": "所有菜单",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

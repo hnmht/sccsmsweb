@@ -131,7 +131,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
     const handleTestConfirmPassword = (value) => {
         let err = { isErr: false, msg: "" };
         if (value !== currentUser.password) {
-            err = { isErr: true, msg: "必须和密码一致" };
+            err = { isErr: true, msg: "passwordsMustMatch" };
         }
         return err;
     };

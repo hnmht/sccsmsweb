@@ -17,7 +17,7 @@ const docName = "department";
 const DeptPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [depts, setDepts] = useState([]);
     const { t } = useTranslation();
-
+    // Get local cache when the component loads.
     useEffect(() => {
         async function getLocalDepts() {
             const newDepts = await GetLocalCache(docName);
@@ -26,13 +26,13 @@ const DeptPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction,
         getLocalDepts();
     }, []);
 
-    //将当前选择部门转换为部门id数组
+    // Convert the selected array to ID array
     const transforDeptIDs = (dept) => {
         let selectDeptIds = [];
         selectDeptIds.push(dept.id);
         return selectDeptIds;
     };
-    //刷新部门
+    // Actions after click refresh button
     const handleDeptRefresh = async () => {
         await InitDocCache(docName);
         const newDepts = await GetLocalCache(docName);

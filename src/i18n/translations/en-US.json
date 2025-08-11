@@ -98,8 +98,11 @@
     "emailIncorrect":"The Email is incorrect.",
     "chooseDept":"Choose Department",
     "passwordsMustMatch":"Passwords must match.",
-    "choosePosition":"Choose position.",
-  
+    "selectPosition":"Select Position",
+
+    "roleList":"Role List",
+    "menuList":"Menu List", 
+    "allMenu":"All Menu",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

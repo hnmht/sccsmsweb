@@ -5,37 +5,45 @@ import {
     Stack,
 } from "@mui/material";
 import { message } from "mui-message";
-
-import { Divider,Button } from "../../../../component/ScMui/ScMui";
-import PageTitle from "../../../../component/PageTitle/PageTitle";
+import { useTranslation } from "react-i18next";
+import { Divider, Button } from "../../../component/ScMui/ScMui";
+import PageTitle from "../../../component/PageTitle/PageTitle";
 import RoleList from "./roleList";
 import AuthTree from "./authTree";
 
-import { reqGetRoles, reqGetRoleAuths,reqUpdateRoleAuths } from "../../../../api/role";
-import { reqMenu } from "../../../../api/menu";
+import { reqGetRoles, reqGetRoleAuths, reqUpdateRoleAuths } from "../../../api/role";
+import { reqMenu } from "../../../api/menu";
 import { cloneDeep } from "lodash";
 
+// Assign menu permissions to role
 function PermissionAssignment() {
-    const [roles, setRoles] = useState([]); //角色列表
-    const [menus, setMenus] = useState([]); //权限列表
-    const [currentRole, setCurrentRole] = useState(undefined) //当前角色
-    const [auths, setAuths] = useState([]); //选择完成的权限列表
+    const [roles, setRoles] = useState([]); // Role list
+    const [menus, setMenus] = useState([]); // All menus
+    const [currentRole, setCurrentRole] = useState(undefined) // Current role
+    const [auths, setAuths] = useState([]); 
     const [roleAuths, setRoleAuths] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
+    const {t} = useTranslation();
 
     useEffect(() => {
         async function reqRoles() {
+            let newRoles = [];
+            let newMenus = [];
             const resRoles = await reqGetRoles();
+            if (resRoles.status) {
+                newRoles = resRoles.data;
+            }
             const resMenus = await reqMenu();
-            const menus = resMenus.data.data;
-            setRoles(resRoles.data.data);
-            setMenus(menus);
+            if (resMenus.status) {
+                newMenus = resMenus.data;
+            }
+            setRoles(newRoles);
+            setMenus(newMenus);
         }
         reqRoles();
-        // eslint-disable-next-line 
     }, []);
 
-    //权限列表选择完成后
+    // Actions after auths selected
     const handelAuthsSelectedOk = (auths) => {
         let newAuths = [];
         auths.forEach(auth => {
@@ -43,23 +51,20 @@ function PermissionAssignment() {
                 newAuths.push(auth);
             }
         })
-        // console.log("handelAuthsSelectedOk newAuths:", newAuths);
         setAuths(newAuths);
     };
 
 
-    //角色列表选择后
-    const handleRoleSelectOk = async (role) => {
-        // console.log("handleRoleSelectOk role:", role);
-        //获取当前角色的权限
+    // Actions after select the role.
+    const handleRoleSelectOk = async (role) => {    
+        // Get permissions list for the currently seleted role
         const roleAuthsRes = await reqGetRoleAuths(role);
-       
         let roleAuths = [];
-        if (roleAuthsRes.data.data !== null) {
-            roleAuths = roleAuthsRes.data.data;
+        if (roleAuthsRes.status) {
+            roleAuths = roleAuthsRes.data;
         }
-        // console.log("当前角色的权限:", roleAuths);
-        //将角色权限列表和所有权限列表混合 
+
+        // Update all permission list display data based on the permission list 
         let newMenus = cloneDeep(menus);
         if (roleAuths.length > 0) {
             roleAuths.forEach(auth => {
@@ -73,28 +78,30 @@ function PermissionAssignment() {
                 }
             })
         }
-        // console.log(newMenus);
+  
         setCurrentRole(role);
         setRoleAuths(newMenus);
     };
 
-    //点击保存按钮后
-    const handleSave = async() => {
-        //向服务器提交更新列表
-        const res = await reqUpdateRoleAuths({role:currentRole,auths:auths})
-        // console.log("handleSave res:",res);
-        if (res.data.status === 0) {
-            message.success("角色权限修改成功!");
+    // Actions after click save button in the head
+    const handleSave = async () => {
+        // Request permission changes from the server
+        const res = await reqUpdateRoleAuths({ role: currentRole, auths: auths });   
+        if (res.status) {
+            message.success(t("modifySuccessful"));
         } else {
-            message.error(res.data.statusMsg);
+            message.error(res.msg);
         }
-        //更改是否编辑状态
+        // Modify the current interface to be non-editable
         setIsEdit(false);
-        //刷新最新角色列表,否则会出现无法再次修改的错误
+        // Refresh role list
+        let newRoles = [];
         const resRoles = await reqGetRoles();
-        const newRoles = resRoles.data.data
+        if (resRoles.status) {
+           newRoles = resRoles.data;
+        } 
         setRoles(newRoles);
-         //查找当前角色在最新角色列表中的数据（更新currentRole的ts）
+        // Find currentRole in the new role list
         let newCurrentRole = undefined;
         newRoles.forEach(role => {
             if (role.id === currentRole.id) {
@@ -102,27 +109,27 @@ function PermissionAssignment() {
             }
         });
         setCurrentRole(newCurrentRole);
-        //刷新当前用户权限
+        // Refresh current role permission
         handleRoleSelectOk(newCurrentRole);
     };
-    //点击取消按钮后
+    // Action after click the cancel button
     const handleCancel = () => {
-        //将是否编辑状态设置为否
+        // Modify the current interface to be non-editable
         setIsEdit(false);
-        //刷新当前用户权限
+        // Refresh current role permission
         handleRoleSelectOk(currentRole);
     }
 
     return (
         <React.Fragment>
-            <PageTitle pageName="权限分配" displayHelp={true} helpUrl="/helps/permission" />
+            <PageTitle pageName={t("MenuPA")} displayHelp={false} />
             <Divider my={1} />
             <Paper sx={{ width: '100%', overflow: 'hidden', height: "100%", bgcolor: "background.default" }}>
                 <Stack
                     direction={"row"}
                     justifyContent="right"
                     alignItems={"center"}
-                    sx={{ p: 1, bgcolor: "background.default",height:55 }}
+                    sx={{ p: 1, bgcolor: "background.default", height: 55 }}
                 >
                     <Button
                         variant="contained"
@@ -130,7 +137,7 @@ function PermissionAssignment() {
                         disabled={currentRole === undefined || (currentRole === undefined && !isEdit) || isEdit}
                         onClick={() => setIsEdit(true)}
                     >
-                        修改
+                        {t("edit")}
                     </Button>
                     <Button
                         variant="contained"
@@ -138,7 +145,7 @@ function PermissionAssignment() {
                         m={1}
                         onClick={handleSave}
                     >
-                        保存
+                        {t("save")}
                     </Button>
                     <Button
                         variant="contained"
@@ -146,7 +153,7 @@ function PermissionAssignment() {
                         disabled={!isEdit}
                         onClick={handleCancel}
                     >
-                        取消
+                        {t("cancel")}
                     </Button>
                 </Stack>
                 <Grid container spacing={2}>

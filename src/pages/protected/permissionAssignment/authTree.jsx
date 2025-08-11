@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     List,
     ListSubheader,
@@ -10,23 +10,26 @@ import {
     Collapse,
     IconButton,
 } from "@mui/material";
-import { ExpandLessIcon,  ExpandMoreIcon} from "../../../../component/PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
+import { ExpandLessIcon,  ExpandMoreIcon} from "../../../component/PubIcon/PubIcon";
 import { cloneDeep } from "lodash";
-import { toTree, findChildrens, findParents } from "../../../../utils/tree";
-import useContentHeight from "../../../../hooks/useContentHeight";
+import { toTree, findChildrens, findParents } from "../../../utils/tree";
+import useContentHeight from "../../../hooks/useContentHeight";
+
 
 function AuthTree({ menus, isEdit, selectedOk }) {
     const [auths, setAuths] = useState([]);
     const [openAll, setOpenAll] = useState(true);
     const contentHeight = useContentHeight();
+    const {t} = useTranslation();
     useEffect(() => {
         setAuths(menus);
     }, [menus]);
 
-    //选择子项目后的处理
+    // Actions after select child item
     const handleChildItemClick = (item, event) => {
         let newMenus = [];
-        //修改被选择项目的selected元素
+        // Modify the selected field of the chosen item
         auths.forEach((auth, index) => {
             if (item.id === auth.id) {
                 auth.selected = !auth.selected;
@@ -35,13 +38,12 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                 newMenus.push(auth);
             }
         })
-
-        //重新计算父节点的selected 和 indeterminate
-        //查找与当前项目有关的所有父节点
+        // Recalculate parent node status
+        // Find all parent nodes of the current item
         let parents = findParents(newMenus, item.id);
-        //判断父节点的所有子节点是否全部选择
+        // Calculate the status of all parents nodes
         parents.forEach((parent) => {
-            //查找父节点的所有子节点
+            // Find all children nodes of the parent node
             const childrens = findChildrens(newMenus, parent.id);
             let selectedNum = 0;
             let isSelected = false;
@@ -51,7 +53,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     selectedNum++
                 }
             })
-            //根据子节点选择情况判定父节点的selected值和indecter值
+            // Update parent node status based on child node status
             if (selectedNum === 0) {
                 isSelected = false;
                 isIndeter = false;
@@ -62,7 +64,6 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                 isSelected = true;
                 isIndeter = false;
             }
-            //更新newAuths中的父节点
             for (let i = 1; i < newMenus.length; i++) {
                 if (newMenus[i].id === parent.id) {
                     newMenus[i].selected = isSelected;
@@ -75,14 +76,13 @@ function AuthTree({ menus, isEdit, selectedOk }) {
         setAuths(newMenus);
     };
 
-    //选择父项目
+    // Actions after select parent item
     const handleParentItemClick = (item, event) => {
         let newAuths = cloneDeep(auths);
-        //1 查找处理该节点的所有子节点
-        //1.1 查找该节点的所有子节点
+        // Find all child nodes of the node
         let childs = findChildrens(newAuths, item.id);
-        //console.log("fatherItem:", item);
-        //1.2处理子节点和本节点的selected和isIndeter
+        // Calculate the values of the selected and indeterminate fileds for child nodes 
+        // and the current node
         if (item.selected && !item.indeterminate) {
             //selected=true 并且 isIndeter = false 说明下级节点全部被选择，则将下级全部取消选择
             childs.forEach(child => {
@@ -181,7 +181,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
 
     };
 
-    //全选
+    // Select All
     const selectAll = () => {
         const newAuths = cloneDeep(auths);
         newAuths.forEach(auth => {
@@ -192,8 +192,8 @@ function AuthTree({ menus, isEdit, selectedOk }) {
         setAuths(newAuths);
     };
 
-    //全消
-    const unSelectAll = () => {
+    // Deselect all
+    const DeselectAll = () => {
         const newAuths = cloneDeep(auths);
         newAuths.forEach(auth => {
             auth.selected = false;
@@ -203,15 +203,15 @@ function AuthTree({ menus, isEdit, selectedOk }) {
         setAuths(newAuths);
     };
 
-    //allselect button 点击
+    // Actions after click the select all button
     const handleAllClick = () => {
         const selected = allSelectedChecked();
         const indeter = allSelectedIndeterminate();
-        if (selected && indeter) { //部分选择
-            unSelectAll(); //全部取消选择
-        } else if (selected && !indeter) { //全部选择
-            unSelectAll(); //全部取消选择
-        } else if (!selected && !indeter) { //全部为空
+        if (selected && indeter) { 
+            DeselectAll(); 
+        } else if (selected && !indeter) { 
+            DeselectAll(); 
+        } else if (!selected && !indeter) {
             selectAll();
         }
     };
@@ -263,7 +263,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                             <ListItemIcon key={"parentitemicon" + item.id}>
                                 <Checkbox key={"parentcheckbox" + item.id} size="small" checked={item.selected} indeterminate={item.indeterminate} />
                             </ListItemIcon>
-                            <ListItemText key={"parentitemtext" + item.id} primary={item.title} />
+                            <ListItemText key={"parentitemtext" + item.id} primary={t(item.title)} />
                         </ListItemButton>
                     </ListItem>
                     <Collapse key={"collapse" + item.id} in={open} sx={{ p: 0, m: 0 }}>
@@ -275,7 +275,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                         <ListItemIcon key={"childitemicon" + item.id}>
                             <Checkbox key={"childcheckbox" + item.id} size="small" checked={item.selected} />
                         </ListItemIcon>
-                        <ListItemText key={"childitemtext" + item.id} primary={item.title} />
+                        <ListItemText key={"childitemtext" + item.id} primary={t(item.title)} />
                     </ListItemButton>
                 </ListItem>
         );
@@ -297,7 +297,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                 <ListSubheader component="div" id="nested-list-subheader"
                     sx={{ borderBottomStyle: "solid", borderBottomWidth: 1, borderBottomColor: "divider", fontWeight: "bold", fontSize: "1.125em", bgcolor: "background.paper" }}
                 >
-                    权限列表
+                    {t("menuList")}
                 </ListSubheader>
             }
             sx={{ width: "100%", height: contentHeight - 38, overflow: "auto", p: 0, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
@@ -313,7 +313,7 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                     <ListItemIcon key={"openAllItemicon"}>
                         <Checkbox key={"openAllItemCheckbox"} size="small" checked={allSelectedChecked()} indeterminate={allSelectedIndeterminate()} />
                     </ListItemIcon>
-                    <ListItemText key={"openAllItetext"} primary={"全部权限"} />
+                    <ListItemText key={"openAllItetext"} primary={t("allMenu")} />
                 </ListItemButton>
             </ListItem>
             <Collapse key="collapseAll" in={openAll} sx={{ p: 0, m: 0 }}>
