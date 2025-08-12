@@ -16,7 +16,6 @@ import { cloneDeep } from "lodash";
 import { toTree, findChildrens, findParents } from "../../../utils/tree";
 import useContentHeight from "../../../hooks/useContentHeight";
 
-
 function AuthTree({ menus, isEdit, selectedOk }) {
     const [auths, setAuths] = useState([]);
     const [openAll, setOpenAll] = useState(true);
@@ -334,7 +333,6 @@ function AuthTree({ menus, isEdit, selectedOk }) {
                 <RenderList data={toTree(auths, 0)} listKey={0} level={0} />
             </Collapse>
         </List>
-
     );
 }
 

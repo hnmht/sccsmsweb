@@ -15,13 +15,20 @@ dayjs.extend(weekday);
 dayjs.extend(quarterOfYear);
 dayjs.extend(customParseFormat);
 
-const DateTimeFormat = (date = new Date(), formats = "LL") => {
+const DateTimeFormat = (date = new Date(), formats = "LLL") => {
     const lang = i18n.language || "en-US";
     dayjs.locale(lang);
     return dayjs(date).format(formats);
 }
 
+const UnixTimeFormat = (unixSeconds,formats="LLL") => {
+    const lang = i18n.language || "en-US";
+    dayjs.locale(lang);
+    return dayjs.unix(unixSeconds).format(formats);
+}
+
 export {
     dayjs,
-    DateTimeFormat
+    DateTimeFormat,
+    UnixTimeFormat
 };

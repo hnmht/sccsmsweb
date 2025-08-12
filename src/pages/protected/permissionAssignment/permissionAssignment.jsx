@@ -89,9 +89,7 @@ function PermissionAssignment() {
         const res = await reqUpdateRoleAuths({ role: currentRole, auths: auths });   
         if (res.status) {
             message.success(t("modifySuccessful"));
-        } else {
-            message.error(res.msg);
-        }
+        } 
         // Modify the current interface to be non-editable
         setIsEdit(false);
         // Refresh role list

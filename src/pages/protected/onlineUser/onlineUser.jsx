@@ -1,40 +1,37 @@
 import { Fragment, useState, useEffect } from "react";
 import { message } from "mui-message";
 
-import { Divider } from "../../../../component/ScMui/ScMui";
-import DocList from "../../../../component/DocList/DocList";
-import PageTitle from "../../../../component/PageTitle/PageTitle";
-import { reqGetOnlineUsers,reqRemoveOnlineUser } from "../../../../api/onlineUser";
+import { Divider } from "../../../component/ScMui/ScMui";
+import DocList from "../../../component/DocList/DocList";
+import PageTitle from "../../../component/PageTitle/PageTitle";
+import { reqGetOnlineUsers, reqRemoveOnlineUser } from "../../../api/onlineUser";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
+import { useTranslation } from "react-i18next";
 
 const OnlineUser = () => {
     const [rows, setRows] = useState([]);
-
+    const { t } = useTranslation();
     useEffect(() => {
         async function getData() {
             handleGetOnlineUsers();
         }
         getData();
     }, []);
-    //获取在线用户列表
+    // Request the Online user list from the server.
     const handleGetOnlineUsers = async () => {
         const resp = await reqGetOnlineUsers();
         let newRows = [];
-        if (resp.data.status === 0) {
-            newRows=resp.data.data;
-        } else {
-            message.error(resp.data.statusMsg);
+        if (resp.status) {
+            newRows = resp.data;
         }
         setRows(newRows);
     };
 
-    //踢出在线用户
+    // Destory Online user login credentials .
     const handleKickOutUser = async (item) => {
         const delRes = await reqRemoveOnlineUser(item);
-        if (delRes.data.status === 0) {
-            message.success("销毁登录凭据" + item.id + "'成功");
-        } else {
-            message.error("销毁登录凭据'" + item.id + "'失败:" + delRes.data.statusMsg);
+        if (delRes.status) {
+            message.success("successful");
         }
         //刷新数据
         await handleGetOnlineUsers();
@@ -42,7 +39,7 @@ const OnlineUser = () => {
 
     return (
         <Fragment>
-            <PageTitle pageName="在线用户" displayHelp={false} />
+            <PageTitle pageName={t("MenuOU")} displayHelp={false} />
             <Divider my={2} />
             <DocList
                 columns={columns}
@@ -53,12 +50,11 @@ const OnlineUser = () => {
                 headAddVisible={false}
                 headDelMultipleVisible={false}
                 delMultipleDisabled={delMultipleDisabled}
-                docListTitle="在线用户列表"
+                docListTitle="onlineUser"
                 rowDelete={handleKickOutUser}
             />
         </Fragment>
     );
 };
-
 
 export default OnlineUser;

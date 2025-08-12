@@ -99,10 +99,18 @@
     "chooseDept":"Choose Department",
     "passwordsMustMatch":"Passwords must match.",
     "selectPosition":"Select Position",
-
     "roleList":"Role List",
     "menuList":"Menu List", 
     "allMenu":"All Menu",
+
+    "browser":"Browser",
+    "mobileDevice":"Mobile Device",
+    "destoryLoginCredential":"Destory login credentials.",
+    "clientType":"Client Type",
+    "fromIp":"Client IP",
+    "userCode":"User Code",
+    "userName":"User Name",
+    "expireTime":"Expiration Time",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
