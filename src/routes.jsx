@@ -194,11 +194,11 @@ const routes = [
                 element: <LpaWizard />
             },
             {
-                path: "/private/archive/department",
+                path: "/private/masterData/department",
                 element: <Department />
             },
             {
-                path: "/private/archive/operatingpost",
+                path: "/private/masterData/operatingpost",
                 element: <OperatingPost />
             },
             {

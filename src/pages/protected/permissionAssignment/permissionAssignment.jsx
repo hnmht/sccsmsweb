@@ -20,10 +20,10 @@ function PermissionAssignment() {
     const [roles, setRoles] = useState([]); // Role list
     const [menus, setMenus] = useState([]); // All menus
     const [currentRole, setCurrentRole] = useState(undefined) // Current role
-    const [auths, setAuths] = useState([]); 
+    const [auths, setAuths] = useState([]);
     const [roleAuths, setRoleAuths] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function reqRoles() {
@@ -56,7 +56,7 @@ function PermissionAssignment() {
 
 
     // Actions after select the role.
-    const handleRoleSelectOk = async (role) => {    
+    const handleRoleSelectOk = async (role) => {
         // Get permissions list for the currently seleted role
         const roleAuthsRes = await reqGetRoleAuths(role);
         let roleAuths = [];
@@ -78,7 +78,7 @@ function PermissionAssignment() {
                 }
             })
         }
-  
+
         setCurrentRole(role);
         setRoleAuths(newMenus);
     };
@@ -86,18 +86,18 @@ function PermissionAssignment() {
     // Actions after click save button in the head
     const handleSave = async () => {
         // Request permission changes from the server
-        const res = await reqUpdateRoleAuths({ role: currentRole, auths: auths });   
+        const res = await reqUpdateRoleAuths({ role: currentRole, auths: auths });
         if (res.status) {
             message.success(t("modifySuccessful"));
-        } 
+        }
         // Modify the current interface to be non-editable
         setIsEdit(false);
         // Refresh role list
         let newRoles = [];
         const resRoles = await reqGetRoles();
         if (resRoles.status) {
-           newRoles = resRoles.data;
-        } 
+            newRoles = resRoles.data;
+        }
         setRoles(newRoles);
         // Find currentRole in the new role list
         let newCurrentRole = undefined;

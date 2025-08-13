@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
     Dialog,
     Grid,
@@ -7,6 +7,8 @@ import {
     Tooltip,
     IconButton,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 import { RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import { reqGetDepts, reqDelDept, reqDeleteDepts } from "../../../api/department";
 
@@ -25,6 +27,7 @@ const Department = () => {
     const [depts, setDepts] = useState([]);
     const [simpDepts, setSimpDepts] = useState([]);
     const [selectedDeptIds, setSelectedDeptIds] = useState([]);
+    const { t } = useTranslation();
 
     const [diagStatus, setDiagStatus] = useState({
         currentDept: undefined,
@@ -38,39 +41,37 @@ const Department = () => {
 
     useEffect(() => {
         async function getData() {
-            //从本地缓存获取简化部门列表
+            // Get  department list from local cache
             await InitDocCache("department");
             let newSimpDepts = await GetLocalCache("department");
-            //获取全部Ids
+
+            // Get all department IDs
             let newSelectedIds = [];
             newSimpDepts.forEach(simpDept => {
                 newSelectedIds.push(simpDept.id);
             });
             setSimpDepts(newSimpDepts);
             setSelectedDeptIds(newSelectedIds);
-            //从服务器获取最新的部门列表            
+            // Request latest Department list from server            
             handleGetDepts();
         }
         getData();
     }, []);
 
-    //获取部门列表
+    // Request Department list from server
     const handleGetDepts = async () => {
-        //从服务器获取部门列表
         const resp = await reqGetDepts();
         let newDepts = [];
-        if (resp.data.status === 0) {
-            newDepts = resp.data.data;
+        if (resp.status) {
+            newDepts = resp.data;
         }
         setDepts(newDepts);
     };
 
-    //获取简化部门列表
+    // Get simple department list from front-end cache
     const handlegetSimpDepts = async (isGetAllIds = true) => {
-        await InitDocCache("department");
-        //从本地缓存获取部门列表
+        await InitDocCache("department");   
         const newSimpDepts = await GetLocalCache("department");
-        //如果
         let newIds = [];
         if (isGetAllIds) {
             newSimpDepts.forEach(simpDept => {
@@ -83,7 +84,7 @@ const Department = () => {
         setSelectedDeptIds(newIds);
     };
 
-    //点击增加按钮
+    // Actions after click the Add button in the header
     const handleAddDept = () => {
         setDiagStatus({
             isNew: true,
@@ -93,7 +94,7 @@ const Department = () => {
         });
     };
 
-    //对话框编辑页面点击确定按钮
+    // Actions after click Add button in the body
     const handelAddDeptOk = () => {
         setDiagStatus({
             diagOpen: false,
@@ -102,12 +103,12 @@ const Department = () => {
             currentDept: undefined
         });
 
-        //重新向服务器请求用户列表数据
+        // Request latest department list
         handleGetDepts();
         handlegetSimpDepts(true);
     };
 
-    //弹出对话框关闭/取消
+    // Close Dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentDept: undefined,
@@ -117,7 +118,7 @@ const Department = () => {
         });
     };
 
-    //表体行点击编辑按钮
+    // Actions after click the edit button in the body
     const handleDeptEdit = (item) => {
         setDiagStatus({
             isNew: false,
@@ -126,7 +127,7 @@ const Department = () => {
             diagOpen: true
         });
     };
-    //表体行点击复制新增按钮
+    // Actions after click the copy add button in the body
     const handleCopyAdd = (item) => {
         setDiagStatus({
             isNew: true,
@@ -135,34 +136,32 @@ const Department = () => {
             diagOpen: true
         });
     };
-    //表体行点击删除按钮
+    // Actions after click the delete button in the body
     const handleRowDelete = async (item) => {
         const delRes = await reqDelDept(item);
-        if (delRes.data.status === 0) {
-            message.success("删除部门'" + item.name + "'成功");
-        } else {
-            message.error("删除部门'" + item.name + "'失败:" + delRes.data.statusMsg);
-        }
-        //刷新部门
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
+        } 
+        // Request latest department from server
         handleGetDepts();
-        //更新本地缓存
+        // Request latest department using froent-end cache
         handlegetSimpDepts(true);
     };
-    //表头批量删除
+    // Actions after click the batch delete button in the heaser
     const handleDelMultipleAction = async (depts) => {
         const delRes = await reqDeleteDepts(depts);
-        if (delRes.data.status === 0) {
-            message.success("批量删除部门成功");
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
         } else {
-            message.error("批量删除部门失败:" + delRes.data.statusMsg);
+            message.error(t("batchDeletefailed") + delRes.msg);
         }
-        //刷新部门
+        // Request latest department from server
         handleGetDepts();
-        //更新本地缓存
+        // Request latest department using froent-end cache
         handlegetSimpDepts(true);
     };
 
-    //RowViewDetail 行查看详情
+    // Actions after click the detail button in the body
     const handleDeptDetail = (item) => {
         setDiagStatus({
             isNew: false,
@@ -172,20 +171,19 @@ const Department = () => {
         });
     };
 
-    //PubTree选中部门
+    // Actions after department click in the pubTree component
     const handleDeptClick = async (item, type) => {
-        //type 0 末级; 1父级; 3 全部;
         let deptIds = [];
-        if (type === 0) {
+        if (type === 0) { // Final level
             deptIds.push(item.id);
-        } else if (type === 1) {
+        } else if (type === 1) { // Parent level
             const tree = [];
             tree.push(item);
             let allChilds = treeToArr(tree);
             allChilds.forEach(item1 => {
                 deptIds.push(item1.id);
             })
-        } else if (type === 3) {
+        } else if (type === 3) { // All
             item.forEach(item3 => {
                 deptIds.push(item3.id);
             })
@@ -194,8 +192,8 @@ const Department = () => {
     };
 
     return (
-        <React.Fragment>
-            <PageTitle pageName="部门档案" displayHelp={true} helpUrl="/helps/department" />
+        <Fragment>
+            <PageTitle pageName={t("MenuDepartment")} displayHelp={false} />
             <Divider my={2} />
             <Grid container spacing={2} >
                 <Grid item xs={2}>
@@ -209,8 +207,8 @@ const Department = () => {
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择部门
-                                <Tooltip title="刷新" placement="top">
+                                {t("chooseDept")}
+                                <Tooltip title={t("refresh")} placement="top">
                                     <IconButton onClick={handlegetSimpDepts}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
@@ -220,7 +218,7 @@ const Department = () => {
                         sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="部门"
+                            docName={t("department")}
                             isDisplayAll={true}
                             oriDocs={simpDepts}
                             onDocClick={handleDeptClick}
@@ -263,7 +261,7 @@ const Department = () => {
                     onOk={handelAddDeptOk}
                 />
             </Dialog>
-        </React.Fragment>
+        </Fragment>
     );
 }
 

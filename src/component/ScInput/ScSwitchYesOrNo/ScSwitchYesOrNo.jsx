@@ -1,23 +1,24 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     FormControlLabel,
     Switch,
 } from "@mui/material";
-//bool值转数字
+import { useTranslation } from "react-i18next";
+// Convert boolean to number 
 function boolTransInt(b) {
     return b ? 1 : 0;
 };
 
-//数字转bool
+// Convert number to boolean
 function intTransBool(i) {
     return i === 0 ? false : true;
 }
 
-
-//402
+// 402 Switch
 const ScSwitchYesOrNo = memo((props) => {
-    const {positionID, fieldIndex, rowIndex, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
+    const {positionID, fieldIndex, rowIndex, isEdit, itemShowName, itemKey, initValue = 0, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
+    const {t} = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
             setFieldValue(initValue);
@@ -50,14 +51,12 @@ const ScSwitchYesOrNo = memo((props) => {
                     color={props.color ? props.color : "primary"}
                     onChange={handleOnBlur}
                 />}
-            label={itemShowName}
+            label={t(itemShowName)}
             labelPlacement='start'
         />
     );
 });
 
-ScSwitchYesOrNo.defaultProps = {
-    initValue: 0,
-};
+
 
 export default ScSwitchYesOrNo;

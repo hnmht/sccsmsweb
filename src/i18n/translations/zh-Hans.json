@@ -109,6 +109,18 @@
     "userCode": "用户编码",
     "userName": "用户名",
     "expireTime": "失效日期",
+    "allDept": "所有部门",
+
+    "parentCannotItself": "父级不能为其自己.",
+    "parentCannotBeChild": "父级不能同时为子级",
+    "addDept": "增加部门",
+    "modifyDept": "修改部门",
+    "viewDept": "查看部门",
+    "parent": "父级",
+    "leader": "负责人",
+    "choosePersonPlaceholder": "请选择人员",
+    "chooseDeptPlaceholder": "请选择部门",
+
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

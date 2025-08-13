@@ -7,6 +7,7 @@ import {
     Button,
 } from "@mui/material";
 import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat } from '../../../i18n/dayjs';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
 
@@ -18,21 +19,22 @@ import MoreInfo from '../../../component/MoreInfo/MoreInfo';
 import { reqValidateDeptCode, reqAddDept, reqEditDept } from '../../../api/department';
 import { findChildrens } from '../../../utils/tree';
 import { GetLocalCache } from '../../../storage/db/db';
-import { getCurrentPerson ,checkVoucherNoBodyErrors} from '../pub';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { useTranslation } from 'react-i18next';
 
 const getInitialValues = async (oriDept, isNew, isModify) => {
     const person = await getCurrentPerson();
     let newDept = {};
-    if (isNew) { //新增or复制新增
-        if (oriDept) { //复制新增
+    if (isNew) { //Add or CopyAdd
+        if (oriDept) { // Copy Add
             newDept = cloneDeep(oriDept);
             newDept.id = 0;
             newDept.code = "";
-            newDept.createuser = person;
-            newDept.modifyuser = { id: 0, code: "", name: "" };
-            newDept.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newDept.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
-        } else { //新增
+            newDept.creator = person;
+            newDept.modifier = { id: 0, code: "", name: "" };
+            newDept.createDate = DateTimeFormat(new Date(), "LLL");
+            newDept.modifyDate = DateTimeFormat(new Date(), "LLL");
+        } else { // Add
             newDept = {
                 id: 0,
                 code: "",
@@ -41,25 +43,25 @@ const getInitialValues = async (oriDept, isNew, isModify) => {
                 status: 0,
                 leader: { id: 0, code: "", name: "" },
                 fatherid: { id: 0, code: "", name: "" },
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: DateTimeFormat(new Date(), "LLL")
             };
         }
     } else {
-        if (!oriDept) { //错误
+        if (!oriDept) {
             return
-        } else { //编辑或者查看
-            if (isModify) { //编辑
+        } else { // Edit or Detail
+            if (isModify) { // Edit
                 newDept = cloneDeep(oriDept);
-                newDept.createdate = dayjs(newDept.createdate).format("YYYYMMDDHHmm");
-                newDept.modifyuser = person;
-                newDept.modifydate = dayjs(newDept.modifydate).format("YYYYMMDDHHmm");
-            } else {
+                newDept.createDate = DateTimeFormat(newDept.createDate, "LLL");
+                newDept.modifier = person;
+                newDept.modifyDate = DateTimeFormat(newDept.modifyDate, "LLL");
+            } else { // Detail
                 newDept = cloneDeep(oriDept);
-                newDept.createdate = dayjs(newDept.createdate).format("YYYYMMDDHHmm");
-                newDept.modifydate = dayjs(newDept.modifydate).format("YYYYMMDDHHmm");
+                newDept.createDate = DateTimeFormat(newDept.createDate, "LLL");
+                newDept.modifyDate = DateTimeFormat(newDept.modifyDate, "LLL");
             }
         }
     }
@@ -70,6 +72,7 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
     const [currentDept, setCurrentDept] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
@@ -78,61 +81,58 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
         }
         if (isOpen) {
             initValue();
-        }    
-    }, [isOpen,oriDept, isNew, isModify]);
-    //scinput组件获取内容后传入
+        }
+    }, [isOpen, oriDept, isNew, isModify]);
+    // Data processing actions after the data is passed into the ScInput components
     const handleGetValue = useCallback((value, itemkey, fieldIndex, rowIndex, errMsg) => {
-        if (currentDept === undefined || !isOpen || !isEdit ) {
+        if (currentDept === undefined || !isOpen || !isEdit) {
             return
         }
-
-        //更新errors
+        // Refersh errors
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的用户信息
+        // Refresh fields
         setCurrentDept((prevState) => {
-            //深拷贝方法
+            // Deep Clone
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
-            //结构赋值方法
-            // return ({
-            //     ...prevState,
-            //     [itemkey]: value,
-            // });
         });
-    }, [currentDept,isOpen,isEdit]);
-    //检查部门编码是否已经存在
+    }, [currentDept, isOpen, isEdit]);
+    // Check if the department code exists
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
         let uid = currentDept.id ? currentDept.id : 0;
-        let resp = await reqValidateDeptCode({ id: uid, "code": value },false);
-        if (resp.data.status === 0) {
+        let resp = await reqValidateDeptCode({ id: uid, "code": value }, false);
+        if (resp.status) {
             return err;
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
 
-    //检查上级部门是否循环
+    // Check for circular references in the parent department
     const handleCheckFatherDept = async (dept) => {
         let err = { isErr: false, msg: "" };
-        //如果是新增档案，则直接跳出
+        // No need to check if it's a new entry
         if (isNew) {
             return err;
         };
+        // The parent department cannot be itself.
         if (currentDept.id === dept.id) {
-            err = { isErr: true, msg: "上级部门不能是自己" }
+            err = { isErr: true, msg: "parentCannotItself" }
             return err;
         }
-        // 获取缓存中的部门列表
+        // Get department list from front-end cache
         const depts = await GetLocalCache("department");
-        //获取本部门的所有下级部门，上级部门不能为其中的任何一个
+
+        // Get all subordinate departments of this department,
+        // the parent department cannot be any of these.
         const childrens = findChildrens(depts, currentDept.id);
         let pNum = 0;
         childrens.forEach(children => {
@@ -141,40 +141,38 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
             }
         })
         if (pNum > 0) {
-            err = { isErr: true, msg: "循环，上级部门不能是本部门的子级部门" }
+            err = { isErr: true, msg: "parentCannotBeChild" }
         }
         return err;
     }
-    //部门增加或修改
+    // Add or edit department
     const handleAddDept = async () => {
         let thisDept = cloneDeep(currentDept);
-        delete thisDept.createdate;
-        delete thisDept.modifydate;
-        //如果是编辑部门或者复制新增部门
-        if (isModify) {
-            // console.log("currentDept:",thisDept);
+        delete thisDept.createDate;
+        delete thisDept.modifyDate;
+
+        if (isModify) { // Edit
             const editRes = await reqEditDept(thisDept);
-            if (editRes.data.status === 0) {
-                message.success("修改部门'" + thisDept.name + "'成功");
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
             } else {
-                message.error(editRes.data.statusMsg);
+                message.error(t("modifyFailed") + editRes.msg);
             }
-        } else {
+        } else { // Add 
             const addRes = await reqAddDept(thisDept);
-            // console.log("addRes:", addRes);
-            if (addRes.data.status === 0) {
-                message.success("新增部门'" + thisDept.name + "'成功");
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
             } else {
-                message.error(addRes.data.statusMsg);
+                message.error(t("addFailed") + addRes.msg);
             }
         }
     }
-     
+
     return (currentDept
         ? <>
-            <DialogTitle>{isNew ? "增加部门" : isModify ? "修改部门" : "查看部门"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addDept") : isModify ? t("modifyDept"): t("viewDept")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -183,11 +181,11 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="部门编码"
+                            itemShowName="code"
                             itemKey="code"
                             initValue={currentDept.code}
                             pickDone={handleGetValue}
-                            placeholder="请输入部门编码"
+                            placeholder="codePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestCode}
                             key="code"
@@ -198,11 +196,11 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="部门名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={currentDept.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入部门名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={false}
                             key="name"
                         />
@@ -212,11 +210,11 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={520}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="上级部门"
-                            itemKey="fatherid"
-                            initValue={currentDept.fatherid}
+                            itemShowName="parent"
+                            itemKey="fatherID"
+                            initValue={currentDept.fatherID}
                             pickDone={handleGetValue}
-                            placeholder="请选择上级部门"
+                            placeholder="chooseDeptPlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleCheckFatherDept}
                             key="fatherid"
@@ -227,11 +225,11 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="负责人"
+                            itemShowName="leader"
                             itemKey="leader"
                             initValue={currentDept.leader}
                             pickDone={handleGetValue}
-                            placeholder="请选择人员"
+                            placeholder="choosePersonPlaceholder"
                             isBackendTest={false}
                             key="leader"
                         />
@@ -241,11 +239,11 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="部门说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={currentDept.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入部门说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -257,7 +255,7 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={currentDept.status}
                             pickDone={handleGetValue}
@@ -274,25 +272,25 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentDept.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentDept.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentDept.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentDept.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -300,25 +298,25 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentDept.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentDept.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentDept.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentDept.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -327,10 +325,10 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2.5 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddDept}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddDept}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant='contained' onClick={onCancel}>返回</Button>
+                    : <Button variant='contained' onClick={onCancel}>{t("back")}</Button>
                 }
 
 

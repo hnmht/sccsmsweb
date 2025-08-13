@@ -1,12 +1,12 @@
 import { Fragment, useState, useEffect } from "react";
 import { message } from "mui-message";
-
+import { useTranslation } from "react-i18next";
 import { Divider } from "../../../component/ScMui/ScMui";
 import DocList from "../../../component/DocList/DocList";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import { reqGetOnlineUsers, reqRemoveOnlineUser } from "../../../api/onlineUser";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
-import { useTranslation } from "react-i18next";
+
 
 const OnlineUser = () => {
     const [rows, setRows] = useState([]);
@@ -26,7 +26,6 @@ const OnlineUser = () => {
         }
         setRows(newRows);
     };
-
     // Destory Online user login credentials .
     const handleKickOutUser = async (item) => {
         const delRes = await reqRemoveOnlineUser(item);

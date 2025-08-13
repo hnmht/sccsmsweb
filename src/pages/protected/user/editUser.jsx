@@ -162,31 +162,33 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                 return
             }
             const publickey = publicKeyRes.data;
-            // 使用jsencrypt创建加密对象实例
+            // Create a JSEncrypt encryption object instance.
             let encryptor = new jsencrypt();
-            encryptor.setPublicKey(publickey); //设置公玥
-            let rsaPassword = encryptor.encrypt(currentUser.password); //加密
-            //将password更换为密文
+            // Set Public
+            encryptor.setPublicKey(publickey); 
+            // Encrypt
+            let rsaPassword = encryptor.encrypt(currentUser.password);
+            // Replace the content of the password filed with ciphertext
             thisUser.password = rsaPassword;
         }
-        //删除数据中的confirmPassword内容
+        // Delete the content of the confirmPassword filed.
         delete thisUser.confirmPassword;
 
         if (isModify) { // Edit user
-            const resEdit = await reqEditUser(thisUser);        
+            const resEdit = await reqEditUser(thisUser);
             if (resEdit.status) {
                 message.success(t("modifySuccessful"));
                 onOk();
             } else {
-                message.error(t("modifyFailed") + resEdit.msg);                  
+                message.error(t("modifyFailed") + resEdit.msg);
             }
         } else { // Add user
             const resAdd = await reqAddUser(thisUser);
             if (resAdd.status) {
                 message.success(t("addSuccessful"));
                 onOk();
-            } else {               
-                message.error(t("addFailed") + resAdd.msg);             
+            } else {
+                message.error(t("addFailed") + resAdd.msg);
             }
         }
         // Get latest person master data for front-end cache
@@ -195,7 +197,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
 
     return currentUser
         ? <>
-            <DialogTitle>{isNew ? t("addUser") : isModify ? t("editUser") : t("userDetail")}</DialogTitle>
+            <DialogTitle>{isNew ? t("addUser") : isModify ? t("modifyUser") : t("userDetail")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2, maxHeight: 800 }}>
                 <Grid container spacing={3}>

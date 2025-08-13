@@ -45,7 +45,7 @@ const CellClientType = (row, column) => {
 const CellExpireTime = (row, column) => {
     return UnixTimeFormat(row.expireTime,"LLL");
 };
-// Define whether the batch delete button is displayed.
+// Define whether the batch delete button is diabled.
 export function delMultipleDisabled(selectedRows) {    
     return true;
 }
