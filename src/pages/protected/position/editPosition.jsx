@@ -8,153 +8,142 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
+import { useTranslation } from 'react-i18next';
+import { DateTimeFormat } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
-import { reqAddOP,reqEditOP,reqCheckOPName } from '../../../api/position';
+import { reqCheckPositionName,reqAddPosition,reqEditPosition } from '../../../api/position';
 import { InitDocCache } from '../../../storage/db/db';
-import { getCurrentPerson } from '../pub';
+import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
-//获取初始值
+
+// Generate initial position values
 const getInitialValues = async (diagStatus) => {
-    const { isNew, isModify, oriOP } = diagStatus;
-
+    const { isNew, isModify, oriPosition } = diagStatus;
     const person = await getCurrentPerson();
-    let newOP = {};
+    let newPosition = {};
     if (isNew) {
-        if (oriOP) {//复制新增
-            newOP = cloneDeep(oriOP);
-            newOP.id = 0;
-            newOP.name = "";
-            newOP.createuser = person;
-            newOP.modifyuser = { id: 0, code: "", name: "" };
-            newOP.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newOP.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+        if (oriPosition) {// CopyAdd
+            newPosition = cloneDeep(oriPosition);
+            newPosition.id = 0;
+            newPosition.name = "";
+            newPosition.creator = person;
+            newPosition.modifier = { id: 0, code: "", name: "" };
+            newPosition.createDate = DateTimeFormat(new Date(),"LLL");
+            newPosition.modifyDate = DateTimeFormat(new Date(), "LLL");
         } else {
-            newOP = { //新增
+            newPosition = { // Add 
                 id: 0,
                 name: "",
                 description: "",
                 status: 0,
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: DateTimeFormat(new Date(), "LLL")
             };
         }
     } else {
-        if (!oriOP) { //错误
+        if (!oriPosition) { // error
             return
         } else {
-            if (isModify) {//编辑
-                newOP = cloneDeep(oriOP);
-                newOP.createdate = dayjs(newOP.createdate).format("YYYYMMDDHHmm");
-                newOP.modifyuser = person;
-                newOP.modifydate = dayjs(newOP.modifydate).format("YYYYMMDDHHmm");
-            } else { //查看
-                newOP = cloneDeep(oriOP);
-                newOP.createdate = dayjs(newOP.createdate).format("YYYYMMDDHHmm");
-                newOP.modifydate = dayjs(newOP.modifydate).format("YYYYMMDDHHmm");
+            if (isModify) {// Edit
+                newPosition = cloneDeep(oriPosition);
+                newPosition.createDate = DateTimeFormat(newPosition.createDate, "LLL");
+                newPosition.modifier = person;
+                newPosition.modifyDate = DateTimeFormat(newPosition.modifyDate, "LLL");
+            } else { // Detail
+                newPosition = cloneDeep(oriPosition);
+                newPosition.createDate = DateTimeFormat(newPosition.createDate, "LLL");
+                newPosition.modifyDate = DateTimeFormat(newPosition.modifyDate, "LLL");
             }
         }
     }
 
-    return newOP;
-};
-//检查错误值
-const isError = (errors) => {
-    let number = 0;
-    for (let key in errors) {
-        if (errors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
+    return newPosition;
 };
 
-const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
+// Add, modify, delete, and view position master data.
+const EditPosition = ({ diagStatus, onCancel, onOk }) => {
     const { isOpen, isNew, isModify } = diagStatus;
-    const [currentOP, setCurrentOP] = useState(undefined);
+    const [currentPosition, setCurrentPosition] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const {t} = useTranslation();
 
     useEffect(() => {
         async function initValue() {
             const initOP = await getInitialValues(diagStatus);
-            setCurrentOP(initOP);
+            setCurrentPosition(initOP);
         }
         if (diagStatus.isOpen) {
             initValue();
         }
     }, [diagStatus]);
 
-    //scinput组件获取内容后传入
+    // Data processing actions after the data is passed into the ScInput components
     const handleGetValue = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
-        if (!isOpen || !isEdit || currentOP === undefined) {
+        if (!isOpen || !isEdit || currentPosition === undefined) {
             return
         }
-        //更新errors
+        // Change errors values
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的信息
-        setCurrentOP((prevState) => {
-            //深拷贝方法
+        // Change currentPosition values
+        setCurrentPosition((prevState) => {
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
         });
     };
 
-    //增加或修改岗位档案
-    const handleAddOP = async () => {
-        let thisOP = cloneDeep(currentOP);
-        delete thisOP.createdate;
-        delete thisOP.modifydate;
+    // Add or Modify the Postion master data.
+    const handleAddPosition = async () => {
+        let thisOP = cloneDeep(currentPosition);
+        delete thisOP.createDate;
+        delete thisOP.modifyDate;
         if (isModify) {
-            const editRes = await reqEditOP(thisOP);
-            if (editRes.data.status === 0) {
-                message.success("修改岗位'" + thisOP.name + "'成功");
+            // Request the server to  modify the positon master data 
+            const editRes = await reqEditPosition(thisOP);
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改岗位'" + thisOP.name + "'失败:" + editRes.data.statusMsg);
             }
         } else {
-            //增加自定义档案岗位
-            const addRes = await reqAddOP(thisOP);
-            if (addRes.data.status === 0) {
-                message.success("新增岗位‘" + thisOP.name + "’成功");
+            // Request the server to add the position master data
+            const addRes = await reqAddPosition(thisOP);
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增岗位‘" + thisOP.name + "’失败:" + addRes.data.statusMsg);
-            }
+            } 
         }
-        //刷新本地缓存
-        await InitDocCache("operatingpost");
+        // Get the latest position front-end cache
+        await InitDocCache("position");
     }
-    //检查自定义档案名称是否存在
+    // Check if the position name exists
     const handleBackendTestName = async (value) => {
         let err = { isErr: false, msg: "" };
-        let opId = currentOP.id ? currentOP.id : 0;
-        let resp = await reqCheckOPName({ id: opId, "name": value }, false);
-        if (resp.data.status === 0) {
+        let opId = currentPosition.id ? currentPosition.id : 0;
+        let resp = await reqCheckPositionName({ id: opId, "name": value }, false);
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg};
         }
         return err;
     };
 
-    return currentOP
+    return currentPosition
         ? <>
-            <DialogTitle>{isNew ? "增加岗位" : isModify ? "修改岗位" : "岗位详情"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addPositon") : isModify ? t("modifyPosition") : t("viewPosition")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -163,9 +152,9 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="岗位名称"
+                            itemShowName="name"
                             itemKey="name"
-                            initValue={currentOP.name}
+                            initValue={currentPosition.name}
                             pickDone={handleGetValue}
                             placeholder="请输入岗位名称"
                             isBackendTest={true}
@@ -178,9 +167,9 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="岗位说明"
+                            itemShowName="description"
                             itemKey="description"
-                            initValue={currentOP.description}
+                            initValue={currentPosition.description}
                             pickDone={handleGetValue}
                             placeholder="请输入岗位说明"
                             isBackendTest={false}
@@ -194,9 +183,9 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
-                            initValue={currentOP.status}
+                            initValue={currentPosition.status}
                             pickDone={handleGetValue}
                             placeholder=""
                             key="status"
@@ -211,25 +200,25 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentOP.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentPosition.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentOP.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentPosition.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -238,24 +227,24 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
                             allowNull={true}
                             isEdit={false}
                             itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentOP.modifyuser}
+                            itemKey="modifier"
+                            initValue={currentPosition.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentOP.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentPosition.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -265,7 +254,7 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
                 {isEdit
                     ? <>
                         <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={isError(errors)} onClick={handleAddOP}>{isModify ? "保存" : "增加"}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddPosition}>{isModify ? "保存" : "增加"}</Button>
                     </>
                     : <Button variant="contained" onClick={onCancel} >返回</Button>
                 }
@@ -275,4 +264,4 @@ const EditOperatingPost = ({ diagStatus, onCancel, onOk }) => {
 
 };
 
-export default EditOperatingPost;
+export default EditPosition;

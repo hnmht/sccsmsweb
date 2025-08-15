@@ -123,6 +123,10 @@
     "choosePerson":"Select Person",
     "chooseDepartment":"Select Department",
 
+    "addPosition":"Add Position",
+    "modifyPosition":"Modify Position",
+    "viewPosition":"View Position",
+
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
     "author": "HaiTao Meng",

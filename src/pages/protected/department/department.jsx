@@ -44,7 +44,6 @@ const Department = () => {
             // Get  department list from local cache
             await InitDocCache("department");
             let newSimpDepts = await GetLocalCache("department");
-
             // Get all department IDs
             let newSelectedIds = [];
             newSimpDepts.forEach(simpDept => {

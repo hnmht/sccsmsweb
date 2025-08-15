@@ -6,7 +6,6 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
-import dayjs from "../../../utils/myDayjs";
 import { DateTimeFormat } from '../../../i18n/dayjs';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
@@ -22,6 +21,7 @@ import { GetLocalCache } from '../../../storage/db/db';
 import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
 import { useTranslation } from 'react-i18next';
 
+// Generate initial values for the department master date
 const getInitialValues = async (oriDept, isNew, isModify) => {
     const person = await getCurrentPerson();
     let newDept = {};
