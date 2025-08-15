@@ -1,28 +1,20 @@
-import {
-    Typography
-} from "@mui/material";
-
-//性别列显示
+// Content of the gender column
 const CellGender = (row) => {
-    return row.gender === 0 ? "" : row.gender === 1 ? "男" : "女";
+    return row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
 };
-//状态列显示
+// Content of the status column 
 const CellStatus = (row) => {
-    return row.status === 0 ? "正常" : "停用";
+    return row.status === 0 ? "normal" : "disable";
 };
-//系统预置列显示
+// Content of the systemFlag column
 const CellSystemFlag = (row) => {
-    return row.systemflag === 0 ? "否" : "是";
-};
-//用户名显示
-const CellName = (row) => {
-    return <Typography color={row.status=== 0 ?"default" :"red"}>{row.name}</Typography>
+    return row.systemflag === 0 ? "N" : "Y";
 };
 
 export const columns = [
     { id: "id", label: "id", alignment: "left", minWidth: 100, visible: false, sort: true, sortField:"id", display: { type: 0, cell1: null } },
     { id: "code", label: "code", alignment: "center", minWidth: 100, visible: true, sort: true, sortField: "code", display: { type: 0, cell1: null } },
-    { id: "name", label: "name", alignment: "center", minWidth: 100, visible: true, sort: true, sortField: "name", display: { type: 1, cell1: CellName } },
+    { id: "name", label: "name", alignment: "center", minWidth: 100, visible: true, sort: true, sortField: "name", display: { type: 0, cell1: null } },
     { id: "mobile", label: "mobile", alignment: "center", minWidth: 60, visible: false, sort: true, sortField: "mobile", display: { type: 0, cell1: null } },
     { id: "email", label: "email", alignment: "center", minWidth: 60, visible: false, sort: true, sortField: "email", display: { type: 0, cell1: null } },
     { id: "deptID", label: "deptID", alignment: "center", minWidth: 30, visible: false, sort: true, sortField: "deptID", display: { type: 0, cell1: null } },

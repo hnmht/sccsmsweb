@@ -2,7 +2,7 @@ import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { DateTimeFormat } from "../../../i18n/dayjs";
 
-//获取当前操作人员
+// Get Operator
 export const getCurrentPerson = () => {
     const { user } = store.getState();
     return user.person;
@@ -79,29 +79,29 @@ export const CellConfirmTime = (row, column) => {
     return DateTimeFormat(date);
 };
 
-//状态列显示
+// Status display content 
 export const CellStatus = (row, column) => {
     return row.status === 0 ? "normal" : "disable";
 };
 
-//单据状态列显示
+// Voucher status displa content
 export const CellVoucherStatus = (row, column) => {
     return VoucherStatus[row.status];
 };
 
-//部门显示
+// Department display
 export const CellDept = (row, column) => {
     return row.department.name;
 };
-//岗位显示
+// Position display
 export const CellPosition = (row, column) => {
     return row.position.name;
 };
-//性别列显示
+// Gender display
 export const CellGender = (row) => {
     return row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
 };
-//系统预置列显示
+// System preset column display content
 export const CellSystemFlag = (row) => {
     return row.systemflag === 0 ? "N" : "Y";
 };

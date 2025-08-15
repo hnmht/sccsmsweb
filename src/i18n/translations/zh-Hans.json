@@ -110,7 +110,6 @@
     "userName": "用户名",
     "expireTime": "失效日期",
     "allDept": "所有部门",
-
     "parentCannotItself": "父级不能为其自己.",
     "parentCannotBeChild": "父级不能同时为子级",
     "addDept": "增加部门",
@@ -120,6 +119,8 @@
     "leader": "负责人",
     "choosePersonPlaceholder": "请选择人员",
     "chooseDeptPlaceholder": "请选择部门",
+    "choosePerson": "选择人员",
+    "chooseDepartment": "选择部门",
 
 
     "systemName": "海云现场管理系统",

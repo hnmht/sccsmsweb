@@ -80,7 +80,7 @@ const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickActio
 
     return (
         <>
-            <DialogTitle>选择人员</DialogTitle>
+            <DialogTitle>{t("choosePerson")}</DialogTitle>
             <Grid container spacing={2} >
                 <Grid item xs={2}>
                     <List
@@ -93,8 +93,8 @@ const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickActio
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择部门
-                                <Tooltip title="刷新" placement="top">
+                                {t("chooseDepartment")}
+                                <Tooltip title={t("refresh")} placement="top">
                                     <IconButton onClick={handleRefreshDepts}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
@@ -104,7 +104,7 @@ const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickActio
                         sx={{ width: "100%", height: 700, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="部门"
+                            docName={t("allDept")}
                             isDisplayAll={true}
                             oriDocs={depts}
                             onDocClick={handleDeptClick}
@@ -119,7 +119,7 @@ const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickActio
                         columns={columns}
                         refreshAction={handleRefreshPersons}
                         rows={persons}
-                        docListTitle="选择人员"
+                        docListTitle="selectPerson"
                         clickItem={clickItemAction}
                         doubleClickItem={doubleClickItemAction}
                         isMultiple={false}
@@ -128,8 +128,8 @@ const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickActio
                 </Grid>
             </Grid>
             <DialogActions sx={{ m: 1 }}>
-                <Button key="personPickerCancel" color="error" onClick={cancelClickAction} id="personPickerCancel">取消</Button>
-                <Button key="personPickerOk" variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button key="personPickerCancel" color="error" onClick={cancelClickAction} id="personPickerCancel">{t("cancel")}</Button>
+                <Button key="personPickerOk" variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );

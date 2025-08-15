@@ -110,7 +110,6 @@
     "userCode":"User Code",
     "userName":"User Name",
     "expireTime":"Expiration Time",
-
     "allDept": "All Department",
     "parentCannotItself":"The parent cannot be itself.",
     "parentCannotBeChild":"The parent cannot be a child of the current level.",
@@ -121,6 +120,8 @@
     "leader":"Leader",
     "choosePersonPlaceholder":"Please select person.",
     "chooseDeptPlaceholder":"Please select department.",
+    "choosePerson":"Select Person",
+    "chooseDepartment":"Select Department",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
