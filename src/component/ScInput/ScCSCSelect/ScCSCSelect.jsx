@@ -8,16 +8,19 @@ import {
     Dialog,
     Tooltip,
 } from "@mui/material";
-import { SICIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import SICPicker from "./SicPicker";
+import { useTranslation } from "react-i18next";
+import { CSCIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
+import CSCPicker from "./CscPicker";
+
 const zeroValue = { id: 0, name: "", description: "", fatherid: 0, status: 0 };
 
-// 525 现场档案分类单选
-const ScSICSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+// 525 Constriction Site Category
+const ScCSCSelect = memo((props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [currentDoc, setCurrentDoc] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const { t } = useTranslation();
 
     useEffect(() => {
         setCurrentDoc(initValue);
@@ -28,55 +31,55 @@ const ScSICSelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleOnBlur();
     };
-    //对话框点击取消按钮
+    // Actions after click cancel button in the dialog.
     const handleDiagCancel = () => {
         setDialogOpen(false);
     };
-    //对话框点击确定按钮
+    // Actions after click ok button in the dialog.
     const handleDiagOk = () => {
         setDialogOpen(false);
         handleOnBlur();
     };
-    //检查档案值
+    // Transmit data to the parent components
     const handleOnBlur = async (doc = currentDoc) => {
         if (!isEdit) {
             return
         }
-
         let err = { isErr: false, msg: "" };
         if (doc.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(doc);
         }
         setErrInfo(err);
         pickDone(doc, itemKey, positionID, rowIndex, err);
     };
-    //点击清除按钮
+    // Actions after click the clear button.
     const handleClear = () => {
         setCurrentDoc(zeroValue);
         handleOnBlur(zeroValue);
     }
-    //档案列表单击
-    const handleDocClick = (item, type) => { //type:0 没有下级部门 1 有下级部门
+    // Actions after click the CSC item.
+    const handleDocClick = (item, type) => { //type:0 No subcategory 1 Subcategories exist
         setCurrentDoc(item);
         handleOnBlur(item);
     };
-    //档案列表双击
-    const handleDocDoubleClick = (item, type) => {//type:0 没有下级部门 1 有下级部门
+    // Actions after double click the CSC item
+    const handleDocDoubleClick = (item, type) => {//type:0 No subcategory 1 Subcategories exist
         setCurrentDoc(item);
         handleOnBlur(item);
         setDialogOpen(false);
     }
+
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -86,7 +89,7 @@ const ScSICSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={isEdit ? placeholder : null}
+                    placeholder={isEdit ? t(placeholder) : null}
                     value={currentDoc.name}
                     onBlur={handleOnBlur}
                     error={errInfo.isErr}
@@ -94,7 +97,7 @@ const ScSICSelect = memo((props) => {
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {currentDoc.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small"><ClearIcon /></IconButton>
                                         </span>
@@ -105,10 +108,10 @@ const ScSICSelect = memo((props) => {
                                     ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择类别" placement="top">
+                                <Tooltip title={t("chooseCategory")} placement="top">
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
-                                            <SICIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
+                                            <CSCIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                         </IconButton>
                                     </span>
                                 </Tooltip>
@@ -122,14 +125,14 @@ const ScSICSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={isEdit ? placeholder : null}
+                    placeholder={isEdit ? t(placeholder) : null}
                     value={currentDoc.name}
                     onBlur={handleOnBlur}
                     error={errInfo.isErr}
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {currentDoc.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small"><ClearIcon /></IconButton>
                                     </span>
@@ -140,10 +143,10 @@ const ScSICSelect = memo((props) => {
                                 ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择类别" placement="top">
+                            <Tooltip title={t("chooseCategory")} placement="top">
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
-                                        <SICIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
+                                        <CSCIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                     </IconButton>
                                 </span>
                             </Tooltip>
@@ -156,7 +159,7 @@ const ScSICSelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <SICPicker
+                <CSCPicker
                     clickItemAction={handleDocClick}
                     doubleClickItemAction={handleDocDoubleClick}
                     cancelClickAction={handleDiagCancel}
@@ -168,8 +171,4 @@ const ScSICSelect = memo((props) => {
     );
 });
 
-export default ScSICSelect;
-
-ScSICSelect.defaultProps = {
-    initValue: zeroValue,
-};
+export default ScCSCSelect;

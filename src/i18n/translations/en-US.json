@@ -122,10 +122,17 @@
     "chooseDeptPlaceholder":"Please select department.",
     "choosePerson":"Select Person",
     "chooseDepartment":"Select Department",
-
     "addPosition":"Add Position",
     "modifyPosition":"Modify Position",
     "viewPosition":"View Position",
+    "addCategory":"Add Category",
+    "modifyCategory":"Modify Category",
+    "viewCategory":"View Category",
+    "parentCategory":"Parent Category",    
+    "categoryPlaceholder":"Please select category.",
+    "chooseCategory":"Choose Category",
+    "category":"Category",
+
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

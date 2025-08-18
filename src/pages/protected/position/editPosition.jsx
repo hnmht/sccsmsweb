@@ -20,7 +20,6 @@ import { reqCheckPositionName,reqAddPosition,reqEditPosition } from '../../../ap
 import { InitDocCache } from '../../../storage/db/db';
 import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
-
 // Generate initial position values
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriPosition } = diagStatus;
@@ -156,7 +155,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                             itemKey="name"
                             initValue={currentPosition.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入岗位名称"
+                            placeholder="placeholderName"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
                             key="name"
@@ -171,7 +170,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                             itemKey="description"
                             initValue={currentPosition.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入岗位说明"
+                            placeholder="placeholderDeacription"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -226,7 +225,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
+                            itemShowName="modifier"
                             itemKey="modifier"
                             initValue={currentPosition.modifier}
                             pickDone={handleGetValue}
@@ -253,10 +252,10 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddPosition}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddPosition}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>

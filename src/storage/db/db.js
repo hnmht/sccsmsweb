@@ -10,7 +10,7 @@ import { reqGetSimpEICList, reqGetSimpEICCache } from "../../api/exectiveItemCla
 import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
 import { reqGetSIList, reqGetSICache, reqGetSIOCache, reqSIOs } from "../../api/sceneItem";
-import { reqGetSimpSICList, reqGetSimpSICCache } from "../../api/sceneItemClass";
+import { reqGetSimpCSCList, reqGetSimpCSCCache } from "../../api/csc";
 import { reqGetRLList, reqGetRLsCache } from "../../api/riskLevel";
 import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
 import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
@@ -150,13 +150,13 @@ export const docTable = new Map([
     ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
     ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
     ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
+    ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
 
     /* ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
      ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-     ["sceneitemclass", { description: "现场档案类别", reqAllFunc: reqGetSimpSICList, reqCacheFunc: reqGetSimpSICCache, transToFrontFunc: commonTransDoc }],
      ["sceneitemoption", { description: "现场档案选项", reqAllFunc: reqSIOs, reqCacheFunc: reqGetSIOCache, transToFrontFunc: commonTransDoc }],
      ["sceneitem", { description: "现场档案", reqAllFunc: reqGetSIList, reqCacheFunc: reqGetSICache, transToFrontFunc: commonTransDoc }],
      ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
@@ -231,6 +231,7 @@ export const clearLocalDb = async (docName) => {
 };
 // Get Archive list from server for front-end cache
 export const InitDocCache = async (docName) => {
+   
     // Get Master Data latest TimeStamp
     const latestTsRes = await db.tsinfo.where("docname").equals(docName).toArray();
     // Get Local database table detail
@@ -239,8 +240,11 @@ export const InitDocCache = async (docName) => {
     if (latestTsRes.length === 0) {
         // If there are no records in the tsinfo table,
         // this means that all records need to be retrieved
-        const res = await docInfo.reqAllFunc(false);
+        const res = await docInfo.reqAllFunc(false);      
         if (res.status) {
+            if (res.data.length === 0) {
+                return
+            }
             const latestTs = res.data[0].ts;
             const itemAll = await docInfo.transToFrontFunc(res.data);
             // Update the tsinfo table                         
@@ -258,7 +262,6 @@ export const InitDocCache = async (docName) => {
         // If there are records in the tsinfo table,
         // this means onle the latest changed data needs to be retrieved.        
         const queryTs = latestTsRes[0].ts;
-        console.log("queryTs:", queryTs);
         const cacheRes = await docInfo.reqCacheFunc({ queryTs: queryTs }, false);
         if (cacheRes.status) {
             const docCache = cacheRes.data;

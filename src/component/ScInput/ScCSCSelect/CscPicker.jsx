@@ -7,29 +7,31 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { RefreshIcon } from "../../PubIcon/PubIcon";
 import { InitDocCache, GetLocalCache} from "../../../storage/db/db";
 import PubTree from "../ScPub/PubTree";
 
-const docName = "sceneitemclass";
+const docName = "csc";
 
-const SICPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+const CSCPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [oriDocs, setOriDocs] = useState([]);
+    const {t} = useTranslation();
     useEffect(() => {
-        async function getLocalSICs() {
+        async function getLocalCSCs() {
             const eics = await GetLocalCache(docName);
             setOriDocs(eics);
         }
-        getLocalSICs(); 
+        getLocalCSCs(); 
     }, []);
-    //将当前选择档案转换为档案id数组
+    // Convert the current array of CSC objects into an array of CSC IDs.
     const transferDocIDs = (doc) => {
         let selectedDocIDs = [];
         selectedDocIDs.push(doc.id);
         return selectedDocIDs;
     };
 
-    //刷新档案
+    // Refresh CSC list
     const handleDocRefresh = async () => {
         await InitDocCache(docName);
         const newDocs = await GetLocalCache(docName);
@@ -49,8 +51,8 @@ const SICPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                             display: "flex", flexDirection: "row", justifyContent: "space-between"
                         }}
                     >
-                        选择现场档案类别
-                        <Tooltip title="刷新" placement="top">
+                        {t("chooseCategory")}
+                        <Tooltip title={t("refresh")} placement="top">
                             <IconButton onClick={handleDocRefresh}>
                                 <RefreshIcon color="primary" />
                             </IconButton>
@@ -62,11 +64,11 @@ const SICPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                 <PubTree oriDocs={oriDocs} selectDocIDs={transferDocIDs(currentItem)} onDocClick={clickItemAction} onDocDoubleClick={doubleClickItemAction} />
             </List>
             <DialogActions sx={{ p: 2.5 }}>
-                <Button color='error' onClick={cancelClickAction}>取消</Button>
-                <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>确定</Button>
+                <Button color='error' onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions> 
         </>
     );
 };
 
-export default SICPicker;
+export default CSCPicker;

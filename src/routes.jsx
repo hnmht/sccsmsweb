@@ -18,7 +18,7 @@ import DownloadApp from "./pages/downloadApp/downloadApp";
 
 //档案
 const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); //部门档案
-const SceneItemClass = Loadable(lazy(() => import("./pages/protected/sceneItemClass/sceneItemClass"))); //现场档案类别
+const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); //现场档案类别
 const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); //岗位档案
 const SceneItem = Loadable(lazy(() => import("./pages/protected/sceneItem/sceneItem"))); //现场档案
 const UserDefineClass = Loadable(lazy(() => import("./pages/protected/userDefineClass/userDefineClass")));  //自定义档案类别
@@ -202,8 +202,8 @@ const routes = [
                 element: <Position />
             },
             {
-                path: "/private/archive/sceneItemClass",
-                element: <SceneItemClass />
+                path: "/private/masterData/constructionSiteCategory",
+                element: <CSC />
             },
             {
                 path: "/private/archive/sceneItem",

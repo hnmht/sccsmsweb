@@ -32,7 +32,7 @@ import EICIcon from "@mui/icons-material/Widgets"; //执行项目类别图标
 import EIDIcon from "@mui/icons-material/EventNote";//执行项目档案图标
 import PersonIcon from "@mui/icons-material/Group";//人员档案图标
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";//折叠图标
-import SICIcon from "@mui/icons-material/HolidayVillage";//现场档案类别图标
+import CSCIcon from "@mui/icons-material/HolidayVillage";//现场档案类别图标
 import SceneIcon from "@mui/icons-material/Factory";//现场档案类别图标
 import UDCIcon from '@mui/icons-material/Category';//自定义档案类别图标
 import UDDIcon from "@mui/icons-material/SnippetFolderOutlined";//自定义档案图标
@@ -104,7 +104,7 @@ export {
     EIDIcon,
     PersonIcon,
     ExpandLessIcon,
-    SICIcon,
+    CSCIcon,
     SceneIcon,
     UDCIcon,
     UDDIcon,

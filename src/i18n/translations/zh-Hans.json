@@ -121,7 +121,16 @@
     "chooseDeptPlaceholder": "请选择部门",
     "choosePerson": "选择人员",
     "chooseDepartment": "选择部门",
-
+    "addPosition": "增加岗位",
+    "modifyPosition": "编辑岗位",
+    "viewPosition": "查看岗位",
+    "addCategory": "增加类别",
+    "modifyCategory": "编辑类别",
+    "viewCategory": "所有类别",
+    "parentCategory": "上级类别",
+    "categoryPlaceholder": "请选择类别",
+    "chooseCategory": "选择类别",
+    "category": "类别",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

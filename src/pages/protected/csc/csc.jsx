@@ -9,74 +9,75 @@ import {
 } from "@mui/material";
 import { RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import { message } from "mui-message";
-
+import { useTranslation } from "react-i18next";
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
-import EditSIClass from "./editSIC";
+import EditCSC from "./editCSC";
 import PubTree from "../../../component/ScInput/ScPub/PubTree";
 
 import { treeToArr } from "../../../utils/tree";
-import { reqGetSICList, reqDeleteSIC, reqDeleteSICs } from "../../../api/sceneItemClass";
+import { reqGetCSCList, reqDeleteCSC, reqDeleteCSCs } from "../../../api/csc";
 import { GetLocalCache, InitDocCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 import useContentHeight from "../../../hooks/useContentHeight";
 
-function SceneItemClass() {
+// Construction Site Category
+function CSC() {
     const [rows, setRows] = useState([]);
-    const [simpSics, setSimpSics] = useState([]);
-    const [selectedSicIds, setSelectedSicIds] = useState([]);
+    const [simpCscs, setSimpCscs] = useState([]);
+    const [selectedCscIds, setSelectedCscIds] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         currentDoc: undefined,
         diagOpen: false,
         isNew: false,
         isModify: false
     });
-    const filterSics = rows.filter(sic => selectedSicIds.includes(sic.id));
+    const filterCscs = rows.filter(sic => selectedCscIds.includes(sic.id));
     const contentHeight = useContentHeight();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getData() {
-            //从本地缓存获取简化类别列表
-            await InitDocCache("sceneitemclass");
-            let newSimpSics = await GetLocalCache("sceneitemclass");
-            let newSelectedSicIds = [];
-            newSimpSics.forEach(simpSic => {
-                newSelectedSicIds.push(simpSic.id);
+            // Get the CSC list from the front-end cache
+            await InitDocCache("csc");
+            let newSimpCscs = await GetLocalCache("csc");
+            let newSelectedCscIds = [];
+            newSimpCscs.forEach(simpCsc => {
+                newSelectedCscIds.push(simpCsc.id);
             });
-            setSimpSics(newSimpSics);
-            setSelectedSicIds(newSelectedSicIds);
+            setSimpCscs(newSimpCscs);
+            setSelectedCscIds(newSelectedCscIds);
             handleReqDocList();
         }
         getData();
     }, []);
 
-    //获取类别列表
+    // Request the CSC list from the sever
     const handleReqDocList = async () => {
-        const docResp = await reqGetSICList();
+        const docResp = await reqGetCSCList();
         let docList = [];
-        if (docResp.data.status === 0) {
-            docList = docResp.data.data;
+        if (docResp.status) {
+            docList = docResp.data;
         }
         setRows(docList);
     };
-    //获取简化类别列表
-    const handleGetSimpSics = async (isGetAllIds = true) => {
-        await InitDocCache("sceneitemclass");
-        //从本地缓存获取简化类别列表
-        let newSimpSics = await GetLocalCache("sceneitemclass");
-        let newSelectedSicIds = [];
+    // Get the simple CSC list from front-end cache
+    const handleGetSimpCscs = async (isGetAllIds = true) => {
+        await InitDocCache("csc");
+        let newSimpCscs = await GetLocalCache("csc");
+        let newSelectedCscIds = [];
         if (isGetAllIds) {
-            newSimpSics.forEach(simpSic => {
-                newSelectedSicIds.push(simpSic.id);
+            newSimpCscs.forEach(simpCsc => {
+                newSelectedCscIds.push(simpCsc.id);
             })
         } else {
-            newSelectedSicIds = selectedSicIds;
+            newSelectedCscIds = selectedCscIds;
         }
-        setSimpSics(newSimpSics);
-        setSelectedSicIds(newSelectedSicIds);
+        setSimpCscs(newSimpCscs);
+        setSelectedCscIds(newSelectedCscIds);
     };
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -86,7 +87,7 @@ function SceneItemClass() {
         });
     };
 
-    //表头点击增加按钮
+    // Actions after click the add button in the header.
     const handleAddDoc = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -96,21 +97,17 @@ function SceneItemClass() {
         });
     };
 
-    //表头点击批量删除
+    // Actions after click the batch delete button in the header.
     const handleDelMultipleAction = async (docs) => {
-        const delRes = await reqDeleteSICs(docs,true);
+        const delRes = await reqDeleteCSCs(docs, true);
         if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error(delRes.data.statusMsg);
+            message.success(t('batchDeleteSuccessful'));
         }
-        //刷新
-        handleGetSimpSics();
+        // Refresh
+        handleGetSimpCscs();
         handleReqDocList();
     };
-    //对话框编辑用户自定义档案类别页面点击确定按钮
+    // Actions after click the ok button in the dialog.
     const handelAddDocOk = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -118,11 +115,11 @@ function SceneItemClass() {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求档案列表数据
+        // Refresh
         handleReqDocList();
-        handleGetSimpSics();
+        handleGetSimpCscs();
     };
-    //表体点击复制新增按钮
+    // Actions after click the copyAdd button in the body.
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -131,7 +128,7 @@ function SceneItemClass() {
             isModify: false
         });
     };
-    //表体点击详情按钮
+    // Actions after click the detail button in the body.
     const handleRowDetail = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -141,7 +138,7 @@ function SceneItemClass() {
         });
 
     };
-    //表体点击编辑按钮
+    // Actions after click the edit button in the body.
     const handleRowEdit = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -151,45 +148,40 @@ function SceneItemClass() {
         });
 
     };
-    //表体点击删除按钮
+    // Actions after click the delete button in the body.
     const handleRowDelete = async (doc) => {
-        const delRes = await reqDeleteSIC(doc);
-        if (delRes.data.status === 0) {
-            message.success("删除类别" + doc.name + "成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error("删除类别" + doc.name + "失败:" + delRes.data.statusMsg);
-        }
-
-        //刷新
-        handleGetSimpSics();
+        const delRes = await reqDeleteCSC(doc);
+        if (delRes.status) {
+            message.success(t("delSuccessful"));            
+        } 
+        // Refresh
+        handleGetSimpCscs();
         handleReqDocList();
     };
-    //树状视图选择
-    const handleSicsTreeClick = async (item, type) => {
-        //type 0 末级; 1父级; 3 全部;
+    
+    // Actions after the tree view item select
+    const handleCscsTreeClick = async (item, type) => {
         let sicIds = [];
-        if (type === 0) {
+        if (type === 0) { // Final level
             sicIds.push(item.id);
-        } else if (type === 1) {
+        } else if (type === 1) { // Parent level
             const tree = [];
             tree.push(item);
             let allChilds = treeToArr(tree);
             allChilds.forEach(item1 => {
                 sicIds.push(item1.id);
             })
-        } else if (type === 3) {
+        } else if (type === 3) { // All
             item.forEach(item3 => {
                 sicIds.push(item3.id);
             })
         }
-        setSelectedSicIds(sicIds);
+        setSelectedCscIds(sicIds);
     };
 
     return (
         <React.Fragment>
-            <PageTitle pageName="现场档案类别" displayHelp={true} helpUrl="/helps/sceneItemClass" />
+            <PageTitle pageName={t("MenuCSC")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2} >
                 <Grid item xs={2}>
@@ -203,9 +195,9 @@ function SceneItemClass() {
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择类别
-                                <Tooltip title="刷新" placement="top">
-                                    <IconButton onClick={handleGetSimpSics}>
+                                {t("chooseCategory")}
+                                <Tooltip title={t("refresh")} placement="top">
+                                    <IconButton onClick={handleGetSimpCscs}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
                                 </Tooltip>
@@ -214,19 +206,19 @@ function SceneItemClass() {
                         sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="类别"
+                            docName={t("category")}
                             isDisplayAll={true}
-                            oriDocs={simpSics}
-                            onDocClick={handleSicsTreeClick}
-                            selectDocIDs={selectedSicIds}
-                            onDocDoubleClick={handleSicsTreeClick}
+                            oriDocs={simpCscs}
+                            onDocClick={handleCscsTreeClick}
+                            selectDocIDs={selectedCscIds}
+                            onDocDoubleClick={handleCscsTreeClick}
                             isEdit={true}
                         />
                     </List>
                 </Grid>
                 <Grid item xs={10}>
                     <DocList
-                        rows={filterSics}
+                        rows={filterCscs}
                         columns={columns}
                         rowActionsDefine={rowActionsDefine}
                         addAction={handleAddDoc}
@@ -248,7 +240,7 @@ function SceneItemClass() {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800 } }}
                 closeAfterTransition={false}
             >
-                <EditSIClass
+                <EditCSC
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
@@ -261,4 +253,4 @@ function SceneItemClass() {
     );
 }
 
-export default SceneItemClass;
+export default CSC;

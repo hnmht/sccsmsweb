@@ -28,7 +28,6 @@ const Department = () => {
     const [simpDepts, setSimpDepts] = useState([]);
     const [selectedDeptIds, setSelectedDeptIds] = useState([]);
     const { t } = useTranslation();
-
     const [diagStatus, setDiagStatus] = useState({
         currentDept: undefined,
         diagOpen: false,
