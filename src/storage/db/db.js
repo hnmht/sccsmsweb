@@ -9,11 +9,11 @@ import { reqGetUDDAll, reqGetUDDCache } from "../../api/userDefineDoc";
 import { reqGetSimpEICList, reqGetSimpEICCache } from "../../api/exectiveItemClass";
 import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
-import { reqGetSIList, reqGetSICache, reqGetSIOCache, reqSIOs } from "../../api/sceneItem";
+import { reqGetCSList, reqGetCSCache, reqGetCSOCache, reqCSOs, } from "../../api/cs";
 import { reqGetSimpCSCList, reqGetSimpCSCCache } from "../../api/csc";
+import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
 import { reqGetRLList, reqGetRLsCache } from "../../api/riskLevel";
 import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
-import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
 import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 
@@ -151,14 +151,14 @@ export const docTable = new Map([
     ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
     ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
     ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
+    ["cs", { description: "Construction Site", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
 
     /* ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
      ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-     ["sceneitemoption", { description: "现场档案选项", reqAllFunc: reqSIOs, reqCacheFunc: reqGetSIOCache, transToFrontFunc: commonTransDoc }],
-     ["sceneitem", { description: "现场档案", reqAllFunc: reqGetSIList, reqCacheFunc: reqGetSICache, transToFrontFunc: commonTransDoc }],
+     ["sceneitemoption", { description: "现场档案选项", reqAllFunc: reqCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
      ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
      ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
      ["operatingpost", { description: "岗位档案", reqAllFunc: reqGetOPList, reqCacheFunc: reqGetOPCache, transToFrontFunc: commonTransDoc }],
@@ -231,7 +231,7 @@ export const clearLocalDb = async (docName) => {
 };
 // Get Archive list from server for front-end cache
 export const InitDocCache = async (docName) => {
-   
+
     // Get Master Data latest TimeStamp
     const latestTsRes = await db.tsinfo.where("docname").equals(docName).toArray();
     // Get Local database table detail
@@ -240,7 +240,7 @@ export const InitDocCache = async (docName) => {
     if (latestTsRes.length === 0) {
         // If there are no records in the tsinfo table,
         // this means that all records need to be retrieved
-        const res = await docInfo.reqAllFunc(false);      
+        const res = await docInfo.reqAllFunc(false);
         if (res.status) {
             if (res.data.length === 0) {
                 return
@@ -314,8 +314,8 @@ export const GetEIDCacheByClassId = async (classId) => {
     return await db.exectiveitem.where("itemclass.id").equals(classId).toArray();
 };
 //根据类别ID获取现场档案缓存
-export const GetSICacheByClassId = async (classId) => {
-    return await db["sceneitem"].where("itemclass.id").equals(classId).toArray();
+export const GetSICacheByCategoryId = async (classId) => {
+    return await db["cs"].where("csc.id").equals(classId).toArray();
 };
 //根据岗位列表获取可用的人员档案
 export const GetPersonsWithOps = async (opIds) => {

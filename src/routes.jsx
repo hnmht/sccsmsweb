@@ -20,7 +20,7 @@ import DownloadApp from "./pages/downloadApp/downloadApp";
 const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); //部门档案
 const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); //现场档案类别
 const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); //岗位档案
-const SceneItem = Loadable(lazy(() => import("./pages/protected/sceneItem/sceneItem"))); //现场档案
+const CS = Loadable(lazy(() => import("./pages/protected/cs/cs"))); //现场档案
 const UserDefineClass = Loadable(lazy(() => import("./pages/protected/userDefineClass/userDefineClass")));  //自定义档案类别
 const UserDefineDoc = Loadable(lazy(() => import("./pages/protected/userDefineDoc/userDefineDoc"))); //自定义档案
 const ExectiveItemClass = Loadable(lazy(() => import("./pages/protected/exectiveItemClass/exectiveItemClass")));  //执行项目分类
@@ -60,7 +60,7 @@ const User = Loadable(lazy(() => import("./pages/protected/user/user")));
 const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permissionAssignment/permissionAssignment")));
 const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); 
 //设置
-const SceneItemOptions = Loadable(lazy(() => import("./pages/protected/sceneItemOptions/sceneItemOptions")));
+const CSOptions = Loadable(lazy(() => import("./pages/protected/sceneItemOptions/sceneItemOptions")));
 const Registration = Loadable(lazy(() => import("./pages/protected/registration/registration")));
 const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetUp/landingPageSetup")));
 //执行单
@@ -206,8 +206,8 @@ const routes = [
                 element: <CSC />
             },
             {
-                path: "/private/archive/sceneItem",
-                element: <SceneItem />
+                path: "/private/masterData/constructionSite",
+                element: <CS />
             },
             {
                 path: "/private/archive/userDefineClass",
@@ -267,7 +267,7 @@ const routes = [
             },
             {
                 path: "/private/options/sceneItemOption",
-                element: <SceneItemOptions />
+                element: <CSOptions />
             },
             {
                 path: "/private/options/register",

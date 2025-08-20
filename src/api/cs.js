@@ -1,52 +1,52 @@
 import request from "../utils/request";
-//获取现场档案选项
-export function reqSIOs(isLoading = true) {
+// Get Construction Site Options
+export function reqCSOs(isLoading = true) {
     return request({
-        url: "/si/options",
+        url: "/cs/options",
         method: "post",
         isLoading
     });
 }
 
-export function reqEditSIO(data,isLoading=true) {
+export function reqEditCSO(data,isLoading=true) {
     return request({
-        url: "/si/editoption",
+        url: "/cs/editoption",
         method: "post",
         data,
         isLoading
     });
 }
-//获取自定义档案列表
-export function reqGetSIList(isLoading = true) {
+// Get Construction Site master data list
+export function reqGetCSList(isLoading = true) {
     return request({
-        url: "/si/list",
+        url: "/cs/list",
         method: 'post',
         isLoading
     });
 }
 
-//获取自定义档案缓存
-export function reqGetSICache(data, isLoading = true) {
+// Get Construction Site front-end cache
+export function reqGetCSCache(data, isLoading = true) {
     return request({
-        url: "/si/cache",
+        url: "/cs/cache",
         method: 'post',
         data,
         isLoading
     });
 }
-//获取自定义档案选项缓存
-export function reqGetSIOCache(data, isLoading = true) {
+// 获取自定义档案选项缓存
+export function reqGetCSOCache(data, isLoading = true) {
     return request({
-        url: "/si/optioncache",
+        url: "/cs/optioncache",
         method: 'post',
         data,
         isLoading
     });
 }
 //检查现场档案编码
-export function reqCheckSICode(data, isLoading = true) {
+export function reqCheckCSCode(data, isLoading = true) {
     return request({
-        url: "/si/checkcode",
+        url: "/cs/checkcode",
         method: 'post',
         data,
         isLoading
@@ -54,9 +54,9 @@ export function reqCheckSICode(data, isLoading = true) {
 }
 
 //增加现场档案
-export function reqAddSI(data, isLoading = true) {
+export function reqAddCS(data, isLoading = true) {
     return request({
-        url: "/si/add",
+        url: "/cs/add",
         method: 'post',
         data,
         isLoading
@@ -64,9 +64,9 @@ export function reqAddSI(data, isLoading = true) {
 }
 
 //修改现场档案
-export function reqEditSI(data, isLoading = true) {
+export function reqEditCS(data, isLoading = true) {
     return request({
-        url: "/si/edit",
+        url: "/cs/edit",
         method: 'post',
         data,
         isLoading
@@ -74,9 +74,9 @@ export function reqEditSI(data, isLoading = true) {
 }
 
 //删除现场档案
-export function reqDeleteSI(data, isLoading = true) {
+export function reqDeleteCS(data, isLoading = true) {
     return request({
-        url: "/si/delete",
+        url: "/cs/delete",
         method: 'post',
         data,
         isLoading
@@ -84,9 +84,9 @@ export function reqDeleteSI(data, isLoading = true) {
 }
 
 //批量删除现场档案
-export function reqDeleteSIs(data, isLoading = true) {
+export function reqDeleteCSs(data, isLoading = true) {
     return request({
-        url: "/si/deletesis",
+        url: "/cs/deletesis",
         method: 'post',
         data,
         isLoading

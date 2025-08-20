@@ -13,18 +13,18 @@ import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
-import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub';
-import { reqAddSI,reqEditSI,reqCheckSICode } from '../../../api/sceneItem';
+import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { reqAddCS,reqEditCS,reqCheckCSCode } from '../../../api/cs';
 
 //获取初始值
-const getInitialValues = async (oriSI, isNew, isModify, SIC) => {
+const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
     const person = await getCurrentPerson();
-    let newSI = {//新增
+    let newCS = {//新增
         id: 0,
         code: "",
         name: "",
         description: "",
-        itemclass: SIC,
+        itemclass: CSC,
         subdept: { id: 0, code: '', name: '' },
         respdept: { id: 0, code: '', name: '' },
         respperson: { id: 0, code: '', name: '' },
@@ -49,9 +49,9 @@ const getInitialValues = async (oriSI, isNew, isModify, SIC) => {
         modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
     };
     if (isNew) {
-        if (oriSI) {//复制新增
-            newSI = {
-                ...oriSI,
+        if (oriCS) {//复制新增
+            newCS = {
+                ...oriCS,
                 id: 0,
                 code: "",
                 createuser: person,
@@ -62,39 +62,39 @@ const getInitialValues = async (oriSI, isNew, isModify, SIC) => {
         }
     } else {
         if (isModify) {//编辑
-            newSI = {
-                ...oriSI,
+            newCS = {
+                ...oriCS,
                 modifyuser: person,
-                createdate: dayjs(oriSI.createdate).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(oriSI.modifydate).format("YYYYMMDDHHmm")
+                createdate: dayjs(oriCS.createdate).format("YYYYMMDDHHmm"),
+                modifydate: dayjs(oriCS.modifydate).format("YYYYMMDDHHmm")
             }
         } else {//查看
-            newSI = {
-                ...oriSI,
-                createdate: dayjs(oriSI.createdate).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(oriSI.modifydate).format("YYYYMMDDHHmm")
+            newCS = {
+                ...oriCS,
+                createdate: dayjs(oriCS.createdate).format("YYYYMMDDHHmm"),
+                modifydate: dayjs(oriCS.modifydate).format("YYYYMMDDHHmm")
             }
         }
     }
-    return newSI;
+    return newCS;
 };
-const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }) => {
-    const [currentSI, setCurrentSI] = useState(undefined);
+const EditCS = ({ isOpen, isNew, isModify, oriCS, options, CSC, onCancel, onOk }) => {
+    const [currentCS, setCurrentCS] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);  
     useEffect(() => {
         async function initValue() {
-            const newSI = await getInitialValues(oriSI, isNew, isModify, SIC);
-            setCurrentSI(newSI);
+            const newCS = await getInitialValues(oriCS, isNew, isModify, CSC);
+            setCurrentCS(newCS);
         }
         if (isOpen) {
             initValue();
         }
-    }, [isOpen, oriSI, isNew, isModify, SIC]);
+    }, [isOpen, oriCS, isNew, isModify, CSC]);
 
     //ScInput组件获取内容后的输入
     const handleGetValue = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
-        if (!isOpen || !isEdit || currentSI === undefined) {
+        if (!isOpen || !isEdit || currentCS === undefined) {
             return
         }
         //更新errors
@@ -104,8 +104,8 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                 [itemkey]: errMsg,
             });
         });
-        //更新currentSI
-        setCurrentSI((prevState) => {
+        //更新currentCS
+        setCurrentCS((prevState) => {
             //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
@@ -113,32 +113,32 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
         });
     };
     //增加执行项目档案
-    const handleAddSI = async () => {        
-        let thisSI = cloneDeep(currentSI);
-        delete thisSI.createdate;
-        delete thisSI.modifydate;       
+    const handleAddCS = async () => {        
+        let thisCS = cloneDeep(currentCS);
+        delete thisCS.createdate;
+        delete thisCS.modifydate;       
         if (isModify) {
-            let editRes = await reqEditSI(thisSI);
+            let editRes = await reqEditCS(thisCS);
             if (editRes.data.status === 0) {
-                message.success("修改档案'" + thisSI.name + "'成功");
+                message.success("修改档案'" + thisCS.name + "'成功");
                 onOk();
             } else {
-                message.error("修改档案'" + thisSI.name + "'失败:" + editRes.data.statusMsg);
+                message.error("修改档案'" + thisCS.name + "'失败:" + editRes.data.statusMsg);
             }
         } else {
-            let addRes = await reqAddSI(thisSI);
+            let addRes = await reqAddCS(thisCS);
             if (addRes.data.status === 0) {
-                message.success("新增档案‘" + thisSI.name + "’成功");
+                message.success("新增档案‘" + thisCS.name + "’成功");
                 onOk();
             } else {
-                message.error("新增档案‘" + thisSI.name + "’失败:" + addRes.data.statusMsg);
+                message.error("新增档案‘" + thisCS.name + "’失败:" + addRes.data.statusMsg);
             }
         }
     };
     //验证编码
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
-        let checkResp = await reqCheckSICode({ id: currentSI.id,itemclass:SIC,code:value},false);
+        let checkResp = await reqCheckCSCode({ id: currentCS.id,itemclass:CSC,code:value},false);
         if (checkResp.data.status === 0) {
             err = { isErr: false, msg: "" };
         } else {
@@ -146,7 +146,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
         }
         return err;
     };
-    return currentSI
+    return currentCS
         ? <>
             <DialogTitle>{isNew ? "增加现场档案" : isModify ? "修改现场档案" : "现场档案详情"}</DialogTitle>
             <Divider />
@@ -159,7 +159,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="类别"
                             itemKey="itemclass"
-                            initValue={currentSI.itemclass}
+                            initValue={currentCS.itemclass}
                             pickDone={handleGetValue}
                             placeholder=""
                             isBackendTest={false}
@@ -174,7 +174,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="编码"
                             itemKey="code"
-                            initValue={currentSI.code}
+                            initValue={currentCS.code}
                             pickDone={handleGetValue}
                             placeholder="请输入现场档案编码"
                             isBackendTest={true}
@@ -190,7 +190,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="名称"
                             itemKey="name"
-                            initValue={currentSI.name}
+                            initValue={currentCS.name}
                             pickDone={handleGetValue}
                             placeholder="请输入现场档案名称"
                             isBackendTest={false}
@@ -205,7 +205,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="说明"
                             itemKey="description"
-                            initValue={currentSI.description}
+                            initValue={currentCS.description}
                             pickDone={handleGetValue}
                             placeholder="请输入说明"
                             isBackendTest={false}
@@ -222,7 +222,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="所属部门"
                             itemKey="subdept"
-                            initValue={currentSI.subdept}
+                            initValue={currentCS.subdept}
                             pickDone={handleGetValue}
                             placeholder="请选择所属部门"
                             isBackendTest={false}
@@ -237,7 +237,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="责任部门"
                             itemKey="respdept"
-                            initValue={currentSI.respdept}
+                            initValue={currentCS.respdept}
                             pickDone={handleGetValue}
                             placeholder="请选择责任部门"
                             isBackendTest={false}
@@ -252,7 +252,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="责任人"
                             itemKey="respperson"
-                            initValue={currentSI.respperson}
+                            initValue={currentCS.respperson}
                             pickDone={handleGetValue}
                             placeholder="请选择责任人"
                             isBackendTest={false}
@@ -267,7 +267,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="经度"
                             itemKey="longitude"
-                            initValue={currentSI.longitude}
+                            initValue={currentCS.longitude}
                             pickDone={handleGetValue}
                             placeholder="请输入经度"
                             isBackendTest={false}
@@ -282,7 +282,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="纬度"
                             itemKey="latitude"
-                            initValue={currentSI.latitude}
+                            initValue={currentCS.latitude}
                             pickDone={handleGetValue}
                             placeholder="请输入纬度"
                             isBackendTest={false}
@@ -301,7 +301,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                                             isEdit={isEdit}
                                             itemShowName={udf.displayname}
                                             itemKey={udf.code}
-                                            initValue={currentSI[udf.code]}
+                                            initValue={currentCS[udf.code]}
                                             pickDone={handleGetValue}
                                             placeholder={`请选择${udf.displayname}`}
                                             isBackendTest={false}
@@ -322,7 +322,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="完工"
                             itemKey="finishflag"
-                            initValue={currentSI.finishflag}
+                            initValue={currentCS.finishflag}
                             pickDone={handleGetValue}
                             placeholder=""
                             key="finishflag"
@@ -330,15 +330,15 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             positionID={0}
                         />
                     </Grid>
-                    { currentSI.finishflag === 1
+                    { currentCS.finishflag === 1
                         ? <Grid item xs={4}>
                             <ScInput
                                 dataType={306}
-                                allowNull={currentSI.finishflag === 0}
-                                isEdit={isEdit && currentSI.finishflag === 1}
+                                allowNull={currentCS.finishflag === 0}
+                                isEdit={isEdit && currentCS.finishflag === 1}
                                 itemShowName="完工日期"
                                 itemKey="finishdate"
-                                initValue={currentSI.finishdate}
+                                initValue={currentCS.finishdate}
                                 pickDone={handleGetValue}
                                 placeholder=""
                                 key="finishdate"
@@ -355,7 +355,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={isEdit}
                             itemShowName="停用"
                             itemKey="status"
-                            initValue={currentSI.status}
+                            initValue={currentCS.status}
                             pickDone={handleGetValue}
                             placeholder=""
                             key="status"
@@ -373,7 +373,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={false}
                             itemShowName="创建人"
                             itemKey="createuser"
-                            initValue={currentSI.createuser}
+                            initValue={currentCS.createuser}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="createuser"
@@ -386,7 +386,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={false}
                             itemShowName="创建时间"
                             itemKey="createdate"
-                            initValue={currentSI.createdate}
+                            initValue={currentCS.createdate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="createdate"
@@ -399,7 +399,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={false}
                             itemShowName="修改人"
                             itemKey="modifyuser"
-                            initValue={currentSI.modifyuser}
+                            initValue={currentCS.modifyuser}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="modifyuser"
@@ -412,7 +412,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                             isEdit={false}
                             itemShowName="修改时间"
                             itemKey="modifydate"
-                            initValue={currentSI.modifydate}
+                            initValue={currentCS.modifydate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="modifydate"
@@ -425,7 +425,7 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
                 {isEdit
                     ? <>
                         <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddSI}>{isModify ? "保存" : "增加"}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddCS}>{isModify ? "保存" : "增加"}</Button>
                     </>
                     : <Button variant='contained' onClick={onCancel}>返回</Button>
                 }
@@ -436,4 +436,4 @@ const EditSI = ({ isOpen, isNew, isModify, oriSI, options, SIC, onCancel, onOk }
 
 };
 
-export default EditSI;
+export default EditCS;

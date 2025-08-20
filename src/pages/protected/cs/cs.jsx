@@ -8,11 +8,11 @@ import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import Loader from "../../../component/Loader/Loader";
-import SicTree from "./sicTree";
-import EditSI from "./editSceneItem";
+import CSCTree from "./cscTree";
+import EditCS from "./editCS";
 import { columns, rowActionsDefine, delMultipleDisabled, GetDynamicColumns } from "./constructor";
-import { GetSICacheByClassId, InitDocCache } from "../../../storage/db/db";
-import { reqDeleteSI, reqDeleteSIs, reqSIOs } from "../../../api/sceneItem";
+import { GetSICacheByCategoryId, InitDocCache } from "../../../storage/db/db";
+import { reqDeleteCS, reqDeleteCSs, reqCSOs } from "../../../api/cs";
 import { message } from "mui-message";
 import { MultiSortByArr } from "../../../utils/tools";
 
@@ -21,9 +21,9 @@ const SceneItem = () => {
     const [dynamicColumns, setDynamicColumns] = useState(undefined);
     const [options, setOptions] = useState([]);
     const [rows, setRows] = useState([]);
-    const [currentSIC, setCurrentSIC] = useState(undefined);
+    const [currentCSC, setCurrentCSC] = useState(undefined);
     const [diagStatus, setDiagStatus] = useState({
-        currentSI: undefined,
+        currentCS: undefined,
         diagOpen: false,
         isNew: false,
         isModify: false
@@ -34,7 +34,7 @@ const SceneItem = () => {
         async function getSioption() {
             let newColumns = columns;
             let newOptions = [];
-            const res = await reqSIOs();
+            const res = await reqCSOs();
             if (res.data.status === 0) {
                 newOptions = res.data.data;
                 newOptions.sort(MultiSortByArr([{ field: "id", order: "asc" }]));
@@ -49,7 +49,7 @@ const SceneItem = () => {
     //对话框关闭
     const handleDiagClose = () => {
         setDiagStatus({
-            currentSI: undefined,
+            currentCS: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
@@ -58,18 +58,18 @@ const SceneItem = () => {
     //对话框编辑执行项目档案类别页面点击确定按钮
     const handelDiagOk = () => {
         setDiagStatus({
-            currentSI: undefined,
+            currentCS: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
         //重新向服务器请求用户自定义档案类别列表数据
-        handleRefreshSI();
+        handleRefreshCS();
     };
     //表头点击增加按钮
-    const handleAddSI = () => {
+    const handleAddCS = () => {
         setDiagStatus({
-            currentSI: undefined,
+            currentCS: undefined,
             diagOpen: true,
             isNew: true,
             isModify: false
@@ -78,7 +78,7 @@ const SceneItem = () => {
     //表体点击复制新增按钮
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
-            currentSI: doc,
+            currentCS: doc,
             diagOpen: true,
             isNew: true,
             isModify: false
@@ -88,7 +88,7 @@ const SceneItem = () => {
     //表体点击详情按钮
     const handleRowDetail = (doc) => {
         setDiagStatus({
-            currentSI: doc,
+            currentCS: doc,
             diagOpen: true,
             isNew: false,
             isModify: false
@@ -97,7 +97,7 @@ const SceneItem = () => {
     //表体点击编辑按钮
     const handleRowEdit = async (doc) => {
         setDiagStatus({
-            currentSI: doc,
+            currentCS: doc,
             diagOpen: true,
             isNew: false,
             isModify: true
@@ -106,43 +106,43 @@ const SceneItem = () => {
     //表体行点击删除按钮
     const handleRowDelete = async (doc) => {
         //向服务器请求删除
-        const delRes = await reqDeleteSI(doc);
+        const delRes = await reqDeleteCS(doc);
         if (delRes.data.status === 0) {
             message.success("删除档案" + doc.name + "成功");
         } else {
             message.error("删除档案" + doc.name + "失败:" + delRes.data.statusMsg);
         }
         //更新本地缓存，刷新现场档案列表
-        handleRefreshSI();
+        handleRefreshCS();
     };
 
     //表头点击批量删除按钮
     const handleDelMultipleAction = async (docs) => {
-        const res = await reqDeleteSIs(docs);
+        const res = await reqDeleteCSs(docs);
         if (res.data.status === 0) {
             message.success("批量删除档案成功");
         } else {
             message.error("批量删除档案失败:" + res.data.statusMsg);
         }
         //更新本地缓存，刷新现场档案列表
-        handleRefreshSI();
+        handleRefreshCS();
     };
     //获取当前Sic
     const handleGetCurrentSic = async (item) => {
         //设置当前现场档案类别
-        setCurrentSIC(item);
+        setCurrentCSC(item);
         //从本地缓存获取当前类别下的所有现场档案
-        const newSis = await GetSICacheByClassId(item.id);
+        const newSis = await GetSICacheByCategoryId(item.id);
         //更新现场档案列表
         setRows(newSis);
     };
 
     //刷新现场档案
-    const handleRefreshSI = async (sic = currentSIC) => {
+    const handleRefreshCS = async (sic = currentCSC) => {
         //向服务器请求更新本地缓存
         await InitDocCache("sceneitem");
         //从本地缓存获取当前类别下的所有现场档案
-        const newSis = await GetSICacheByClassId(sic.id);
+        const newSis = await GetSICacheByCategoryId(sic.id);
         //更新现场档案列表
         setRows(newSis);
     };
@@ -153,20 +153,20 @@ const SceneItem = () => {
             <Divider my={2} />
             <Grid container spacing={2}>
                 <Grid item xs={2}>
-                    <SicTree selectOk={handleGetCurrentSic} />
+                    <CSCTree selectOk={handleGetCurrentSic} />
                 </Grid>
                 <Grid item xs={10}>
                     {dynamicColumns !== undefined
                         ? <DocList
-                            headAddDisabled={!currentSIC || currentSIC.status !== 0}
-                            headRefreshDisabled={!currentSIC}
+                            headAddDisabled={!currentCSC || currentCSC.status !== 0}
+                            headRefreshDisabled={!currentCSC}
                             delMultipleDisabled={delMultipleDisabled}
                             delMultipleAction={handleDelMultipleAction}
                             columns={dynamicColumns}
                             rows={rows}
                             rowActionsDefine={rowActionsDefine}
-                            refreshAction={() => handleRefreshSI(currentSIC)}
-                            addAction={handleAddSI}
+                            refreshAction={() => handleRefreshCS(currentCSC)}
+                            addAction={handleAddCS}
                             rowCopyAdd={handleRowCopyAdd}
                             rowViewDetail={handleRowDetail}
                             rowEdit={handleRowEdit}
@@ -183,13 +183,13 @@ const SceneItem = () => {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 1024, minHeight: 512 } }}
                 closeAfterTransition={false}
             >
-                <EditSI
+                <EditCS
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
-                    oriSI={diagStatus.currentSI}
+                    oriCS={diagStatus.currentCS}
                     options={options}
-                    SIC={currentSIC}
+                    CSC={currentCSC}
                     onCancel={handleDiagClose}
                     onOk={handelDiagOk}
                 />

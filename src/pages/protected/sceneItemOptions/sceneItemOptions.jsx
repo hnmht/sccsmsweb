@@ -10,7 +10,7 @@ import { Divider, Button } from "../../../component/ScMui/ScMui";
 import Loader from "../../../component/Loader/Loader";
 import ScInput from '../../../component/ScInput';
 import PageTitle from "../../../component/PageTitle/PageTitle";
-import { reqSIOs, reqEditSIO } from "../../../api/sceneItem";
+import { reqSIOs, reqEditSIO } from "../../../api/cs";
 import { InitDocCache } from "../../../storage/db/db";
 import { MultiSortByArr } from "../../../utils/tools";
 import useContentHeight from "../../../hooks/useContentHeight";

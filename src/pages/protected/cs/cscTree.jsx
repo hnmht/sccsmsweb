@@ -5,18 +5,18 @@ import PubTree from "../../../component/ScInput/ScPub/PubTree";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import useContentHeight from "../../../hooks/useContentHeight";
 
-function SicTree({ selectOk }) {
-    const [sics, setSics] = useState([]);
+function CSCTree({ selectOk }) {
+    const [cscs, setCscs] = useState([]);
     const [currentDoc, setCurrentDoc] = useState(undefined);
 
     const contentHeight = useContentHeight();
     useEffect(() => {
-        async function initSics() {
-            await InitDocCache("sceneitemclass");
-            const newSics = await GetLocalCache("sceneitemclass");
-            setSics(newSics);
+        async function initCscs() {
+            await InitDocCache("csc");
+            const newCscs = await GetLocalCache("csc");
+            setCscs(newCscs);
         }
-        initSics();
+        initCscs();
     }, []);
     //将当前选择档案转换为档案id数组
     const transferDocIDs = (doc) => {
@@ -28,8 +28,8 @@ function SicTree({ selectOk }) {
     }
     //获取执行项目类别
     const handleGetLocalSICs = async () => {
-        const newSics = await GetLocalCache("sceneitemclass");
-        setSics(newSics);
+        const newCscs = await GetLocalCache("sceneitemclass");
+        setCscs(newCscs);
     };
     //更新执行项目类别
     const handleRefresh = async () => {
@@ -68,7 +68,7 @@ function SicTree({ selectOk }) {
             <PubTree
                 docName="类别"
                 isDisplayAll={false}
-                oriDocs={sics}
+                oriDocs={cscs}
                 onDocClick={handleOnDocClick}
                 selectDocIDs={transferDocIDs(currentDoc)}
                 onDocDoubleClick={handleOnDocClick}
@@ -77,4 +77,4 @@ function SicTree({ selectOk }) {
     );
 }
 
-export default SicTree;
+export default CSCTree;
