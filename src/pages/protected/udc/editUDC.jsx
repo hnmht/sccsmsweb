@@ -8,58 +8,58 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
-import { reqAddUDC, reqEditUDC, reqCheckUDCName } from '../../../api/userDefineClass';
+import { reqAddUDC, reqEditUDC, reqCheckUDCName } from '../../../api/udc';
 import { InitDocCache } from '../../../storage/db/db';
-import { getCurrentPerson ,checkVoucherNoBodyErrors} from '../pub';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { useTranslation } from 'react-i18next';
 
-//获取初始值
+// General initial values for the UDC master data.
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriUDC } = diagStatus;
-
     const person = await getCurrentPerson();
     let newUDC = {};
     if (isNew) {
-        if (oriUDC) {//复制新增
+        if (oriUDC) {// Copy add
             newUDC = cloneDeep(oriUDC);
             newUDC.id = 0;
             newUDC.name = "";
-            newUDC.createuser = person;
-            newUDC.modifyuser = { id: 0, code: "", name: "" };
-            newUDC.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newUDC.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+            newUDC.creator = person;
+            newUDC.modifier = { id: 0, code: "", name: "" };
+            newUDC.createDate = DateTimeFormat(new Date(), "LLL");
+            newUDC.modifyDate = DateTimeFormat(new Date(), "LLL");
         } else {
-            newUDC = { //新增
+            newUDC = { // Add
                 id: 0,
                 name: "",
                 description: "",
                 islevel: 0,
                 status: 0,
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: DateTimeFormat(new Date(), "LLL")
             };
         }
     } else {
-        if (!oriUDC) { //错误
+        if (!oriUDC) { // error
             return
         } else {
-            if (isModify) {//编辑
+            if (isModify) {// Modify
                 newUDC = cloneDeep(oriUDC);
-                newUDC.createdate = dayjs(newUDC.createdate).format("YYYYMMDDHHmm");
-                newUDC.modifyuser = person;
-                newUDC.modifydate = dayjs(newUDC.modifydate).format("YYYYMMDDHHmm");
-            } else { //查看
+                newUDC.createDate = DateTimeFormat(newUDC.createDate, "LLL");
+                newUDC.modifier = person;
+                newUDC.modifyDate = DateTimeFormat(newUDC.modifyDate, "LLL");
+            } else { // View
                 newUDC = cloneDeep(oriUDC);
-                newUDC.createdate = dayjs(newUDC.createdate).format("YYYYMMDDHHmm");
-                newUDC.modifydate = dayjs(newUDC.modifydate).format("YYYYMMDDHHmm");
+                newUDC.createDate = DateTimeFormat(newUDC.createDate, "LLL");
+                newUDC.modifyDate = DateTimeFormat(newUDC.modifyDate, "LLL");
             }
         }
     }
@@ -67,11 +67,13 @@ const getInitialValues = async (diagStatus) => {
     return newUDC;
 };
 
-const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
+// Add, Edit, View the User-defined Category master data
+const EditUDC = ({ diagStatus, onCancel, onOk }) => {
     const { isOpen, isNew, isModify } = diagStatus;
     const [currentClass, setCurrentClass] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
@@ -83,69 +85,65 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
         }
     }, [diagStatus]);
 
-    //scinput组件获取内容后传入
+    // Data processing actions after the data is passed into the ScInput components.
     const handleGetValue = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
         if (!isOpen || !isEdit || currentClass === undefined) {
             return
         }
-        //更新errors
+        // Modify errors
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的信息
+        // Modify currentClass
         setCurrentClass((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
         });
     };
 
-    //增加或修改用户自定义档案类别
+    // Add or Edit UDC
     const handleAddUDC = async () => {
         let thisUDC = cloneDeep(currentClass);
-        delete thisUDC.createdate;
-        delete thisUDC.modifydate;
+        delete thisUDC.createDate;
+        delete thisUDC.modifyDate;
         if (isModify) {
+            // Modify UDC
             const editRes = await reqEditUDC(thisUDC);
-            if (editRes.data.status === 0) {
-                message.success("修改类别'" + thisUDC.name + "'成功");
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改类别'" + thisUDC.name + "'失败:" + editRes.data.statusMsg);
             }
         } else {
-            //增加自定义档案类别
+            // Add UDC
             const addRes = await reqAddUDC(thisUDC);
-            if (addRes.data.status === 0) {
-                message.success("新增类别‘" + thisUDC.name + "’成功");
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增类别‘" + thisUDC.name + "’失败:" + addRes.data.statusMsg);
-            }
+            } 
         }
-        //刷新本地缓存
-        await InitDocCache("userdefineclass");
+        // Refresh the front-end cache
+        await InitDocCache("udc");
     }
-    //检查自定义档案名称是否存在
+    // Check if the UDC name exists.
     const handleBackendTestName = async (value) => {
         let err = { isErr: false, msg: "" };
         let classId = currentClass.id ? currentClass.id : 0;
-        let resp = await reqCheckUDCName({ id: classId, "name": value },false);
-        if (resp.data.status === 0) {
+        let resp = await reqCheckUDCName({ id: classId, "name": value }, false);
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
-    
+
     return currentClass
         ? <>
-            <DialogTitle>{isNew ? "增加类别" : isModify ? "修改类别" : "类别详情"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addCategory") : isModify ? t("modifyCategory") : t("viewCategory")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -154,11 +152,11 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="类别名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={currentClass.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入类别名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
                             key="name"
@@ -169,11 +167,11 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="类别说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={currentClass.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入类别说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -185,7 +183,7 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={currentClass.status}
                             pickDone={handleGetValue}
@@ -202,25 +200,25 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentClass.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentClass.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentClass.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentClass.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -228,25 +226,25 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentClass.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentClass.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentClass.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentClass.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -255,15 +253,15 @@ const EditUDClass = ({ diagStatus, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddUDC}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddUDC}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>
         : <Loader />
-    
+
 };
 
-export default EditUDClass;
+export default EditUDC;

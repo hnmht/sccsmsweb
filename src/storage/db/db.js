@@ -4,8 +4,8 @@ import dayjs from "../../utils/myDayjs";
 import { GetDataTypeDefaultValue } from "../dataTypes";
 import { reqGetSimpDepts, reqGetSimpDeptsCache } from "../../api/department";
 import { reqGetPersons, reqGetPersonsCache } from "../../api/person";
-import { reqGetUDCList, reqGetUDCsCache } from "../../api/userDefineClass";
-import { reqGetUDDAll, reqGetUDDCache } from "../../api/userDefineDoc";
+import { reqGetUDCList, reqGetUDCsCache } from "../../api/udc";
+import { reqGetUDDAll, reqGetUDDCache } from "../../api/ud";
 import { reqGetSimpEICList, reqGetSimpEICCache } from "../../api/exectiveItemClass";
 import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
@@ -152,8 +152,8 @@ export const docTable = new Map([
     ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
     ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
     ["cs", { description: "Construction Site", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
-
-    /* ["userdefineclass", { description: "用户自定义档案类别", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+    /* 
      ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],

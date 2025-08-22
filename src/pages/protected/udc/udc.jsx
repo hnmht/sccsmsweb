@@ -1,16 +1,17 @@
-import { useState, useCallback, useEffect,Fragment } from "react";
+import { useState, useCallback, useEffect, Fragment } from "react";
 import { Dialog } from "@mui/material";
 import { message } from "mui-message";
 
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
-import EditUDClass from "./editUDClass";
+import EditUDC from "./editUDC";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
-import { reqGetUDCList, reqDeleteUDC, reqDeleteUDCs } from "../../../api/userDefineClass";
+import { reqGetUDCList, reqDeleteUDC, reqDeleteUDCs } from "../../../api/udc";
 import { InitDocCache } from "../../../storage/db/db";
+import { useTranslation } from "react-i18next";
 
-function UserDefineClass() {
+function UserDefineCategory() {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         oriUDC: undefined,
@@ -18,6 +19,7 @@ function UserDefineClass() {
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getData() {
@@ -26,19 +28,17 @@ function UserDefineClass() {
         getData();
     }, []);
 
-    //从服务器获取UDClass列表
+    // Request UDC list from server.
     const handleReqUDCList = async () => {
         const resp = await reqGetUDCList();
         let newUdcs = [];
-        if (resp.data.status === 0) {
-            newUdcs = resp.data.data;
-        } else {
-            message.error(resp.data.statusMsg);
+        if (resp.status) {
+            newUdcs = resp.data;
         }
         setRows(newUdcs);
     };
 
-    //表体行点击复制新增按钮
+    // Actions after click the copyAdd button in the body.
     const handleCopyAdd = (item) => {
         setDiagStatus({
             oriUDC: item,
@@ -47,7 +47,7 @@ function UserDefineClass() {
             isModify: false
         });
     };
-    //表体行点击编辑按钮
+    // Actions after click the add button in the body.
     const handleUDCEdit = (item) => {
         setDiagStatus({
             oriUDC: item,
@@ -56,20 +56,19 @@ function UserDefineClass() {
             isModify: true
         });
     }
-    //表体行点击删除按钮
+    // Actions after click the delete button in the body.
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteUDC(item);
-        if (delRes.data.status === 0) {
-            message.success("删除类别'" + item.name + "'成功");
-            //刷新
+        console.log("delRes:",delRes);
+        if (delRes.status) {
+            message.success("delSuccessful");
+            // Get the latest udc list
             handleReqUDCList();
-        } else {
-            message.error("删除类别'" + item.name + "'失败:" + delRes.data.statusMsg);
         }
-        //更新缓存
-        await InitDocCache("userdefineclass");
+        // Update the front-end cache
+        await InitDocCache("udc");
     }
-    //表体行点击详情按钮
+    // Actions after click the view button in the body.
     const handleUDCDetail = (item) => {
         setDiagStatus({
             oriUDC: item,
@@ -79,7 +78,7 @@ function UserDefineClass() {
         });
     }
 
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = useCallback(() => {
         setDiagStatus({
             oriUDC: undefined,
@@ -89,7 +88,7 @@ function UserDefineClass() {
         });
     }, []);
 
-    //表头点击增加按钮
+    // Actions after click the Add button in the head.
     const handleAddUDClass = () => {
         setDiagStatus({
             oriUDC: undefined,
@@ -98,20 +97,18 @@ function UserDefineClass() {
             isModify: false
         });
     };
-    //表头点击批量删除按钮
+    // Actions after click the Batch delete button in the head.
     const handleDelMultiple = async (udcs) => {
         const delRes = await reqDeleteUDCs(udcs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
+            // Get latest UDC list
             handleReqUDCList();
-        } else {
-            message.error(delRes.data.statusMsg);
         }
-        //更新本地缓存
-        await InitDocCache("userdefineclass");
+        // Update the front-end cache
+        await InitDocCache("udc");
     }
-    //对话框编辑用户自定义档案类别页面点击确定按钮
+    // Actions after click ok button in the dialog.
     const handelAddUDCOk = useCallback(() => {
         setDiagStatus({
             oriUDC: undefined,
@@ -119,14 +116,14 @@ function UserDefineClass() {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求用户自定义档案类别列表数据
+        // Get latest UDC list.
         handleReqUDCList();
     }, []);
 
 
     return (
         <Fragment>
-            <PageTitle pageName="自定义档案类别" displayHelp={true} helpUrl="/helps/userDefineClass" />
+            <PageTitle pageName={t("MenuUDC")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 rows={rows}
@@ -149,7 +146,7 @@ function UserDefineClass() {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800 } }}
                 closeAfterTransition={false}
             >
-                <EditUDClass
+                <EditUDC
                     diagStatus={diagStatus}
                     onCancel={handleDiagClose}
                     onOk={handelAddUDCOk}
@@ -159,4 +156,4 @@ function UserDefineClass() {
     );
 }
 
-export default UserDefineClass;
+export default UserDefineCategory;

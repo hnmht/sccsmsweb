@@ -21,7 +21,7 @@ const Department = Loadable(lazy(() => import("./pages/protected/department/depa
 const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); //现场档案类别
 const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); //岗位档案
 const CS = Loadable(lazy(() => import("./pages/protected/cs/cs"))); //现场档案
-const UserDefineClass = Loadable(lazy(() => import("./pages/protected/userDefineClass/userDefineClass")));  //自定义档案类别
+const UDC = Loadable(lazy(() => import("./pages/protected/udc/udc")));  //自定义档案类别
 const UserDefineDoc = Loadable(lazy(() => import("./pages/protected/userDefineDoc/userDefineDoc"))); //自定义档案
 const ExectiveItemClass = Loadable(lazy(() => import("./pages/protected/exectiveItemClass/exectiveItemClass")));  //执行项目分类
 const ExectiveItem = Loadable(lazy(() => import("./pages/protected/exectiveItem/exectiveItem"))); //执行项目
@@ -210,8 +210,8 @@ const routes = [
                 element: <CS />
             },
             {
-                path: "/private/archive/userDefineClass",
-                element: <UserDefineClass />
+                path: "/private/masterData/userDefinedCategory",
+                element: <UDC />
             },
             {
                 path: "/private/archive/userDefine",

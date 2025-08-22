@@ -16,7 +16,6 @@ import { reqDeleteCS, reqDeleteCSs, reqCSOs } from "../../../api/cs";
 import { message } from "mui-message";
 import { MultiSortByArr } from "../../../utils/tools";
 
-
 const SceneItem = () => {
     const [dynamicColumns, setDynamicColumns] = useState(undefined);
     const [options, setOptions] = useState([]);
@@ -30,7 +29,6 @@ const SceneItem = () => {
     });
 
     useEffect(() => {
-        //获取动态列
         async function getSioption() {
             let newColumns = columns;
             let newOptions = [];
@@ -46,7 +44,7 @@ const SceneItem = () => {
         getSioption();
     }, []);
 
-    //对话框关闭
+    // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentCS: undefined,

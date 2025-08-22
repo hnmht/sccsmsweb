@@ -21,7 +21,7 @@ import { GetLocalCache } from '../../../storage/db/db';
 import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
 import { useTranslation } from 'react-i18next';
 
-// Generate initial values for the department master date
+// Generate initial values for the department master data
 const getInitialValues = async (oriDept, isNew, isModify) => {
     const person = await getCurrentPerson();
     let newDept = {};
@@ -68,6 +68,7 @@ const getInitialValues = async (oriDept, isNew, isModify) => {
     return newDept;
 };
 
+// Add, Edit, View the department master data
 const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
     const [currentDept, setCurrentDept] = useState(undefined);
     const [errors, setErrors] = useState({});
