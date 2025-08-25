@@ -9,34 +9,36 @@ import {
     Tooltip,
     IconButton,
 } from "@mui/material";
-import { UDCIcon,RefreshIcon,LevelIcon } from "../../../component/PubIcon/PubIcon";
-import { InitDocCache,GetLocalCache } from "../../../storage/db/db";
+import { useTranslation } from "react-i18next";
+import { UDCIcon, RefreshIcon, LevelIcon } from "../../../component/PubIcon/PubIcon";
+import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import useContentHeight from "../../../hooks/useContentHeight";
 
 function UDCList({ isEdit, selectOk }) {
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [UDCs, setUDCs] = useState([]);
-
+    const { t } = useTranslation();
     const contentHeight = useContentHeight();
+
     useEffect(() => {
         handleGetUDCs();
     }, []);
-    //选择项目
+    // Actions after click the item
     const handleSelect = (index) => {
         if (currentIndex !== index) {
             selectOk(UDCs[index]);
         }
         setCurrentIndex(index);
     };
-    //获取自定义档案类别列表
+    // Get UDC list from the front-end cache
     const handleGetUDCs = async () => {
-        const udcsCache = await GetLocalCache("userdefineclass");
-        const udcs = udcsCache.length > 0 ? udcsCache : [];
-        setUDCs(udcs);
+        const udcsCache = await GetLocalCache("udc");
+        // const udcs = udcsCache.length > 0 ? udcsCache : [];
+        setUDCs(udcsCache);
     };
-    //点击刷新按钮
+    // Actions after click the refresh button.
     const handleRefresh = async () => {
-        await InitDocCache("userdefineclass");
+        await InitDocCache("udc");
         handleGetUDCs();
     };
 
@@ -51,8 +53,8 @@ function UDCList({ isEdit, selectOk }) {
                         display: "flex", flexDirection: "row", justifyContent: "space-between"
                     }}
                 >
-                    选择类别
-                    <Tooltip title="刷新" placement="top">
+                    {t("chooseCategory")}
+                    <Tooltip title={t("refresh")} placement="top">
                         <IconButton onClick={handleRefresh}>
                             <RefreshIcon color="primary" />
                         </IconButton>
@@ -69,20 +71,19 @@ function UDCList({ isEdit, selectOk }) {
                     <ListItemButton
                         onClick={() => handleSelect(index)}
                         disabled={isEdit}
-                        // sx={{backgroundColor:udc.status === 0 ? "transparent" :"#FF7256"}}                      
                     >
                         <ListItemIcon>
-                           <UDCIcon color={currentIndex === index ? "primary" : "transparent"} />                            
+                            <UDCIcon color={currentIndex === index ? "primary" : "transparent"} />
                         </ListItemIcon>
                         <ListItemText primary={udc.name}
-                            sx={{ ".MuiListItemText-primary": { color: udc.status===0 ? currentIndex === index ? "primary.main" : "primary" :"red" } }} 
+                            sx={{ ".MuiListItemText-primary": { color: udc.status === 0 ? currentIndex === index ? "primary.main" : "primary" : "red" } }}
                         />
-                        { udc.level === 1
+                        {udc.level === 1
                             ? <ListItemIcon>
                                 <LevelIcon color={currentIndex === index ? "primary" : "transparent"} />
                             </ListItemIcon>
                             : null
-                        }                        
+                        }
                     </ListItemButton>
                 </ListItem>
             )}

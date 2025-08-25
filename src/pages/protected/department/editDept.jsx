@@ -165,15 +165,13 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
             if (addRes.status) {
                 message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error(t("addFailed") + addRes.msg);
             }
         }
     }
 
     return (currentDept
         ? <>
-            <DialogTitle>{isNew ? t("addDept") : isModify ? t("modifyDept"): t("viewDept")}</DialogTitle>
+            <DialogTitle>{isNew ? t("addDept") : isModify ? t("modifyDept") : t("viewDept")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -256,7 +254,7 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="disable"
+                            itemShowName="MenuUDA"
                             itemKey="status"
                             initValue={currentDept.status}
                             pickDone={handleGetValue}

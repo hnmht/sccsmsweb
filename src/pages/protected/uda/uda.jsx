@@ -1,147 +1,142 @@
-import { useState,Fragment } from "react";
+import { useState, Fragment } from "react";
 import {
     Grid,
     Dialog
 } from "@mui/material";
 import { message } from "mui-message";
-
+import { useTranslation } from "react-i18next";
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import UDCList from "./udcList";
-import EditUDDoc from "./editUDDoc";
-
-import { columns, rowActionsDefine, delMultipleDisabled } from "./uddConstructor";
-import { GetUDDCache, InitDocCache } from "../../../storage/db/db";
-import { reqDeleteUDD, reqDeleteUDDs } from "../../../api/userDefineDoc";
+import EditUDA from "./editUDA";
+import { columns, rowActionsDefine, delMultipleDisabled } from "./construction";
+import { GetUDACache, InitDocCache } from "../../../storage/db/db";
+import { reqDeleteUDA, reqDeleteUDAs } from "../../../api/uda";
 
 function UserDefineDoc() {
-    const [UDDs, setUDDs] = useState([]);
+    const [UDAs, setUDAs] = useState([]);
     const [currentUDC, setCurrentUDC] = useState(undefined);
     const [diagStatus, setDiagStatus] = useState({
-        currentUDD: undefined,
+        currentUDA: undefined,
         isOpen: false,
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
-    //更新自定义档案列表
-    const handleGetUDDList = async (udc) => {
-        await InitDocCache("userdefinedoc");
-        handleGetUDDCache(udc);
+    // Refrsh UDA list
+    const handleGetUDAList = async (udc) => {
+        await InitDocCache("uda");
+        handleGetUDACache(udc);
     }
-    //获取自定义档案缓存列表
-    const handleGetUDDCache = async (udc) => {
-        const newUDDs = await GetUDDCache(udc.id);
-        setUDDs(newUDDs);
+    // Get the UDA list from front-end cache
+    const handleGetUDACache = async (udc) => {
+        const newUDAs = await GetUDACache(udc.id);
+        setUDAs(newUDAs);
     }
-    //自定义档案类别选择值以后
-    const handleSelectClass = (udc) => {
+    // Actions after select the UDC items
+    const handlerSelectUDC = (udc) => {
         setCurrentUDC(udc);
-        handleGetUDDCache(udc);
+        handleGetUDACache(udc);
     }
-    //弹出对话框关闭/取消
+    // Close dialog 
     const handleDiagClose = () => {
         setDiagStatus({
-            currentUDD: undefined,
+            currentUDA: undefined,
             isOpen: false,
             isNew: false,
             isModify: false
         });
     };
 
-    //对话框编辑用户自定义档案类别页面点击确定按钮
-    const handelAddUDDOk = () => {
+    // Actions after click the Ok button in the dialog.
+    const handelAddUDAOk = () => {
         setDiagStatus({
-            currentUDD: undefined,
+            currentUDA: undefined,
             isOpen: false,
             isNew: false,
             isModify: false
-        });
-        //重新向服务器请求用户自定义档案类别列表数据
-        handleGetUDDList(currentUDC);
+        });    
+        handleGetUDAList(currentUDC);
     };
 
-    //表头点击增加按钮
-    const handleAddUDDoc = () => {
+    // Actions after click the Add button in the head.
+    const handleAddUDAoc = () => {
         setDiagStatus({
-            currentUDD: undefined,
+            currentUDA: undefined,
             isOpen: true,
             isNew: true,
             isModify: false
         });
     };
-    //表头点击批量删除按钮
+    // Actions after click the Batch delete button in the head.
     const handleDelMultiple = async (udds) => {
-        const delRes = await reqDeleteUDDs(udds);
-        if (delRes.data.status === 0) {
-            message.success("批量删除档案成功");
-            handleGetUDDList(currentUDC);
-        } else {
-            message.error("批量删除档案失败:" + delRes.data.statusMsg);
-        }
+        const delRes = await reqDeleteUDAs(udds);
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
+            handleGetUDAList(currentUDC);
+        } 
     };
-    //行点击复制新增按钮
+    // Actions after click the CopyAdd button in the body.
     const handleRowCopyAdd = (udd) => {
         setDiagStatus({
-            currentUDD: udd,
+            currentUDA: udd,
             isOpen: true,
             isNew: true,
             isModify: false
         });
     }
-    //行点击详情按钮
-    const handleUDDDetail = (udd) => {
+    // Actions after click the view button in the body.
+    const handleUDADetail = (udd) => {
         setDiagStatus({
-            currentUDD: udd,
+            currentUDA: udd,
             isOpen: true,
             isNew: false,
             isModify: false
         });
     }
-    //行点击编辑按钮
+    // Actions after click Edit button in the body.
     const handleRowEdit = (udd) => {
         setDiagStatus({
-            currentUDD: udd,
+            currentUDA: udd,
             isOpen: true,
             isNew: false,
             isModify: true
         });
     }
-    //行点击删除按钮
+    // Actions after click the Delete button in the button.
     const handleRowDelete = async (udd) => {
-        const delRes = await reqDeleteUDD(udd);
-        if (delRes.data.status === 0) {
-            message.success("删除档案'" + udd.name + "'成功");
-            handleGetUDDList(currentUDC);
-        } else {
-            message.error("删除档案'" + udd.name + "'失败:" + delRes.data.statusMsg);
+        const delRes = await reqDeleteUDA(udd);
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
+            handleGetUDAList(currentUDC);
         }
     }
 
     return (
         <Fragment>
-            <PageTitle pageName="自定义档案" displayHelp={true} helpUrl="/helps/userDefine" />
+            <PageTitle pageName={t("MenuUDA")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2} sx={{ height: "100%" }}>
                 <Grid item xs={2} >
-                    <UDCList isEdit={false} selectOk={handleSelectClass} />
+                    <UDCList isEdit={false} selectOk={handlerSelectUDC} />
                 </Grid>
                 <Grid item xs={10}>
                     <DocList
                         headAddDisabled={!currentUDC || currentUDC.status !== 0}
                         headRefreshDisabled={!currentUDC}
-                        rows={UDDs}
+                        rows={UDAs}
                         columns={columns}
                         rowActionsDefine={rowActionsDefine}
                         delMultipleDisabled={delMultipleDisabled}
                         delMultipleAction={handleDelMultiple}
-                        addAction={handleAddUDDoc}
-                        refreshAction={() => handleGetUDDList(currentUDC)}
+                        addAction={handleAddUDAoc}
+                        refreshAction={() => handleGetUDAList(currentUDC)}
                         rowCopyAdd={handleRowCopyAdd}
                         rowEdit={handleRowEdit}
                         rowDelete={handleRowDelete}
-                        rowViewDetail={handleUDDDetail}
+                        rowViewDetail={handleUDADetail}
                     />
                 </Grid>
             </Grid>
@@ -153,13 +148,13 @@ function UserDefineDoc() {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800 } }}
                 closeAfterTransition={false}
             >
-                <EditUDDoc
+                <EditUDA
                     isOpen={diagStatus.isOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
-                    oriUDD={diagStatus.currentUDD}
+                    oriUDA={diagStatus.currentUDA}
                     onCancel={handleDiagClose}
-                    onOk={handelAddUDDOk}
+                    onOk={handelAddUDAOk}
                     UDC={currentUDC}
                 />
 

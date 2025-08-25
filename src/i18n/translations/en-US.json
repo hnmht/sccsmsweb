@@ -133,6 +133,10 @@
     "chooseCategory":"Choose Category",
     "category":"Category",
 
+    "addUDA":"Add User-defined Archive",
+    "modifyUDA":"Modify User-defined Archive",
+    "viewUDA":"View User-defined Archive",
+
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
@@ -202,7 +206,7 @@
     "MenuCSC": "Construction Site Category",
     "MenuCS": "Construction Site",
     "MenuUDC": "User-defined Category",
-    "MenuUD": "User Defined",
+    "MenuUDA": "User Defined Archive",
     "MenuEPC": "Execution Project Category",
     "MenuEP": "Execution Project",
     "MenuRL": "Risk Level",

@@ -1,4 +1,4 @@
-import { useState, useCallback,useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
     DialogContent,
     DialogTitle,
@@ -6,148 +6,134 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
-
+import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
+import { DateTimeFormat } from '../../../i18n/dayjs';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
 import Loader from '../../../component/Loader/Loader';
 import MoreInfo from '../../../component/MoreInfo/MoreInfo';
-import { getCurrentPerson } from '../pub';
-import { reqAddUDD, reqCheckUDDCode, reqEditUDD } from '../../../api/userDefineDoc';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { reqAddUDA, reqCheckUDACode, reqEditUDA } from '../../../api/uda';
 
-//生成初始数据
-const getInitialValues = async (oriUDD, isNew, isModify, currentUDC) => {
+// Generate initial values for the UDA master data
+const getInitialValues = async (oriUDA, isNew, isModify, currentUDC) => {
     const person = await getCurrentPerson();
-    let newUdd = { //新增
+    let newUda = { // Add brand new
         id: 0,
-        docclass: currentUDC,
+        udc: currentUDC,
         code: "",
         name: "",
         description: "",
-        fatherid: 0,
+        fatherID: 0,
         status: 0,
-        createuser: person,
-        modifyuser: { id: 0, code: "", name: "" },
-        createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+        creator: person,
+        modifier: { id: 0, code: "", name: "" },
+        createDate: DateTimeFormat(new Date(), "LLL"),
+        modifyDate: DateTimeFormat(new Date(), "LLL"),
     };
-    if (isNew) { //新增或者复制新增
-        if (oriUDD) {//复制新增
-            newUdd = cloneDeep(oriUDD);
-            newUdd.id = 0;
-            newUdd.code = "";
-            newUdd.createuser = person;
-            newUdd.modifyuser = { id: 0, code: "", name: "" };
-            newUdd.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newUdd.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+    if (isNew) { // Copy add or Edit or View
+        if (oriUDA) {// Copy Add
+            newUda = cloneDeep(oriUDA);
+            newUda.id = 0;
+            newUda.code = "";
+            newUda.creator = person;
+            newUda.modifier = { id: 0, code: "", name: "" };
+            newUda.createDate = DateTimeFormat(new Date(), "LLL");
+            newUda.modifyDate = DateTimeFormat(new Date(), "LLL");
         }
-    } else { //编辑或者查看详情
-        if (!oriUDD) { //错误
+    } else { // Edit or View
+        if (!oriUDA) { // Error
             return
         } else {
-            if (isModify) { //编辑
-                newUdd = cloneDeep(oriUDD);
-                newUdd.createdate = dayjs(newUdd.createdate).format("YYYYMMDDHHmm");
-                newUdd.modifyuser = person;
-                newUdd.modifydate = dayjs(newUdd.modifydate).format("YYYYMMDDHHmm");
-            } else {//查看
-                newUdd = cloneDeep(oriUDD);
-                newUdd.createdate = dayjs(newUdd.createdate).format("YYYYMMDDHHmm");
-                newUdd.modifydate = dayjs(newUdd.modifydate).format("YYYYMMDDHHmm");
+            if (isModify) { // Edit
+                newUda = cloneDeep(oriUDA);
+                newUda.createDate = DateTimeFormat(newUda.createDate, "LLL");
+                newUda.modifier = person;
+                newUda.modifyDate = DateTimeFormat(newUda.modifyDate, "LLL");
+            } else {// View
+                newUda = cloneDeep(oriUDA);
+                newUda.createDate = DateTimeFormat(newUda.createDate, "LLL");
+                newUda.modifyDate = DateTimeFormat(newUda.modifyDate, "LLL");
             }
         }
     }
-    return newUdd;
+    return newUda;
 };
-//检查错误
-const isError = (errors) => {
-    let number = 0;
-    for (let key in errors) {
-        if (errors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
-};
-
-const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => {
-    const [currentUDD, setCurrentUDD] = useState(undefined);
+// Add, Edit, View User-defined Archive
+const EditUDA = ({ isOpen, isNew, isModify, oriUDA, UDC, onCancel, onOk }) => {
+    const [currentUDA, setCurrentUDA] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
-            const initUdd = await getInitialValues(oriUDD, isNew, isModify, UDC)
-            setCurrentUDD(initUdd);
+            const initUdd = await getInitialValues(oriUDA, isNew, isModify, UDC)
+            setCurrentUDA(initUdd);
         }
         if (isOpen) {
             initValue();
         }
-    }, [isOpen, oriUDD, isNew, isModify, UDC]);
+    }, [isOpen, oriUDA, isNew, isModify, UDC]);
 
-    //scinput组件获取内容后传入
+    // Data processing actions after the data is passed into the ScInput components
     const handleGetValue = useCallback((value, itemkey, fieldIndex, rowIndex, errMsg) => {
-        if (currentUDD === undefined || !isOpen || !isEdit) {
+        if (currentUDA === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新errors
+        // Change errors value
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的信息
-        setCurrentUDD((prevState) => {
-            //深拷贝方法
+        // Change currentUDA value
+        setCurrentUDA((prevState) => {
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
         });
-    }, [isOpen, currentUDD, isEdit]);
+    }, [isOpen, currentUDA, isEdit]);
 
-    //增加自定义档案
-    const handleAddUDD = async () => {
-        let thisUDD = cloneDeep(currentUDD);
-        delete thisUDD.createdate;
-        delete thisUDD.modifydate;
+    // Add or Edit UDA master data
+    const handleAddUDA = async () => {
+        let thisUDA = cloneDeep(currentUDA);
+        delete thisUDA.createDate;
+        delete thisUDA.modifyDate;
         if (isModify) {
-            let editRes = await reqEditUDD(thisUDD);
-            if (editRes.data.status === 0) {
-                message.success("修改档案'" + thisUDD.name + "'成功");
+            let editRes = await reqEditUDA(thisUDA);
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改档案'" + thisUDD.name + "'失败:" + editRes.data.statusMsg);
             }
         } else {
-            let addRes = await reqAddUDD(thisUDD);
+            let addRes = await reqAddUDA(thisUDA);
             if (addRes.data.status === 0) {
-                message.success("新增档案‘" + thisUDD.name + "’成功");
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增档案‘" + thisUDD.name + "’失败:" + addRes.data.statusMsg);
             }
         }
     };
-    //检查自定义档案编码
+    // Check if the UDA code exists
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
-        let docId = currentUDD.id ? currentUDD.id : 0;
-        let checkResp = await reqCheckUDDCode({ id: docId, docclass: UDC, code: value },false);
+        let docId = currentUDA.id ? currentUDA.id : 0;
+        let checkResp = await reqCheckUDACode({ id: docId, udc: UDC, code: value }, false);
 
-        if (checkResp.data.status === 0) {
+        if (checkResp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: checkResp.data.statusMsg };
+            err = { isErr: true, msg: checkResp.msg};
         }
         return err;
     }
 
-    return currentUDD
+    return currentUDA
         ? <>
-            <DialogTitle>{isNew ? "增加档案" : isModify ? "修改档案" : "档案详情"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addUDA") : isModify ? t("modifyUDA") : t("viewUDA")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={3}>
@@ -156,11 +142,11 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="档案编码"
+                            itemShowName="code"
                             itemKey="code"
-                            initValue={currentUDD.code}
+                            initValue={currentUDA.code}
                             pickDone={handleGetValue}
-                            placeholder="请输入类别编码"
+                            placeholder="codePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestCode}
                             key="code"
@@ -171,11 +157,11 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="档案名称"
+                            itemShowName="name"
                             itemKey="name"
-                            initValue={currentUDD.name}
+                            initValue={currentUDA.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入档案名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={false}
                             key="name"
                         />
@@ -185,11 +171,11 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="档案说明"
+                            itemShowName="description"
                             itemKey="description"
-                            initValue={currentUDD.description}
+                            initValue={currentUDA.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入档案说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -201,13 +187,13 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="档案类别"
-                            itemKey="docclass.name"
-                            initValue={currentUDD.docclass.name}
+                            itemShowName="MenuUDC"
+                            itemKey="udc.name"
+                            initValue={currentUDA.udc.name}
                             pickDone={handleGetValue}
                             placeholder=""
                             isBackendTest={false}
-                            key="docclass.name"
+                            key="udc.name"
                         />
                     </Grid>
                     <Grid item xs={6} sx={{ display: "flex", alignItems: "center", justifyContent: "right" }}>
@@ -215,9 +201,9 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
-                            initValue={currentUDD.status}
+                            initValue={currentUDA.status}
                             pickDone={handleGetValue}
                             placeholder=""
                             key="status"
@@ -232,25 +218,25 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentUDD.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentUDA.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentUDD.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentUDA.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -258,25 +244,25 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentUDD.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentUDA.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentUDD.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentUDA.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -285,14 +271,14 @@ const EditUDDoc = ({ isOpen, isNew, isModify, oriUDD, UDC, onCancel, onOk }) => 
             <DialogActions sx={{ p: 2.5 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={isError(errors)} onClick={handleAddUDD}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddUDA}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>
         : <Loader />
 };
 
-export default EditUDDoc;
+export default EditUDA;

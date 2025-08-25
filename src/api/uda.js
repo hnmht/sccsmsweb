@@ -1,9 +1,9 @@
 import request from "../utils/request";
 
 //获取自定义档案列表
-export function reqGetUDDList(data,isLoading=true) {
+export function reqGetUDAList(data,isLoading=true) {
     return request({
-        url: "/udd/list",
+        url: "/uda/list",
         method: 'post',
         data,
         isLoading
@@ -11,18 +11,18 @@ export function reqGetUDDList(data,isLoading=true) {
 }
 
 //获取所有自定义档案
-export function reqGetUDDAll(isLoading = true) {
+export function reqGetUDAAll(isLoading = true) {
     return request({
-        url: "/udd/all",
+        url: "/uda/all",
         method: 'post',
         isLoading
     });
 }
 
 //获取自定义档案缓存
-export function reqGetUDDCache(data, isLoading = true) {
+export function reqGetUDACache(data, isLoading = true) {
     return request({
-        url: "/udd/cache",
+        url: "/uda/cache",
         method: 'post',
         data,
         isLoading
@@ -30,9 +30,9 @@ export function reqGetUDDCache(data, isLoading = true) {
 }
 
 //增加自定义档案
-export function reqAddUDD(data, isLoading = true) {
+export function reqAddUDA(data, isLoading = true) {
     return request({
-        url: "/udd/add",
+        url: "/uda/add",
         method: 'post',
         data,
         isLoading
@@ -40,9 +40,9 @@ export function reqAddUDD(data, isLoading = true) {
 }
 
 //检查自定义档案编码是否存在
-export function reqCheckUDDCode(data, isLoading = true) {
+export function reqCheckUDACode(data, isLoading = true) {
     return request({
-        url: "/udd/checkcode",
+        url: "/uda/checkcode",
         method: 'post',
         data,
         isLoading
@@ -50,9 +50,9 @@ export function reqCheckUDDCode(data, isLoading = true) {
 }
 
 //编辑自定义档案
-export function reqEditUDD(data, isLoading = true) {
+export function reqEditUDA(data, isLoading = true) {
     return request({
-        url: "/udd/edit",
+        url: "/uda/edit",
         method: 'post',
         data,
         isLoading
@@ -60,9 +60,9 @@ export function reqEditUDD(data, isLoading = true) {
 }
 
 //删除自定义档案
-export function reqDeleteUDD(data, isLoading = true) {
+export function reqDeleteUDA(data, isLoading = true) {
     return request({
-        url: "/udd/delete",
+        url: "/uda/delete",
         method: 'post',
         data,
         isLoading
@@ -70,9 +70,9 @@ export function reqDeleteUDD(data, isLoading = true) {
 }
 
 //批量删除自定义档案
-export function reqDeleteUDDs(data, isLoading = true) {
+export function reqDeleteUDAs(data, isLoading = true) {
     return request({
-        url: "/udd/deleteudds",
+        url: "/uda/deleteudas",
         method: 'post',
         data,
         isLoading

@@ -5,7 +5,7 @@ import { GetDataTypeDefaultValue } from "../dataTypes";
 import { reqGetSimpDepts, reqGetSimpDeptsCache } from "../../api/department";
 import { reqGetPersons, reqGetPersonsCache } from "../../api/person";
 import { reqGetUDCList, reqGetUDCsCache } from "../../api/udc";
-import { reqGetUDDAll, reqGetUDDCache } from "../../api/ud";
+import { reqGetUDAAll, reqGetUDACache } from "../../api/uda";
 import { reqGetSimpEICList, reqGetSimpEICCache } from "../../api/exectiveItemClass";
 import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
@@ -28,7 +28,7 @@ db.version(1).stores({
     department: "id,status,ts",
     person: "id,deptID,positionID,status,ts",
     udc: "id,status,ts",
-    ud: "id,docclass.id,status,ts",
+    uda: "id,udc.id,status,ts",
     epc: "id,status,ts",
     csc: "id,status,ts",
     ep: "id,code,epc.id,resulttype.id,status,ts",
@@ -153,8 +153,9 @@ export const docTable = new Map([
     ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
     ["cs", { description: "Construction Site", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
     ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
+
     /* 
-     ["userdefinedoc", { description: "用户自定义档案", reqAllFunc: reqGetUDDAll, reqCacheFunc: reqGetUDDCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
@@ -305,8 +306,8 @@ export const GetCacheAnyOf = async (cacheName, key, arr) => {
     return await db[cacheName].where(key).anyOf(arr).toArray();
 };
 //获取自定义档案缓存
-export const GetUDDCache = async (classId) => {
-    const udds = await db.userdefinedoc.where("docclass.id").equals(classId).toArray();
+export const GetUDACache = async (classId) => {
+    const udds = await db.uda.where("udc.id").equals(classId).toArray();
     return udds;
 };
 //根据类别ID获取执行项目缓存

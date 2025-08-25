@@ -6,16 +6,16 @@ import {
 } from "@mui/material";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
-import { InitDocCache,GetUDDCache } from "../../../storage/db/db";
+import { InitDocCache,GetUDACache } from "../../../storage/db/db";
 
-const docName = "userdefinedoc";
+const docName = "uda";
 
-const UddPicker = ({udc,clickItemAction,doubleClickItemAction,cancelClickAction,okClickAction,currentItem}) => {
+const UdaPicker = ({udc,clickItemAction,doubleClickItemAction,cancelClickAction,okClickAction,currentItem}) => {
     const [udds, setUdds] = useState([]);
 
     useEffect(() => {
         async function reqLocalUdds() {
-            const localUdds = await GetUDDCache(udc.id);
+            const localUdds = await GetUDACache(udc.id);
             // console.log("获取udcs");
             setUdds(localUdds);
         }
@@ -26,7 +26,7 @@ const UddPicker = ({udc,clickItemAction,doubleClickItemAction,cancelClickAction,
         let newUdds = [];
         if (udc && udc.id !== 0 ) {
             await InitDocCache(docName);
-            newUdds = await GetUDDCache(udc.id);
+            newUdds = await GetUDACache(udc.id);
         }
         setUdds(newUdds);
     };
@@ -52,4 +52,4 @@ const UddPicker = ({udc,clickItemAction,doubleClickItemAction,cancelClickAction,
     );
 }
 
-export default memo(UddPicker);
+export default memo(UdaPicker);

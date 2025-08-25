@@ -10,7 +10,7 @@ import {
     Tooltip,
 } from "@mui/material";
 import { UDDIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import UddPicker from "./UddPicker";
+import UdaPicker from "./UdaPicker";
 const zeroValue = { id: 0, code: "", name: "", description: "", docclass: { id: 0, name: "" }, fatherid: 0 };
 //550 
 const ScUDDSelect = memo((props) => {
@@ -159,7 +159,7 @@ const ScUDDSelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <UddPicker
+                <UdaPicker
                     udc={udc}
                     clickItemAction={handleClickItem}
                     doubleClickItemAction={handleDoubleClickItem}
