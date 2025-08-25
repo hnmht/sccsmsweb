@@ -7,46 +7,45 @@ import {
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache,GetUDACache } from "../../../storage/db/db";
+import { useTranslation } from "react-i18next";
 
 const docName = "uda";
-
 const UdaPicker = ({udc,clickItemAction,doubleClickItemAction,cancelClickAction,okClickAction,currentItem}) => {
-    const [udds, setUdds] = useState([]);
-
+    const [udas, setUdas] = useState([]);
+    const {t} = useTranslation();
     useEffect(() => {
-        async function reqLocalUdds() {
+        async function getLocalUDAs() {
             const localUdds = await GetUDACache(udc.id);
-            // console.log("获取udcs");
-            setUdds(localUdds);
+            setUdas(localUdds);
         }
-        reqLocalUdds();        
+        getLocalUDAs();        
     }, [udc]);
-    //刷新用户自定义档案
-    const handleRefreshUdds = async () => {
+
+    // Refresh the UDA list 
+    const handleRefreshUdas = async () => {
         let newUdds = [];
         if (udc && udc.id !== 0 ) {
             await InitDocCache(docName);
             newUdds = await GetUDACache(udc.id);
         }
-        setUdds(newUdds);
+        setUdas(newUdds);
     };
 
-    // console.log("渲染uddPicker");
     return (
         <>
-            <DialogTitle>选择档案</DialogTitle>
+            <DialogTitle>{t("chooseUDA")}</DialogTitle>
             <DocTable
                 columns={columns}
-                refreshAction={handleRefreshUdds}
-                rows={udds}
-                docListTitle="选择档案"
+                refreshAction={handleRefreshUdas}
+                rows={udas}
+                docListTitle="UDAList"
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{m:1}}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );

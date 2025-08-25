@@ -13,7 +13,7 @@ import PersonPicker from "./PersonPicker";
 import { useTranslation } from "react-i18next";
 const zeroValue = { id: 0, code: "", name: "", avater: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" };
 
-//510 Person Select Component
+//510 Person Archive selection input component
 const ScPersonSelect = ({
     positionID = -1,
     rowIndex = -1,
@@ -57,7 +57,7 @@ const ScPersonSelect = ({
         handleOkClick();
     };
 
-    // Check the value and  pass it to the parent component
+    // Check the value and pass it to the parent component
     const handleTransfer = async (doc = person) => {
         if (!isEdit) {
             return

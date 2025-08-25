@@ -9,16 +9,20 @@ import {
     Dialog,
     Tooltip,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { UDDIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import UdaPicker from "./UdaPicker";
+
 const zeroValue = { id: 0, code: "", name: "", description: "", docclass: { id: 0, name: "" }, fatherid: 0 };
-//550 
+const udcZeroValue = { id: 0, name: "", description: "" }
+
+//550 User-defined Archive selection input component
 const ScUDDSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc, udc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc, udc = udcZeroValue } = props;
     const [selectItem, setSelectItem] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
-    /* const [udds, setUdds] = useState([]); */
+    const { t } = useTranslation();
 
     useEffect(() => {
         setSelectItem(initValue);
@@ -30,15 +34,14 @@ const ScUDDSelect = memo((props) => {
     }, [allowNull, isBackendTest]);
 
 
-    //向父组件传递数据
+    // Check the value and pass it to parent
     const handleTransfer = async (item = selectItem) => {
         if (!isEdit) {
             return
         }
-        // console.log("handleTransfor start");
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(item);
         }
@@ -46,39 +49,44 @@ const ScUDDSelect = memo((props) => {
         setSelectItem(item);
         pickDone(item, itemKey, positionID, rowIndex, err);
     };
-    //关闭选择dialog
+    // Close the dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
-    //点击确定按钮
+    // Actions after click the ok button in the dialog
     const handleOkClick = () => {
-        // 向父组件传递数据
+        // Pass data to the parent component
         handleTransfer();
-        //关闭对话框
+        // Close dialog
         setDialogOpen(false);
     }
-    //点击清除按钮
+    // Actions after click the clear button 
     const handleClear = () => {
         setSelectItem(zeroValue);
         handleTransfer(zeroValue);
     }
-    //单击项目
+    // Acitions after click item
     const handleClickItem = (item) => {
         setSelectItem(item);
     };
-    //双击项目
+    // Actions after double click item
     const handleDoubleClickItem = (item) => {
         setSelectItem(item);
         handleTransfer(item);
         setDialogOpen(false);
     };
 
-    // console.log("ScUDDSelect selectItem:",selectItem);
     return (
         <>
             {positionID !== 1
-                ? <InputLabel id={`textfield${itemKey}${positionID}${rowIndex}`} htmlFor={`textfield${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel
+                    id={`textfield${itemKey}${positionID}${rowIndex}`}
+                    htmlFor={`textfield${itemKey}${positionID}${rowIndex}`}
+                    sx={{ color: allowNull ? "primary" : "blue" }}
+                >
+                    {t(itemShowName)}
+                </InputLabel>
                 : null
             }
             {positionID !== 1
@@ -88,14 +96,14 @@ const ScUDDSelect = memo((props) => {
                     id={`textfield${itemKey}${positionID}${rowIndex}`}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     InputProps={{
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {selectItem.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -108,7 +116,7 @@ const ScUDDSelect = memo((props) => {
                                     ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择档案" placement="top" >
+                                <Tooltip title={t("chooseUDA")} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <UDDIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -129,7 +137,7 @@ const ScUDDSelect = memo((props) => {
                     error={errInfo.isErr}
                     endAdornment={<Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                         {selectItem.id !== 0 && isEdit && allowNull
-                            ? <Tooltip title="清除数据" placement="top">
+                            ? <Tooltip title={t("clear")} placement="top">
                                 <span>
                                     <IconButton onClick={handleClear} size="small">
                                         <ClearIcon fontSize="small" />
@@ -142,7 +150,7 @@ const ScUDDSelect = memo((props) => {
                             ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                             : null
                         }
-                        <Tooltip title="选择档案" placement="top" >
+                        <Tooltip title={t("chooseUDA")} placement="top" >
                             <span>
                                 <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                     <UDDIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -173,11 +181,3 @@ const ScUDDSelect = memo((props) => {
 
 export default ScUDDSelect;
 
-ScUDDSelect.propTypes = {
-    udc: PropTypes.object.isRequired,
-};
-
-ScUDDSelect.defaultProps = {
-    udc: { id: 0, name: "", description: "" },
-    initValue: zeroValue,
-};

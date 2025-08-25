@@ -4,49 +4,48 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 
-const docName = "userdefineclass";
-
+const docName = "udc";
 const UdcPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
     const [udcs, setUdcs] = useState([]);
-
-    //组件加载时加载本地自定义档案类别
+    const {t} = useTranslation();
+    // Get User-defined categories from the frontend cache when the component loads.
     useEffect(() => {
-        async function reqLocalUdcs() {
+        async function getLocalUDCs() {
             const localUdcs = await GetLocalCache(docName);
-            // console.log("获取udcs");
             setUdcs(localUdcs);
         }
-        reqLocalUdcs();
+        getLocalUDCs();
     },[]);
 
-    //刷新
+    // Actions after click the refresh button in the table head.
     const handleRefreshUdcs = async () => {
-        //向服务器请求数据
+        // Refresh the latest frontend cache 
         await InitDocCache(docName);
         let newUdcs = await GetLocalCache(docName);
-        //刷新最新的用户自定义档案类别
+        // Refresh UDCs
         setUdcs(newUdcs);
     };
 
     return (
         <>
-            <DialogTitle>选择自定义档案类别</DialogTitle>
+            <DialogTitle>{t("chooseUDC")}</DialogTitle>
             <DocTable
                 columns={columns}
                 refreshAction={handleRefreshUdcs}
                 rows={udcs}
-                docListTitle="选择类别"
+                docListTitle={t("chooseCategory")}
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );
