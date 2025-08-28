@@ -9,7 +9,8 @@ import { reqGetUDAAll, reqGetUDACache } from "../../api/uda";
 import { reqGetSimpEICList, reqGetSimpEICCache } from "../../api/exectiveItemClass";
 import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
-import { reqGetCSList, reqGetCSCache, reqGetCSOCache, reqCSOs, } from "../../api/cs";
+import { reqGetCSList, reqGetCSCache  } from "../../api/csa";
+import { reqGetCSOCache, reqGetCSOs } from "../../api/cso";
 import { reqGetSimpCSCList, reqGetSimpCSCCache } from "../../api/csc";
 import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
 import { reqGetRLList, reqGetRLsCache } from "../../api/riskLevel";
@@ -20,7 +21,7 @@ import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 import { reqPubSysInfo } from "../../api/pub";
 import { message } from "mui-message";
 
-const db = new Dexie('sceneDb');
+const db = new Dexie('scDb');
 
 db.version(1).stores({
     dbinfo: "infoname",
@@ -31,10 +32,10 @@ db.version(1).stores({
     uda: "id,udc.id,status,ts",
     epc: "id,status,ts",
     csc: "id,status,ts",
-    ep: "id,code,epc.id,resulttype.id,status,ts",
-    ept: "id,code,status,ts",
     cso: "id,code,status,ts",
-    cs: "id,code,csc.id,status,ts",
+    csa: "id,code,csc.id,status,ts",
+    ep: "id,code,epc.id,resulttype.id,status,ts",
+    ept: "id,code,status,ts",   
     risklevel: "id,status,ts",
     dc: "id,status,ts",
     position: "id,status,ts",
@@ -150,16 +151,15 @@ export const docTable = new Map([
     ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
     ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
     ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
+    ["csa", { description: "Construction Site Archive", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
     ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
-    ["cs", { description: "Construction Site", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
+    ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
     ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
     ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
-
-    /* 
+     /* 
      ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-     ["sceneitemoption", { description: "现场档案选项", reqAllFunc: reqCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
      ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
      ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
      ["operatingpost", { description: "岗位档案", reqAllFunc: reqGetOPList, reqCacheFunc: reqGetOPCache, transToFrontFunc: commonTransDoc }],
@@ -167,7 +167,7 @@ export const docTable = new Map([
      ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
 ]);
 
-//本地缓存初始化
+// Initialize browser indexedDB database
 export const initLocalDb = async () => {
     //访问服务器获取dbid
     let newDbid;

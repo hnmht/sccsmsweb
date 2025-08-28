@@ -142,7 +142,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
 
     return currentPosition
         ? <>
-            <DialogTitle>{isNew ? t("addPositon") : isModify ? t("modifyPosition") : t("viewPosition")}</DialogTitle>
+            <DialogTitle>{isNew ? t("addPosition") : isModify ? t("modifyPosition") : t("viewPosition")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>

@@ -20,7 +20,7 @@ import DownloadApp from "./pages/downloadApp/downloadApp";
 const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); //部门档案
 const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); //现场档案类别
 const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); //岗位档案
-const CS = Loadable(lazy(() => import("./pages/protected/cs/cs"))); //现场档案
+const CSA = Loadable(lazy(() => import("./pages/protected/csa/csa"))); //现场档案
 const UDC = Loadable(lazy(() => import("./pages/protected/udc/udc")));  //自定义档案类别
 const UDA = Loadable(lazy(() => import("./pages/protected/uda/uda"))); //自定义档案
 const ExectiveItemClass = Loadable(lazy(() => import("./pages/protected/exectiveItemClass/exectiveItemClass")));  //执行项目分类
@@ -60,7 +60,7 @@ const User = Loadable(lazy(() => import("./pages/protected/user/user")));
 const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permissionAssignment/permissionAssignment")));
 const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); 
 //设置
-const CSOptions = Loadable(lazy(() => import("./pages/protected/sceneItemOptions/sceneItemOptions")));
+const CSO = Loadable(lazy(() => import("./pages/protected/cso/cso")));
 const Registration = Loadable(lazy(() => import("./pages/protected/registration/registration")));
 const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetUp/landingPageSetup")));
 //执行单
@@ -207,7 +207,7 @@ const routes = [
             },
             {
                 path: "/private/masterData/constructionSite",
-                element: <CS />
+                element: <CSA />
             },
             {
                 path: "/private/masterData/userDefinedCategory",
@@ -266,8 +266,8 @@ const routes = [
                 element: <OnlineUser />
             },
             {
-                path: "/private/options/sceneItemOption",
-                element: <CSOptions />
+                path: "/private/options/constructionSiteOptions",
+                element: <CSO />
             },
             {
                 path: "/private/options/register",

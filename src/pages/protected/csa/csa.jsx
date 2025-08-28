@@ -12,7 +12,7 @@ import CSCTree from "./cscTree";
 import EditCS from "./editCS";
 import { columns, rowActionsDefine, delMultipleDisabled, GetDynamicColumns } from "./constructor";
 import { GetSICacheByCategoryId, InitDocCache } from "../../../storage/db/db";
-import { reqDeleteCS, reqDeleteCSs, reqCSOs } from "../../../api/cs";
+import { reqDeleteCS, reqDeleteCSs, reqCSOs } from "../../../api/csa";
 import { message } from "mui-message";
 import { MultiSortByArr } from "../../../utils/tools";
 

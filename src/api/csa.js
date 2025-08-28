@@ -1,25 +1,9 @@
 import request from "../utils/request";
-// Get Construction Site Options
-export function reqCSOs(isLoading = true) {
-    return request({
-        url: "/cs/options",
-        method: "post",
-        isLoading
-    });
-}
 
-export function reqEditCSO(data,isLoading=true) {
-    return request({
-        url: "/cs/editoption",
-        method: "post",
-        data,
-        isLoading
-    });
-}
 // Get Construction Site master data list
 export function reqGetCSList(isLoading = true) {
     return request({
-        url: "/cs/list",
+        url: "/csa/list",
         method: 'post',
         isLoading
     });
@@ -28,25 +12,17 @@ export function reqGetCSList(isLoading = true) {
 // Get Construction Site front-end cache
 export function reqGetCSCache(data, isLoading = true) {
     return request({
-        url: "/cs/cache",
+        url: "/csa/cache",
         method: 'post',
         data,
         isLoading
     });
 }
-// 获取自定义档案选项缓存
-export function reqGetCSOCache(data, isLoading = true) {
-    return request({
-        url: "/cs/optioncache",
-        method: 'post',
-        data,
-        isLoading
-    });
-}
+
 //检查现场档案编码
 export function reqCheckCSCode(data, isLoading = true) {
     return request({
-        url: "/cs/checkcode",
+        url: "/csa/checkcode",
         method: 'post',
         data,
         isLoading
@@ -56,7 +32,7 @@ export function reqCheckCSCode(data, isLoading = true) {
 //增加现场档案
 export function reqAddCS(data, isLoading = true) {
     return request({
-        url: "/cs/add",
+        url: "/csa/add",
         method: 'post',
         data,
         isLoading
@@ -66,7 +42,7 @@ export function reqAddCS(data, isLoading = true) {
 //修改现场档案
 export function reqEditCS(data, isLoading = true) {
     return request({
-        url: "/cs/edit",
+        url: "/csa/edit",
         method: 'post',
         data,
         isLoading
@@ -76,7 +52,7 @@ export function reqEditCS(data, isLoading = true) {
 //删除现场档案
 export function reqDeleteCS(data, isLoading = true) {
     return request({
-        url: "/cs/delete",
+        url: "/csa/delete",
         method: 'post',
         data,
         isLoading
@@ -86,7 +62,7 @@ export function reqDeleteCS(data, isLoading = true) {
 //批量删除现场档案
 export function reqDeleteCSs(data, isLoading = true) {
     return request({
-        url: "/cs/deletesis",
+        url: "/csa/deletesis",
         method: 'post',
         data,
         isLoading

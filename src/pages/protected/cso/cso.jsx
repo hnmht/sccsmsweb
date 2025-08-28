@@ -3,30 +3,29 @@ import {
     Paper,
     Grid
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { isEqual, cloneDeep } from "lodash";
 import { message } from "mui-message";
-
 import { Divider, Button } from "../../../component/ScMui/ScMui";
 import Loader from "../../../component/Loader/Loader";
 import ScInput from '../../../component/ScInput';
 import PageTitle from "../../../component/PageTitle/PageTitle";
-import { reqSIOs, reqEditSIO } from "../../../api/cs";
+import { reqGetCSOs, reqEditCSO } from "../../../api/cso";
 import { InitDocCache } from "../../../storage/db/db";
 import { MultiSortByArr } from "../../../utils/tools";
 import useContentHeight from "../../../hooks/useContentHeight";
 
+// Generate Body errors
 const generateErrors = (rowNumber) => {
     let errors = [];
-    //生成表体错误信息
     for (let i = 0; i < rowNumber; i++) {
         errors.push({});
     }
     return errors;
 };
 
-//检查错误
+// Check Errors
 const checkError = (errors) => {
-    // console.log("EditExecItem errors:",errors);
     let number = 0;
     for (let key in errors) {
         if (errors[key].isErr) {
@@ -36,51 +35,50 @@ const checkError = (errors) => {
     return number > 0;
 };
 
-function SceneItemOptions() {
-    const [sios, setSios] = useState([]);
-    const [oriSios, setOriSios] = useState([]);
+// Edit Construction Site Options
+function CSO() {
+    const [csos, setCsos] = useState([]);
+    const [oriCsos, setOriCsos] = useState([]);
     const [errors, setErrors] = useState([]);
-
+    const { t } = useTranslation();
     const contentHeight = useContentHeight();
 
-    //点击保存按钮
+    // Actions after click the save button
     const handleSave = async (item, index) => {
-        const res = await reqEditSIO(item, true);
-        if (res.data.status === 0) {
-            message.success("修改现场档案" + item.name + "成功");
+        const res = await reqEditCSO(item, true);
+        if (res.status) {
+            message.success(item.name + t("modifySuccessful"));
             handleRefresh(index);
-        } else {
-            message.error("修改现场档案" + item.name + "失败:", res.data.statusMsg);
         }
-        await InitDocCache("sceneitemoption");
+        await InitDocCache("cso");
     };
-    //点击取消按钮
+    // Actions after click the cancel button
     const handleCancel = (index) => {
-        const newSio = cloneDeep(oriSios[index]);
-        const newSios = cloneDeep(sios);
-        newSios[index] = newSio;
-        setSios(newSios);
+        const newCso = cloneDeep(oriCsos[index]);
+        const newCsos = cloneDeep(csos);
+        newCsos[index] = newCso;
+        setCsos(newCsos);
     };
-    //刷新选项列表
+    // Refresh Construction site optios UI
     const handleRefresh = async (index) => {
-        const res = await reqSIOs(true);
-        let newOriSios = [];
-        let newSios = cloneDeep(sios);
-        if (res.data.status === 0) {
-            newOriSios = res.data.data;
-            newOriSios.sort(MultiSortByArr([{ field: "id", order: "asc" }]));
-            let newSio = cloneDeep(newOriSios[index]);    
-            newSios[index] = newSio;
+        const res = await reqGetCSOs(true);
+        let newOriCsos = [];
+        let newCsos = cloneDeep(csos);
+        if (res.status) {
+            newOriCsos = res.data;
+            newOriCsos.sort(MultiSortByArr([{ field: "id", order: "asc" }]));
+            let newCso = cloneDeep(newOriCsos[index]);
+            newCsos[index] = newCso;
         }
-        setSios(newSios);
-        setOriSios(newOriSios);
+        setCsos(newCsos);
+        setOriCsos(newOriCsos);
     };
-    //系统获取值之后
+    // Actions after receiving the value  passed into the ScInput component 
     const handleGetValue = (value, itemkey, positionID, rowIndex, errMsg) => {
-        setSios((prevState) => {
-            let newSios = cloneDeep(prevState);
-            newSios[rowIndex][itemkey] = value;
-            return newSios;
+        setCsos((prevState) => {
+            let newCsos = cloneDeep(prevState);
+            newCsos[rowIndex][itemkey] = value;
+            return newCsos;
         });
 
         setErrors((prevState) => {
@@ -92,36 +90,36 @@ function SceneItemOptions() {
 
     useEffect(() => {
         async function getData() {
-            const res = await reqSIOs(true);
-            let newSios = [];
-            if (res.data.status === 0) {
-                newSios = res.data.data;
-                newSios.sort(MultiSortByArr([{ field: "id", order: "asc" }]));
+            const res = await reqGetCSOs(true);
+            let newCsos = [];
+            if (res.status) {
+                newCsos = res.data;
+                newCsos.sort(MultiSortByArr([{ field: "id", order: "asc" }]));
             }
-            setSios(newSios);
-            setOriSios(newSios);
-            setErrors(generateErrors(newSios.length))
+            setCsos(newCsos);
+            setOriCsos(newCsos);
+            setErrors(generateErrors(newCsos.length))
         }
         getData();
     }, []);
 
-    return (sios.length > 0
+    return (csos.length > 0
         ? <>
-            <PageTitle pageName="现场档案自定义项" />
+            <PageTitle pageName={t("MenuCSO")}/>
             <Divider my={2} />
             <Paper sx={{ width: "100%", height: contentHeight, overflow: "auto", pt: 4 }}>
-                {sios.map((item, index) => {
-                    //取消按钮是否可用
-                    const cancelDisabled = isEqual(item, oriSios[index]);
-                    //按钮是否能否使用                   
+                {csos.map((item, index) => {
+                    // Whether the cancel button is available
+                    const cancelDisabled = isEqual(item, oriCsos[index]);
+                    // Whether the save button is available                   
                     const saveDisabled = cancelDisabled || checkError(errors[index]);
-                    //启用是否可编辑
-                    const enableEnabled = item.ismodify === 0;
-                    //显示名称是否可编辑 
+                    // Whether the enable checkbox is availiable
+                    const enableEnabled = item.isModify === 0;
+                    // Whether the display name field is editable 
                     const displayNameEnable = item.enable === 1;
-                    //档案类别是否可编辑(启用 且 可修改 )
-                    const udcEnable = item.enable === 1 && item.ismodify === 0;
-                    //默认值是否可编辑
+                    // Whether the UDC field is editable
+                    const udcEnable = item.enable === 1 && item.isModify === 0;
+                    // Whether the Default value field is editable
                     const defaultValueEnable = item.enable === 1 && item.udc.id > 0;
                     return (
                         <Grid key={index} container spacing={2} sx={{ width: "100%" }}>
@@ -130,7 +128,7 @@ function SceneItemOptions() {
                                     dataType={403}
                                     allowNull={false}
                                     isEdit={enableEnabled}
-                                    itemShowName="启用"
+                                    itemShowName="enable"
                                     itemKey="enable"
                                     initValue={item.enable}
                                     pickDone={handleGetValue}
@@ -145,7 +143,7 @@ function SceneItemOptions() {
                                     dataType={301}
                                     allowNull={false}
                                     isEdit={false}
-                                    itemShowName="编码"
+                                    itemShowName="code"
                                     itemKey="code"
                                     initValue={item.code}
                                     pickDone={handleGetValue}
@@ -160,9 +158,9 @@ function SceneItemOptions() {
                                     dataType={301}
                                     allowNull={false}
                                     isEdit={false}
-                                    itemShowName="名称"
+                                    itemShowName="name"
                                     itemKey="name"
-                                    initValue={item.name}
+                                    initValue={t(item.name)}
                                     pickDone={handleGetValue}
                                     placeholder=""
                                     isBackendTest={false}
@@ -175,13 +173,13 @@ function SceneItemOptions() {
                                     dataType={301}
                                     allowNull={false}
                                     isEdit={displayNameEnable}
-                                    itemShowName="显示名称"
-                                    itemKey="displayname"
-                                    initValue={item.displayname}
+                                    itemShowName="displayName"
+                                    itemKey="displayName"
+                                    initValue={item.displayName}
                                     pickDone={handleGetValue}
                                     placeholder=""
                                     isBackendTest={false}
-                                    key="displayname"
+                                    key="displayName"
                                     rowIndex={index}
                                 />
                             </Grid>
@@ -190,7 +188,7 @@ function SceneItemOptions() {
                                     dataType={530}
                                     allowNull={item.enable === 0}
                                     isEdit={udcEnable}
-                                    itemShowName="档案类别"
+                                    itemShowName="udc"
                                     itemKey="udc"
                                     initValue={item.udc}
                                     pickDone={handleGetValue}
@@ -205,13 +203,13 @@ function SceneItemOptions() {
                                     dataType={550}
                                     allowNull={true}
                                     isEdit={defaultValueEnable}
-                                    itemShowName="默认值"
-                                    itemKey="defaultvalue"
-                                    initValue={item.defaultvalue}
+                                    itemShowName="defaultValue"
+                                    itemKey="defaultValue"
+                                    initValue={item.defaultValue}
                                     pickDone={handleGetValue}
                                     placeholder=""
                                     isBackendTest={false}
-                                    key="defaultvalue"
+                                    key="defaultValue"
                                     rowIndex={index}
                                     udc={item.udc}
                                 />
@@ -223,7 +221,7 @@ function SceneItemOptions() {
                                     m={1}
                                     onClick={() => handleSave(item, index)}
                                 >
-                                    保存
+                                    {t("save")}
                                 </Button>
                                 <Button
                                     variant="contained"
@@ -231,7 +229,7 @@ function SceneItemOptions() {
                                     disabled={cancelDisabled}
                                     onClick={() => handleCancel(index)}
                                 >
-                                    取消
+                                    {t("cancel")}
                                 </Button>
                             </Grid>
                             <Grid item xs={12}>
@@ -246,4 +244,4 @@ function SceneItemOptions() {
     );
 }
 
-export default SceneItemOptions;
+export default CSO;

@@ -1,5 +1,4 @@
 import React, { useState, memo, useEffect } from "react";
-import PropTypes from "prop-types";
 import {
     IconButton,
     Stack,

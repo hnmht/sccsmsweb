@@ -4,22 +4,22 @@ import {
     Checkbox,
     Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-//bool值转数字
+// Convert bool value to number
 function boolTransInt(b) {
     return b ? 1 : 0;
 };
-
-//数字转bool
+// Convert number value to bool
 function intTransBool(i) {
-    return i === 1 ;
-}
+    return i === 1;
+};
 
-
-//403
+//403 CheckBox Yes Or No
 const ScCheckYesOrNo = memo((props) => {
-    const { positionID, rowIndex, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, isEdit, itemShowName, itemKey, initValue = 0, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
+    const { t } = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -44,7 +44,7 @@ const ScCheckYesOrNo = memo((props) => {
 
     return (
         <>
-        { positionID !== 1
+            {positionID !== 1
                 ? <Stack id={`view${itemKey}${positionID}${rowIndex}`} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     <Checkbox
                         disabled={!isEdit}
@@ -54,7 +54,7 @@ const ScCheckYesOrNo = memo((props) => {
                         color={props.color ? props.color : "primary"}
                         onChange={handleOnBlur}
                     />
-                    <Typography>{itemShowName}</Typography>
+                    <Typography>{t(itemShowName)}</Typography>
                 </Stack>
                 : <Checkbox
                     disabled={!isEdit}
@@ -64,13 +64,9 @@ const ScCheckYesOrNo = memo((props) => {
                     color={props.color ? props.color : "primary"}
                     onChange={handleOnBlur}
                 />
-        }
+            }
         </>
     );
 });
-
-ScCheckYesOrNo.defaultProps = {
-    initValue: 0,
-};
 
 export default ScCheckYesOrNo;
