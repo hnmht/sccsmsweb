@@ -33,7 +33,7 @@ const UdaPicker = ({udc,clickItemAction,doubleClickItemAction,cancelClickAction,
 
     return (
         <>
-            <DialogTitle>{t("chooseUDA")}</DialogTitle>
+            <DialogTitle>{t("chooseUDA",{udcName:udc.name})}</DialogTitle>
             <DocTable
                 columns={columns}
                 refreshAction={handleRefreshUdas}

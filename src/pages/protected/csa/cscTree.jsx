@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { List, ListSubheader, Tooltip, IconButton } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import PubTree from "../../../component/ScInput/ScPub/PubTree";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import useContentHeight from "../../../hooks/useContentHeight";
 
+// Construction Site Category Tree Selection Component
 function CSCTree({ selectOk }) {
     const [cscs, setCscs] = useState([]);
     const [currentDoc, setCurrentDoc] = useState(undefined);
+    const {t} = useTranslation();
 
     const contentHeight = useContentHeight();
     useEffect(() => {
@@ -28,12 +31,12 @@ function CSCTree({ selectOk }) {
     }
     //获取执行项目类别
     const handleGetLocalSICs = async () => {
-        const newCscs = await GetLocalCache("sceneitemclass");
+        const newCscs = await GetLocalCache("csc");
         setCscs(newCscs);
     };
     //更新执行项目类别
     const handleRefresh = async () => {
-        await InitDocCache("sceneitemclass");
+        await InitDocCache("csc");
         handleGetLocalSICs();
     };
 
@@ -55,8 +58,8 @@ function CSCTree({ selectOk }) {
                         display: "flex", flexDirection: "row", justifyContent: "space-between"
                     }}
                 >
-                    选择类别
-                    <Tooltip title="刷新" placement="top">
+                    {t("chooseCategory")}
+                    <Tooltip title={t("refresh")} placement="top">
                         <IconButton onClick={handleRefresh}>
                             <RefreshIcon color="primary" />
                         </IconButton>
@@ -66,7 +69,7 @@ function CSCTree({ selectOk }) {
             sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
         >
             <PubTree
-                docName="类别"
+                docName="csc"
                 isDisplayAll={false}
                 oriDocs={cscs}
                 onDocClick={handleOnDocClick}

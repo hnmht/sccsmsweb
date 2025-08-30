@@ -9,32 +9,35 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import Loader from "../../../component/Loader/Loader";
 import CSCTree from "./cscTree";
-import EditCS from "./editCS";
+import EditCSA from "./editCSA";
 import { columns, rowActionsDefine, delMultipleDisabled, GetDynamicColumns } from "./constructor";
-import { GetSICacheByCategoryId, InitDocCache } from "../../../storage/db/db";
-import { reqDeleteCS, reqDeleteCSs, reqCSOs } from "../../../api/csa";
+import { GetCSACacheByCategoryId, InitDocCache } from "../../../storage/db/db";
+import { reqDeleteCS, reqDeleteCSs } from "../../../api/csa";
+import { reqGetCSOs } from "../../../api/cso";
 import { message } from "mui-message";
 import { MultiSortByArr } from "../../../utils/tools";
-
-const SceneItem = () => {
+import { useTranslation } from "react-i18next";
+// Construction Site Archive List
+const CSA = () => {
     const [dynamicColumns, setDynamicColumns] = useState(undefined);
     const [options, setOptions] = useState([]);
     const [rows, setRows] = useState([]);
     const [currentCSC, setCurrentCSC] = useState(undefined);
     const [diagStatus, setDiagStatus] = useState({
-        currentCS: undefined,
+        currentCSA: undefined,
         diagOpen: false,
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getSioption() {
             let newColumns = columns;
             let newOptions = [];
-            const res = await reqCSOs();
-            if (res.data.status === 0) {
-                newOptions = res.data.data;
+            const res = await reqGetCSOs();
+            if (res.status) {
+                newOptions = res.data;
                 newOptions.sort(MultiSortByArr([{ field: "id", order: "asc" }]));
                 newColumns = GetDynamicColumns(newColumns, newOptions);
             }
@@ -47,111 +50,106 @@ const SceneItem = () => {
     // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
-            currentCS: undefined,
+            currentCSA: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
     };
-    //对话框编辑执行项目档案类别页面点击确定按钮
+    // Actions after click the ok button in the dialog
     const handelDiagOk = () => {
         setDiagStatus({
-            currentCS: undefined,
+            currentCSA: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求用户自定义档案类别列表数据
-        handleRefreshCS();
+        handleRefreshCSA();
     };
-    //表头点击增加按钮
+    // Actions after click the add button in the head
     const handleAddCS = () => {
         setDiagStatus({
-            currentCS: undefined,
+            currentCSA: undefined,
             diagOpen: true,
             isNew: true,
             isModify: false
         });
     };
-    //表体点击复制新增按钮
+    // Actions after click the copyAdd button in the body
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
-            currentCS: doc,
+            currentCSA: doc,
             diagOpen: true,
             isNew: true,
             isModify: false
         });
     };
 
-    //表体点击详情按钮
+    // Actions after click the Detail button in the body
     const handleRowDetail = (doc) => {
         setDiagStatus({
-            currentCS: doc,
+            currentCSA: doc,
             diagOpen: true,
             isNew: false,
             isModify: false
         });
     };
-    //表体点击编辑按钮
+    // Actions after click the Edit button in the body
     const handleRowEdit = async (doc) => {
         setDiagStatus({
-            currentCS: doc,
+            currentCSA: doc,
             diagOpen: true,
             isNew: false,
             isModify: true
         });
     };
-    //表体行点击删除按钮
+    // Actions after click the delete button in the body
     const handleRowDelete = async (doc) => {
-        //向服务器请求删除
+        // Request the server to delete csa
         const delRes = await reqDeleteCS(doc);
-        if (delRes.data.status === 0) {
-            message.success("删除档案" + doc.name + "成功");
-        } else {
-            message.error("删除档案" + doc.name + "失败:" + delRes.data.statusMsg);
-        }
-        //更新本地缓存，刷新现场档案列表
-        handleRefreshCS();
+        if (delRes.status) {
+            message.success(t("deleteSuccessful"));
+        } 
+        // Get latest csa front-end page
+        handleRefreshCSA();
     };
 
-    //表头点击批量删除按钮
+    // Actions after click the batch delete button in the head
     const handleDelMultipleAction = async (docs) => {
         const res = await reqDeleteCSs(docs);
-        if (res.data.status === 0) {
-            message.success("批量删除档案成功");
-        } else {
-            message.error("批量删除档案失败:" + res.data.statusMsg);
-        }
-        //更新本地缓存，刷新现场档案列表
-        handleRefreshCS();
+        if (res.status) {
+            message.success(t("batchDeleteSuccessful"));
+        } 
+        // Get latest csa front-end cache
+        handleRefreshCSA();
     };
-    //获取当前Sic
-    const handleGetCurrentSic = async (item) => {
-        //设置当前现场档案类别
+    // Get current CSC
+    const handleGetCurrentCSC = async (item) => {
+        // Set current Construction Site Category
         setCurrentCSC(item);
-        //从本地缓存获取当前类别下的所有现场档案
-        const newSis = await GetSICacheByCategoryId(item.id);
-        //更新现场档案列表
+        // Retrieve all CSAs under the current category from indexdb
+        const newSis = await GetCSACacheByCategoryId(item.id);
+        // Refresh list
         setRows(newSis);
     };
 
-    //刷新现场档案
-    const handleRefreshCS = async (sic = currentCSC) => {
-        //向服务器请求更新本地缓存
-        await InitDocCache("sceneitem");
-        //从本地缓存获取当前类别下的所有现场档案
-        const newSis = await GetSICacheByCategoryId(sic.id);
-        //更新现场档案列表
+    // Refresh csa list
+    const handleRefreshCSA = async (sic = currentCSC) => {
+        // Request latest CSAs from server
+        await InitDocCache("csa");
+        // Retrieve all CSAs under the current category from indexdb
+        const newSis = await GetCSACacheByCategoryId(sic.id);
+        // Refresh list
         setRows(newSis);
     };
 
     return (
         <Fragment>
-            <PageTitle pageName="现场档案" displayHelp={true} helpUrl="/helps/sceneItem" />
+            <PageTitle pageName={t("MenuCSA")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2}>
                 <Grid item xs={2}>
-                    <CSCTree selectOk={handleGetCurrentSic} />
+                    <CSCTree selectOk={handleGetCurrentCSC} />
                 </Grid>
                 <Grid item xs={10}>
                     {dynamicColumns !== undefined
@@ -163,7 +161,7 @@ const SceneItem = () => {
                             columns={dynamicColumns}
                             rows={rows}
                             rowActionsDefine={rowActionsDefine}
-                            refreshAction={() => handleRefreshCS(currentCSC)}
+                            refreshAction={() => handleRefreshCSA(currentCSC)}
                             addAction={handleAddCS}
                             rowCopyAdd={handleRowCopyAdd}
                             rowViewDetail={handleRowDetail}
@@ -181,11 +179,11 @@ const SceneItem = () => {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 1024, minHeight: 512 } }}
                 closeAfterTransition={false}
             >
-                <EditCS
+                <EditCSA
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
-                    oriCS={diagStatus.currentCS}
+                    oriCS={diagStatus.currentCSA}
                     options={options}
                     CSC={currentCSC}
                     onCancel={handleDiagClose}
@@ -196,4 +194,4 @@ const SceneItem = () => {
     );
 }
 
-export default SceneItem;
+export default CSA;

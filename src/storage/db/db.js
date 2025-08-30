@@ -315,8 +315,8 @@ export const GetEIDCacheByClassId = async (classId) => {
     return await db.exectiveitem.where("itemclass.id").equals(classId).toArray();
 };
 //根据类别ID获取现场档案缓存
-export const GetSICacheByCategoryId = async (classId) => {
-    return await db["cs"].where("csc.id").equals(classId).toArray();
+export const GetCSACacheByCategoryId = async (classId) => {
+    return await db["csa"].where("csc.id").equals(classId).toArray();
 };
 //根据岗位列表获取可用的人员档案
 export const GetPersonsWithOps = async (opIds) => {

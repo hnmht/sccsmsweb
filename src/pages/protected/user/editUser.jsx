@@ -16,7 +16,6 @@ import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
 import Loader from '../../../component/Loader/Loader';
 import MoreInfo from '../../../component/MoreInfo/MoreInfo';
-
 import { getCurrentPerson } from '../pub/pubFunction';
 import { reqValidateUserCode, reqAddUser, reqEditUser } from '../../../api/user';
 import { reqGetPublicKey } from '../../../api/security';
@@ -42,7 +41,7 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
             newUser.name = "";
             newUser.password = "";
             newUser.confirmPassword = "";
-            newUser.creator = person;
+            newUser.creator = person;           
             newUser.createDate = DateTimeFormat(currentDate, "LLL");
             newUser.modifyDate = DateTimeFormat(currentDate, "LLL");
         } else { // Add New
@@ -59,7 +58,7 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
                 status: 0,
                 locked: 0,
                 password: "",
-                isOerator: 1,
+                isOperator: 1,
                 position: { id: 0, name: "", description: "" },
                 department: { id: 0, code: '', name: '' },
                 confirmPassword: "",

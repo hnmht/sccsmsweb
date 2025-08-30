@@ -19,63 +19,55 @@ const rowStartDisabled = (row) => {
 const rowStopDisabled = (row) => {
     return false;
 };
-//所属部门显示
+// Department display content
 const CellDept = (row) => {
-    return row.subdept.name
+    return row.subDept.name
 };
-//负责部门显示
+// Responsible Department display content 
 const CellRespDept = (row) => {
-    return row.respdept.name
+    return row.respDept.name
 };
-//负责人显示
+// Responsible Person display content
 const CellRespPerson = (row) => {
-    return row.respperson.name
+    return row.respPerson.name
 };
-//udf1显示
+// User-defined Column Display content
 const CellUdf = (row, column) => {
     return row[column.id].name;
 };
-//批量删除按钮是否显示
+// Define wether the batch delete button is disabled
 export function delMultipleDisabled(selectedRows) {
-    if (selectedRows.length === 0) {
-        return true;
-    } else {
-        let noDeleteRowNumber = 0;
-        selectedRows.forEach((row) => {
-            if (row.useddoc > 0) {
-                noDeleteRowNumber += 1
-            }
-        })
-        return noDeleteRowNumber > 0 ? true : false;
-    }
+    return selectedRows.length === 0;
 };
+
+// Define a row button display content
 export const rowActionsDefine = {
     rowCopyAdd: {
         visible: true,
         disabled: rowCopyAddDisabled,
         color: "success",
-        tips: "复制新增",
+        tips: "copyAdd",
         icon: "CopyNewIcon",
     },
     rowViewDetail: {
         visible: true,
         disabled: rowViewDisabled,
         color: "secondary",
-        tips: "详情",
+        tips: "detail",
         icon: "DetailIcon",
     },
     rowEdit: {
         visible: true,
         disabled: rowEditDisabled,
         color: "warning",
-        tips: "编辑",
+        tips: "edit",
         icon: "EditIcon",
     },
     rowDelete: {
         visible: true,
         disabled: rowDelDisabled,
         color: "error",
-        tips: "删除",
+        tips: "delete",
         icon: "DeleteIcon",
     },
     rowStart: {
@@ -96,21 +88,21 @@ export const rowActionsDefine = {
 
 export const columns = [
     { id: "id", label: "ID", alignment: "left", minWidth: 20, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
-    { id: "code", label: "编码", alignment: "center", minWidth: 40, visible: true, sortField: "code", sort: true, display: { type: 0, cell1: null } },
-    { id: "name", label: "名称", alignment: "center", minWidth: 60, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
-    { id: "description", label: "说明", alignment: "center", minWidth: 100, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
-    { id: "status", label: "状态", alignment: "center", minWidth: 30, visible: false, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
-    { id: "subdept", label: "所属部门", alignment: "center", minWidth: 30, visible: false, sortField: "subdept.name", sort: true, display: { type: 1, cell1: CellDept } },
-    { id: "respdept", label: "负责部门", alignment: "center", minWidth: 30, visible: true, sortField: "respdept.name", sort: true, display: { type: 1, cell1: CellRespDept } },
-    { id: "respperson", label: "负责人", alignment: "center", minWidth: 30, visible: true, sortField: "respperson.name", sort: true, display: { type: 1, cell1: CellRespPerson } },
-    { id: "finishflag", label: "完工标志", alignment: "center", minWidth: 30, visible: false, sortField: "finishflag", sort: true, display: { type: 0, cell1: null } },
-    { id: "finishdate", label: "完工日期", alignment: "center", minWidth: 30, visible: false, sortField: "finishdate", sort: true, display: { type: 0, cell1: null } },
-    { id: "longitude", label: "经度", alignment: "center", minWidth: 30, visible: false, sortField: "longitude", sort: true, display: { type: 0, cell1: null } },
-    { id: "latitude", label: "纬度", alignment: "center", minWidth: 30, visible: false, sortField: "latitude", sort: true, display: { type: 0, cell1: null } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 60, visible: false, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
-    { id: "createdate", label: "创建时间", alignment: "center", minWidth: 60, visible: false, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
-    { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
+    { id: "code", label: "code", alignment: "center", minWidth: 40, visible: true, sortField: "code", sort: true, display: { type: 0, cell1: null } },
+    { id: "name", label: "name", alignment: "center", minWidth: 60, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "description", alignment: "center", minWidth: 100, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "status", label: "status", alignment: "center", minWidth: 30, visible: false, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
+    { id: "subDept", label: "subDept", alignment: "center", minWidth: 30, visible: false, sortField: "subDept.name", sort: true, display: { type: 1, cell1: CellDept } },
+    { id: "respDept", label: "respDept", alignment: "center", minWidth: 30, visible: true, sortField: "respDept.name", sort: true, display: { type: 1, cell1: CellRespDept } },
+    { id: "respPerson", label: "respPerson", alignment: "center", minWidth: 30, visible: true, sortField: "respPerson.name", sort: true, display: { type: 1, cell1: CellRespPerson } },
+    { id: "endFlag", label: "endFlag", alignment: "center", minWidth: 30, visible: false, sortField: "endFlag", sort: true, display: { type: 0, cell1: null } },
+    { id: "endDate", label: "endDate", alignment: "center", minWidth: 30, visible: false, sortField: "endDate", sort: true, display: { type: 0, cell1: null } },
+    { id: "longitude", label: "longitude", alignment: "center", minWidth: 30, visible: false, sortField: "longitude", sort: true, display: { type: 0, cell1: null } },
+    { id: "latitude", label: "latitude", alignment: "center", minWidth: 30, visible: false, sortField: "latitude", sort: true, display: { type: 0, cell1: null } },
+    { id: "creator", label: "creator", alignment: "center", minWidth: 60, visible: false, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },
+    { id: "createDate", label: "createDate", alignment: "center", minWidth: 60, visible: false, sortField: "createDate", sort: true, display: { type: 1, cell1: CellCreateTime } },
+    { id: "modifier", label: "modifier", alignment: "center", minWidth: 60, visible: false, sortField: "modifier.name", sort: true, display: { type: 1, cell1: CellModifier } },
+    { id: "modifyDate", label: "modifyDate", alignment: "center", minWidth: 60, visible: false, sortField: "modifyDate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];
 
 export const GetDynamicColumns = (cols, options) => { 

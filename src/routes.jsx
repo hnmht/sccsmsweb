@@ -206,7 +206,7 @@ const routes = [
                 element: <CSC />
             },
             {
-                path: "/private/masterData/constructionSite",
+                path: "/private/masterData/constructionSiteArchive",
                 element: <CSA />
             },
             {
