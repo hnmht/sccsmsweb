@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 const locale = {
-    name: 'zh-Hans',
+    name: 'zh-hans',
     weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
     weekdaysShort: '周日_周一_周二_周三_周四_周五_周六'.split('_'),
     weekdaysMin: '日_一_二_三_四_五_六'.split('_'),
@@ -57,10 +57,10 @@ const locale = {
         } else if (hm < 1800) {
             return '下午'
         }
-        return '晚上'
+        return '晚上';
     }
 }
 
 dayjs.locale(locale.name, locale, true);
 
-export default locale
+export default locale;

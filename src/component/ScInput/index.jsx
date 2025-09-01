@@ -1,7 +1,4 @@
-import React from "react";
-
 import ScDataTypeSelect from "./ScDataTypeSelect/ScDataTypeSelect"; //101 数据类型输入组件
-
 import ScTextInput from "./ScTextInput/ScTextInput"; //301 文本输入组件
 import ScNumberInput from "./ScNumberInput/ScNumberInput"; //302 数字输入组件
 import ScPasswordInput from "./ScPasswordInput/ScPasswordInput"; //303 密码输入组件

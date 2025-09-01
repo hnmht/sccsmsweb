@@ -424,16 +424,14 @@ const EditCSA = ({ isOpen, isNew, isModify, oriCS, options, CSC, onCancel, onOk 
             <DialogActions sx={{ p: 2.5 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddCS}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddCS}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant='contained' onClick={onCancel}>返回</Button>
+                    : <Button variant='contained' onClick={onCancel}>{t("back")}</Button>
                 }
             </DialogActions>
         </>
         : <Loader />
-
-
 };
 
 export default EditCSA;

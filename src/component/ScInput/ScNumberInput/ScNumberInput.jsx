@@ -1,5 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, memo, useEffect } from "react";
 import {
     InputLabel,
     TextField,
@@ -10,12 +9,11 @@ import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { NumericFormat } from "react-number-format";
 import { cloneDeep } from "lodash";
 const zeroValue = 0.00;
-//302
+// 302
 const ScNumberInput = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID = -1, rowIndex = -1, allowNull = false, isEdit = true, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest = false, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue.toString());
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    // console.log("ScNumberInput initValue:",initValue);
     useEffect(() => {
         function updateInitvalue() {
             setTextValue(initValue.toString());
@@ -105,30 +103,5 @@ const ScNumberInput = memo((props) => {
         </>
     );
 });
-
-ScNumberInput.protoType = {
-    positionID: PropTypes.number,
-    rowIndex: PropTypes.number,
-    allowNull: PropTypes.bool,
-    isEdit: PropTypes.bool,
-    itemShowName: PropTypes.string,
-    itemKey: PropTypes.string,
-    initValue: PropTypes.any,
-    pickDone: PropTypes.func,
-    placeholder: PropTypes.string,
-    isMultiline: PropTypes.bool,
-    rowNumber: PropTypes.number,
-}
-
-ScNumberInput.defaultProps = {
-    positionID: -1,
-    rowIndex: -1,
-    allowNull: false,
-    isEdit: true,
-    isBackendTest: false,
-    isMultiline: false,
-    rowNumber: 1,
-    initValue: zeroValue,
-};
 
 export default ScNumberInput;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     List,
     ListSubheader,
@@ -9,20 +9,20 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { RefreshIcon } from "../../PubIcon/PubIcon";
-import { InitDocCache, GetLocalCache} from "../../../storage/db/db";
+import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import PubTree from "../ScPub/PubTree";
 
 const docName = "csc";
 
 const CSCPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [oriDocs, setOriDocs] = useState([]);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     useEffect(() => {
         async function getLocalCSCs() {
             const eics = await GetLocalCache(docName);
             setOriDocs(eics);
         }
-        getLocalCSCs(); 
+        getLocalCSCs();
     }, []);
     // Convert the current array of CSC objects into an array of CSC IDs.
     const transferDocIDs = (doc) => {
@@ -66,7 +66,7 @@ const CSCPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
             <DialogActions sx={{ p: 2.5 }}>
                 <Button color='error' onClick={cancelClickAction}>{t("cancel")}</Button>
                 <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>{t("ok")}</Button>
-            </DialogActions> 
+            </DialogActions>
         </>
     );
 };

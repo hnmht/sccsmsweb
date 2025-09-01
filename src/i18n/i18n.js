@@ -2,14 +2,14 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import languageDetector from "i18next-browser-languagedetector";
 
-import translationEnUS from "./translations/en-US.json";
-import translationZhHans from "./translations/zh-Hans.json"
+import translationEnUS from "./translations/en-us.json";
+import translationZhHans from "./translations/zh-hans.json"
 
 const resources = {
-    "en-US": {
+    "en-us": {
         translation: translationEnUS,
     },
-    "zh-Hans": {
+    "zn-hans": {
         translation: translationZhHans
     },
 };
@@ -19,9 +19,9 @@ i18n
     .use(languageDetector)
     .init({
         resources,
-        supportedLngs:["en-US","zh-Hans"],
-        // lng:"en-US",        
-        fallbackLng: "en-US",
+        supportedLngs:["en-us","zn-hans"],
+        // lang:"en-us",        
+        fallbackLng: "en-us",
         interpolation: {
             escapeValue: false,
         },

@@ -115,7 +115,7 @@ const ScUDDSelect = memo((props) => {
                                     ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
-                                <Tooltip title={t("chooseUDA")} placement="top" >
+                                <Tooltip title={t("chooseUDA",{udcName:udc.name})} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <UDDIcon color={isEdit ? "success" : "transparent"} fontSize="small" />

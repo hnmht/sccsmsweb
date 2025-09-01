@@ -9,6 +9,8 @@ import createTheme from "./theme";
 import useTheme from "./hooks/useTheme";
 import routes from "./routes.jsx";
 import store from "./store";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import createEmotionCache from "./utils/createEmotionCache";
 const clientSideEmotionCache = createEmotionCache();
@@ -18,12 +20,14 @@ function App({ emotionCache = clientSideEmotionCache }) {
   const { theme } = useTheme();
   return (
     <CacheProvider value={emotionCache}>
-      <Provider store={store}>
-        <MuiThemeProvider theme={createTheme(theme)}>
-          <MessageBox />
-          {content}
-        </MuiThemeProvider>
-      </Provider>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Provider store={store}>
+          <MuiThemeProvider theme={createTheme(theme)}>
+            <MessageBox />
+            {content}
+          </MuiThemeProvider>
+        </Provider>
+      </LocalizationProvider>
     </CacheProvider>
   );
 }

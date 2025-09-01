@@ -7,12 +7,16 @@ import {
     IconButton,
     Tooltip,
     InputBase,
+    InputAdornment
 } from "@mui/material";
 import { PatternFormat } from "react-number-format";
 import dayjs from "../../../utils/myDayjs";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+import { DateInputFormat } from "../../../i18n/dayjs";
 
 const zeroValue = dayjs(new Date()).format("YYYYMMDD");
-//306
+//306 Date Format
 const DateFormat = forwardRef(function dateFormat(props, ref) {
     const { onChange, ...other } = props;
     return (
@@ -34,11 +38,11 @@ const DateFormat = forwardRef(function dateFormat(props, ref) {
     );
 });
 
-
 const ScDateInput = (props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [dateValue, setDateValue] = useState(initValue ? initValue : zeroValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const [value, setValue] = React.useState(null);
 
     useEffect(() => {
         function updateInitvalue() {
@@ -72,19 +76,19 @@ const ScDateInput = (props) => {
         setErrInfo(err);
         pickDone(newValue, itemKey, positionID, rowIndex, err);
     };
-
     const handleOnChange = (value) => {
         setDateValue(value);
     };
-
     //清空按钮单击事件
     const handleClearClick = () => {
         setDateValue("");
         handleOnBlur("");
     };
 
-
-
+    const handleOnChange1 = (event) => {
+        console.log(event);
+        setValue(event);
+    };
     return (
         <>
             {positionID !== 1
@@ -92,37 +96,81 @@ const ScDateInput = (props) => {
                 : null
             }
             {positionID !== 1
-                ? <TextField
-                    fullWidth
-                    type="text"
-                    id={`dateinput${itemKey}${positionID}${rowIndex}`}
-                    disabled={!isEdit}
-                    name={`dateinput${itemKey}${positionID}${rowIndex}`}
-                    placeholder={placeholder}
-                    onChange={(event) => handleOnChange(event.target.value, 0)}
-                    value={dateValue}
-                    onBlur={() => handleOnBlur(dateValue)}
-                    error={errInfo.isErr}
-                    InputProps={{
-                        inputComponent: DateFormat,
-                        endAdornment:
-                            <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
-                                {
-                                    errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
-                                }
-                                {dateValue !== "" && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
-                                        <span>
-                                            <IconButton onClick={handleClearClick} size="small">
-                                                <ClearIcon fontSize="small" />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                    : null
-                                }
-                            </Stack>,
+                ? <DatePicker
+                    value={value}
+                    onChange={(newValue) => {
+                        handleOnChange1(newValue);
                     }}
+                    inputFormat="YYYY-MM-DD"
+                    renderInput={(params) => {
+                        return <TextField
+                            {...params}
+                            fullWidth
+                            id={`dateinput${itemKey}${positionID}${rowIndex}`}
+                            disabled={!isEdit}
+                            name={`dateinput${itemKey}${positionID}${rowIndex}`}
+                            error={errInfo.isErr}
+                            value={dateValue}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {params.InputProps?.endAdornment}
+                                        < InputAdornment position="end" >
+                                            {
+                                                errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
+                                            }
+                                            {dateValue !== "" && isEdit && allowNull
+                                                ? <Tooltip title="清除数据" placement="top">
+                                                    <span>
+                                                        <IconButton onClick={handleClearClick} size="small">
+                                                            <ClearIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </span>
+                                                </Tooltip>
+                                                : null
+                                            }
+                                        </InputAdornment>
+                                    </>
+                                )
+
+                            }}
+                        />
+                    }
+                    }
                 />
+
+                /*  <TextField
+                fullWidth
+                type="text"
+                id={`dateinput${itemKey}${positionID}${rowIndex}`}
+                disabled={!isEdit}
+                name={`dateinput${itemKey}${positionID}${rowIndex}`}
+                placeholder={placeholder}
+                onChange={(event) => handleOnChange(event.target.value, 0)}
+                value={dateValue}
+                onBlur={() => handleOnBlur(dateValue)}
+                error={errInfo.isErr}
+                InputProps={{
+                    inputComponent: DateFormat,
+                    endAdornment:
+                        <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
+                            {
+                                errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
+                            }
+                            {dateValue !== "" && isEdit && allowNull
+                                ? <Tooltip title="清除数据" placement="top">
+                                    <span>
+                                        <IconButton onClick={handleClearClick} size="small">
+                                            <ClearIcon fontSize="small" />
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                                : null
+                            }
+                        </Stack>,
+                }}
+            /> */
                 : <InputBase
                     fullWidth
                     type="text"
@@ -158,7 +206,3 @@ const ScDateInput = (props) => {
 }
 
 export default memo(ScDateInput);
-
-ScDateInput.defaultProps = {
-    initValue: zeroValue,
-}

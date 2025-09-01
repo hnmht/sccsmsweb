@@ -10,7 +10,7 @@ import useContentHeight from "../../../hooks/useContentHeight";
 function CSCTree({ selectOk }) {
     const [cscs, setCscs] = useState([]);
     const [currentDoc, setCurrentDoc] = useState(undefined);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const contentHeight = useContentHeight();
     useEffect(() => {
@@ -21,7 +21,7 @@ function CSCTree({ selectOk }) {
         }
         initCscs();
     }, []);
-    //将当前选择档案转换为档案id数组
+    // Convert the currently selected CSCs into an ID array
     const transferDocIDs = (doc) => {
         let selectedDocIDs = [];
         if (doc !== undefined) {
@@ -29,18 +29,18 @@ function CSCTree({ selectOk }) {
         }
         return selectedDocIDs;
     }
-    //获取执行项目类别
+    // Request latest CSC from indexedb
     const handleGetLocalSICs = async () => {
         const newCscs = await GetLocalCache("csc");
         setCscs(newCscs);
     };
-    //更新执行项目类别
+    // Request the latest CSCs from server
     const handleRefresh = async () => {
         await InitDocCache("csc");
         handleGetLocalSICs();
     };
 
-    //选择项目
+    // Actions after click item
     const handleOnDocClick = (item, type) => {
         setCurrentDoc(item);
         selectOk(item);
