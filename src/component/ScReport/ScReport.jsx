@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Tooltip, IconButton, Paper, Stack } from "@mui/material";
 import { FilterAltIcon, FilterAltOffIcon, FilterIcon, DownloadIcon } from "../PubIcon/PubIcon";
 import MaterialReactTable from "material-react-table";
-import { MRT_Localization_ZH_HANS } from 'material-react-table/locales/zn-hans';
+import { MRT_Localization_ZH_HANS } from 'material-react-table/locales/zh-hans';
 import { utils, writeFileXLSX } from "xlsx";
 import { DateFormat } from "../../utils/tools";
 import useContentHeight from "../../hooks/useContentHeight";

@@ -25,7 +25,7 @@ const languageOptions = {
     icon: "/static/img/flags/us.png",
     name: "American English",
   },
-  "zn-hans": {
+  "zh-hans": {
     icon: "/static/img/flags/cn.png",
     name: "简体中文",
   },  

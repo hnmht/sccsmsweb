@@ -3,7 +3,7 @@ import { Dialog, Stack, Tooltip, IconButton, FormControlLabel, Checkbox } from "
 import { message } from "mui-message";
 import { utils, writeFileXLSX } from "xlsx";
 import MaterialReactTable from "material-react-table";
-import { MRT_Localization_ZH_HANS } from 'material-react-table/locales/zn-hans';
+import { MRT_Localization_ZH_HANS } from 'material-react-table/locales/zh-hans';
 
 import { FilterIcon, FilterAltIcon, FilterAltOffIcon, DownloadIcon } from "../../../component/PubIcon/PubIcon";
 import { Divider } from "../../../component/ScMui/ScMui";

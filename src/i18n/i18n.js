@@ -9,7 +9,7 @@ const resources = {
     "en-us": {
         translation: translationEnUS,
     },
-    "zn-hans": {
+    "zh-hans": {
         translation: translationZhHans
     },
 };
@@ -19,7 +19,7 @@ i18n
     .use(languageDetector)
     .init({
         resources,
-        supportedLngs:["en-us","zn-hans"],
+        supportedLngs:["en-us","zh-hans"],
         // lang:"en-us",        
         fallbackLng: "en-us",
         interpolation: {
