@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 const locale = {
-    name: 'en-us',
+    name: 'en-US',
     weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
     weekdaysShort: 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
     weekdaysMin: 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_'),

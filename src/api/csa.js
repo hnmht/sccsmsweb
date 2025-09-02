@@ -62,7 +62,7 @@ export function reqDeleteCS(data, isLoading = true) {
 //批量删除现场档案
 export function reqDeleteCSs(data, isLoading = true) {
     return request({
-        url: "/csa/deletesis",
+        url: "/csa/deletecss",
         method: 'post',
         data,
         isLoading

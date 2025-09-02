@@ -21,11 +21,11 @@ const Flag = styled.img`
 `;
 
 const languageOptions = {
-  "en-us": {
+  "en-US": {
     icon: "/static/img/flags/us.png",
     name: "American English",
   },
-  "zh-hans": {
+  "zh-Hans": {
     icon: "/static/img/flags/cn.png",
     name: "简体中文",
   },  

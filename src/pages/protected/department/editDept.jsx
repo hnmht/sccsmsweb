@@ -254,7 +254,7 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="MenuUDA"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={currentDept.status}
                             pickDone={handleGetValue}

@@ -7,7 +7,7 @@ const displayTop = { display: "block", position: "fixed", right: 32, top: 80, zI
 const displayBottom = { display: "block", position: "fixed", right: 8, bottom: 64, zIndex: 9 };
 
 function DownloadQR() {
-    const { t } = useTranslation();
+    const { t,i18n } = useTranslation();
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up("md"));
     return (

@@ -164,6 +164,8 @@
     "latitudePlaceholder":"Please input latitude",
     "end":"End",
     "chooseUDAPlaceholder":"Please select `{{udcName}}`",
+
+    "enterValidDate":"Please enter a valid date",
     
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

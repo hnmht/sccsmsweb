@@ -81,12 +81,11 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
                 newUser.confirmPassword = "";
             } else {// View Detail
                 newUser = cloneDeep(oriUser);
-                newUser.createdate = DateTimeFormat(newUser.createDate, "LLL");
+                newUser.createDate = DateTimeFormat(newUser.createDate, "LLL");
                 newUser.modifyDate = DateTimeFormat(newUser.modifyDate, "LLL");
             }
         }
     }
-
     return newUser;
 };
 
@@ -196,7 +195,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
 
     return currentUser
         ? <>
-            <DialogTitle>{isNew ? t("addUser") : isModify ? t("modifyUser") : t("userDetail")}</DialogTitle>
+            <DialogTitle>{isNew ? t("addUser") : isModify ? t("modifyUser") : t("viewUser")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2, maxHeight: 800 }}>
                 <Grid container spacing={3}>
@@ -442,7 +441,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                             isEdit={false}
                             itemShowName="createDate"
                             itemKey="createDate"
-                            initValue={currentUser.createdate}
+                            initValue={currentUser.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="createDate"
@@ -468,7 +467,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                             isEdit={false}
                             itemShowName="modifyDate"
                             itemKey="modifyDate"
-                            initValue={currentUser.ModifyDate}
+                            initValue={currentUser.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="modifyDate"

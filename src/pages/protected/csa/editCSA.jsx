@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { DateTimeFormat, dayjs } from '../../../i18n/dayjs';
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
@@ -31,7 +31,7 @@ const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
         respPerson: { id: 0, code: '', name: '' },
         status: 0,
         endFlag: 0,
-        endDate: "197001010000",
+        endDate:dayjs(new Date()),
         longitude: 0,
         latitude: 0,
         udf1: { id: 0, code: '', name: '' },
@@ -146,6 +146,7 @@ const EditCSA = ({ isOpen, isNew, isModify, oriCS, options, CSC, onCancel, onOk 
         }
         return err;
     };
+
     return currentCSA
         ? <>
             <DialogTitle>{isNew ? t("addCSA") : isModify ? t("modifyCSA") : t("viewCSA")}</DialogTitle>
