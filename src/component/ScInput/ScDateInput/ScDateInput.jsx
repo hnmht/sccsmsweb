@@ -1,5 +1,5 @@
-import React, { useState, forwardRef, useEffect, memo } from "react";
-import { ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
+import { useState, useEffect, memo } from "react";
+import { ErrorIcon } from "../../PubIcon/PubIcon";
 import {
     InputLabel,
     TextField,
@@ -20,7 +20,7 @@ const ScDateInput = (props) => {
     const { t } = useTranslation();
     const mask = DateInputMask();
     useEffect(() => {
-        function updateInitvalue() {                             
+        function updateInitvalue() {
             setDateValue(initValue);
         }
         updateInitvalue();
@@ -73,7 +73,7 @@ const ScDateInput = (props) => {
                                 endAdornment: (
                                     <>
                                         {params.InputProps?.endAdornment}
-                                        < InputAdornment position="end" >
+                                        <InputAdornment position="end">
                                             {
                                                 errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
                                             }
@@ -94,7 +94,7 @@ const ScDateInput = (props) => {
                                 endAdornment: (
                                     <>
                                         {params.InputProps?.endAdornment}
-                                        < InputAdornment position="end" >
+                                        <InputAdornment position="end">
                                             {
                                                 errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
                                             }
@@ -108,6 +108,6 @@ const ScDateInput = (props) => {
             />
         </>
     );
-}
+};
 
 export default memo(ScDateInput);

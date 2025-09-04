@@ -159,7 +159,7 @@ function CSC() {
         handleReqDocList();
     };
     
-    // Actions after the tree view item select
+    // Actions after the tree view item selected
     const handleCscsTreeClick = async (item, type) => {
         let sicIds = [];
         if (type === 0) { // Final level

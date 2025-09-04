@@ -6,65 +6,66 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
-
+import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
-
+import { DateTimeFormat } from '../../../i18n/dayjs';
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
 import Loader from '../../../component/Loader/Loader';
 import MoreInfo from '../../../component/MoreInfo/MoreInfo';
 
-import { reqCheckEICName, reqAddEIC, reqEditEIC } from '../../../api/exectiveItemClass';
+import { reqCheckEPCName, reqAddEPC, reqEditEPC } from '../../../api/epc';
 import { findChildrens } from '../../../utils/tree';
-import { getCurrentPerson,checkVoucherNoBodyErrors} from '../pub';
-import {  GetLocalCache } from '../../../storage/db/db';
-//生成初始数据
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { GetLocalCache } from '../../../storage/db/db';
+
+// Generate initial Execution Project Category
 const getInitialValues = async (oriDoc, isNew, isModify) => {
     const person = await getCurrentPerson();
     let newDoc = {
         id: 0,
         name: "",
         description: "",
-        fatherid: { id: 0, name: "" },
+        fatherID: { id: 0, name: "" },
         status: 0,
-        createuser: person,
-        modifyuser: { id: 0, code: "", name: "" },
-        createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+        creator: person,
+        modifier: { id: 0, code: "", name: "" },
+        createDate: DateTimeFormat(new Date(), "LLL"),
+        modifyDate: DateTimeFormat(new Date(), "LLL"),
     };
-    if (isNew) {//新增或者复制新增
-        if (oriDoc) { //复制新增
+    if (isNew) {// Add or CopyAdd
+        if (oriDoc) { // Copy item for add
             newDoc = cloneDeep(oriDoc);
             newDoc.id = 0;
             newDoc.name = "";
-            newDoc.createuser = person;
-            newDoc.modifyuser = { id: 0, code: "", name: "" };
-            newDoc.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newDoc.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+            newDoc.creator = person;
+            newDoc.modifier = { id: 0, code: "", name: "" };
+            newDoc.createDate = DateTimeFormat(new Date(), "LLL");
+            newDoc.modifyDate = DateTimeFormat(new Date(), "LLL");
         }
     } else {
         if (oriDoc) {
-            if (isModify) { //编辑
+            if (isModify) { // Edit
                 newDoc = cloneDeep(oriDoc);
-                newDoc.createdate = dayjs(newDoc.createdate).format("YYYYMMDDHHmm");
-                newDoc.modifyuser = person;
-                newDoc.modifydate = dayjs(newDoc.modifydate).format("YYYYMMDDHHmm");
-            } else { //查看详情
+                newDoc.createDate = DateTimeFormat(newDoc.createDate, "LLL");
+                newDoc.modifier = person;
+                newDoc.modifyDate = DateTimeFormat(newDoc.modifyDate, "LLL");
+            } else { // Detail
                 newDoc = cloneDeep(oriDoc);
-                newDoc.createdate = dayjs(newDoc.createdate).format("YYYYMMDDHHmm");
-                newDoc.modifydate = dayjs(newDoc.modifydate).format("YYYYMMDDHHmm");
+                newDoc.createDate = DateTimeFormat(newDoc.createDate, "LLL");
+                newDoc.modifyDate = DateTimeFormat(newDoc.modifyDate, "LLL");
             }
         }
     }
     return newDoc;
 };
 
-const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
+const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
     const [currentDoc, setCurrentDoc] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initDoc() {
@@ -76,59 +77,53 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
         }
     }, [isOpen, isNew, isModify, oriDoc]);
 
-    //scinput组件获取内容后传入
+    // Data processing actions after the data is passed into the ScInput Components 
     const handleGetValue = useCallback((value, itemkey, fieldIndex, rowIndex, errMsg) => {
         if (currentDoc === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新errors
+        // Change Errors value
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的用户信息
+        // Change currentDoc value
         setCurrentDoc((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
-            //结构赋值方法
-            // return ({
-            //     ...prevState,
-            //     [itemkey]: value,
-            // });
         });
     }, [currentDoc, isOpen, isEdit]);
-    //检查档案名称是否存在
+    // CHeck if the EPC name exists
     const handleBackendTestName = async (value) => {
         let err = { isErr: false, msg: "" };
-        let resp = await reqCheckEICName({ id: currentDoc.id, "name": value });
-        if (resp.data.status === 0) {
+        let resp = await reqCheckEPCName({ id: currentDoc.id, "name": value });
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
 
-    //检查上级类别是否合规
+    // Check if the parent category is compliant
     const handleCheckHigherClass = async (value) => {
         let err = { isErr: false, msg: "" };
-        //如果是新增档案，则直接跳出
+        // If is a new addition, directly exit
         if (isNew) {
             return err;
         }
-        //如果上级类别等于本机
+        //If the parent category is equal to the current category.
         if (currentDoc.id === value.id) {
-            err = { isErr: true, msg: "上级不能是等于自己" };
+            err = { isErr: true, msg: "parentCannotItself" };
             return err
-        }
-        //获取缓存中的所有执行项目类别
-        const eics = await GetLocalCache("exectiveitemclass");
-        //获取本部门的所有下级类别，上级类别不能为其中任何一个
-        const childrens = findChildrens(eics, currentDoc.id);
+        } 
+        // Get all epcs from the front-end category
+        const epcs = await GetLocalCache("epc");
+        // Get all subcategories
+        const childrens = findChildrens(epcs, currentDoc.id);
         let pNum = 0;
         childrens.forEach(child => {
             if (child.id === value.id) {
@@ -136,32 +131,27 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
             }
         })
         if (pNum > 0) {
-            err = { isErr: true, msg: "循环,上级类别不能是本类别的子级类别" }
+            err = { isErr: true, msg: "parentCannotBeChild" }
         }
         return err;
     }
 
-    //增加修改执行项目类别
-    const handleAddEIC = async () => {
+    // Add or Edit EPC
+    const handleAddEPC = async () => {
         let thisDoc = cloneDeep(currentDoc);
-        delete thisDoc.createdate;
-        delete thisDoc.modifydate;
-
-        if (isModify) {//编辑执行项目类别            
-            const editRes = await reqEditEIC(thisDoc);
-            if (editRes.data.status === 0) {
-                message.success("修改类别'" + thisDoc.name + "'成功");
+        delete thisDoc.createDate;
+        delete thisDoc.modifyDate;
+        if (isModify) {// Edit EPC            
+            const editRes = await reqEditEPC(thisDoc);
+            if (editRes.status) {
+                message.success("modifySuccessful");
                 onOk();
-            } else {
-                message.error("修改类别'" + thisDoc.name + "'失败:" + editRes.data.statusMsg);
             }
-        } else {//增加执行项目类别            
-            const addRes = await reqAddEIC(thisDoc);
+        } else {// Add EPC            
+            const addRes = await reqAddEPC(thisDoc);
             if (addRes.data.status === 0) {
-                message.success("新增类别‘" + thisDoc.name + "’成功");
+                message.success("addSuccessful");
                 onOk();
-            } else {
-                message.error("新增类别‘" + thisDoc.name + "’失败:" + addRes.data.statusMsg);
             }
         }
     }
@@ -169,20 +159,20 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
 
     return currentDoc
         ? <>
-            <DialogTitle>{isNew ? "增加类别" : isModify ? "修改类别" : "类别详情"}</DialogTitle>
+            <DialogTitle>{isNew ? t("addCategory") : isModify ? t("modifyCategory") : t("viewCategory")}</DialogTitle>
             <Divider />
-            <DialogContent sx={{ p: 2, maxHeight: 768}}>
+            <DialogContent sx={{ p: 2, maxHeight: 768 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <ScInput
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="类别名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={currentDoc.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入类别名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
                             key="name"
@@ -193,11 +183,11 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="类别说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={currentDoc.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入类别说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -209,16 +199,16 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             dataType={540}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="上级类别"
-                            itemKey="fatherid"
-                            initValue={currentDoc.fatherid}
+                            itemShowName="parentCategory"
+                            itemKey="fatherID"
+                            initValue={currentDoc.fatherID}
                             pickDone={handleGetValue}
-                            placeholder="请选择上级类别"
+                            placeholder="categoryPlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleCheckHigherClass}
                             isMultiline={false}
                             rowNumber={1}
-                            key="fatherid"
+                            key="fatherID"
                         />
                     </Grid>
                     <Grid item xs={12} >
@@ -226,7 +216,7 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={currentDoc.status}
                             pickDone={handleGetValue}
@@ -243,25 +233,25 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentDoc.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentDoc.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentDoc.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentDoc.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -269,25 +259,25 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentDoc.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentDoc.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentDoc.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentDoc.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -296,15 +286,13 @@ const EditEIClass = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
             <DialogActions>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddEIC}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddEPC}>{isModify ? t("save") : t("add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>
         : <Loader />
 };
-
-export default EditEIClass;
-// sx = {{ display: "flex", alignItems: "center", justifyContent: "right" }}
+export default EditEPC;

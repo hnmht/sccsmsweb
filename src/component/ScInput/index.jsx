@@ -21,7 +21,7 @@ import ScPersonSelect from "./ScPersonSelect/ScPersonSelect"; // 510 人员单�
 import ScDeptSelect from "./ScDeptSelect/ScDeptSelect"; //520 部门单选
 import ScCSCSelect from "./ScCSCSelect/ScCSCSelect"; //525 现场档案分类单选
 import ScUDCSelect from "./ScUDCSelect/ScUDCSelect"; //530 自定义档案类别单选组件
-import ScEICSelect from "./ScEICSelect/ScEICSelect"; //540 执行项目类别单选组件
+import ScEPCSelect from "./ScEPCSelect/ScEPCSelect"; //540 执行项目类别单选组件
 import ScUDASelect from "./ScUDASelect/ScUDASelect"; //550 自定义档案单选组件
 import ScEIDSelect from "./ScEIDSelect/ScEIDSelect"; //560 执行项目档案单选组件
 import ScSISelect from "./ScSISelect/ScSISelect"; // 570 现场档案单选组件
@@ -84,7 +84,7 @@ const ScInput = (props) => {
         case 530:
             return <ScUDCSelect {...props} />;
         case 540:
-            return <ScEICSelect {...props} />;
+            return <ScEPCSelect {...props} />;
         case 550:
             return <ScUDASelect {...props} />;
         case 560:

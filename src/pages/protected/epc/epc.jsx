@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
     Dialog,
     Grid,
@@ -13,69 +13,73 @@ import { message } from "mui-message";
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
-import EditEIClass from "./editEIC";
+import EditEPC from "./editEPC";
 import PubTree from "../../../component/ScInput/ScPub/PubTree";
 
 import { treeToArr } from "../../../utils/tree";
-import { reqGetEICList, reqDeleteEIC, reqDeleteEICs } from "../../../api/exectiveItemClass";
+import { reqGetEPCList, reqDeleteEPC, reqDeleteEPCs } from "../../../api/epc";
 import { GetLocalCache, InitDocCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 import useContentHeight from "../../../hooks/useContentHeight";
+import { useTranslation } from "react-i18next";
 
-function ExectiveItemClass() {
+function EPC() {
     const [rows, setRows] = useState([]);
-    const [simpEics, setSimpEics] = useState([]);
-    const [selectedEicIds, setSelectedEicIds] = useState([]);
+    const [simpEpcs, setSimpEpcs] = useState([]);
+    const [selectedEpcIds, setSelectedEpcIds] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         currentDoc: undefined,
         diagOpen: false,
         isNew: false,
         isModify: false
     });
-    const filterEics = rows.filter(eic => selectedEicIds.includes(eic.id));
+    const filterEpcs = rows.filter(epc => selectedEpcIds.includes(epc.id));
     const contentHeight = useContentHeight();
+    const { t } = useTranslation();
+
     useEffect(() => {
         async function getData() {
-            //从本地缓存获取简化类别列表
-            await InitDocCache("exectiveitemclass");
-            let newSimpEics = await GetLocalCache("exectiveitemclass");
-            let newSelectedEicIds = [];
-            newSimpEics.forEach(simpEic => {
-                newSelectedEicIds.push(simpEic.id);
+            // Get EPC list from front-end cache
+            await InitDocCache("epc");
+            let newSimpEpcs = await GetLocalCache("epc");
+            let newSelectedEpcIds = [];
+            newSimpEpcs.forEach(simpEpc => {
+                newSelectedEpcIds.push(simpEpc.id);
             });
-            setSimpEics(newSimpEics);
-            setSelectedEicIds(newSelectedEicIds);
+            setSimpEpcs(newSimpEpcs);
+            setSelectedEpcIds(newSelectedEpcIds);
             handleReqDocList();
         }
         getData();
     }, []);
 
-    //获取类别列表
+    // Request EPC list from server
     const handleReqDocList = async () => {
-        const docResp = await reqGetEICList();
+        const docResp = await reqGetEPCList();
         let docList = [];
-        if (docResp.data.status === 0) {
-            docList = docResp.data.data;
-        } 
+        if (docResp.status) {
+            docList = docResp.data;
+        }
         setRows(docList);
     };
-    //获取简化类别列表
-    const handleGetSimpEics = async (isGetAllIds = true) => {
-        await InitDocCache("exectiveitemclass");
-        //从本地缓存获取简化类别列表
-        let newSimpEics = await GetLocalCache("exectiveitemclass");
-        let newSelectedEicIds = [];
+    // Get SimpEPC list from front-end cache
+    const handleGetSimpEpcs = async (isGetAllIds = true) => {
+        // Request latest SimpEPC from server
+        await InitDocCache("epc");
+        // Get SimpEPC from front-end cache
+        let newSimpEpcs = await GetLocalCache("epc");
+        let newSelectedEpcIds = [];
         if (isGetAllIds) {
-            newSimpEics.forEach(simpEic => {
-                newSelectedEicIds.push(simpEic.id);
+            newSimpEpcs.forEach(simpEpc => {
+                newSelectedEpcIds.push(simpEpc.id);
             })
         } else {
-            newSelectedEicIds = selectedEicIds;
+            newSelectedEpcIds = selectedEpcIds;
         }
-        setSimpEics(newSimpEics);
-        setSelectedEicIds(newSelectedEicIds);
+        setSimpEpcs(newSimpEpcs);
+        setSelectedEpcIds(newSelectedEpcIds);
     };
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -85,7 +89,7 @@ function ExectiveItemClass() {
         });
     };
 
-    //表头点击增加按钮
+    // Actions after click the Add button in the head
     const handleAddDoc = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -95,21 +99,17 @@ function ExectiveItemClass() {
         });
     };
 
-    //表头点击批量删除
+    // Actions after click the batch delete button in the head
     const handleDelMultipleAction = async (docs) => {
-        const delRes = await reqDeleteEICs(docs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error(delRes.data.statusMsg);
-        }
-        //刷新
-        handleGetSimpEics();
+        const delRes = await reqDeleteEPCs(docs);
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
+        } 
+        // Refresh data
+        handleGetSimpEpcs();
         handleReqDocList();
     };
-    //对话框编辑用户自定义档案类别页面点击确定按钮
+    //Actions after click ok button in the dialog
     const handelAddDocOk = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -117,11 +117,11 @@ function ExectiveItemClass() {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求档案列表数据
+        // Refresh data
         handleReqDocList();
-        handleGetSimpEics();
+        handleGetSimpEpcs();
     };
-    //表体点击复制新增按钮
+    // Actions after click copy add button in the body
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -130,7 +130,7 @@ function ExectiveItemClass() {
             isModify: false
         });
     };
-    //表体点击详情按钮
+    // Actions after click detail button in the bdoby
     const handleRowDetail = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -140,7 +140,7 @@ function ExectiveItemClass() {
         });
 
     };
-    //表体点击编辑按钮
+    // Actions after click edit button in the body
     const handleRowEdit = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -150,45 +150,39 @@ function ExectiveItemClass() {
         });
 
     };
-    //表体点击删除按钮
+    // Actions after click delete button in the body
     const handleRowDelete = async (doc) => {
-        const delRes = await reqDeleteEIC(doc);
-        if (delRes.data.status === 0) {
-            message.success("删除类别" + doc.name + "成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error("删除类别" + doc.name + "失败:" + delRes.data.statusMsg);
-        }
-        
-        //刷新
-        handleGetSimpEics();
+        const delRes = await reqDeleteEPC(doc);
+        if (delRes.status) {
+            message.success("delSuccessful");
+        } 
+        // refresh
+        handleGetSimpEpcs();
         handleReqDocList();
     };
-    //树状视图选择
+    // Actions after the tree view item selected
     const handleEicsTreeClick = async (item, type) => {
-        //type 0 末级; 1父级; 3 全部;
         let eicIds = [];
-        if (type === 0) {
+        if (type === 0) { // Final level
             eicIds.push(item.id);
-        } else if (type === 1) {
+        } else if (type === 1) { // Parent Level 
             const tree = [];
             tree.push(item);
             let allChilds = treeToArr(tree);
             allChilds.forEach(item1 => {
                 eicIds.push(item1.id);
             })
-        } else if (type === 3) {
+        } else if (type === 3) { // All
             item.forEach(item3 => {
                 eicIds.push(item3.id);
             })
         }
-        setSelectedEicIds(eicIds);
+        setSelectedEpcIds(eicIds);
     };
 
     return (
         <React.Fragment>
-            <PageTitle pageName="执行项目类别" displayHelp={true} helpUrl="/helps/exectiveItemClass" />
+            <PageTitle pageName={t("MenuEPC")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2} >
                 <Grid item xs={2}>
@@ -202,9 +196,9 @@ function ExectiveItemClass() {
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择类别
-                                <Tooltip title="刷新" placement="top">
-                                    <IconButton onClick={handleGetSimpEics}>
+                                {t("chooseCategory")}
+                                <Tooltip title={t("refresh")} placement="top">
+                                    <IconButton onClick={handleGetSimpEpcs}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
                                 </Tooltip>
@@ -213,11 +207,11 @@ function ExectiveItemClass() {
                         sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="类别"
+                            docName={t("category")}
                             isDisplayAll={true}
-                            oriDocs={simpEics}
+                            oriDocs={simpEpcs}
                             onDocClick={handleEicsTreeClick}
-                            selectDocIDs={selectedEicIds}
+                            selectDocIDs={selectedEpcIds}
                             onDocDoubleClick={handleEicsTreeClick}
                             isEdit={true}
                         />
@@ -225,7 +219,7 @@ function ExectiveItemClass() {
                 </Grid>
                 <Grid item xs={10}>
                     <DocList
-                        rows={filterEics}
+                        rows={filterEpcs}
                         columns={columns}
                         rowActionsDefine={rowActionsDefine}
                         addAction={handleAddDoc}
@@ -247,7 +241,7 @@ function ExectiveItemClass() {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800 } }}
                 closeAfterTransition={false}
             >
-                <EditEIClass
+                <EditEPC
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
@@ -260,4 +254,4 @@ function ExectiveItemClass() {
     );
 }
 
-export default ExectiveItemClass;
+export default EPC;

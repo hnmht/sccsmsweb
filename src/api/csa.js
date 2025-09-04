@@ -19,7 +19,7 @@ export function reqGetCSCache(data, isLoading = true) {
     });
 }
 
-//检查现场档案编码
+// Check if the CSA code exists
 export function reqCheckCSCode(data, isLoading = true) {
     return request({
         url: "/csa/checkcode",
@@ -29,7 +29,7 @@ export function reqCheckCSCode(data, isLoading = true) {
     });
 }
 
-//增加现场档案
+// Add Construction Site Archive
 export function reqAddCS(data, isLoading = true) {
     return request({
         url: "/csa/add",
@@ -39,7 +39,7 @@ export function reqAddCS(data, isLoading = true) {
     });
 }
 
-//修改现场档案
+// Edit CSA
 export function reqEditCS(data, isLoading = true) {
     return request({
         url: "/csa/edit",
@@ -49,7 +49,7 @@ export function reqEditCS(data, isLoading = true) {
     });
 }
 
-//删除现场档案
+// Delete CSA
 export function reqDeleteCS(data, isLoading = true) {
     return request({
         url: "/csa/delete",
@@ -59,7 +59,7 @@ export function reqDeleteCS(data, isLoading = true) {
     });
 }
 
-//批量删除现场档案
+// Batch delete CSA
 export function reqDeleteCSs(data, isLoading = true) {
     return request({
         url: "/csa/deletecss",

@@ -6,7 +6,7 @@ import { reqGetSimpDepts, reqGetSimpDeptsCache } from "../../api/department";
 import { reqGetPersons, reqGetPersonsCache } from "../../api/person";
 import { reqGetUDCList, reqGetUDCsCache } from "../../api/udc";
 import { reqGetUDAAll, reqGetUDACache } from "../../api/uda";
-import { reqGetSimpEICList, reqGetSimpEICCache } from "../../api/exectiveItemClass";
+import { reqGetSimpEPCList, reqGetSimpEPCCache } from "../../api/epc";
 import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
 import { reqGetCSList, reqGetCSCache  } from "../../api/csa";
@@ -156,8 +156,8 @@ export const docTable = new Map([
     ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
     ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
     ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
+    ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
      /* 
-     ["exectiveitemclass", { description: "执行项目类别", reqAllFunc: reqGetSimpEICList, reqCacheFunc: reqGetSimpEICCache, transToFrontFunc: commonTransDoc }],
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
      ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],

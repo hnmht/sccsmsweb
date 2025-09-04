@@ -8,33 +8,33 @@ import {
     Button,
 } from "@mui/material";
 import { RefreshIcon } from "../../PubIcon/PubIcon";
-import { InitDocCache, GetLocalCache} from "../../../storage/db/db";
+import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import PubTree from "../ScPub/PubTree";
-
-const docName = "exectiveitemclass";
-const EICPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+import { useTranslation } from "react-i18next";
+const docName = "epc";
+// EPC Selector
+const EPCPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [oriDocs, setOriDocs] = useState([]);
+    const { t } = useTranslation();
     useEffect(() => {
-        async function getLocalEICs() {
+        async function getLocalEPCs() {
             const eics = await GetLocalCache(docName);
             setOriDocs(eics);
         }
-        getLocalEICs(); 
+        getLocalEPCs();
     }, []);
-    //将当前选择档案转换为档案id数组
+    // Convert the current array of EPC objects into an array of EPC IDs.
     const transferDocIDs = (doc) => {
         let selectedDocIDs = [];
         selectedDocIDs.push(doc.id);
         return selectedDocIDs;
     };
-
-    //刷新档案
+    // Refresh EPC list
     const handleDocRefresh = async () => {
         await InitDocCache(docName);
         const newDocs = await GetLocalCache(docName);
         setOriDocs(newDocs);
     };
-
 
     return (
         <>
@@ -48,8 +48,8 @@ const EICPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                             display: "flex", flexDirection: "row", justifyContent: "space-between"
                         }}
                     >
-                        选择类别
-                        <Tooltip title="刷新" placement="top">
+                        {t("chooseCategory")}
+                        <Tooltip title={t("refresh")} placement="top">
                             <IconButton onClick={handleDocRefresh}>
                                 <RefreshIcon color="primary" />
                             </IconButton>
@@ -61,11 +61,11 @@ const EICPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                 <PubTree oriDocs={oriDocs} selectDocIDs={transferDocIDs(currentItem)} onDocClick={clickItemAction} onDocDoubleClick={doubleClickItemAction} />
             </List>
             <DialogActions sx={{ p: 2.5 }}>
-                <Button color='error' onClick={cancelClickAction}>取消</Button>
-                <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>确定</Button>
-            </DialogActions> 
+                <Button color='error' onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant='contained' disabled={currentItem.id === 0 ? true : false} onClick={okClickAction}>{t("ok")}</Button>
+            </DialogActions>
         </>
     );
 };
 
-export default EICPicker;
+export default EPCPicker;
