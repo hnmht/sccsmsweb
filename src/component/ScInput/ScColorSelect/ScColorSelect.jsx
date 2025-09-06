@@ -11,12 +11,15 @@ import {
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { scColors } from "./constructor";
-const zeroValue = "white";
-//406
+import { useTranslation } from "react-i18next";
+const zeroValue = "blue";
+
+// Seacloud Color Select component
 const ScSelectColor = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const {t} = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -30,7 +33,7 @@ const ScSelectColor = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //向父组件传递数据
+    // Transmit data to the parent component
     const handleTransfer = async (value = fieldValue) => {
         if (!isEdit) {
             return
@@ -53,7 +56,7 @@ const ScSelectColor = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`input${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`input${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <FormControl id={`${itemKey}${positionID}${rowIndex}`} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
@@ -64,15 +67,15 @@ const ScSelectColor = memo((props) => {
                     value={fieldValue}
                     error={errInfo.isErr}
                     input={positionID !== 1
-                        ? <OutlinedInput id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
-                        : <InputBase id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
+                        ? <OutlinedInput id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
+                        : <InputBase id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
                     sx={{ flex: 1 }}
                 >
                     {scColors.map((color, index) => (
-                        <MenuItem key={index} value={color.value}>
+                        <MenuItem key={index} value={color}>
                             <div style={{ display: "flex", justifyContent: "left", flexDirection: "row" }}>
-                                <div style={{ minHeight: 16, minWidth: 32, borderRadius:4,backgroundColor: color.value,marginRight:4 }} />
-                                <Typography variant="body1"> {color.chineseName}</Typography>
+                                <div style={{ minHeight: 16, minWidth: 32, borderRadius:4,backgroundColor: color,marginRight:4 }} />
+                                <Typography variant="body1"> {t(color)}</Typography>
                             </div>
                         </MenuItem>
                     ))
@@ -82,9 +85,5 @@ const ScSelectColor = memo((props) => {
         </>
     );
 });
-
-ScSelectColor.defaultProps = {
-    initValue: zeroValue,
-};
 
 export default ScSelectColor;

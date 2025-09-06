@@ -277,7 +277,7 @@ function DocList({
                                                 <TableCell key={column.id} align={column.alignment} sx={{ m: 2, p: 2 }} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} >
                                                     {column.display.type === 0
                                                         ? value
-                                                        : t(column.display.cell1(row, column))
+                                                        : column.display.cell1(row, column)
                                                     }
                                                 </TableCell>
                                             );

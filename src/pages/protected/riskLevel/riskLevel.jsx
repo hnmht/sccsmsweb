@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, Fragment } from "react";
 import { Dialog } from "@mui/material";
 import { message } from "mui-message";
+import { useTranslation } from "react-i18next";
 
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
@@ -10,7 +11,8 @@ import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 import { reqGetRLList, reqDeleteRL, reqDeleteRLs } from "../../../api/riskLevel";
 import { InitDocCache } from "../../../storage/db/db";
 
-function RiskLevel() {
+// Risk Level
+const RiskLevel = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         oriRL: undefined,
@@ -18,6 +20,7 @@ function RiskLevel() {
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation()
 
     useEffect(() => {
         async function getData() {
@@ -26,19 +29,17 @@ function RiskLevel() {
         getData();
     }, []);
 
-    //从服务器获取风险等级列表
+    // Request Risk Level list
     const handleReqRLList = async () => {
         const resp = await reqGetRLList();
         let newRls = [];
-        if (resp.data.status === 0) {
-            newRls = resp.data.data;
-        } else {
-            message.error(resp.data.statusMsg);
+        if (resp.status) {
+            newRls = resp.data;
         }
         setRows(newRls);
     };
 
-    //表体行点击复制新增按钮
+    // Actions after click copyAdd button in the body
     const handleCopyAdd = (item) => {
         setDiagStatus({
             oriRL: item,
@@ -47,7 +48,7 @@ function RiskLevel() {
             isModify: false
         });
     };
-    //表体行点击编辑按钮
+    // Actions after click Edit button in the body
     const handleRLEdit = (item) => {
         setDiagStatus({
             oriRL: item,
@@ -56,20 +57,18 @@ function RiskLevel() {
             isModify: true
         });
     }
-    //表体行点击删除按钮
+    // Actions after click delete button in the body
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteRL(item);
-        if (delRes.data.status === 0) {
-            message.success("删除类别'" + item.name + "'成功");
-            //刷新
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
+            // Refresh data
             handleReqRLList();
-        } else {
-            message.error("删除类别'" + item.name + "'失败:" + delRes.data.statusMsg);
         }
-        //更新缓存
+        // Refresh front-end cache
         await InitDocCache("risklevel");
     }
-    //表体行点击详情按钮
+    // Action after click delete button in body
     const handleRLDetail = (item) => {
         setDiagStatus({
             oriRL: item,
@@ -79,7 +78,7 @@ function RiskLevel() {
         });
     }
 
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = useCallback(() => {
         setDiagStatus({
             oriRL: undefined,
@@ -89,7 +88,7 @@ function RiskLevel() {
         });
     }, []);
 
-    //表头点击增加按钮
+    // Actions after click add button in head
     const handleAddRLlass = () => {
         setDiagStatus({
             oriRL: undefined,
@@ -98,35 +97,34 @@ function RiskLevel() {
             isModify: false
         });
     };
-    //表头点击批量删除按钮
+    // Actions after click batch delete button in header
     const handleDelMultiple = async (udcs) => {
         const delRes = await reqDeleteRLs(udcs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
+            // Refresh
             handleReqRLList();
-        } else {
-            message.error(delRes.data.statusMsg);
         }
-        //更新本地缓存
+        // Refresh local cache
         await InitDocCache("risklevel");
     }
-    //对话框编辑用户自定义档案类别页面点击确定按钮
+    // Actions after click ok button in the dialog
     const handelAddRLOk = useCallback(() => {
+        console.log("增加ok")
         setDiagStatus({
             oriRL: undefined,
             isOpen: false,
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求用户自定义档案类别列表数据
+        // Refresh
         handleReqRLList();
     }, []);
 
 
     return (
         <Fragment>
-            <PageTitle pageName="风险等级" displayHelp={false} helpUrl="/helps/riskLevel" />
+            <PageTitle pageName={t("MenuRL")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 rows={rows}

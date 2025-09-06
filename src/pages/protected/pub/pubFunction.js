@@ -1,34 +1,35 @@
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { DateTimeFormat } from "../../../i18n/dayjs";
+import i18n from "../../../i18n/i18n";
 
 // Get Operator
 export const getCurrentPerson = () => {
     const { user } = store.getState();
     return user.person;
 };
-//生成单据错误信息
+// Generate Master-detail form error messages
 export const generateVoucherErrors = (rowNumber) => {
     let voucherErrors = {
         body: [],
     };
-    //生成表体错误信息
+    // Generate Master-Detail form details errors
     for (let i = 0; i < rowNumber; i++) {
         voucherErrors.body.push({});
     }
     return voucherErrors;
 };
 
-//检查是否存在错误信息
+// Check if the Master-Detail form error messages
 export const checkVoucherErrors = (voucherErrors) => {
     let number = 0;
-    //表头错误信息
+    // Check Master-Detail form Master errors
     for (let key in voucherErrors) {
         if (key !== "body" && voucherErrors[key].isErr) {
             number = number + 1;
         }
     }
-    //表体错误信息
+    // Check Master-Detail form Detail errors
     voucherErrors.body.forEach((row) => {
         for (let key in row) {
             if (row[key].isErr) {
@@ -36,10 +37,11 @@ export const checkVoucherErrors = (voucherErrors) => {
             }
         }
     });
+
     return number > 0;
 };
 
-//检查不存在表体的单据或档案错误信息
+// Check if the form error messages
 export const checkVoucherNoBodyErrors = (errors) => {
     let number = 0;
     for (let key in errors) {
@@ -50,30 +52,30 @@ export const checkVoucherNoBodyErrors = (errors) => {
     return number > 0;
 };
 
-//创建人显示
+// Creator display content
 export const CellCreator = (row, column) => {
     return row.creator.name;
 };
-//创建日期显示
+// Create date display content
 export const CellCreateTime = (row, column) => {
     let date = new Date(row.createDate);
     return DateTimeFormat(date, "LLL");
 };
-//修改人显示
+// Modifier display content
 export const CellModifier = (row, column) => {
     return row.modifier.name;
 };
-//修改日期显示
+// Modify date display content
 export const CellModifyTime = (row, column) => {
     let date = new Date(row.modifyDate);
     return DateTimeFormat(date);
 };
 
-//确认人显示
+// Confirmer display conent
 export const CellConfirmer = (row, column) => {
     return row.confirmer.name;
 };
-//修改日期显示
+// Confirm date display content
 export const CellConfirmTime = (row, column) => {
     let date = new Date(row.confirmDate);
     return DateTimeFormat(date);
@@ -81,7 +83,8 @@ export const CellConfirmTime = (row, column) => {
 
 // Status display content 
 export const CellStatus = (row, column) => {
-    return row.status === 0 ? "normal" : "disable";
+    const v = row.status === 0 ? "normal" : "disable";
+    return i18n.t(v)
 };
 
 // Voucher status displa content
@@ -89,19 +92,21 @@ export const CellVoucherStatus = (row, column) => {
     return VoucherStatus[row.status];
 };
 
-// Department display
+// Department display content
 export const CellDept = (row, column) => {
     return row.department.name;
 };
-// Position display
+// Position display content
 export const CellPosition = (row, column) => {
     return row.position.name;
 };
-// Gender display
+// Gender display content
 export const CellGender = (row) => {
-    return row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
+    const v = row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
+    return i18n.t(v);
 };
-// System preset column display content
+// System preset  display content
 export const CellSystemFlag = (row) => {
-    return row.systemflag === 0 ? "N" : "Y";
+    const v = row.systemflag === 0 ? "N" : "Y";
+    return i18n.t(v);
 };

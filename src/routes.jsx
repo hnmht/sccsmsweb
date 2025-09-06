@@ -222,11 +222,11 @@ const routes = [
                 element: <EPC />
             },
             {
-                path: "/private/archive/exectiveItem",
+                path: "/private/masterData/executionProjectArchive",
                 element: <ExectiveItem />
             },
             {
-                path: "/private/archive/riskLevel",
+                path: "/private/masterData/riskLevel",
                 element: <RiskLevel />
             },
             {

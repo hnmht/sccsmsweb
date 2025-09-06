@@ -1,4 +1,4 @@
-import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus, CellDescription } from "../pub";
+import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus } from "../pub/pubFunction";
 
 const rowCopyAddDisabled = (row) => {
     return false;
@@ -21,13 +21,13 @@ const rowStartDisabled = (row) => {
 const rowStopDisabled = (row) => {
     return false;
 };
-//颜色列显示
+// Cell display content
 const CellColor = (row, column) => {
     return (<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center",margin:0,padding:0 }}>
         <div style={{ minHeight: 16, width: 32, borderRadius: 4, backgroundColor: row.color }} />
     </div>)
 };
-//批量删除按钮是否显示
+// Determine if the "Bulk Delete" button is enable/disable
 export function delMultipleDisabled(selectedRows) {
     return selectedRows.length === 0;
 }
@@ -38,54 +38,54 @@ export const rowActionsDefine = {
         visible: true,
         disabled: rowCopyAddDisabled,
         color: "success",
-        tips: "复制新增",
+        tips: "copyAdd",
         icon: "CopyNewIcon",
     },
     rowViewDetail: {
         visible: true,
         disabled: rowViewDisabled,
         color: "secondary",
-        tips: "详情",
+        tips: "detail",
         icon: "DetailIcon",
     },
     rowEdit: {
         visible: true,
         disabled: rowEditDisabled,
         color: "warning",
-        tips: "编辑",
+        tips: "edit",
         icon: "EditIcon",
     },
     rowDelete: {
         visible: true,
         disabled: rowDelDisabled,
         color: "error",
-        tips: "删除",
+        tips: "delete",
         icon: "DeleteIcon",
     },
     rowStart: {
         visible: false,
         disabled: rowStartDisabled,
         color: "success",
-        tips: "启用",
+        tips: "start",
         icon: "StartIcon",
     },
     rowStop: {
         visible: false,
         disabled: rowStopDisabled,
         color: "error",
-        tips: "停用",
+        tips: "stop",
         icon: "StopIcon",
     },
 };
 
 export const columns = [
     { id: "id", label: "ID", alignment: "left", minWidth: 20, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
-    { id: "name", label: "名称", alignment: "center", minWidth: 100, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
-    { id: "color", label: "颜色", alignment: "center", minWidth: 60, visible: true, sortField: "color", sort: true, display: { type: 1, cell1: CellColor } },
-    { id: "description", label: "说明", alignment: "center", minWidth: 150, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
-    { id: "status", label: "状态", alignment: "center", minWidth: 30, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
-    { id: "createuser", label: "创建人", alignment: "center", minWidth: 30, visible: true, sortField: "createuser.name", sort: true, display: { type: 1, cell1: CellCreator } },
-    { id: "createdate", label: "创建日期", alignment: "center", minWidth: 30, visible: true, sortField: "createdate", sort: true, display: { type: 1, cell1: CellCreateTime } },
-    { id: "modifyuser", label: "修改人", alignment: "center", minWidth: 60, visible: false, sortField: "modifyuser.name", sort: true, display: { type: 1, cell1: CellModifier } },
-    { id: "modifydate", label: "修改日期", alignment: "center", minWidth: 60, visible: false, sortField: "modifydate", sort: true, display: { type: 1, cell1: CellModifyTime } },
+    { id: "name", label: "name", alignment: "center", minWidth: 100, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
+    { id: "color", label: "color", alignment: "center", minWidth: 60, visible: true, sortField: "color", sort: true, display: { type: 1, cell1: CellColor } },
+    { id: "description", label: "description", alignment: "center", minWidth: 150, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "status", label: "status", alignment: "center", minWidth: 30, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
+    { id: "creator", label: "creator", alignment: "center", minWidth: 30, visible: true, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },
+    { id: "createDate", label: "createDate", alignment: "center", minWidth: 30, visible: true, sortField: "createDate", sort: true, display: { type: 1, cell1: CellCreateTime } },
+    { id: "modifier", label: "modifier", alignment: "center", minWidth: 60, visible: false, sortField: "modifier.name", sort: true, display: { type: 1, cell1: CellModifier } },
+    { id: "modifyDate", label: "modifyDate", alignment: "center", minWidth: 60, visible: false, sortField: "modifyDate", sort: true, display: { type: 1, cell1: CellModifyTime } },
 ];

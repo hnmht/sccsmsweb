@@ -157,12 +157,11 @@ export const docTable = new Map([
     ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
     ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
     ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
+    ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
      /* 
      ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-     ["risklevel", { description: "风险等级", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
      ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
-     ["operatingpost", { description: "岗位档案", reqAllFunc: reqGetOPList, reqCacheFunc: reqGetOPCache, transToFrontFunc: commonTransDoc }],
      ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
      ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
 ]);

@@ -23,6 +23,7 @@ import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 import useContentHeight from "../../../hooks/useContentHeight";
 import { useTranslation } from "react-i18next";
 
+// Execution Project Category
 function EPC() {
     const [rows, setRows] = useState([]);
     const [simpEpcs, setSimpEpcs] = useState([]);

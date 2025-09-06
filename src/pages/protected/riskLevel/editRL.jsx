@@ -6,9 +6,10 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat } from '../../../i18n/dayjs';
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
@@ -16,62 +17,62 @@ import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
 import { reqAddRL, reqEditRL, reqCheckRLName } from '../../../api/riskLevel';
 import { InitDocCache } from '../../../storage/db/db';
-import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
-//获取初始值
+// Generate initial Risk Level 
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriRL } = diagStatus;
-
     const person = await getCurrentPerson();
     let newRL = {};
     if (isNew) {
-        if (oriRL) {//复制新增
+        if (oriRL) {// Copy and Add
             newRL = cloneDeep(oriRL);
             newRL.id = 0;
             newRL.name = "";
-            newRL.color="white"
-            newRL.createuser = person;
-            newRL.modifyuser = { id: 0, code: "", name: "" };
-            newRL.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newRL.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+            newRL.color = "blue"
+            newRL.creator = person;
+            newRL.modifier = { id: 0, code: "", name: "" };
+            newRL.createDate = DateTimeFormat(new Date(), "LLL");
+            newRL.modifyDate = DateTimeFormat(new Date(), "LLL");
         } else {
-            newRL = { //新增
+            newRL = { //Add
                 id: 0,
                 name: "",
                 description: "",
-                color: "white",
+                color: "blue",
                 status: 0,
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: DateTimeFormat(new Date(), "LLL")
             };
         }
     } else {
-        if (!oriRL) { //错误
+        if (!oriRL) { // Error
             return
         } else {
-            if (isModify) {//编辑
+            if (isModify) {// Modify
                 newRL = cloneDeep(oriRL);
-                newRL.createdate = dayjs(newRL.createdate).format("YYYYMMDDHHmm");
-                newRL.modifyuser = person;
-                newRL.modifydate = dayjs(newRL.modifydate).format("YYYYMMDDHHmm");
-            } else { //查看
+                newRL.createDate = DateTimeFormat(newRL.createDate, "LLL");
+                newRL.modifier = person;
+                newRL.modifyDate = DateTimeFormat(newRL.modifyDate, "LLL");
+            } else { // View
                 newRL = cloneDeep(oriRL);
-                newRL.createdate = dayjs(newRL.createdate).format("YYYYMMDDHHmm");
-                newRL.modifydate = dayjs(newRL.modifydate).format("YYYYMMDDHHmm");
+                newRL.createDate = DateTimeFormat(newRL.createDate, "LLL");
+                newRL.modifyDate = DateTimeFormat(newRL.modifyDate, "LLL");
             }
         }
     }
-
     return newRL;
 };
 
+// Add, Edit, View Risk Level
 const EditRL = ({ diagStatus, onCancel, onOk }) => {
     const { isOpen, isNew, isModify } = diagStatus;
     const [currentRl, setCurrentRl] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
@@ -83,69 +84,63 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
         }
     }, [diagStatus]);
 
-    //scinput组件获取内容后传入
+    // Data processing actions after the data is passed into the ScInput Components
     const handleGetValue = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
         if (!isOpen || !isEdit || currentRl === undefined) {
             return
         }
-        //更新errors
+        // Change errors values
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的信息
+        // Change currentRL values
         setCurrentRl((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
         });
     };
 
-    //增加或修改风险等级
+    // Actions after click Add or Edit button 
     const handleAddRL = async () => {
         let thisRL = cloneDeep(currentRl);
-        delete thisRL.createdate;
-        delete thisRL.modifydate;
-        if (isModify) {
+        delete thisRL.createDate;
+        delete thisRL.modifyDate;
+        if (isModify) { // Modify Risk Level
             const editRes = await reqEditRL(thisRL);
-            if (editRes.data.status === 0) {
-                message.success("修改风险等级'" + thisRL.name + "'成功");
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改风险等级'" + thisRL.name + "'失败:" + editRes.data.statusMsg);
             }
-        } else {
-            //增加风险等级
+        } else { // Add Risk Level
             const addRes = await reqAddRL(thisRL);
-            if (addRes.data.status === 0) {
-                message.success("新增风险等级‘" + thisRL.name + "’成功");
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增风险等级‘" + thisRL.name + "’失败:" + addRes.data.statusMsg);
             }
         }
-        //刷新本地缓存
+        // Refresh front-end cache
         await InitDocCache("risklevel");
     }
-    //检查名称是否存在
+    // Check if the Risk Level name exists
     const handleBackendTestName = async (value) => {
         let err = { isErr: false, msg: "" };
         let classId = currentRl.id ? currentRl.id : 0;
         let resp = await reqCheckRLName({ id: classId, "name": value }, false);
-        if (resp.data.status === 0) {
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
 
     return currentRl
         ? <>
-            <DialogTitle>{isNew ? "增加风险等级" : isModify ? "修改风险等级" : "风险等级详情"}</DialogTitle>
+            <DialogTitle>{t(isNew ? "addRL" : isModify ? "modifyRL" : "viewRL")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -154,11 +149,11 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="风险等级名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={currentRl.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入风险等级名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
                             key="name"
@@ -169,11 +164,11 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                             dataType={406}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="颜色"
+                            itemShowName="color"
                             itemKey="color"
                             initValue={currentRl.color}
                             pickDone={handleGetValue}
-                            placeholder="请选择颜色"
+                            placeholder="chooseRL"
                             isBackendTest={false}
                             key="false"
                         />
@@ -183,11 +178,11 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="风险等级说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={currentRl.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入风险等级说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -199,7 +194,7 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={currentRl.status}
                             pickDone={handleGetValue}
@@ -216,25 +211,25 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentRl.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentRl.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentRl.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentRl.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -242,25 +237,25 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentRl.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentRl.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentRl.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentRl.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -269,10 +264,10 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddRL}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddRL}>{t(isModify ? "save" : "add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>

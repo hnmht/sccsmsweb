@@ -12,7 +12,7 @@ import ScSwitchYesOrNo from "./ScSwitchYesOrNo/ScSwitchYesOrNo"; //402 switch选
 import ScCheckYesOrNo from "./ScCheckYesOrNo/ScCheckYesOrNo"; //403 CheckBox选择是否
 import ScSelectYesOrNo from "./ScSelectYesOrNo/ScSelectYesOrNo"; //404 Select是否选择
 import ScVoucherStatus from "./ScVoucherStatus/ScVoucherStatus"; //405 单据状态显示
-import ScSelectColor from "./ScSelectColor/ScSelectColor"; //406 选择颜色
+import ScColorSelect from "./ScColorSelect/ScColorSelect"; //406 选择颜色
 import ScPeriodSelect from "./ScPeriodSelect/ScPeriodSelect"; //407 选择周期
 
 import ScRoleSelects from "./ScRoleSelects/ScRoleSelects"; //501 角色列表多选组件
@@ -68,7 +68,7 @@ const ScInput = (props) => {
         case 405:
             return <ScVoucherStatus {...props} />;
         case 406:
-            return <ScSelectColor {...props} />;
+            return <ScColorSelect {...props} />;
         case 407:
             return <ScPeriodSelect {...props} />;
         case 501:
