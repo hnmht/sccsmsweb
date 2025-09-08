@@ -51,7 +51,7 @@ export function reqEditCSC(data, isLoading = true) {
 // Delete CSC master data
 export function reqDeleteCSC(data, isLoading = true) {
     return request({
-        url: "/csc/delete",
+        url: "/csc/del",
         method: 'post',
         data,
         isLoading
@@ -60,7 +60,7 @@ export function reqDeleteCSC(data, isLoading = true) {
 // Batch delete CSCs 
 export function reqDeleteCSCs(data, isLoading = true) {
     return request({
-        url: "/csc/deletes",
+        url: "/csc/dels",
         method: 'post',
         data,
         isLoading

@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取自定义档案类别列表
+// Get UDC list 
 export function reqGetUDCList(isLoading=true) {
     return request({
         url: "/udc/list",
@@ -8,7 +8,7 @@ export function reqGetUDCList(isLoading=true) {
         isLoading
     });
 }
-//获取自定义档案类别缓存
+// Get latest UDC front-end cache
 export function reqGetUDCsCache(data, isLoading = true) {
     return request({
         url: "/udc/cache",
@@ -18,7 +18,7 @@ export function reqGetUDCsCache(data, isLoading = true) {
     });
 }
 
-//增加自定义档案类别
+// Add UDC
 export function reqAddUDC(data, isLoading = true) {
     return request({
         url: "/udc/add",
@@ -28,7 +28,7 @@ export function reqAddUDC(data, isLoading = true) {
     });
 }
 
-//编辑自定义档案类别
+// Edit UDC
 export function reqEditUDC(data, isLoading = true) {
     return request({
         url:"/udc/edit",
@@ -38,26 +38,26 @@ export function reqEditUDC(data, isLoading = true) {
     });
 }
 
-//删除自定义档案类别
+// Delete UDC
 export function reqDeleteUDC(data, isLoading = true) {
     return request({
-        url: "/udc/delete",
+        url: "/udc/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//批量删除自定义档案类别
+// Batch Delete UDC
 export function reqDeleteUDCs(data, isLoading = true) {
     return request({
-        url: "/udc/deleteudcs",
+        url: "/udc/dels",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//检查自定义档案类别名称是否存在
+// Check the UDC's name exists
 export function reqCheckUDCName(data, isLoading = true) {
     return request({
         url: "/udc/checkname",

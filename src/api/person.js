@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取人员列表
+// Get Person list
 export function reqGetPersons(isLoading=true) {
     return request({
         url: "/person/list",
@@ -9,7 +9,7 @@ export function reqGetPersons(isLoading=true) {
     });
 }
 
-//获取人员缓存
+// Get latest Person front-end cache
 export function reqGetPersonsCache(data,isLoading=true) {
     return request({
         url:"/person/cache",

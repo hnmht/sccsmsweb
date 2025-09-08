@@ -1,14 +1,6 @@
 import request from "../utils/request";
 
-export function reqRoleInfo(data,isLoading=true) {
-    return request({
-        url: "/role/roleinfo",
-        method: "post",
-        data,
-        isLoading
-    });
-}
-//获取角色列表
+// Get Role list
 export function reqGetRoles( isLoading = true) {
     return request({
         url: "/role/list",
@@ -16,25 +8,25 @@ export function reqGetRoles( isLoading = true) {
         isLoading
     });
 }
-//删除角色
+// Delete Role
 export function reqDeleteRole(data, isLoading = true) {
     return request({
-        url: "/role/delete",
+        url: "/role/del",
         method: "post",
         data,
         isLoading
     });
 }
-//批量删除角色
+// Batch delete Roles
 export function reqDeleteRoles(data, isLoading = true) {
     return request({
-        url: "/role/deleteroles",
+        url: "/role/dels",
         method: "post",
         data,
         isLoading
     });
 }
-//编辑角色保存
+// Edit Role
 export function reqEditRole(data, isLoading = true) {
     return request({
         url: "/role/edit",
@@ -43,16 +35,16 @@ export function reqEditRole(data, isLoading = true) {
         isLoading
     });
 }
-//验证系统中是否存在重名角色
+// Check if the Role's name exists
 export function reqValidateRoleName(data, isLoading = true) {
     return request({
-        url: "/role/validatename",
+        url: "/role/checkname",
         method: "post",
         data,
         isLoading
     });
 }
-//增加角色保存
+// Add Role
 export function reqAddRole(data, isLoading = true) {
     return request({
         url: "/role/add",
@@ -61,7 +53,7 @@ export function reqAddRole(data, isLoading = true) {
         isLoading
     });
 }
-//获取角色权限
+// Get role's Menus
 export function reqGetRoleAuths(data, isLoading = true) {
     return request({
         url: "/role/getmenus",
@@ -70,7 +62,7 @@ export function reqGetRoleAuths(data, isLoading = true) {
         isLoading
     });
 }
-//更新角色权限
+// Update Role's Menus (Modify role permissions)
 export function reqUpdateRoleAuths(data, isLoading = true) {
     return request({
         url: "/role/updaterolemenus",

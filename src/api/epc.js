@@ -51,7 +51,7 @@ export function reqEditEPC(data, isLoading = true) {
 // Delete EPC
 export function reqDeleteEPC(data, isLoading = true) {
     return request({
-        url: "/epc/delete",
+        url: "/epc/del",
         method: 'post',
         data,
         isLoading
@@ -60,7 +60,7 @@ export function reqDeleteEPC(data, isLoading = true) {
 // Batch delete EPC
 export function reqDeleteEPCs(data, isLoading = true) {
     return request({
-        url: "/epc/deletes",
+        url: "/epc/dels",
         method: 'post',
         data,
         isLoading

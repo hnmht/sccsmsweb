@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取自定义档案列表
+// Get UDA list under the UDC
 export function reqGetUDAList(data,isLoading=true) {
     return request({
         url: "/uda/list",
@@ -10,7 +10,7 @@ export function reqGetUDAList(data,isLoading=true) {
     });
 }
 
-//获取所有自定义档案
+// Get ALL UDA
 export function reqGetUDAAll(isLoading = true) {
     return request({
         url: "/uda/all",
@@ -19,7 +19,7 @@ export function reqGetUDAAll(isLoading = true) {
     });
 }
 
-//获取自定义档案缓存
+// Get latest UDA front-end cache
 export function reqGetUDACache(data, isLoading = true) {
     return request({
         url: "/uda/cache",
@@ -29,7 +29,7 @@ export function reqGetUDACache(data, isLoading = true) {
     });
 }
 
-//增加自定义档案
+// Add UDA
 export function reqAddUDA(data, isLoading = true) {
     return request({
         url: "/uda/add",
@@ -39,7 +39,7 @@ export function reqAddUDA(data, isLoading = true) {
     });
 }
 
-//检查自定义档案编码是否存在
+// Check if the UDA code exists
 export function reqCheckUDACode(data, isLoading = true) {
     return request({
         url: "/uda/checkcode",
@@ -49,7 +49,7 @@ export function reqCheckUDACode(data, isLoading = true) {
     });
 }
 
-//编辑自定义档案
+// Edit UDA
 export function reqEditUDA(data, isLoading = true) {
     return request({
         url: "/uda/edit",
@@ -59,20 +59,20 @@ export function reqEditUDA(data, isLoading = true) {
     });
 }
 
-//删除自定义档案
+// Delete UDA
 export function reqDeleteUDA(data, isLoading = true) {
     return request({
-        url: "/uda/delete",
+        url: "/uda/del",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//批量删除自定义档案
+// Batch Delete UDA
 export function reqDeleteUDAs(data, isLoading = true) {
     return request({
-        url: "/uda/deleteudas",
+        url: "/uda/dels",
         method: 'post',
         data,
         isLoading

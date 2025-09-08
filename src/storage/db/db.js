@@ -7,7 +7,7 @@ import { reqGetPersons, reqGetPersonsCache } from "../../api/person";
 import { reqGetUDCList, reqGetUDCsCache } from "../../api/udc";
 import { reqGetUDAAll, reqGetUDACache } from "../../api/uda";
 import { reqGetSimpEPCList, reqGetSimpEPCCache } from "../../api/epc";
-import { reqGetEIDList, reqGetEIDCache } from "../../api/exectiveItem";
+import { reqGetEPList, reqGetEPCache } from "../../api/epa";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
 import { reqGetCSList, reqGetCSCache  } from "../../api/csa";
 import { reqGetCSOCache, reqGetCSOs } from "../../api/cso";
@@ -34,7 +34,7 @@ db.version(1).stores({
     csc: "id,status,ts",
     cso: "id,code,status,ts",
     csa: "id,code,csc.id,status,ts",
-    ep: "id,code,epc.id,resulttype.id,status,ts",
+    epa: "id,code,epc.id,resulttype.id,status,ts",
     ept: "id,code,status,ts",   
     risklevel: "id,status,ts",
     dc: "id,status,ts",
@@ -49,7 +49,7 @@ export const GetCacheDocById = async (cacheName, id) => {
     return value;
 };
 
-//通用转换函数
+// Generic conversion function
 const commonTransDoc = async (docs) => {
     return docs;
 };
@@ -65,7 +65,7 @@ const transPersonToFrontend = async (persons) => {
 };
 
 //执行项目档案后端批量转前端
-const transEIDsToFrontend = async (eids) => {
+const transEPsToFrontend = async (eids) => {
     // let startTime = new Date();
     async function transEids() {
         for (let newEid of eids) {
@@ -156,10 +156,11 @@ export const docTable = new Map([
     ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
     ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
     ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
+    ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend }],
     ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
     ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
      /* 
-     ["exectiveitem", { description: "执行项目", reqAllFunc: reqGetEIDList, reqCacheFunc: reqGetEIDCache, transToFrontFunc: transEIDsToFrontend }],
+   
      ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
      ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
      ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
@@ -310,8 +311,8 @@ export const GetUDACache = async (classId) => {
     return udds;
 };
 //根据类别ID获取执行项目缓存
-export const GetEIDCacheByClassId = async (classId) => {
-    return await db.exectiveitem.where("itemclass.id").equals(classId).toArray();
+export const GetEPCacheByClassId = async (classId) => {
+    return await db.epa.where("epc.id").equals(classId).toArray();
 };
 //根据类别ID获取现场档案缓存
 export const GetCSACacheByCategoryId = async (classId) => {
@@ -319,13 +320,13 @@ export const GetCSACacheByCategoryId = async (classId) => {
 };
 //根据岗位列表获取可用的人员档案
 export const GetPersonsWithOps = async (opIds) => {
-    let persons = await db["person"].where("op_id").anyOf(opIds).and(person => person.status === 0).toArray();
+    let persons = await db["person"].where("positionID").anyOf(opIds).and(person => person.status === 0).toArray();
     return persons;
 
 
 };
 //执行项目档案前端数据转后端数据
-export function transEIDToBackend(eid) {
+export function transEPToBackend(eid) {
     const newEid = cloneDeep(eid);
     switch (newEid.resulttype.id) {
         case 301:
@@ -375,7 +376,7 @@ export function transEIDToBackend(eid) {
     return newEid;
 };
 //执行项目档案批量前端转后端数据
-export const transEIDsToBackend = async (eids) => {
+export const transEPsToBackend = async (eids) => {
     const newEids = cloneDeep(eids);
     async function transEids() {
         for (let newEid of newEids) {
@@ -427,7 +428,7 @@ export const transEIDsToBackend = async (eids) => {
         }
     }
     await transEids();
-    // console.log("transEIDsToBackend result:",newEids);
+    // console.log("transEPsToBackend result:",newEids);
     return newEids;
 };
 

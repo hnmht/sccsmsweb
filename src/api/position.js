@@ -41,7 +41,7 @@ export function reqEditPosition(data, isLoading = true) {
 // Delete position
 export function reqDeletePosition(data, isLoading = true) {
     return request({
-        url: "/position/delete",
+        url: "/position/del",
         method: 'post',
         data,
         isLoading
@@ -50,7 +50,7 @@ export function reqDeletePosition(data, isLoading = true) {
 // Batch delete position
 export function reqDeletePositions(data, isLoading = true) {
     return request({
-        url: "/position/batchdel",
+        url: "/position/dels",
         method: 'post',
         data,
         isLoading

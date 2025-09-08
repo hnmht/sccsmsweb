@@ -52,7 +52,7 @@ export function reqEditCS(data, isLoading = true) {
 // Delete CSA
 export function reqDeleteCS(data, isLoading = true) {
     return request({
-        url: "/csa/delete",
+        url: "/csa/del",
         method: 'post',
         data,
         isLoading
@@ -62,7 +62,7 @@ export function reqDeleteCS(data, isLoading = true) {
 // Batch delete CSA
 export function reqDeleteCSs(data, isLoading = true) {
     return request({
-        url: "/csa/deletecss",
+        url: "/csa/dels",
         method: 'post',
         data,
         isLoading

@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取风险等级列表
+// Get Risk Level list
 export function reqGetRLList(isLoading = true) {
     return request({
         url: "/rl/list",
@@ -8,7 +8,7 @@ export function reqGetRLList(isLoading = true) {
         isLoading
     });
 }
-//获取风险等级缓存
+// Get latest Risk Level front-end cache
 export function reqGetRLsCache(data, isLoading = true) {
     return request({
         url: "/rl/cache",
@@ -18,7 +18,7 @@ export function reqGetRLsCache(data, isLoading = true) {
     });
 }
 
-//增加风险等级
+// Add RL
 export function reqAddRL(data, isLoading = true) {
     return request({
         url: "/rl/add",
@@ -28,7 +28,7 @@ export function reqAddRL(data, isLoading = true) {
     });
 }
 
-//编辑风险等级
+// Edit RL
 export function reqEditRL(data, isLoading = true) {
     return request({
         url: "/rl/edit",
@@ -38,26 +38,26 @@ export function reqEditRL(data, isLoading = true) {
     });
 }
 
-//删除风险等级
+// Delete RL
 export function reqDeleteRL(data, isLoading = true) {
     return request({
-        url: "/rl/delete",
+        url: "/rl/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//批量删除风险等级
+// Batch delete RL
 export function reqDeleteRLs(data, isLoading = true) {
     return request({
-        url: "/rl/deleterls",
+        url: "/rl/dels",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//检查风险等级名称是否存在
+// Check if the Risk Level name exists
 export function reqCheckRLName(data, isLoading = true) {
     return request({
         url: "/rl/checkname",

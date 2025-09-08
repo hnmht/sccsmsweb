@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取部门列表
+// Get Department list
 export function reqGetDepts(isLoading=true) {
     return request({
         url: "/dept/list",
@@ -9,7 +9,7 @@ export function reqGetDepts(isLoading=true) {
     });
 }
 
-//获取简化部门列表
+// Get Simple Department list
 export function reqGetSimpDepts(isLoading = true) {
     return request({
         url: "/dept/simplist",
@@ -18,17 +18,17 @@ export function reqGetSimpDepts(isLoading = true) {
     });
 }
 
-//获取简化部门缓存
+// Get Simple Department latest front-end cache
 export function reqGetSimpDeptsCache(data, isLoading = true) {
     return request({
-        url: "/dept/simpdeptscache",
+        url: "/dept/simpcache",
         method: 'post',
         data,
         isLoading
     });
 }
-
-//增加部门
+ 
+// Add Department
 export function reqAddDept(data,isLoading = true) {
     return request({
         url: "/dept/add",
@@ -38,7 +38,7 @@ export function reqAddDept(data,isLoading = true) {
     });
 }
 
-//编辑部门
+// Edit Department
 export function reqEditDept(data, isLoading = true) {
     return request({
         url: "/dept/edit",
@@ -47,29 +47,29 @@ export function reqEditDept(data, isLoading = true) {
         isLoading
     });
 }
-//删除部门
+// Delete Department
 export function reqDelDept(data, isLoading = true) {
     return request({
-        url: "/dept/delete",
+        url: "/dept/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//批量删除部门
+// Batch delete Department
 export function reqDeleteDepts(data, isLoading = true) {
     return request({
-        url: "/dept/deletedepts",
+        url: "/dept/dels",
         method: "post",
         data,
         isLoading
     });
 }
 
-//验证部门编码是否存在
+// Check if the department code exists
 export function reqValidateDeptCode(data, isLoading = true) {
     return request({
-        url: "/dept/validateDeptCode",
+        url: "/dept/checkcode",
         method: 'post',
         data,
         isLoading
