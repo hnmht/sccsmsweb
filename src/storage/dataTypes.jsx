@@ -30,20 +30,20 @@ const dataIconMap = new Map([
     [550, ScUDDSelectIcon],
     [525, ScSicSelectIcon],
 ]);
-//Sc数据类型列表
+// Seacloud Data Type List
 export const DataTypes = [
-    { id: 301, code: "ScTextInput", name: "文本", dataType: "string", inputMode: "输入" },
-    { id: 302, code: "ScNumberInput", name: "数字", dataType: "number", inputMode: "输入" },
-    { id: 306, code: "ScDateInput", name: "日期", dataType: "string", inputMode: "输入或选择" },
-    { id: 307, code: "ScDateTimeInput", name: "日期时间", dataType: "string", inputMode: "输入或选择" },
-    { id: 401, code: "ScSelectGender", name: "性别", dataType: "int16", inputMode: "选择" },
-    { id: 404, code: "ScSelectYesOrNo", name: "是否", dataType: "int16", inputMode: "选择" },
-    { id: 510, code: "ScPersonSelect", name: "人员", dataType: "Person", inputMode: "选择" },
-    { id: 520, code: "ScDeptSelect", name: "部门", dataType: "SimpDept", inputMode: "选择" },
-    { id: 525, code: "ScSICSelect", name: "现场档案类别", dataType: "SceneItemClass", inputMode: "选择" },
-    { id: 530, code: "ScUDCSelect", name: "自定义档案类别", dataType: "UserDefineClass", inputMode: "选择" },
-    { id: 540, code: "ScEICSelect", name: "执行项目类别", dataType: "ExectiveItemClass", inputMode: "选择" },
-    { id: 550, code: "ScUDDSelect", name: "自定义档案", dataType: "UserDefineDoc", inputMode: "选择" },
+    { id: 301, code: "ScTextInput", name: "text", dataType: "string", inputMode: "Input" },
+    { id: 302, code: "ScNumberInput", name: "number", dataType: "number", inputMode: "Input" },
+    { id: 306, code: "ScDateInput", name: "date", dataType: "string", inputMode: "Input" },
+    { id: 307, code: "ScDateTimeInput", name: "dateTime", dataType: "string", inputMode: "Input" },
+    { id: 401, code: "ScSelectGender", name: "gender", dataType: "int16", inputMode: "Select" },
+    { id: 404, code: "ScSelectYesOrNo", name: "bool", dataType: "int16", inputMode: "Select" },
+    { id: 510, code: "ScPersonSelect", name: "person", dataType: "Person", inputMode: "Select" },
+    { id: 520, code: "ScDeptSelect", name: "simpDept", dataType: "SimpDept", inputMode: "Select" },
+    { id: 525, code: "ScCSCSelect", name: "csc", dataType: "csc", inputMode: "Select" },
+    { id: 530, code: "ScUDCSelect", name: "udc", dataType: "udc", inputMode: "Select" },
+    { id: 540, code: "ScEPCSelect", name: "epc", dataType: "epc", inputMode: "Select" },
+    { id: 550, code: "ScUDASelect", name: "uda", dataType: "uda", inputMode: "Select" },
 ];
 
 //Sc数据类型默认值（0值）
@@ -64,15 +64,15 @@ export const GetDataTypeDefaultValue = (typeid) => {
         case 510:
             return { id: 0, code: "", name: "", avatar: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" };
         case 520:
-            return { id: 0, code: "", name: "", fatherid: 0, leader: { id: 0, code: "", name: "" }, description: "", status: 0 };
+            return { id: 0, code: "", name: "", fatherID: 0, leader: { id: 0, code: "", name: "" }, description: "", status: 0 };
         case 525:
-            return { id: 0, name: "", description: "", fatherid: 0, status: 0 };
+            return { id: 0, name: "", description: "", fatherID: 0, status: 0 };
         case 530:
             return { id: 0, name: "", description: "" };
         case 540:
-            return { id: 0, name: "", description: "", fatherid: 0, status: 0 };
+            return { id: 0, name: "", description: "", fatherID: 0, status: 0 };
         case 550:
-            return { id: 0, code: "", name: "", description: "", docclass: { id: 0, name: "" }, fatherid: 0 };
+            return { id: 0, code: "", name: "", description: "", udc: { id: 0, name: "" }, fatherID: 0 };
         default:
             return undefined;
     }

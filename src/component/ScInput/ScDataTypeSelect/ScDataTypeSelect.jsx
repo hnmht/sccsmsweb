@@ -1,26 +1,28 @@
-import React, { useState,memo } from "react";
+import React, { useState, memo } from "react";
 import {
     Box,
     TextField,
     Autocomplete,
     InputLabel,
 } from "@mui/material";
-import {DataTypes,DataIcon} from "../../../storage/dataTypes";
+import { DataTypes, DataIcon } from "../../../storage/dataTypes";
+import { useTranslation } from "react-i18next";
 
-//101 数据输入类型 该档案不允许有空值
+//101 Data Type selection input component(Cannot be empty) 
 const ScDataTypeSelect = (props) => {
+    const { t } = useTranslation();
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [currentType, setCurrentType] = useState(initValue ? initValue : DataTypes[0]);
-    const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });  
 
-    //检查档案值
-    const handleOnBlur = async (doc = currentType) => {  
+    // Check value and pass it to the parents
+    const handleOnBlur = async (doc = currentType) => {
         if (!isEdit) {
             return
-        }      
+        }
         let err = { isErr: false, msg: "" };
-        if ( doc.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+        if (doc.id === 0 && !allowNull) {
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(doc);
         }
@@ -40,28 +42,28 @@ const ScDataTypeSelect = (props) => {
 
     return (
         <>
-            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <Autocomplete
                 id={`${itemKey}${positionID}${rowIndex}`}
                 options={DataTypes}
                 disabled={!isEdit}
                 disableClearable={true}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => t(option.name)}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderOption={(props, option) => (
                     <Box component="li" {...props}>
                         <DataIcon datacode={option.id} fontSize="small" color="primary" sx={{ mr: 2 }} />
-                        {option.name}
+                        {t(option.name)}
                     </Box>
                 )}
-                noOptionsText="没有数据"
+                noOptionsText={t("noData")}
                 value={currentType}
                 renderInput={(params) => {
                     return (
-                        <TextField                            
+                        <TextField
                             {...params}
                             inputProps={{
-                                ...params.inputProps,                               
+                                ...params.inputProps,
                                 autoComplete: 'new-password', // disable autocomplete and autofill
                             }}
                         />);

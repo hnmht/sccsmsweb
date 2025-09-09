@@ -176,7 +176,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
 
     return currentEP
         ? <>
-            <DialogTitle>{isNew ? "增加执行项目档案" : isModify ? "修改执行项目档案" : "执行项目档案详情"}</DialogTitle>
+            <DialogTitle>{t(isNew ? "addEP" : isModify ? "modifyEP" : "viewEP")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ width: "100%", height: "100%" }}>
                 <Grid container spacing={3}>
@@ -269,7 +269,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={101}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="结果类型"
+                            itemShowName="resultType"
                             itemKey="resultType"
                             initValue={currentEP.resultType}
                             pickDone={handleGetValue}
@@ -285,7 +285,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={530}
                             allowNull={currentEP.resultType.id !== 550}
                             isEdit={currentEP.resultType.id === 550 && isEdit}
-                            itemShowName="自定义档案类别"
+                            itemShowName="udc"
                             itemKey="udc"
                             initValue={currentEP.udc}
                             pickDone={handleGetValue}
@@ -302,7 +302,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={currentEP.resultType.id}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="默认值"
+                            itemShowName="defaultValue"
                             itemKey="defaultValue"
                             initValue={currentEP.defaultValue}
                             pickDone={handleGetValue}
@@ -321,7 +321,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={403}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="自动判断问题"
+                            itemShowName="isCheckError"
                             itemKey="isCheckError"
                             pickErr={handleGetError}
                             initValue={currentEP.isCheckError}
@@ -337,7 +337,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={currentEP.resultType.id}
                             allowNull={currentEP.isCheckError === 0}
                             isEdit={isEdit}
-                            itemShowName="问题值"
+                            itemShowName="errorValueDisp"
                             itemKey="errorValue"
                             initValue={currentEP.errorValue}
                             pickDone={handleGetValue}
@@ -355,7 +355,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={403}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="必传附件"
+                            itemShowName="isRequireFile"
                             itemKey="isRequireFile"
                             initValue={currentEP.isRequireFile}
                             pickDone={handleGetValue}
@@ -369,7 +369,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={403}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="必须现场拍照"
+                            itemShowName="isOnsitePhoto"
                             itemKey="isOnsitePhoto"
                             initValue={currentEP.isOnsitePhoto}
                             pickDone={handleGetValue}
@@ -385,7 +385,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={402}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={currentEP.status}
                             pickDone={handleGetValue}
@@ -461,10 +461,10 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2.5 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddEP}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddEP}>{t(isModify ? "save" : "add")}</Button>
                     </>
-                    : <Button variant='contained' onClick={onCancel}>返回</Button>
+                    : <Button variant='contained' onClick={onCancel}>{t("back")}</Button>
                 }
             </DialogActions>
         </>
