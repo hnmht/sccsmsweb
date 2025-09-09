@@ -107,6 +107,6 @@ export const CellGender = (row) => {
 };
 // System preset  display content
 export const CellSystemFlag = (row) => {
-    const v = row.systemflag === 0 ? "N" : "Y";
+    const v = row.systemFlag === 0 ? "N" : "Y";
     return i18n.t(v);
 };

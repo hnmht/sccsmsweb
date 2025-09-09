@@ -9,13 +9,15 @@ import {
     OutlinedInput,
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
 const zeroValue = 2;
-//404
+//404 Select Yes or No Component
 const ScSelectYesOrNo = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const commentID = `select${itemKey}${positionID}${rowIndex}`;
+    const { t } = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -36,7 +38,7 @@ const ScSelectYesOrNo = memo((props) => {
         }
         let err = { isErr: false, msg: "" };
         if (value === 2 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(value);
         }
@@ -54,7 +56,7 @@ const ScSelectYesOrNo = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={commentID} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={commentID} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <FormControl fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
@@ -73,18 +75,12 @@ const ScSelectYesOrNo = memo((props) => {
                     }
                 >
                     <MenuItem key={2} value={2}></MenuItem>
-                    <MenuItem key={0} value={0}>否</MenuItem>
-                    <MenuItem key={1} value={1}>是</MenuItem>
+                    <MenuItem key={0} value={0}>{t("N")}</MenuItem>
+                    <MenuItem key={1} value={1}>{t("Y")}</MenuItem>
                 </Select>
             </FormControl>
         </>
     );
 });
-
-ScSelectYesOrNo.defaultProps = {
-    initValue: zeroValue,
-    positionID:0,
-    rowIndex:0,
-};
 
 export default ScSelectYesOrNo;

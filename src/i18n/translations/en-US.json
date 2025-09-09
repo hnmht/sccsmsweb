@@ -205,6 +205,10 @@
     "person": "Person",
     "simpDept": "Department",
     "uda": "User-define Archive",
+    "isRequireFile":"Required Attachments",
+    "isOnsitePhoto":"On-site photo",
+    "Y":"Y",
+    "N":"N",
 
 
     "systemName": "SeaCloud Construction Site Management System",

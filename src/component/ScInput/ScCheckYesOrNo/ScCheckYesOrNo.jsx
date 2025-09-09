@@ -15,7 +15,7 @@ function intTransBool(i) {
     return i === 1;
 };
 
-//403 CheckBox Yes Or No
+//403 CheckBox Yes Or No Components
 const ScCheckYesOrNo = memo((props) => {
     const { positionID, rowIndex, isEdit, itemShowName, itemKey, initValue = 0, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);

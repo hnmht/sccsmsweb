@@ -29,7 +29,7 @@ const ScDataTypeSelect = (props) => {
         setErrInfo(err);
         pickDone(doc, itemKey, positionID, rowIndex, errInfo);
     };
-    //选择项变化以后
+    // Actions after the selected value changed
     const handleOnChange = (value) => {
         let newValue;
         if (value === null) {
