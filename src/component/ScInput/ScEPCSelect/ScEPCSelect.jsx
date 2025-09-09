@@ -18,7 +18,7 @@ const ScEPCSelect = memo((props) => {
     const [currentDoc, setCurrentDoc] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         setCurrentDoc(initValue);
@@ -63,7 +63,7 @@ const ScEPCSelect = memo((props) => {
         handleOnBlur(zeroValue);
     }
     // Actions after click the epc item 
-    const handleDocClick = (item, type) => { 
+    const handleDocClick = (item, type) => {
         setCurrentDoc(item);
         handleOnBlur(item);
     };

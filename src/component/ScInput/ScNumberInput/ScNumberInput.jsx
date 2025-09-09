@@ -8,12 +8,14 @@ import {
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { NumericFormat } from "react-number-format";
 import { cloneDeep } from "lodash";
+import { useTranslation } from "react-i18next";
 const zeroValue = 0.00;
-// 302
+// 302 Seacloud Number Input Component
 const ScNumberInput = memo((props) => {
     const { positionID = -1, rowIndex = -1, allowNull = false, isEdit = true, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest = false, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue.toString());
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const {t} = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
             setTextValue(initValue.toString());
@@ -37,15 +39,14 @@ const ScNumberInput = memo((props) => {
         if (textValue.length > 0) {
             newTextValue = textValue.trim();
         }
-
-        //将字符串转化为小数
+        // Convert string to number
         if (newTextValue === "0" || newTextValue === "") {
             newNumber = 0;
         } else {
-            //去除千分位符
+            // Remove thousands separator
             newNumber = parseFloat(textValue.replace(/,/g, ''));
         }
-        //如果有后台验证则进行后台验证
+        // More validation checks
         if (isBackendTest) {
             newErrMsg = await backendTestFunc(newNumber);
         }
@@ -64,11 +65,11 @@ const ScNumberInput = memo((props) => {
             id: `${itemKey}${positionID}${rowIndex}`,
             disabled: !isEdit,
             name: itemKey,
-            placeholder: placeholder,
+            placeholder: t(placeholder),
             onChange: (event) => handleOnChange(event),
             InputProps: {
                 sx: { "& input": { textAlign: "right" } },
-                endAdornment: errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
+                endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
             },
             onBlur: handleOnBlur,
             error: errInfo.isErr,
@@ -78,9 +79,9 @@ const ScNumberInput = memo((props) => {
             id: `${itemKey}${positionID}${rowIndex}`,
             disabled: !isEdit,
             name: itemKey,
-            placeholder: placeholder,
+            placeholder: t(placeholder),
             onChange: (event) => handleOnChange(event),
-            endAdornment: errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
+            endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
             onBlur: handleOnBlur,
             error: errInfo.isErr,
             sx: { "& input": { textAlign: "right" } },
@@ -90,7 +91,7 @@ const ScNumberInput = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <NumericFormat
