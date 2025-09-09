@@ -255,7 +255,7 @@ function DocTable({
                                                 <TableCell key={column.id} align={column.alignment} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} >
                                                     {column.display.type === 0
                                                         ? row[column.id]
-                                                        : t(column.display.cell1(row, column))
+                                                        : column.display.cell1(row, column)
                                                     }
                                                 </TableCell>
                                             );

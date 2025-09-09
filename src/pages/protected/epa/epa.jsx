@@ -7,63 +7,66 @@ import { message } from "mui-message";
 
 import { Divider } from "../../../component/ScMui/ScMui";
 import DocList from "../../../component/DocList/DocList";
-import EicTree from "./eicTree";
-import EditEIDoc from "./editExectiveItem";
+import EpcTree from "./epcTree";
+import EditEPoc from "./editEPA";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 
-import { GetEIDCacheByClassId, InitDocCache, transEIDsToBackend, transEIDToBackend } from "../../../storage/db/db";
+import { GetEPCacheByCategoryId, InitDocCache, transEPsToBackend, transEPToBackend } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
-import { reqDeleteEID, reqDeleteEIDs } from "../../../api/exectiveItem";
+import { reqDeleteEP, reqDeleteEPs } from "../../../api/epa";
+import { useTranslation } from "react-i18next";
 
-function ExectiveItem() {
-    const [eids, setEids] = useState([]);
-    const [eic, setEic] = useState(undefined);
+// Execution Project 
+const EPA = () => {
+    const [epas, setEpas] = useState([]);
+    const [epc, setEpc] = useState(undefined);
     const [diagStatus, setDiagStatus] = useState({
-        currentEID: undefined,
+        currentEP: undefined,
         diagOpen: false,
         isNew: false,
         isModify: false
     });
+    const {t} = useTranslation();
 
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDiagStatus({
-            currentEID: undefined,
+            currentEP: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
     };
 
-    //获取当前eic
-    const handleGetCurrentEic = async (item) => {
-        setEic(item);
-        const newEids = await GetEIDCacheByClassId(item.id);
-        setEids(newEids);
+    // Get Excution Project Archive by EPC id
+    const handleGetCurrentEpc = async (item) => {
+        setEpc(item);
+        const newEpas = await GetEPCacheByCategoryId(item.id);
+        setEpas(newEpas);
     };
-    //获取当前类别下的所有执行项目
-    const handleGetEIDList = async (item = eic) => {
+    // 
+    const handleGetEPList = async (item = epc) => {
         //向服务器请求更新执行项目缓存
-        await InitDocCache("exectiveitem");
+        await InitDocCache("epa");
         //从本地缓存中获取当前类别下的所有执行项目
-        const newEids = await GetEIDCacheByClassId(item.id);
-        setEids(newEids);
+        const newEpas = await GetEPCacheByCategoryId(item.id);
+        setEpas(newEpas);
     };
     //对话框编辑执行项目档案类别页面点击确定按钮
-    const handelAddEIDOk = () => {
+    const handelAddEPOk = () => {
         setDiagStatus({
-            currentEID: undefined,
+            currentEP: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
         //重新向服务器请求用户自定义档案类别列表数据
-        handleGetEIDList(eic);
+        handleGetEPList(epc);
     };
     //表头点击增加按钮
-    const handleAddEIDoc = () => {
+    const handleAddEPoc = () => {
         setDiagStatus({
-            currentEID: undefined,
+            currentEP: undefined,
             diagOpen: true,
             isNew: true,
             isModify: false
@@ -71,20 +74,18 @@ function ExectiveItem() {
     };
     //表头点击批量删除
     const handleDelMultipleAction = async (docs) => {
-        const delDocs = await transEIDsToBackend(docs);
-        const delRes = await reqDeleteEIDs(delDocs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-        } else {
-            message.error(delRes.data.statusMsg);
-        }
+        const delDocs = await transEPsToBackend(docs);
+        const delRes = await reqDeleteEPs(delDocs);
+        if (delRes.status) {
+            message.success(t("batchDelSuccessful"));
+        } 
         //更新本地缓存
-        handleGetEIDList();
+        handleGetEPList();
     };
     //表体点击复制新增按钮
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
-            currentEID: doc,
+            currentEP: doc,
             diagOpen: true,
             isNew: true,
             isModify: false
@@ -93,7 +94,7 @@ function ExectiveItem() {
     //表体点击详情按钮
     const handleRowDetail = (doc) => {
         setDiagStatus({
-            currentEID: doc,
+            currentEP: doc,
             diagOpen: true,
             isNew: false,
             isModify: false
@@ -102,7 +103,7 @@ function ExectiveItem() {
     //表体点击编辑按钮
     const handleRowEdit = async (doc) => {
         setDiagStatus({
-            currentEID: doc,
+            currentEP: doc,
             diagOpen: true,
             isNew: false,
             isModify: true
@@ -111,39 +112,37 @@ function ExectiveItem() {
     //表体行点击删除按钮
     const handleRowDelete = async (doc) => {
         //转换为后端数据
-        const backendDoc = await transEIDToBackend(doc);
+        const backendDoc = await transEPToBackend(doc);
         //向服务器请求删除
-        const delRes = await reqDeleteEID(backendDoc);
-        if (delRes.data.status === 0) {
-            message.success("删除项目" + doc.name + "成功");
-        } else {
-            message.error("删除项目" + doc.name + "失败:" + delRes.data.statusMsg);
-        }
+        const delRes = await reqDeleteEP(backendDoc);
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
+        } 
         //更新本地缓存
-        handleGetEIDList();
+        handleGetEPList();
     }
 
     return (
         <React.Fragment>
-            <PageTitle pageName="执行项目" displayHelp={true} helpUrl="/helps/exectiveItem" />
+            <PageTitle pageName={t("MenuEP")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2}>
                 <Grid item xs={2} >
-                    <EicTree
-                        selectOk={handleGetCurrentEic}
+                    <EpcTree
+                        selectOk={handleGetCurrentEpc}
                     />
                 </Grid>
                 <Grid item xs={10}>
                     <DocList
-                        headAddDisabled={!eic || eic.status !== 0}
-                        headRefreshDisabled={!eic}
+                        headAddDisabled={!epc || epc.status !== 0}
+                        headRefreshDisabled={!epc}
                         delMultipleDisabled={delMultipleDisabled}
                         delMultipleAction={handleDelMultipleAction}
                         columns={columns}
-                        rows={eids}
+                        rows={epas}
                         rowActionsDefine={rowActionsDefine}
-                        addAction={handleAddEIDoc}
-                        refreshAction={() => handleGetEIDList(eic)}
+                        addAction={handleAddEPoc}
+                        refreshAction={() => handleGetEPList(epc)}
                         rowCopyAdd={handleRowCopyAdd}
                         rowViewDetail={handleRowDetail}
                         rowEdit={handleRowEdit}
@@ -158,18 +157,18 @@ function ExectiveItem() {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800, minHeight: 512 } }}
                 closeAfterTransition={false}
             >
-                <EditEIDoc
+                <EditEPoc
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
-                    oriEID={diagStatus.currentEID}
-                    EIC={eic}
+                    oriEP={diagStatus.currentEP}
+                    EPC={epc}
                     onCancel={handleDiagClose}
-                    onOk={handelAddEIDOk}
+                    onOk={handelAddEPOk}
                 />
             </Dialog>
         </React.Fragment>
     );
 }
 
-export default ExectiveItem;
+export default EPA;

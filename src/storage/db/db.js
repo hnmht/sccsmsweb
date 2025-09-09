@@ -34,7 +34,7 @@ db.version(1).stores({
     csc: "id,status,ts",
     cso: "id,code,status,ts",
     csa: "id,code,csc.id,status,ts",
-    epa: "id,code,epc.id,resulttype.id,status,ts",
+    epa: "id,code,epc.id,resultType.id,status,ts",
     ept: "id,code,status,ts",   
     risklevel: "id,status,ts",
     dc: "id,status,ts",
@@ -65,23 +65,23 @@ const transPersonToFrontend = async (persons) => {
 };
 
 //执行项目档案后端批量转前端
-const transEPsToFrontend = async (eids) => {
+const transEPsToFrontend = async (epas) => {
     // let startTime = new Date();
-    async function transEids() {
-        for (let newEid of eids) {
-            switch (newEid.resulttype.id) {
+    async function transEpas() {
+        for (let newEid of epas) {
+            switch (newEid.resultType.id) {
                 case 301:
                 case 306:
                 case 307:
                     break;
                 case 302:
-                    newEid.defaultvalue = parseFloat(newEid.defaultvalue);
-                    newEid.errorvalue = parseFloat(newEid.errorvalue);
+                    newEid.defaultValue = parseFloat(newEid.defaultValue);
+                    newEid.errorValue = parseFloat(newEid.errorValue);
                     break;
                 case 401:
                 case 404:
-                    newEid.defaultvalue = parseInt(newEid.defaultvalue);
-                    newEid.errorvalue = parseInt(newEid.errorvalue);
+                    newEid.defaultValue = parseInt(newEid.defaultValue);
+                    newEid.errorValue = parseInt(newEid.errorValue);
                     break;
                 case 510:
                 case 520:
@@ -89,17 +89,16 @@ const transEPsToFrontend = async (eids) => {
                 case 530:
                 case 540:
                 case 550:
-                    newEid.defaultvalue = newEid.defaultvalue !== "0" ? await GetCacheDocById(newEid.resulttype.frontdb, parseInt(newEid.defaultvalue)) : GetDataTypeDefaultValue(newEid.resulttype.id);
-                    newEid.errorvalue = newEid.errorvalue !== "0" ? await GetCacheDocById(newEid.resulttype.frontdb, parseInt(newEid.errorvalue)) : GetDataTypeDefaultValue(newEid.resulttype.id);
+                    newEid.defaultValue = newEid.defaultValue !== "0" ? await GetCacheDocById(newEid.resultType.frontdb, parseInt(newEid.defaultValue)) : GetDataTypeDefaultValue(newEid.resultType.id);
+                    newEid.errorValue = newEid.errorValue !== "0" ? await GetCacheDocById(newEid.resultType.frontdb, parseInt(newEid.errorValue)) : GetDataTypeDefaultValue(newEid.resultType.id);
                     break;
                 default:
                     console.error("No matching DataType");
             }
         }
     }
-    await transEids();
-    // console.log("执行项目档案批量转换耗费时间:", new Date() - startTime, "ms");
-    return eids;
+    await transEpas();
+    return epas;
 };
 //执行模板批量后端转前端
 const transEITsToFrontend = async (eits) => {
@@ -107,23 +106,23 @@ const transEITsToFrontend = async (eits) => {
     async function transEITs() {
         for (let eit of eits) {
             for (let row of eit.body) {
-                switch (row.eid.resulttype.id) {
+                switch (row.eid.resultType.id) {
                     case 301:
                     case 306:
                     case 307:
                         break;
                     case 302:
-                        row.defaultvalue = parseFloat(row.defaultvalue);
-                        row.errorvalue = parseFloat(row.errorvalue);
-                        row.eid.defaultvalue = parseFloat(row.eid.defaultvalue);
-                        row.eid.errorvalue = parseFloat(row.eid.errorvalue);
+                        row.defaultValue = parseFloat(row.defaultValue);
+                        row.errorValue = parseFloat(row.errorValue);
+                        row.eid.defaultValue = parseFloat(row.eid.defaultValue);
+                        row.eid.errorValue = parseFloat(row.eid.errorValue);
                         break;
                     case 401:
                     case 404:
-                        row.defaultvalue = parseInt(row.defaultvalue);
-                        row.errorvalue = parseInt(row.errorvalue);
-                        row.eid.defaultvalue = parseInt(row.eid.defaultvalue);
-                        row.eid.errorvalue = parseInt(row.eid.errorvalue);
+                        row.defaultValue = parseInt(row.defaultValue);
+                        row.errorValue = parseInt(row.errorValue);
+                        row.eid.defaultValue = parseInt(row.eid.defaultValue);
+                        row.eid.errorValue = parseInt(row.eid.errorValue);
                         break;
                     case 510:
                     case 520:
@@ -131,10 +130,10 @@ const transEITsToFrontend = async (eits) => {
                     case 530:
                     case 540:
                     case 550:
-                        row.defaultvalue = row.defaultvalue !== "0" ? await GetCacheDocById(row.eid.resulttype.frontdb, parseInt(row.defaultvalue)) : GetDataTypeDefaultValue(row.eid.resulttype.id);
-                        row.errorvalue = row.errorvalue !== "0" ? await GetCacheDocById(row.eid.resulttype.frontdb, parseInt(row.errorvalue)) : GetDataTypeDefaultValue(row.eid.resulttype.id);
-                        row.eid.defaultvalue = row.eid.defaultvalue !== "0" ? await GetCacheDocById(row.eid.resulttype.frontdb, parseInt(row.eid.defaultvalue)) : GetDataTypeDefaultValue(row.eid.resulttype.id);
-                        row.eid.errorvalue = row.eid.errorvalue !== "0" ? await GetCacheDocById(row.eid.resulttype.frontdb, parseInt(row.eid.errorvalue)) : GetDataTypeDefaultValue(row.eid.resulttype.id);
+                        row.defaultValue = row.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.eid.defaultValue = row.eid.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.eid.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.eid.errorValue = row.eid.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.eid.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
                         break;
                     default:
                         console.error("No matching DataType");
@@ -311,7 +310,7 @@ export const GetUDACache = async (classId) => {
     return udds;
 };
 //根据类别ID获取执行项目缓存
-export const GetEPCacheByClassId = async (classId) => {
+export const GetEPCacheByCategoryId = async (classId) => {
     return await db.epa.where("epc.id").equals(classId).toArray();
 };
 //根据类别ID获取现场档案缓存
@@ -328,36 +327,36 @@ export const GetPersonsWithOps = async (opIds) => {
 //执行项目档案前端数据转后端数据
 export function transEPToBackend(eid) {
     const newEid = cloneDeep(eid);
-    switch (newEid.resulttype.id) {
+    switch (newEid.resultType.id) {
         case 301:
-            newEid.defaultvaluedisp = newEid.defaultvalue;
-            newEid.errorvaluedisp = newEid.errorvalue;
+            newEid.defaultvaluedisp = newEid.defaultValue;
+            newEid.errorvaluedisp = newEid.errorValue;
             break;
         case 306:
-            newEid.defaultvaluedisp = newEid.defaultvalue === "" ? "" : dayjs(newEid.defaultvalue, "YYYYMMDD").format("YYYY-MM-DD");
-            newEid.errorvaluedisp = newEid.errorvalue === "" ? "" : dayjs(newEid.errorvalue, "YYYYMMDD").format("YYYY-MM-DD");
+            newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
+            newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
             break;
         case 307:
-            newEid.defaultvaluedisp = newEid.defaultvalue === "" ? "" : dayjs(newEid.defaultvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-            newEid.errorvaluedisp = newEid.errorvalue === "" ? "" : dayjs(newEid.errorvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+            newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+            newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
             break;
         case 302:
-            newEid.defaultvalue = newEid.defaultvalue.toString();
-            newEid.defaultvaluedisp = newEid.defaultvalue;
-            newEid.errorvalue = newEid.errorvalue.toString();
-            newEid.errorvaluedisp = newEid.errorvalue;
+            newEid.defaultValue = newEid.defaultValue.toString();
+            newEid.defaultvaluedisp = newEid.defaultValue;
+            newEid.errorValue = newEid.errorValue.toString();
+            newEid.errorvaluedisp = newEid.errorValue;
             break;
         case 401:
-            newEid.defaultvaluedisp = newEid.defaultvalue === 0 ? "" : newEid.defaultvalue === 1 ? "男" : "女";
-            newEid.defaultvalue = newEid.defaultvalue.toString();
-            newEid.errorvaluedisp = newEid.errorvalue === 0 ? "" : newEid.errorvalue === 1 ? "男" : "女";
-            newEid.errorvalue = newEid.errorvalue.toString();
+            newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "" : newEid.defaultValue === 1 ? "男" : "女";
+            newEid.defaultValue = newEid.defaultValue.toString();
+            newEid.errorvaluedisp = newEid.errorValue === 0 ? "" : newEid.errorValue === 1 ? "男" : "女";
+            newEid.errorValue = newEid.errorValue.toString();
             break;
         case 404:
-            newEid.defaultvaluedisp = newEid.defaultvalue === 0 ? "否" : newEid.defaultvalue === 1 ? "是" : "";
-            newEid.defaultvalue = newEid.defaultvalue.toString();
-            newEid.errorvaluedisp = newEid.errorvalue === 0 ? "否" : newEid.errorvalue === 1 ? "是" : "";
-            newEid.errorvalue = newEid.errorvalue.toString();
+            newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "否" : newEid.defaultValue === 1 ? "是" : "";
+            newEid.defaultValue = newEid.defaultValue.toString();
+            newEid.errorvaluedisp = newEid.errorValue === 0 ? "否" : newEid.errorValue === 1 ? "是" : "";
+            newEid.errorValue = newEid.errorValue.toString();
             break;
         case 510:
         case 520:
@@ -365,10 +364,10 @@ export function transEPToBackend(eid) {
         case 530:
         case 540:
         case 550:
-            newEid.defaultvaluedisp = newEid.defaultvalue.name;
-            newEid.defaultvalue = newEid.defaultvalue.id.toString();
-            newEid.errorvaluedisp = newEid.errorvalue.name;
-            newEid.errorvalue = newEid.errorvalue.id.toString();
+            newEid.defaultvaluedisp = newEid.defaultValue.name;
+            newEid.defaultValue = newEid.defaultValue.id.toString();
+            newEid.errorvaluedisp = newEid.errorValue.name;
+            newEid.errorValue = newEid.errorValue.id.toString();
             break;
         default:
             console.error("No matching DataType");
@@ -376,40 +375,40 @@ export function transEPToBackend(eid) {
     return newEid;
 };
 //执行项目档案批量前端转后端数据
-export const transEPsToBackend = async (eids) => {
-    const newEids = cloneDeep(eids);
-    async function transEids() {
+export const transEPsToBackend = async (epas) => {
+    const newEids = cloneDeep(epas);
+    async function transEpas() {
         for (let newEid of newEids) {
-            switch (newEid.resulttype.id) {
+            switch (newEid.resultType.id) {
                 case 301:
-                    newEid.defaultvaluedisp = newEid.defaultvalue;
-                    newEid.errorvaluedisp = newEid.errorvalue;
+                    newEid.defaultvaluedisp = newEid.defaultValue;
+                    newEid.errorvaluedisp = newEid.errorValue;
                     break;
                 case 306:
-                    newEid.defaultvaluedisp = newEid.defaultvalue === "" ? "" : dayjs(newEid.defaultvalue, "YYYYMMDD").format("YYYY-MM-DD");
-                    newEid.errorvaluedisp = newEid.errorvalue === "" ? "" : dayjs(newEid.errorvalue, "YYYYMMDD").format("YYYY-MM-DD");
+                    newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
+                    newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
                     break;
                 case 307:
-                    newEid.defaultvaluedisp = newEid.defaultvalue === "" ? "" : dayjs(newEid.defaultvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-                    newEid.errorvaluedisp = newEid.errorvalue === "" ? "" : dayjs(newEid.errorvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                    newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                    newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
                     break;
                 case 302:
-                    newEid.defaultvalue = newEid.defaultvalue.toString();
-                    newEid.defaultvaluedisp = newEid.defaultvalue;
-                    newEid.errorvalue = newEid.errorvalue.toString();
-                    newEid.errorvaluedisp = newEid.errorvalue;
+                    newEid.defaultValue = newEid.defaultValue.toString();
+                    newEid.defaultvaluedisp = newEid.defaultValue;
+                    newEid.errorValue = newEid.errorValue.toString();
+                    newEid.errorvaluedisp = newEid.errorValue;
                     break;
                 case 401:
-                    newEid.defaultvaluedisp = newEid.defaultvalue === 0 ? "" : newEid.defaultvalue === 1 ? "男" : "女";
-                    newEid.defaultvalue = newEid.defaultvalue.toString();
-                    newEid.errorvaluedisp = newEid.errorvalue === 0 ? "" : newEid.errorvalue === 1 ? "男" : "女";
-                    newEid.errorvalue = newEid.errorvalue.toString();
+                    newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "" : newEid.defaultValue === 1 ? "男" : "女";
+                    newEid.defaultValue = newEid.defaultValue.toString();
+                    newEid.errorvaluedisp = newEid.errorValue === 0 ? "" : newEid.errorValue === 1 ? "男" : "女";
+                    newEid.errorValue = newEid.errorValue.toString();
                     break;
                 case 404:
-                    newEid.defaultvaluedisp = newEid.defaultvalue === 0 ? "否" : newEid.defaultvalue === 1 ? "是" : "";
-                    newEid.defaultvalue = newEid.defaultvalue.toString();
-                    newEid.errorvaluedisp = newEid.errorvalue === 0 ? "否" : newEid.errorvalue === 1 ? "是" : "";
-                    newEid.errorvalue = newEid.errorvalue.toString();
+                    newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "否" : newEid.defaultValue === 1 ? "是" : "";
+                    newEid.defaultValue = newEid.defaultValue.toString();
+                    newEid.errorvaluedisp = newEid.errorValue === 0 ? "否" : newEid.errorValue === 1 ? "是" : "";
+                    newEid.errorValue = newEid.errorValue.toString();
                     break;
                 case 510:
                 case 520:
@@ -417,17 +416,17 @@ export const transEPsToBackend = async (eids) => {
                 case 530:
                 case 540:
                 case 550:
-                    newEid.defaultvaluedisp = newEid.defaultvalue.name;
-                    newEid.defaultvalue = newEid.defaultvalue.id.toString();
-                    newEid.errorvaluedisp = newEid.errorvalue.name;
-                    newEid.errorvalue = newEid.errorvalue.id.toString();
+                    newEid.defaultvaluedisp = newEid.defaultValue.name;
+                    newEid.defaultValue = newEid.defaultValue.id.toString();
+                    newEid.errorvaluedisp = newEid.errorValue.name;
+                    newEid.errorValue = newEid.errorValue.id.toString();
                     break;
                 default:
                     console.error("No matching DataType");
             }
         }
     }
-    await transEids();
+    await transEpas();
     // console.log("transEPsToBackend result:",newEids);
     return newEids;
 };
@@ -439,36 +438,36 @@ export function transEITToBackend(eit) {
     delete newEit.createdate;
     delete newEit.modifydate;
     newEit.body.map((row) => {
-        switch (row.eid.resulttype.id) {
+        switch (row.eid.resultType.id) {
             case 301:
-                row.defaultvaluedisp = row.defaultvalue;
-                row.errorvaluedisp = row.errorvalue;
+                row.defaultvaluedisp = row.defaultValue;
+                row.errorvaluedisp = row.errorValue;
                 break;
             case 306:
-                row.defaultvaluedisp = row.defaultvalue === "" ? "" : dayjs(row.defaultvalue, "YYYYMMDD").format("YYYY-MM-DD");
-                row.errorvaluedisp = row.errorvalue === "" ? "" : dayjs(row.errorvalue, "YYYYMMDD").format("YYYY-MM-DD");
+                row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
+                row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
                 break;
             case 307:
-                row.defaultvaluedisp = row.defaultvalue === "" ? "" : dayjs(row.defaultvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-                row.errorvaluedisp = row.errorvalue === "" ? "" : dayjs(row.errorvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
                 break;
             case 302:
-                row.defaultvalue = row.defaultvalue.toString();
-                row.defaultvaluedisp = row.defaultvalue;
-                row.errorvalue = row.errorvalue.toString();
-                row.errorvaluedisp = row.errorvalue;
+                row.defaultValue = row.defaultValue.toString();
+                row.defaultvaluedisp = row.defaultValue;
+                row.errorValue = row.errorValue.toString();
+                row.errorvaluedisp = row.errorValue;
                 break;
             case 401:
-                row.defaultvaluedisp = row.defaultvalue === 0 ? "" : row.defaultvalue === 1 ? "男" : "女";
-                row.defaultvalue = row.defaultvalue.toString();
-                row.errorvaluedisp = row.errorvalue === 0 ? "" : row.errorvalue === 1 ? "男" : "女";
-                row.errorvalue = row.errorvalue.toString();
+                row.defaultvaluedisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
+                row.defaultValue = row.defaultValue.toString();
+                row.errorvaluedisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
+                row.errorValue = row.errorValue.toString();
                 break;
             case 404:
-                row.defaultvaluedisp = row.defaultvalue === 0 ? "否" : row.defaultvalue === 1 ? "是" : "";
-                row.defaultvalue = row.defaultvalue.toString();
-                row.errorvaluedisp = row.errorvalue === 0 ? "" : row.errorvalue === 1 ? "是" : "否";
-                row.errorvalue = row.errorvalue.toString();
+                row.defaultvaluedisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
+                row.defaultValue = row.defaultValue.toString();
+                row.errorvaluedisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "是" : "否";
+                row.errorValue = row.errorValue.toString();
                 break;
             case 510:
             case 520:
@@ -476,16 +475,16 @@ export function transEITToBackend(eit) {
             case 530:
             case 540:
             case 550:
-                row.defaultvaluedisp = row.defaultvalue.name;
-                row.defaultvalue = row.defaultvalue.id.toString();
-                row.errorvaluedisp = row.errorvalue.name;
-                row.errorvalue = row.errorvalue.id.toString();
+                row.defaultvaluedisp = row.defaultValue.name;
+                row.defaultValue = row.defaultValue.id.toString();
+                row.errorvaluedisp = row.errorValue.name;
+                row.errorValue = row.errorValue.id.toString();
                 break;
             default:
                 console.error("No matching DataType");
         }
-        row.eid.defaultvalue = "";
-        row.eid.errorvalue = "";
+        row.eid.defaultValue = "";
+        row.eid.errorValue = "";
         return row;
     });
     return newEit;
@@ -498,36 +497,36 @@ export const transEITsToBackend = async (eits) => {
             delete newEit.createdate;
             delete newEit.modifydate;
             for (let row of newEit.body) {
-                switch (row.eid.resulttype.id) {
+                switch (row.eid.resultType.id) {
                     case 301:
-                        row.defaultvaluedisp = row.defaultvalue;
-                        row.errorvaluedisp = row.errorvalue;
+                        row.defaultvaluedisp = row.defaultValue;
+                        row.errorvaluedisp = row.errorValue;
                         break;
                     case 306:
-                        row.defaultvaluedisp = row.defaultvalue === "" ? "" : dayjs(row.defaultvalue, "YYYYMMDD").format("YYYY-MM-DD");
-                        row.errorvaluedisp = row.errorvalue === "" ? "" : dayjs(row.errorvalue, "YYYYMMDD").format("YYYY-MM-DD");
+                        row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
+                        row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
                         break;
                     case 307:
-                        row.defaultvaluedisp = row.defaultvalue === "" ? "" : dayjs(row.defaultvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-                        row.errorvaluedisp = row.errorvalue === "" ? "" : dayjs(row.errorvalue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                        row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                        row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
                         break;
                     case 302:
-                        row.defaultvalue = row.defaultvalue.toString();
-                        row.defaultvaluedisp = row.defaultvalue;
-                        row.errorvalue = row.errorvalue.toString();
-                        row.errorvaluedisp = row.errorvalue;
+                        row.defaultValue = row.defaultValue.toString();
+                        row.defaultvaluedisp = row.defaultValue;
+                        row.errorValue = row.errorValue.toString();
+                        row.errorvaluedisp = row.errorValue;
                         break;
                     case 401:
-                        row.defaultvaluedisp = row.defaultvalue === 0 ? "" : row.defaultvalue === 1 ? "男" : "女";
-                        row.defaultvalue = row.defaultvalue.toString();
-                        row.errorvaluedisp = row.errorvalue === 0 ? "" : row.errorvalue === 1 ? "男" : "女";
-                        row.errorvalue = row.errorvalue.toString();
+                        row.defaultvaluedisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
+                        row.defaultValue = row.defaultValue.toString();
+                        row.errorvaluedisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
+                        row.errorValue = row.errorValue.toString();
                         break;
                     case 404:
-                        row.defaultvaluedisp = row.defaultvalue === 0 ? "否" : row.defaultvalue === 1 ? "是" : "";
-                        row.defaultvalue = row.defaultvalue.toString();
-                        row.errorvaluedisp = row.errorvalue === 0 ? "否" : row.errorvalue === 1 ? "是" : "";
-                        row.errorvalue = row.errorvalue.toString();
+                        row.defaultvaluedisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
+                        row.defaultValue = row.defaultValue.toString();
+                        row.errorvaluedisp = row.errorValue === 0 ? "否" : row.errorValue === 1 ? "是" : "";
+                        row.errorValue = row.errorValue.toString();
                         break;
                     case 510:
                     case 520:
@@ -535,16 +534,16 @@ export const transEITsToBackend = async (eits) => {
                     case 530:
                     case 540:
                     case 550:
-                        row.defaultvaluedisp = row.defaultvalue.name;
-                        row.defaultvalue = row.defaultvalue.id.toString();
-                        row.errorvaluedisp = row.errorvalue.name;
-                        row.errorvalue = row.errorvalue.id.toString();
+                        row.defaultvaluedisp = row.defaultValue.name;
+                        row.defaultValue = row.defaultValue.id.toString();
+                        row.errorvaluedisp = row.errorValue.name;
+                        row.errorValue = row.errorValue.id.toString();
                         break;
                     default:
                         console.error("No matching DataType:", row);
                 }
-                row.eid.defaultvalue = "";
-                row.eid.errorvalue = "";
+                row.eid.defaultValue = "";
+                row.eid.errorValue = "";
             }
         }
     }

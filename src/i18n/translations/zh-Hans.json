@@ -184,6 +184,13 @@
     "gray": "棕色",
     "indigo": "靛蓝色",
     "black": "黑色",
+    "epc": "执行项目类别",
+    "resultType": "结果类型",
+    "udc": "自定义档案类别",
+    "defaultValueDisp": "默认值",
+    "isCheckError": "自动检查错误",
+    "errorValueDisp": "错误值",
+    "riskLevel": "风险等级",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

@@ -4,49 +4,48 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
-
 const docName = "risklevel";
 
 const RLPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [rls, setRLs] = useState([]);
-
-    //组件加载时加载本地风险等级
+    const { t } = useTranslation();
+    // Get local cache when the component loads
     useEffect(() => {
         async function reqLocalRLs() {
-            const localUdcs = await GetLocalCache(docName);
-            // console.log("获取rls");
-            setRLs(localUdcs);
+            const newRls = await GetLocalCache(docName);
+            setRLs(newRls);
         }
         reqLocalRLs();
     }, []);
 
-    //刷新
+    // Actions after click refresh button
     const handleRefreshRLs = async () => {
-        //向服务器请求数据
+        // Request latest Risk Level front-end cache from server
         await InitDocCache(docName);
-        let newUdcs = await GetLocalCache(docName);
-        //刷新最新的用户风险等级
-        setRLs(newUdcs);
+        let newRls = await GetLocalCache(docName);
+        // Refresh
+        setRLs(newRls);
     };
 
     return (
         <>
-            <DialogTitle>选择风险等级</DialogTitle>
+            <DialogTitle>{t("chooseRiskLevel")}</DialogTitle>
             <DocTable
                 columns={columns}
                 refreshAction={handleRefreshRLs}
                 rows={rls}
-                docListTitle="选择风险等级"
+                docListTitle="riskLevel"
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );

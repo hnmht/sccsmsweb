@@ -24,7 +24,7 @@ const CSA = Loadable(lazy(() => import("./pages/protected/csa/csa"))); //现场�
 const UDC = Loadable(lazy(() => import("./pages/protected/udc/udc")));  //自定义档案类别
 const UDA = Loadable(lazy(() => import("./pages/protected/uda/uda"))); //自定义档案
 const EPC = Loadable(lazy(() => import("./pages/protected/epc/epc")));  //执行项目分类
-const ExectiveItem = Loadable(lazy(() => import("./pages/protected/ep/exectiveItem"))); //执行项目
+const EPA = Loadable(lazy(() => import("./pages/protected/epa/epa"))); //执行项目
 const RiskLevel = Loadable(lazy(() => import("./pages/protected/riskLevel/riskLevel"))); //风险等级
 const LaborProtection = Loadable(lazy(() => import("./pages/protected/laborProtection/laborProtection"))); //劳保用品（存货）档案
 
@@ -222,8 +222,8 @@ const routes = [
                 element: <EPC />
             },
             {
-                path: "/private/masterData/executionProjectArchive",
-                element: <ExectiveItem />
+                path: "/private/masterData/executionProject",
+                element: <EPA />
             },
             {
                 path: "/private/masterData/riskLevel",

@@ -56,7 +56,7 @@ export function reqAddRole(data, isLoading = true) {
 // Get role's Menus
 export function reqGetRoleAuths(data, isLoading = true) {
     return request({
-        url: "/role/getmenus",
+        url: "/role/getmenu",
         method: "post",
         data,
         isLoading

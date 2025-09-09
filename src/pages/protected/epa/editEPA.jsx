@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -16,97 +16,99 @@ import Loader from '../../../component/Loader/Loader';
 import MoreInfo from '../../../component/MoreInfo/MoreInfo';
 
 import { GetDataTypeDefaultValue } from "../../../storage/dataTypes";
-import { transEIDToBackend } from "../../../storage/db/db";
-import { reqAddEID, reqCheckEIDCode, reqEditEID } from '../../../api/exectiveItem';
-import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub';
+import { transEPToBackend } from "../../../storage/db/db";
+import { reqAddEP, reqCheckEPCode, reqEditEP } from '../../../api/epa';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { useTranslation } from 'react-i18next';
 
-//初始值
-const getInitialValues = async (oriEID, isNew, isModify, currentEIC) => {
+// Generate initial Execution Project 
+const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
     const person = await getCurrentPerson();
-    let newEID = { //新增
+    let newEP = { // add
         id: 0,
         code: "",
         name: "",
-        itemclass: currentEIC,
+        epc: currentEPC,
         description: "",
-        status: 0,//状态
-        resulttype: { id: 301, name: "文本", dataType: "string", inputMode: "输入" }, //数据类型 
+        status: 0,
+        resultType: { id: 301, name: "Text", dataType: "string", inputMode: "Input" },
         udc: { id: 0, name: "", description: "" },
-        defaultvalue: "",//默认值
-        ischeckerror: 0,//是否自动判断问题
-        errorvalue: "",//自动判断问题值       
-        isrequirefile: 0,//是否必传附件
-        isonsitephoto: 0,//是否现场拍照
-        risklevel: { id: 0, name: "", color: "white", description: "" },
-        createuser: person,
-        modifyuser: { id: 0, code: "", name: "" },
-        createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+        defaultValue: "",
+        isCheckError: 0,
+        errorValue: "",
+        isRequireFile: 0,
+        isOnsitePhoto: 0,
+        riskLevel: { id: 0, name: "", color: "white", description: "" },
+        creator: person,
+        modifier: { id: 0, code: "", name: "" },
+        createDate: DateTimeFormat(new Date(), "LLL"),
+        modifyDate: DateTimeFormat(new Date(), "LLL")
     };
 
     if (isNew) {
-        if (oriEID) {//复制新增
-            newEID = {
-                ...oriEID,
+        if (oriEP) {// Copy and add
+            newEP = {
+                ...oriEP,
                 id: 0,
                 code: "",
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: DateTimeFormat(new Date(), "LLL")
             };
         }
     } else {
-        if (oriEID) {
-            if (isModify) { //编辑
-                newEID = {
-                    ...oriEID,
-                    modifyuser: person,
-                    createdate: dayjs(oriEID.createdate).format("YYYYMMDDHHmm"),
-                    modifydate: dayjs(oriEID.modifydate).format("YYYYMMDDHHmm")
+        if (oriEP) {
+            if (isModify) { // Edit
+                newEP = {
+                    ...oriEP,
+                    modifier: person,
+                    createDate: DateTimeFormat(oriEP.createDate, "LLL"),
+                    modifyDate: DateTimeFormat(oriEP.modifyDate, "LLL")
                 };
-            } else {//查看
-                newEID = {
-                    ...oriEID,
-                    createdate: dayjs(oriEID.createdate).format("YYYYMMDDHHmm"),
-                    modifydate: dayjs(oriEID.modifydate).format("YYYYMMDDHHmm")
+            } else {// View Detail
+                newEP = {
+                    ...oriEP,
+                    createDate: DateTimeFormat(oriEP.createDate, "LLL"),
+                    modifyDate: DateTimeFormat(oriEP.modifyDate, "LLL")
                 };
             }
         }
     }
-    return newEID;
+    return newEP;
 };
-
-const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => {
-    const [currentEID, setCurrentEID] = useState(undefined);
+// Add, Edit, View Execution Project
+const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
+    const [currentEP, setCurrentEP] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
-            const newEid = await getInitialValues(oriEID, isNew, isModify, EIC);
-            setCurrentEID(newEid);
+            const newEid = await getInitialValues(oriEP, isNew, isModify, EPC);
+            setCurrentEP(newEid);
         }
         if (isOpen) {
             initValue();
         }
-    }, [isOpen, oriEID, isNew, isModify, EIC]);
+    }, [isOpen, oriEP, isNew, isModify, EPC]);
 
     //scinput组件获取内容后传入
     const handleGetValue = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
-        if (currentEID === undefined || !isOpen || !isEdit) {
+        if (currentEP === undefined || !isOpen || !isEdit) {
             return
         }
         //更新输入的信息
-        setCurrentEID((prevState) => {
+        setCurrentEP((prevState) => {
             //深拷贝方法
             let newValue = cloneDeep(prevState);
             //如果修改的是"结果类型"字段
-            if (itemkey === "resulttype" && value.id !== prevState.resulttype.id) { //修改resulttype且前后不一致 
+            if (itemkey === "resultType" && value.id !== prevState.resultType.id) { //修改resulttype且前后不一致 
                 //修改默认值字段                                 
-                newValue.defaultvalue = GetDataTypeDefaultValue(value.id);
-                newValue.errorvalue = GetDataTypeDefaultValue(value.id);
-                if (prevState.resulttype.id === 550) { //如果前值是550                  
+                newValue.defaultValue = GetDataTypeDefaultValue(value.id);
+                newValue.errorValue = GetDataTypeDefaultValue(value.id);
+                if (prevState.resultType.id === 550) { //如果前值是550                  
                     newValue.udc = { id: 0, name: "", description: "" };
                 }
             }
@@ -121,13 +123,13 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                 [itemkey]: errMsg,
             });
         });
-    }, [currentEID, isOpen, isEdit]);
+    }, [currentEP, isOpen, isEdit]);
 
     //scInput组件错误信息传入
     const handleGetError = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
-        if (currentEID === undefined || !isOpen || !isEdit) {
+        if (currentEP === undefined || !isOpen || !isEdit) {
             return
-        }      
+        }
         //更新errors       
         setErrors((prevState) => {
             return ({
@@ -135,30 +137,25 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                 [itemkey]: errMsg,
             });
         });
-    }, [currentEID, isOpen, isEdit]);
+    }, [currentEP, isOpen, isEdit]);
 
-    //增加执行项目档案
-    const handleAddEID = async () => {
-        // console.log("转换前:",currentEID);
-        let thisEID = transEIDToBackend(currentEID);
-        delete thisEID.createdate;
-        delete thisEID.modifydate;
-        // console.log("转换后:",thisEID);
+    // Add Or Edit Execution Project
+    const handleAddEP = async () => {
+        let thisEP = transEPToBackend(currentEP);
+        delete thisEP.createDate;
+        delete thisEP.modifyDate;
+
         if (isModify) {
-            let editRes = await reqEditEID(thisEID);
-            if (editRes.data.status === 0) {
-                message.success("修改档案'" + thisEID.name + "'成功");
+            let editRes = await reqEditEP(thisEP);
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改档案'" + thisEID.name + "'失败:" + editRes.data.statusMsg);
             }
         } else {
-            let addRes = await reqAddEID(thisEID);
-            if (addRes.data.status === 0) {
-                message.success("新增档案‘" + thisEID.name + "’成功");
+            let addRes = await reqAddEP(thisEP);
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增档案‘" + thisEID.name + "’失败:" + addRes.data.statusMsg);
             }
         }
     };
@@ -167,7 +164,7 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
     //检查执行项目档案编码
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
-        let checkResp = await reqCheckEIDCode({ id: currentEID.id, itemclass: EIC, code: value }, false);
+        let checkResp = await reqCheckEPCode({ id: currentEP.id, epc: EPC, code: value }, false);
 
         if (checkResp.data.status === 0) {
             err = { isErr: false, msg: "" };
@@ -177,23 +174,23 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
         return err;
     };
 
-    return currentEID
+    return currentEP
         ? <>
             <DialogTitle>{isNew ? "增加执行项目档案" : isModify ? "修改执行项目档案" : "执行项目档案详情"}</DialogTitle>
             <Divider />
             <DialogContent sx={{ width: "100%", height: "100%" }}>
-                <Grid container spacing={3}>                  
+                <Grid container spacing={3}>
                     <Grid item xs={4}>
                         <ScInput
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="档案编码"
+                            itemShowName="code"
                             itemKey="code"
-                            initValue={currentEID.code}
+                            initValue={currentEP.code}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入档案编码"
+                            placeholder="codePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestCode}
                             key="code"
@@ -205,12 +202,12 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="档案名称"
+                            itemShowName="name"
                             itemKey="name"
-                            initValue={currentEID.name}
+                            initValue={currentEP.name}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入档案名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={false}
                             key="name"
                             positionID={0}
@@ -221,12 +218,12 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="档案说明"
+                            itemShowName="description"
                             itemKey="description"
-                            initValue={currentEID.description}
+                            initValue={currentEP.description}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入档案说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -239,14 +236,14 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             dataType={540}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="执行项目类别"
-                            itemKey="itemclass"
-                            initValue={currentEID.itemclass}
+                            itemShowName="epc"
+                            itemKey="epc"
+                            initValue={currentEP.epc}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
                             isBackendTest={false}
-                            key="itemclass"
+                            key="epc"
                             positionID={0}
                         />
                     </Grid>
@@ -255,13 +252,13 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             dataType={590}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="风险等级"
-                            itemKey="risklevel"
-                            initValue={currentEID.risklevel}
+                            itemShowName="riskLevel"
+                            itemKey="riskLevel"
+                            initValue={currentEP.riskLevel}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="risklevel"
+                            key="riskLevel"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -273,12 +270,12 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             allowNull={false}
                             isEdit={isEdit}
                             itemShowName="结果类型"
-                            itemKey="resulttype"
-                            initValue={currentEID.resulttype}
+                            itemKey="resultType"
+                            initValue={currentEP.resultType}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="resulttype"
+                            key="resultType"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -286,11 +283,11 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                     <Grid item xs={4} >
                         <ScInput
                             dataType={530}
-                            allowNull={currentEID.resulttype.id !== 550}
-                            isEdit={currentEID.resulttype.id === 550 && isEdit}
+                            allowNull={currentEP.resultType.id !== 550}
+                            isEdit={currentEP.resultType.id === 550 && isEdit}
                             itemShowName="自定义档案类别"
                             itemKey="udc"
-                            initValue={currentEID.udc}
+                            initValue={currentEP.udc}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
@@ -302,18 +299,18 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                     </Grid>
                     <Grid item xs={4} >
                         <ScInput
-                            dataType={currentEID.resulttype.id}
+                            dataType={currentEP.resultType.id}
                             allowNull={true}
                             isEdit={isEdit}
                             itemShowName="默认值"
-                            itemKey="defaultvalue"
-                            initValue={currentEID.defaultvalue}
+                            itemKey="defaultValue"
+                            initValue={currentEP.defaultValue}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="defaultvalue"
+                            key="defaultValue"
                             isBackendTest={false}
-                            udc={currentEID.udc}
+                            udc={currentEP.udc}
                             positionID={0}
                             rowIndex={0}
                         />
@@ -325,30 +322,30 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             allowNull={false}
                             isEdit={isEdit}
                             itemShowName="自动判断问题"
-                            itemKey="ischeckerror"
+                            itemKey="isCheckError"
                             pickErr={handleGetError}
-                            initValue={currentEID.ischeckerror}
+                            initValue={currentEP.isCheckError}
                             pickDone={handleGetValue}
                             placeholder=""
-                            key="ischeckerror"
+                            key="isCheckError"
                             isBackendTest={false}
                             positionID={0}
                         />
                     </Grid>
                     <Grid item xs={8} >
                         <ScInput
-                            dataType={currentEID.resulttype.id}
-                            allowNull={currentEID.ischeckerror === 0}
+                            dataType={currentEP.resultType.id}
+                            allowNull={currentEP.isCheckError === 0}
                             isEdit={isEdit}
                             itemShowName="问题值"
-                            itemKey="errorvalue"
-                            initValue={currentEID.errorvalue}
+                            itemKey="errorValue"
+                            initValue={currentEP.errorValue}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="errorvalue"
+                            key="errorValue"
                             isBackendTest={false}
-                            udc={currentEID.udc}
+                            udc={currentEP.udc}
                             positionID={0}
                             rowIndex={1}
                         />
@@ -359,12 +356,12 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             allowNull={false}
                             isEdit={isEdit}
                             itemShowName="必传附件"
-                            itemKey="isrequirefile"
-                            initValue={currentEID.isrequirefile}
+                            itemKey="isRequireFile"
+                            initValue={currentEP.isRequireFile}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="isrequirefile"
+                            key="isRequireFile"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -373,24 +370,24 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             allowNull={false}
                             isEdit={isEdit}
                             itemShowName="必须现场拍照"
-                            itemKey="isonsitephoto"
-                            initValue={currentEID.isonsitephoto}
+                            itemKey="isOnsitePhoto"
+                            initValue={currentEP.isOnsitePhoto}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="isonsitephoto"
+                            key="isOnsitePhoto"
                             isBackendTest={false}
                             positionID={0}
                         />
                     </Grid>
-                    <Grid item xs={6} sx={{ display: "flex", alignItems: "center", justifyContent: "left" }}>                        
+                    <Grid item xs={6} sx={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
                         <ScInput
                             dataType={402}
                             allowNull={false}
                             isEdit={isEdit}
                             itemShowName="停用"
                             itemKey="status"
-                            initValue={currentEID.status}
+                            initValue={currentEP.status}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
@@ -407,27 +404,27 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentEID.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentEP.creator}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentEID.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentEP.createDate}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -435,27 +432,27 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentEID.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentEP.modifier}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentEID.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentEP.modifyDate}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -465,7 +462,7 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
                 {isEdit
                     ? <>
                         <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddEID}>{isModify ? "保存" : "增加"}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddEP}>{isModify ? "保存" : "增加"}</Button>
                     </>
                     : <Button variant='contained' onClick={onCancel}>返回</Button>
                 }
@@ -474,4 +471,4 @@ const EditEIDoc = ({ isOpen, isNew, isModify, oriEID, EIC, onCancel, onOk }) => 
         : <Loader />
 };
 
-export default EditEIDoc;
+export default EditEP;

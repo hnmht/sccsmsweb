@@ -185,6 +185,16 @@
     "gray": "Gray",
     "indigo": "Indigo",
     "black": "Black",
+    "epc":"EPC",
+    "resultType":"Result Type",
+    "udc":"UDC",
+    "defaultValueDisp":"Default Value",
+    "isCheckError":"Chcek Error",
+    "errorValueDisp":"Error Value",
+    "riskLevel":"Risk Level",
+
+    "chooseRiskLevel":"Select Risk Level",
+
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

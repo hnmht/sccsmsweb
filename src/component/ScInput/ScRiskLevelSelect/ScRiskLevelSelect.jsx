@@ -8,23 +8,28 @@ import {
     IconButton,
     Dialog,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { RiskLevelIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import RLPicker from "./RLPicker";
 
 const zeroValue = { id: 0, name: "", color: "white", description: "" };
 
-//590 风险等级
+//590  Risk Level Selection Input Component
 const ScRLSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, pickErr, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue= zeroValue, pickDone, pickErr = ()=>{}, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const { t } = useTranslation();
 
-    //向父组件传递数据
+    // Check the value and past it to the parent
     const handleTransfer = async (item = selectItem) => {
+        if (!isEdit) {
+            return
+        }
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(item);
         }
@@ -34,11 +39,14 @@ const ScRLSelect = memo((props) => {
         }
         pickDone(item, itemKey, positionID, rowIndex, err);
     };
-    //向父组件传递错误信息
+    // Check the value and pass it to the parent
     const handleTransferErr = async (item = selectItem) => {
+        if (!isEdit) {
+            return
+        }
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(item);
         }
@@ -60,39 +68,39 @@ const ScRLSelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //单击项目
+    // Actions after click the Risk Level item
     const handleClickItem = (item) => {
         setSelectItem(item);
     };
-    //双击项目
+    // Actions after double click the Risk Level Item
     const handleDoubleClickItem = (item) => {
         setSelectItem(item);
         handleTransfer(item);
         setDialogOpen(false);
     };
-    //点击清除按钮
+    // Actions after click the clear button
     const handleClear = () => {
         setSelectItem(zeroValue);
         handleTransfer(zeroValue);
     };
 
-    //关闭选择dialog
+    // Close the dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
-    //点击确定按钮
+    // Actions after click the ok button in dialog
     const handleOkClick = () => {
-        // 向父组件传递数据
+        // Check value and pass it to the parent
         handleTransfer();
-        //关闭对话框
+        // Clost dialog
         setDialogOpen(false);
     };
 
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -102,7 +110,7 @@ const ScRLSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled
                     name={itemKey}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     InputProps={{
@@ -111,11 +119,11 @@ const ScRLSelect = memo((props) => {
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {errInfo.isErr
-                                    ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                    ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
                                 {selectItem.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -124,7 +132,7 @@ const ScRLSelect = memo((props) => {
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择等级" placement="top">
+                                <Tooltip title={t("chooseRiskLevel")} placement="top">
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <RiskLevelIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -140,17 +148,17 @@ const ScRLSelect = memo((props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled
                     name={itemKey}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {errInfo.isErr
-                                ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
                             {selectItem.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
                                             <ClearIcon fontSize="small" />
@@ -159,7 +167,7 @@ const ScRLSelect = memo((props) => {
                                 </Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择等级" placement="top">
+                            <Tooltip title={t("chooseRiskLevel")} placement="top">
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                         <RiskLevelIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -192,7 +200,3 @@ const ScRLSelect = memo((props) => {
 
 export default ScRLSelect;
 
-ScRLSelect.defaultProps = {
-    initValue: zeroValue,
-    pickErr: () => { },
-}
