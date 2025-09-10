@@ -94,21 +94,20 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
         }
     }, [isOpen, oriEP, isNew, isModify, EPC]);
 
-    //scinput组件获取内容后传入
+    // Data processing actions after the data is passed into the ScInput components
     const handleGetValue = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
         if (currentEP === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新输入的信息
+        // Change currentEP value
         setCurrentEP((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
-            //如果修改的是"结果类型"字段
-            if (itemkey === "resultType" && value.id !== prevState.resultType.id) { //修改resulttype且前后不一致 
-                //修改默认值字段                                 
+            // If the resultType field is modified and its value has changed
+            if (itemkey === "resultType" && value.id !== prevState.resultType.id) {
+                // Modify the defaultValue                                 
                 newValue.defaultValue = GetDataTypeDefaultValue(value.id);
                 newValue.errorValue = GetDataTypeDefaultValue(value.id);
-                if (prevState.resultType.id === 550) { //如果前值是550                  
+                if (prevState.resultType.id === 550) { // If the previous value of resultType was 550                  
                     newValue.udc = { id: 0, name: "", description: "" };
                 }
             }
@@ -116,7 +115,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
 
             return newValue;
         });
-        //更新errors       
+        // Change errors value       
         setErrors((prevState) => {
             return ({
                 ...prevState,
@@ -125,12 +124,12 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
         });
     }, [currentEP, isOpen, isEdit]);
 
-    //scInput组件错误信息传入
+    // Errors data processing actions after the error is passed into the ScInput components
     const handleGetError = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
         if (currentEP === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新errors       
+        // change errors value       
         setErrors((prevState) => {
             return ({
                 ...prevState,
@@ -141,9 +140,11 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
 
     // Add Or Edit Execution Project
     const handleAddEP = async () => {
-        let thisEP = transEPToBackend(currentEP);
+        let thisEP = transEPToBackend(currentEP);        
         delete thisEP.createDate;
         delete thisEP.modifyDate;
+
+        console.log("thisEP:",thisEP);
 
         if (isModify) {
             let editRes = await reqEditEP(thisEP);
@@ -159,7 +160,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
             }
         }
     };
-    //检查执行项目档案编码
+    // Check if the EP Code exists
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
         let checkResp = await reqCheckEPCode({ id: currentEP.id, epc: EPC, code: value }, false);

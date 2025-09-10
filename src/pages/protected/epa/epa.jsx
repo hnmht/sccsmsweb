@@ -8,7 +8,7 @@ import { message } from "mui-message";
 import { Divider } from "../../../component/ScMui/ScMui";
 import DocList from "../../../component/DocList/DocList";
 import EpcTree from "./epcTree";
-import EditEPoc from "./editEPA";
+import EditEP from "./editEPA";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 
 import { GetEPCacheByCategoryId, InitDocCache, transEPsToBackend, transEPToBackend } from "../../../storage/db/db";
@@ -44,15 +44,15 @@ const EPA = () => {
         const newEpas = await GetEPCacheByCategoryId(item.id);
         setEpas(newEpas);
     };
-    // 
+    // Refresh EP list
     const handleGetEPList = async (item = epc) => {
-        //向服务器请求更新执行项目缓存
+        // Request latest EP fromt-end cache
         await InitDocCache("epa");
-        //从本地缓存中获取当前类别下的所有执行项目
+        // Get EP list by EPC id from cache
         const newEpas = await GetEPCacheByCategoryId(item.id);
         setEpas(newEpas);
     };
-    //对话框编辑执行项目档案类别页面点击确定按钮
+    // Actions after click ok button in the dialog
     const handelAddEPOk = () => {
         setDiagStatus({
             currentEP: undefined,
@@ -60,10 +60,10 @@ const EPA = () => {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求用户自定义档案类别列表数据
+        // Refresh EP list
         handleGetEPList(epc);
     };
-    //表头点击增加按钮
+    // Actions after click Add button in the head
     const handleAddEPoc = () => {
         setDiagStatus({
             currentEP: undefined,
@@ -72,17 +72,17 @@ const EPA = () => {
             isModify: false
         });
     };
-    //表头点击批量删除
+    // Actions after click batch delete button in the head
     const handleDelMultipleAction = async (docs) => {
         const delDocs = await transEPsToBackend(docs);
         const delRes = await reqDeleteEPs(delDocs);
         if (delRes.status) {
-            message.success(t("batchDelSuccessful"));
+            message.success(t("batchDeleteSuccessful"));
         } 
-        //更新本地缓存
+        // Refresh EP list
         handleGetEPList();
     };
-    //表体点击复制新增按钮
+    // Actions after click Copy Add Action in the body
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
             currentEP: doc,
@@ -91,7 +91,7 @@ const EPA = () => {
             isModify: false
         });
     };
-    //表体点击详情按钮
+    // Actions after click Detail button in the body
     const handleRowDetail = (doc) => {
         setDiagStatus({
             currentEP: doc,
@@ -100,7 +100,7 @@ const EPA = () => {
             isModify: false
         });
     };
-    //表体点击编辑按钮
+    // Actions after click Edit buttion in the body
     const handleRowEdit = async (doc) => {
         setDiagStatus({
             currentEP: doc,
@@ -109,16 +109,16 @@ const EPA = () => {
             isModify: true
         });
     };
-    //表体行点击删除按钮
+    // Actions after click Delete button in the body
     const handleRowDelete = async (doc) => {
-        //转换为后端数据
+        // Convert the data into a format usable by the backend 
         const backendDoc = await transEPToBackend(doc);
-        //向服务器请求删除
+        // Requst the backend to delete this data
         const delRes = await reqDeleteEP(backendDoc);
         if (delRes.status) {
             message.success(t("delSuccessful"));
         } 
-        //更新本地缓存
+        // Refresh EP list
         handleGetEPList();
     }
 
@@ -157,7 +157,7 @@ const EPA = () => {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800, minHeight: 512 } }}
                 closeAfterTransition={false}
             >
-                <EditEPoc
+                <EditEP
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}

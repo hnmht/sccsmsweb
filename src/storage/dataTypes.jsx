@@ -1,4 +1,4 @@
-import dayjs from "../utils/myDayjs";
+import { dayjs } from "../i18n/dayjs";
 import ScTextInputIcon from '@mui/icons-material/TextFields'; //301
 import ScNumberInputIcon from '@mui/icons-material/LooksOne'; //302
 // import ScPasswordInputIcon from '@mui/icons-material/Password'; //303
@@ -46,7 +46,7 @@ export const DataTypes = [
     { id: 550, code: "ScUDASelect", name: "uda", dataType: "uda", inputMode: "Select" },
 ];
 
-//Sc数据类型默认值（0值）
+// Get the Secloud Date type default value
 export const GetDataTypeDefaultValue = (typeid) => {
     switch (typeid) {
         case 301:
@@ -54,9 +54,9 @@ export const GetDataTypeDefaultValue = (typeid) => {
         case 302:
             return 0;
         case 306:
-            return dayjs(new Date()).format("YYYYMMDD");
+            return dayjs(new Date());
         case 307:
-            return dayjs(new Date()).format("YYYYMMDDHHmm");
+            return dayjs(new Date());
         case 401:
             return 0;
         case 404:
@@ -104,7 +104,7 @@ export const PeriodDisplay = new Map([
 export const PeriodStartandEnd = (period) => {
     //获取当前日期
     const thisDay = dayjs(new Date()).date();
-    const thisMonth = dayjs(new Date()).month(); 
+    const thisMonth = dayjs(new Date()).month();
     switch (period) {
         case "month"://月
             return { startDate: dayjs(new Date()).startOf("month").format("YYYYMMDD"), endDate: dayjs(new Date()).endOf("month").format("YYYYMMDD") };

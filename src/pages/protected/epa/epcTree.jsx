@@ -7,6 +7,7 @@ import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import useContentHeight from "../../../hooks/useContentHeight";
 import { useTranslation } from "react-i18next";
 
+// Execution Project Category Tree View Component
 const EpcTree = ({ selectOk }) => {
     const [epcs, setEpcs] = useState([]);
     const [currentDoc, setCurrentDoc] = useState(undefined);
@@ -21,7 +22,7 @@ const EpcTree = ({ selectOk }) => {
         }
         initEpcs();
     }, []);
-    //将当前选择档案转换为档案id数组
+    // Convert the current seledted EPCs into a ID array
     const transferDocIDs = (doc) => {
         let selectedDocIDs = [];
         if (doc !== undefined) {
@@ -29,18 +30,18 @@ const EpcTree = ({ selectOk }) => {
         }
         return selectedDocIDs;
     }
-    //获取执行项目类别
+    // Get EPC list from cache
     const handleGetLocalEPCs = async () => {
         const newEpcs = await GetLocalCache("epc");
         setEpcs(newEpcs);
     };
-    //更新执行项目类别
+    // Actions after click Refresh Icon button
     const handleRefresh = async () => {
         await InitDocCache("epc");
         handleGetLocalEPCs();
     };
 
-    //选择项目
+    // Acitons after Click the EPC item 
     const handleOnDocClick = (item, type) => {
         setCurrentDoc(item);
         selectOk(item);

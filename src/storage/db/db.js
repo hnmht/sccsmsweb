@@ -1,6 +1,6 @@
 import Dexie from "dexie";
 import { cloneDeep } from "lodash";
-import dayjs from "../../utils/myDayjs";
+import { dayjs } from "../../i18n/dayjs";
 import { GetDataTypeDefaultValue } from "../dataTypes";
 import { reqGetSimpDepts, reqGetSimpDeptsCache } from "../../api/department";
 import { reqGetPersons, reqGetPersonsCache } from "../../api/person";
@@ -9,7 +9,7 @@ import { reqGetUDAAll, reqGetUDACache } from "../../api/uda";
 import { reqGetSimpEPCList, reqGetSimpEPCCache } from "../../api/epc";
 import { reqGetEPList, reqGetEPCache } from "../../api/epa";
 import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
-import { reqGetCSList, reqGetCSCache  } from "../../api/csa";
+import { reqGetCSList, reqGetCSCache } from "../../api/csa";
 import { reqGetCSOCache, reqGetCSOs } from "../../api/cso";
 import { reqGetSimpCSCList, reqGetSimpCSCCache } from "../../api/csc";
 import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
@@ -35,7 +35,7 @@ db.version(1).stores({
     cso: "id,code,status,ts",
     csa: "id,code,csc.id,status,ts",
     epa: "id,code,epc.id,resultType.id,status,ts",
-    ept: "id,code,status,ts",   
+    ept: "id,code,status,ts",
     risklevel: "id,status,ts",
     dc: "id,status,ts",
     position: "id,status,ts",
@@ -66,22 +66,23 @@ const transPersonToFrontend = async (persons) => {
 
 //执行项目档案后端批量转前端
 const transEPsToFrontend = async (epas) => {
-    // let startTime = new Date();
     async function transEpas() {
-        for (let newEid of epas) {
-            switch (newEid.resultType.id) {
+        for (let newEpa of epas) {
+            switch (newEpa.resultType.id) {
                 case 301:
-                case 306:
-                case 307:
+                    break;
+                case 306:                  
+                    break;
+                case 307:                  
                     break;
                 case 302:
-                    newEid.defaultValue = parseFloat(newEid.defaultValue);
-                    newEid.errorValue = parseFloat(newEid.errorValue);
+                    newEpa.defaultValue = parseFloat(newEpa.defaultValue);
+                    newEpa.errorValue = parseFloat(newEpa.errorValue);
                     break;
                 case 401:
                 case 404:
-                    newEid.defaultValue = parseInt(newEid.defaultValue);
-                    newEid.errorValue = parseInt(newEid.errorValue);
+                    newEpa.defaultValue = parseInt(newEpa.defaultValue);
+                    newEpa.errorValue = parseInt(newEpa.errorValue);
                     break;
                 case 510:
                 case 520:
@@ -89,8 +90,8 @@ const transEPsToFrontend = async (epas) => {
                 case 530:
                 case 540:
                 case 550:
-                    newEid.defaultValue = newEid.defaultValue !== "0" ? await GetCacheDocById(newEid.resultType.frontdb, parseInt(newEid.defaultValue)) : GetDataTypeDefaultValue(newEid.resultType.id);
-                    newEid.errorValue = newEid.errorValue !== "0" ? await GetCacheDocById(newEid.resultType.frontdb, parseInt(newEid.errorValue)) : GetDataTypeDefaultValue(newEid.resultType.id);
+                    newEpa.defaultValue = newEpa.defaultValue !== "0" ? await GetCacheDocById(newEpa.resultType.frontdb, parseInt(newEpa.defaultValue)) : GetDataTypeDefaultValue(newEpa.resultType.id);
+                    newEpa.errorValue = newEpa.errorValue !== "0" ? await GetCacheDocById(newEpa.resultType.frontdb, parseInt(newEpa.errorValue)) : GetDataTypeDefaultValue(newEpa.resultType.id);
                     break;
                 default:
                     console.error("No matching DataType");
@@ -158,12 +159,12 @@ export const docTable = new Map([
     ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend }],
     ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
     ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
-     /* 
-   
-     ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-     ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
-     ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
-     ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
+    /* 
+  
+    ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
+    ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
+    ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
+    ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
 ]);
 
 // Initialize browser indexedDB database
@@ -324,39 +325,39 @@ export const GetPersonsWithOps = async (opIds) => {
 
 
 };
-//执行项目档案前端数据转后端数据
+// Convert EP frontend data to backend-consumable data
 export function transEPToBackend(eid) {
-    const newEid = cloneDeep(eid);
-    switch (newEid.resultType.id) {
+    const newEpa = cloneDeep(eid);
+    switch (newEpa.resultType.id) {
         case 301:
-            newEid.defaultvaluedisp = newEid.defaultValue;
-            newEid.errorvaluedisp = newEid.errorValue;
+            newEpa.defaultValueDisp = newEpa.defaultValue;
+            newEpa.errorValueDisp = newEpa.errorValue;
             break;
         case 306:
-            newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
-            newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
+            newEpa.defaultValueDisp = newEpa.defaultValue === "" ? "" : dayjs(newEpa.defaultValue).format("YYYY-MM-DD");
+            newEpa.errorValueDisp = newEpa.errorValue === "" ? "" : dayjs(newEpa.errorValue).format("YYYY-MM-DD");
             break;
         case 307:
-            newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-            newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+            newEpa.defaultValueDisp = newEpa.defaultValue === "" ? "" : dayjs(newEpa.defaultValue).format("YYYY-MM-DD HH:mm");
+            newEpa.errorValueDisp = newEpa.errorValue === "" ? "" : dayjs(newEpa.errorValue).format("YYYY-MM-DD HH:mm");
             break;
         case 302:
-            newEid.defaultValue = newEid.defaultValue.toString();
-            newEid.defaultvaluedisp = newEid.defaultValue;
-            newEid.errorValue = newEid.errorValue.toString();
-            newEid.errorvaluedisp = newEid.errorValue;
+            newEpa.defaultValue = newEpa.defaultValue.toString();
+            newEpa.defaultValueDisp = newEpa.defaultValue;
+            newEpa.errorValue = newEpa.errorValue.toString();
+            newEpa.errorValueDisp = newEpa.errorValue;
             break;
         case 401:
-            newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "" : newEid.defaultValue === 1 ? "男" : "女";
-            newEid.defaultValue = newEid.defaultValue.toString();
-            newEid.errorvaluedisp = newEid.errorValue === 0 ? "" : newEid.errorValue === 1 ? "男" : "女";
-            newEid.errorValue = newEid.errorValue.toString();
+            newEpa.defaultValueDisp = newEpa.defaultValue === 0 ? "" : newEpa.defaultValue === 1 ? "male" : "female";
+            newEpa.defaultValue = newEpa.defaultValue.toString();
+            newEpa.errorValueDisp = newEpa.errorValue === 0 ? "" : newEpa.errorValue === 1 ? "male" : "female";
+            newEpa.errorValue = newEpa.errorValue.toString();
             break;
         case 404:
-            newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "否" : newEid.defaultValue === 1 ? "是" : "";
-            newEid.defaultValue = newEid.defaultValue.toString();
-            newEid.errorvaluedisp = newEid.errorValue === 0 ? "否" : newEid.errorValue === 1 ? "是" : "";
-            newEid.errorValue = newEid.errorValue.toString();
+            newEpa.defaultValueDisp = newEpa.defaultValue === 0 ? "N" : newEpa.defaultValue === 1 ? "Y" : "";
+            newEpa.defaultValue = newEpa.defaultValue.toString();
+            newEpa.errorValueDisp = newEpa.errorValue === 0 ? "N" : newEpa.errorValue === 1 ? "Y" : "";
+            newEpa.errorValue = newEpa.errorValue.toString();
             break;
         case 510:
         case 520:
@@ -364,51 +365,51 @@ export function transEPToBackend(eid) {
         case 530:
         case 540:
         case 550:
-            newEid.defaultvaluedisp = newEid.defaultValue.name;
-            newEid.defaultValue = newEid.defaultValue.id.toString();
-            newEid.errorvaluedisp = newEid.errorValue.name;
-            newEid.errorValue = newEid.errorValue.id.toString();
+            newEpa.defaultValueDisp = newEpa.defaultValue.name;
+            newEpa.defaultValue = newEpa.defaultValue.id.toString();
+            newEpa.errorValueDisp = newEpa.errorValue.name;
+            newEpa.errorValue = newEpa.errorValue.id.toString();
             break;
         default:
             console.error("No matching DataType");
     }
-    return newEid;
+    return newEpa;
 };
-//执行项目档案批量前端转后端数据
+// Convert EPs frontend data to backend-consumble data
 export const transEPsToBackend = async (epas) => {
-    const newEids = cloneDeep(epas);
+    const newEpas = cloneDeep(epas);
     async function transEpas() {
-        for (let newEid of newEids) {
-            switch (newEid.resultType.id) {
+        for (let newEpa of newEpas) {
+            switch (newEpa.resultType.id) {
                 case 301:
-                    newEid.defaultvaluedisp = newEid.defaultValue;
-                    newEid.errorvaluedisp = newEid.errorValue;
+                    newEpa.defaultValueDisp = newEpa.defaultValue;
+                    newEpa.errorValueDisp = newEpa.errorValue;
                     break;
                 case 306:
-                    newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
-                    newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
+                    newEpa.defaultValueDisp = newEpa.defaultValue === "" ? "" : dayjs(newEpa.defaultValue).format("YYYY-MM-DD");
+                    newEpa.errorValueDisp = newEpa.errorValue === "" ? "" : dayjs(newEpa.errorValue).format("YYYY-MM-DD");
                     break;
                 case 307:
-                    newEid.defaultvaluedisp = newEid.defaultValue === "" ? "" : dayjs(newEid.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-                    newEid.errorvaluedisp = newEid.errorValue === "" ? "" : dayjs(newEid.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                    newEpa.defaultValueDisp = newEpa.defaultValue === "" ? "" : dayjs(newEpa.defaultValue).format("YYYY-MM-DD HH:mm");
+                    newEpa.errorValueDisp = newEpa.errorValue === "" ? "" : dayjs(newEpa.errorValue).format("YYYY-MM-DD HH:mm");
                     break;
                 case 302:
-                    newEid.defaultValue = newEid.defaultValue.toString();
-                    newEid.defaultvaluedisp = newEid.defaultValue;
-                    newEid.errorValue = newEid.errorValue.toString();
-                    newEid.errorvaluedisp = newEid.errorValue;
+                    newEpa.defaultValue = newEpa.defaultValue.toString();
+                    newEpa.defaultValueDisp = newEpa.defaultValue;
+                    newEpa.errorValue = newEpa.errorValue.toString();
+                    newEpa.errorValueDisp = newEpa.errorValue;
                     break;
                 case 401:
-                    newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "" : newEid.defaultValue === 1 ? "男" : "女";
-                    newEid.defaultValue = newEid.defaultValue.toString();
-                    newEid.errorvaluedisp = newEid.errorValue === 0 ? "" : newEid.errorValue === 1 ? "男" : "女";
-                    newEid.errorValue = newEid.errorValue.toString();
+                    newEpa.defaultValueDisp = newEpa.defaultValue === 0 ? "" : newEpa.defaultValue === 1 ? "male" : "female";
+                    newEpa.defaultValue = newEpa.defaultValue.toString();
+                    newEpa.errorValueDisp = newEpa.errorValue === 0 ? "" : newEpa.errorValue === 1 ? "male" : "female";
+                    newEpa.errorValue = newEpa.errorValue.toString();
                     break;
                 case 404:
-                    newEid.defaultvaluedisp = newEid.defaultValue === 0 ? "否" : newEid.defaultValue === 1 ? "是" : "";
-                    newEid.defaultValue = newEid.defaultValue.toString();
-                    newEid.errorvaluedisp = newEid.errorValue === 0 ? "否" : newEid.errorValue === 1 ? "是" : "";
-                    newEid.errorValue = newEid.errorValue.toString();
+                    newEpa.defaultValueDisp = newEpa.defaultValue === 0 ? "N" : newEpa.defaultValue === 1 ? "Y" : "";
+                    newEpa.defaultValue = newEpa.defaultValue.toString();
+                    newEpa.errorValueDisp = newEpa.errorValue === 0 ? "N" : newEpa.errorValue === 1 ? "Y" : "";
+                    newEpa.errorValue = newEpa.errorValue.toString();
                     break;
                 case 510:
                 case 520:
@@ -416,10 +417,10 @@ export const transEPsToBackend = async (epas) => {
                 case 530:
                 case 540:
                 case 550:
-                    newEid.defaultvaluedisp = newEid.defaultValue.name;
-                    newEid.defaultValue = newEid.defaultValue.id.toString();
-                    newEid.errorvaluedisp = newEid.errorValue.name;
-                    newEid.errorValue = newEid.errorValue.id.toString();
+                    newEpa.defaultValueDisp = newEpa.defaultValue.name;
+                    newEpa.defaultValue = newEpa.defaultValue.id.toString();
+                    newEpa.errorValueDisp = newEpa.errorValue.name;
+                    newEpa.errorValue = newEpa.errorValue.id.toString();
                     break;
                 default:
                     console.error("No matching DataType");
@@ -427,8 +428,7 @@ export const transEPsToBackend = async (epas) => {
         }
     }
     await transEpas();
-    // console.log("transEPsToBackend result:",newEids);
-    return newEids;
+    return newEpas;
 };
 
 //执行模板前端数据转后端数据
@@ -440,33 +440,33 @@ export function transEITToBackend(eit) {
     newEit.body.map((row) => {
         switch (row.eid.resultType.id) {
             case 301:
-                row.defaultvaluedisp = row.defaultValue;
-                row.errorvaluedisp = row.errorValue;
+                row.defaultValueDisp = row.defaultValue;
+                row.errorValueDisp = row.errorValue;
                 break;
             case 306:
-                row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
-                row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
+                row.defaultValueDisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
+                row.errorValueDisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
                 break;
             case 307:
-                row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-                row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                row.defaultValueDisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                row.errorValueDisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
                 break;
             case 302:
                 row.defaultValue = row.defaultValue.toString();
-                row.defaultvaluedisp = row.defaultValue;
+                row.defaultValueDisp = row.defaultValue;
                 row.errorValue = row.errorValue.toString();
-                row.errorvaluedisp = row.errorValue;
+                row.errorValueDisp = row.errorValue;
                 break;
             case 401:
-                row.defaultvaluedisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
+                row.defaultValueDisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
                 row.defaultValue = row.defaultValue.toString();
-                row.errorvaluedisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
+                row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
                 row.errorValue = row.errorValue.toString();
                 break;
             case 404:
-                row.defaultvaluedisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
+                row.defaultValueDisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
                 row.defaultValue = row.defaultValue.toString();
-                row.errorvaluedisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "是" : "否";
+                row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "是" : "否";
                 row.errorValue = row.errorValue.toString();
                 break;
             case 510:
@@ -475,9 +475,9 @@ export function transEITToBackend(eit) {
             case 530:
             case 540:
             case 550:
-                row.defaultvaluedisp = row.defaultValue.name;
+                row.defaultValueDisp = row.defaultValue.name;
                 row.defaultValue = row.defaultValue.id.toString();
-                row.errorvaluedisp = row.errorValue.name;
+                row.errorValueDisp = row.errorValue.name;
                 row.errorValue = row.errorValue.id.toString();
                 break;
             default:
@@ -499,33 +499,33 @@ export const transEITsToBackend = async (eits) => {
             for (let row of newEit.body) {
                 switch (row.eid.resultType.id) {
                     case 301:
-                        row.defaultvaluedisp = row.defaultValue;
-                        row.errorvaluedisp = row.errorValue;
+                        row.defaultValueDisp = row.defaultValue;
+                        row.errorValueDisp = row.errorValue;
                         break;
                     case 306:
-                        row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
-                        row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
+                        row.defaultValueDisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDD").format("YYYY-MM-DD");
+                        row.errorValueDisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDD").format("YYYY-MM-DD");
                         break;
                     case 307:
-                        row.defaultvaluedisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
-                        row.errorvaluedisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                        row.defaultValueDisp = row.defaultValue === "" ? "" : dayjs(row.defaultValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
+                        row.errorValueDisp = row.errorValue === "" ? "" : dayjs(row.errorValue, "YYYYMMDDHHmm").format("YYYY-MM-DD HH:mm");
                         break;
                     case 302:
                         row.defaultValue = row.defaultValue.toString();
-                        row.defaultvaluedisp = row.defaultValue;
+                        row.defaultValueDisp = row.defaultValue;
                         row.errorValue = row.errorValue.toString();
-                        row.errorvaluedisp = row.errorValue;
+                        row.errorValueDisp = row.errorValue;
                         break;
                     case 401:
-                        row.defaultvaluedisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
+                        row.defaultValueDisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
                         row.defaultValue = row.defaultValue.toString();
-                        row.errorvaluedisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
+                        row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
                         row.errorValue = row.errorValue.toString();
                         break;
                     case 404:
-                        row.defaultvaluedisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
+                        row.defaultValueDisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
                         row.defaultValue = row.defaultValue.toString();
-                        row.errorvaluedisp = row.errorValue === 0 ? "否" : row.errorValue === 1 ? "是" : "";
+                        row.errorValueDisp = row.errorValue === 0 ? "否" : row.errorValue === 1 ? "是" : "";
                         row.errorValue = row.errorValue.toString();
                         break;
                     case 510:
@@ -534,9 +534,9 @@ export const transEITsToBackend = async (eits) => {
                     case 530:
                     case 540:
                     case 550:
-                        row.defaultvaluedisp = row.defaultValue.name;
+                        row.defaultValueDisp = row.defaultValue.name;
                         row.defaultValue = row.defaultValue.id.toString();
-                        row.errorvaluedisp = row.errorValue.name;
+                        row.errorValueDisp = row.errorValue.name;
                         row.errorValue = row.errorValue.id.toString();
                         break;
                     default:

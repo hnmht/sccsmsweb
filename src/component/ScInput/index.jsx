@@ -7,7 +7,7 @@ import ScEmailInput from "./ScEmailInput/ScEmailInput"; //305 电子邮件输入
 import ScDateInput from "./ScDateInput/ScDateInput"; //306 日期输入组件
 import ScDateTimeInput from "./ScDateTimeInput/ScDateTImeInput"; //307 日期时间输入组件
 
-import ScSelectGender from "./ScSelectGender/ScSelectGender"; //401 选择性别
+import ScGenderSelect from "./ScGenderSelect/ScGendeSelectr"; //401 选择性别
 import ScSwitchYesOrNo from "./ScSwitchYesOrNo/ScSwitchYesOrNo"; //402 switch选择是否
 import ScCheckYesOrNo from "./ScCheckYesOrNo/ScCheckYesOrNo"; //403 CheckBox选择是否
 import ScSelectYesOrNo from "./ScSelectYesOrNo/ScSelectYesOrNo"; //404 Select是否选择
@@ -58,7 +58,7 @@ const ScInput = (props) => {
         case 307:
             return <ScDateTimeInput {...props} />;
         case 401:
-            return <ScSelectGender {...props} />;
+            return <ScGenderSelect {...props} />;
         case 402:
             return <ScSwitchYesOrNo {...props} />;
         case 403:

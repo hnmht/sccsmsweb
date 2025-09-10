@@ -12,7 +12,7 @@ import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { useTranslation } from "react-i18next";
 const zeroValue = 0;
 // 401 Select Gender component
-const ScSelectGender = memo((props) => {
+const ScGenderSelect = memo((props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
@@ -80,4 +80,4 @@ const ScSelectGender = memo((props) => {
     );
 });
 
-export default ScSelectGender;
+export default ScGenderSelect;
