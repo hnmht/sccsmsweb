@@ -37,9 +37,18 @@ const UnixTimeFormat = (unixSeconds, formats = "L") => {
 
 const DateInputMask = () => {
     const lang = i18n.language;
-    var mask = dayjs.Ls[lang.toLowerCase()].formats.L;
+    var mask = dayjs.Ls[lang.toLowerCase()].inputMask.L;
     if (mask === undefined) {
-        mask = dayjs.Ls["en-us"].formats.L;
+        mask = dayjs.Ls["en-us"].inputMask.L;
+    }
+    return mask;
+};
+
+const DateTimeInputMask = () => {
+    const lang = i18n.language;
+    var mask = dayjs.Ls[lang.toLowerCase()].inputMask.LLLL;
+    if (mask === undefined) {
+        mask = dayjs.Ls["en-us"].inputMask.LLLL;
     }
     return mask;
 };
@@ -69,5 +78,6 @@ export {
     DateInputMask,
     DateToLocalDate,
     GenerateUTCZero,
-    IsUTCZero
+    IsUTCZero,
+    DateTimeInputMask
 };

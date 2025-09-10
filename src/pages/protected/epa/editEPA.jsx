@@ -31,7 +31,7 @@ const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
         epc: currentEPC,
         description: "",
         status: 0,
-        resultType: { id: 301, name: "Text", dataType: "string", inputMode: "Input" },
+        resultType: { id: 301, name: "text", dataType: "string", inputMode: "Input" },
         udc: { id: 0, name: "", description: "" },
         defaultValue: "",
         isCheckError: 0,
@@ -159,8 +159,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
             }
         }
     };
-
-
     //检查执行项目档案编码
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
@@ -193,7 +191,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             placeholder="codePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestCode}
-                            key="code"
                             positionID={0}
                         />
                     </Grid>
@@ -209,7 +206,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickErr={handleGetError}
                             placeholder="namePlaceholder"
                             isBackendTest={false}
-                            key="name"
                             positionID={0}
                         />
                     </Grid>
@@ -227,7 +223,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
-                            key="description"
                             positionID={0}
                         />
                     </Grid>
@@ -243,7 +238,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickErr={handleGetError}
                             placeholder=""
                             isBackendTest={false}
-                            key="epc"
                             positionID={0}
                         />
                     </Grid>
@@ -258,7 +252,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="riskLevel"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -275,7 +268,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="resultType"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -291,7 +283,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="udc"
                             isBackendTest={false}
                             positionID={0}
                             rowIndex={0}
@@ -308,7 +299,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="defaultValue"
                             isBackendTest={false}
                             udc={currentEP.udc}
                             positionID={0}
@@ -327,7 +317,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             initValue={currentEP.isCheckError}
                             pickDone={handleGetValue}
                             placeholder=""
-                            key="isCheckError"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -343,7 +332,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="errorValue"
                             isBackendTest={false}
                             udc={currentEP.udc}
                             positionID={0}
@@ -361,7 +349,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="isRequireFile"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -375,7 +362,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="isOnsitePhoto"
                             isBackendTest={false}
                             positionID={0}
                         />
@@ -391,7 +377,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""
-                            key="status"
                             isBackendTest={false}
                             color="warning"
                             positionID={0}
@@ -410,7 +395,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -424,7 +408,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -438,7 +421,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -452,7 +434,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>

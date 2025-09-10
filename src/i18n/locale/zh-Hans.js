@@ -58,6 +58,10 @@ const locale = {
             return '下午'
         }
         return '晚上';
+    },
+    inputMask:{
+        L: 'YYYY/MM/DD',
+        LLLL:"YYYY-MM-DD HH:mm"
     }
 }
 

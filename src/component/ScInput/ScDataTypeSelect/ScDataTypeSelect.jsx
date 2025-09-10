@@ -13,7 +13,7 @@ const ScDataTypeSelect = (props) => {
     const { t } = useTranslation();
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [currentType, setCurrentType] = useState(initValue ? initValue : DataTypes[0]);
-    const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });  
+    const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
 
     // Check value and pass it to the parents
     const handleOnBlur = async (doc = currentType) => {
@@ -50,14 +50,22 @@ const ScDataTypeSelect = (props) => {
                 disableClearable={true}
                 getOptionLabel={(option) => t(option.name)}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderOption={(props, option) => (
-                    <Box component="li" {...props}>
-                        <DataIcon datacode={option.id} fontSize="small" color="primary" sx={{ mr: 2 }} />
-                        {t(option.name)}
-                    </Box>
-                )}
+                renderOption={(props, option) => {
+                    const { key, ...optionProps } = props;
+                    return (
+                        <Box
+                            key={key}
+                            component="li"
+                            {...optionProps}
+                        >
+                            <DataIcon datacode={option.id} fontSize="small" color="primary" sx={{ mr: 2 }} />
+                            {t(option.name)}
+                        </Box>
+                    )
+                }}
                 noOptionsText={t("noData")}
                 value={currentType}
+                defaultValue={currentType}
                 renderInput={(params) => {
                     return (
                         <TextField

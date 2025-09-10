@@ -176,7 +176,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             placeholder="namePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
-                            key="name"
                         />
                     </Grid>
                     <Grid item xs={12} >
@@ -192,7 +191,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
-                            key="description"
                         />
                     </Grid>
                     <Grid item xs={12} >
@@ -209,7 +207,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             backendTestFunc={handleCheckHigherClass}
                             isMultiline={false}
                             rowNumber={1}
-                            key="fatherID"
                         />
                     </Grid>
                     <Grid item xs={12} >
@@ -222,7 +219,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             initValue={currentDoc.status}
                             pickDone={handleGetValue}
                             placeholder=""
-                            key="status"
                             isBackendTest={false}
                             color="warning"
                         />
@@ -239,7 +235,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             initValue={currentDoc.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -252,7 +247,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             initValue={currentDoc.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -265,7 +259,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             initValue={currentDoc.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -278,7 +271,6 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             initValue={currentDoc.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>

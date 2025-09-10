@@ -12,7 +12,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateInputMask, dayjs } from "../../../i18n/dayjs";
 
 const defaultValue = dayjs(new Date());
-// SeaCloud Date input Components
+
+// 306 SeaCloud Date input Components
 const ScDateInput = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = defaultValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [dateValue, setDateValue] = useState(initValue ? initValue : defaultValue);

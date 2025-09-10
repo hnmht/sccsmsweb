@@ -7,44 +7,31 @@ import {
     Tooltip,
     InputBase,
     IconButton,
+    InputAdornment
 } from "@mui/material";
 import { PatternFormat } from "react-number-format";
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeInputMask, dayjs } from "../../../i18n/dayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import {DesktopDateTimePicker} from "@mui/x-date-pickers/DesktopDateTimePicker";
+import { useTranslation } from "react-i18next";
+import { stubFalse } from "lodash";
 
-const DateTimeFormat = forwardRef(function dateTimeFormat(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-        <PatternFormat
-            {...other}
-            getInputRef={ref}
-            onValueChange={(values) => {
-                onChange({
-                    target: {
-                        name: props.name,
-                        value: values.value,
-                    },
-                });
-            }}
-            valueIsNumericString
-            format="####-##-## ##:##"
-            mask={"_"}
-        />
-    );
-});
-
-const zeroValue = dayjs(new Date()).format("YYYYMMDDHHmm");
+const zeroValue = dayjs(new Date());
 //307
 const ScDateTimeInput = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [dateValue, setDateValue] = useState(initValue ? initValue : zeroValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-
-    useEffect(() => {
+    const { t } = useTranslation();
+    const mask = DateTimeInputMask();
+    const [value, setValue] = React.useState(dayjs('2022-04-07'));
+    /* useEffect(() => {
         function updateInitvalue() {
             setDateValue(initValue);
         }
         updateInitvalue();
-    }, [initValue]);
+    }, [initValue]); */
+
     useEffect(() => {
         handleOnBlur(dateValue);
         // eslint-disable-next-line
@@ -60,9 +47,9 @@ const ScDateTimeInput = (props) => {
         }
 
         if (newValue === "" && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if ((newValue !== "" || newValue.length > 0) && !dayjs(newValue, "YYYYMMDDHHmm", true).isValid()) {
-            err = { isErr: true, msg: "请输入正确格式YYYYMMDDHHmm" };
+            err = { isErr: true, msg: "enterValidDate" };
         } else if (isBackendTest) {
             err = await backendTestFunc(newValue, itemKey, positionID, rowIndex);
         }
@@ -84,10 +71,19 @@ const ScDateTimeInput = (props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`datetimeinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`datetimeinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
-            {positionID !== 1
+            <DateTimePicker                
+                value={value}
+                ampm={false}
+                onChange={(newValue) => {
+                    setValue(newValue);
+                }}
+                inputFormat={mask}
+                renderInput={(props) => <TextField {...props} />}
+            />
+            {/*  {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
@@ -148,7 +144,7 @@ const ScDateTimeInput = (props) => {
                             }
                         </Stack>}
                 />
-            }
+            } */}
 
         </>
     );
@@ -156,6 +152,3 @@ const ScDateTimeInput = (props) => {
 
 export default memo(ScDateTimeInput);
 
-ScDateTimeInput.defaultProps = {
-    initValue: zeroValue,
-}
