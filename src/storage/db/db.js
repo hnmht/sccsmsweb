@@ -18,9 +18,10 @@ import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
 import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 
-import { reqPubSysInfo } from "../../api/pub";
+import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
 import { message } from "mui-message";
 
+let cryptoKey;
 const db = new Dexie('scDb');
 db.version(1).stores({
     dbinfo: "infoname",
@@ -53,11 +54,46 @@ const commonTransDoc = async (docs) => {
     return docs;
 };
 
+// Import cryptoKey
+const importCryptoKey = async (key) => {
+    let rawKey;
+    if (typeof atob === "function") {
+        const binary = atob(key);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        rawKey = bytes.buffer;
+    } else {
+        const buf = Buffer.from(key, 'base64');
+        rawKey = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+    }
+    cryptoKey = await crypto.subtle.importKey(
+        "raw", rawKey,
+        { name: "AES-GCM" },
+        true,
+        ["encrypt", "decrypt"]
+    )
+};
+
 // The backend persons encrypt the data and then transfer it to the frontend-comsumble data
 const transPersonToFrontend = async (persons) => {
-    persons.map(person => {
+    console.log("cryptoKey:", cryptoKey);
+    // 加密函数
+    const encoder = new TextEncoder();
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    console.log("iv:",iv.toString())
+    persons.map((person) => {
+        const nameEncrypt = encoder.encode(JSON.stringify(person.name));
+       /*  const encryptedData = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv },
+            cryptoKey,
+            nameEncrypt
+        ); */
+        // console.log("encryptedData:", encryptedData);
         person.email = "";
         person.mobile = "";
+        person.iv = "thisiv";
         return person;
     })
     return persons;
@@ -177,20 +213,45 @@ export const initLocalDb = async () => {
     newDbid = res.data.dbID;
     // Access the dbinfo table in indexedDB to get DBID
     let dbId;
+    let frontDbId;
     const dbidInfo = await db["dbinfo"].where("infoname").equals("dbid").toArray();
     // If no data is queried, it means this is the first time the initialization has been run
     if (dbidInfo.length === 0) {
         dbId = newDbid
         // Write the DBID information to the dbinfo table
-        db["dbinfo"].add({ infoname: "dbid", infovalue: dbId })
+        await db["dbinfo"].add({ infoname: "dbid", infovalue: dbId })
             .then(res => {
                 console.log("Successfully wrote the DBID to dbinfo.");
             })
             .catch((err) => {
                 console.error("Failed to write the DBID to the dbinfo table:", err);
             })
+        // Request the server to generate a frontend DBID
+        const generateRes = await reqGenerateFrontDBID({ dbID: dbId });
+        if (generateRes.status) {
+            await importCryptoKey(generateRes.data.cryptoKey);
+            db["dbinfo"].add({ infoname: "frontdbid", infovalue: generateRes.data.frontDbID })
+                .then(res => {
+                    console.log("Successfully wrote the frontdbid to dbinfo.");
+                })
+                .catch((err) => {
+                    console.error("Failed to write the frontdbid to the dbinfo table:", err);
+                })
+        } else {
+            console.error("Failed to write the DBID to the dbinfo table:", generateRes.msg);
+        }
     } else {
         dbId = dbidInfo[0].infovalue;
+        const frontDbInfo = await db["dbinfo"].where("infoname").equals("frontdbid").toArray();
+        if (frontDbInfo.length === 0) {
+            console.error("Frontend DB information not found. Please Delete the frontend database and try again.")
+            return
+        }
+        frontDbId = frontDbInfo[0].infovalue;
+        const getRes = await reqGetFrontDBID({ dbID: dbId, frontDbId: frontDbId });
+        if (getRes.status) {
+            await importCryptoKey(getRes.data.cryptoKey)
+        }
     }
 
     // If the front-end DBID and back-end DBID are not equal,
@@ -206,6 +267,21 @@ export const initLocalDb = async () => {
             .catch((err) => {
                 console.error("Failed to write the DBID to the dbinfo table:", err);
             })
+
+        // Request the server to generate a frontend DBID
+        const generateRes = await reqGenerateFrontDBID({ dbID: dbId });
+        if (generateRes.status) {
+            await importCryptoKey(generateRes.data.cryptoKey);
+            db["dbinfo"].add({ infoname: "frontdbid", infovalue: generateRes.data.frontDbID })
+                .then(res => {
+                    console.log("Successfully wrote the frontdbid to dbinfo.");
+                })
+                .catch((err) => {
+                    console.error("Failed to write the frontdbid to the dbinfo table:", err);
+                })
+        } else {
+            console.error("Failed to write the DBID to the dbinfo table:", generateRes.msg);
+        }
     }
 
     // Request the latest cached data from the server
@@ -232,7 +308,6 @@ export const clearLocalDb = async (docName) => {
 };
 // Get Archive list from server for front-end cache
 export const InitDocCache = async (docName) => {
-
     // Get Master Data latest TimeStamp
     const latestTsRes = await db.tsinfo.where("docname").equals(docName).toArray();
     // Get Local database table detail
