@@ -22,7 +22,6 @@ import { reqPubSysInfo } from "../../api/pub";
 import { message } from "mui-message";
 
 const db = new Dexie('scDb');
-
 db.version(1).stores({
     dbinfo: "infoname",
     tsinfo: "docname,ts",
@@ -54,7 +53,7 @@ const commonTransDoc = async (docs) => {
     return docs;
 };
 
-//人员档案加密后转前端存储
+// The backend persons encrypt the data and then transfer it to the frontend-comsumble data
 const transPersonToFrontend = async (persons) => {
     persons.map(person => {
         person.email = "";
@@ -64,16 +63,16 @@ const transPersonToFrontend = async (persons) => {
     return persons;
 };
 
-//执行项目档案后端批量转前端
+// Convert EPs backend data to frontend-consumble data
 const transEPsToFrontend = async (epas) => {
     async function transEpas() {
         for (let newEpa of epas) {
             switch (newEpa.resultType.id) {
                 case 301:
                     break;
-                case 306:                  
+                case 306:
                     break;
-                case 307:                  
+                case 307:
                     break;
                 case 302:
                     newEpa.defaultValue = parseFloat(newEpa.defaultValue);
@@ -101,7 +100,7 @@ const transEPsToFrontend = async (epas) => {
     await transEpas();
     return epas;
 };
-//执行模板批量后端转前端
+// Convert EPTs backend data to frontend-consumble data
 const transEITsToFrontend = async (eits) => {
     // let startTime = new Date();
     async function transEITs() {
@@ -146,19 +145,19 @@ const transEITsToFrontend = async (eits) => {
     return eits;
 };
 
-//本地数据库表定义
+// IndexedDB table definition
 export const docTable = new Map([
-    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
-    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
-    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
     ["csa", { description: "Construction Site Archive", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
     ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
     ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
-    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
-    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
+    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
     ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend }],
     ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
+    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
+    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
     ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
+    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
+    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
     /* 
   
     ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
@@ -167,63 +166,64 @@ export const docTable = new Map([
     ["laborprotection", { description: "劳保用品档案", reqAllFunc: reqGetLPList, reqCacheFunc: reqGetLPCache, transToFrontFunc: commonTransDoc }], */
 ]);
 
-// Initialize browser indexedDB database
+// Initialize indexedDB database
 export const initLocalDb = async () => {
-    //访问服务器获取dbid
+    // Request the server to get the DBID
     let newDbid;
     const res = await reqPubSysInfo(false);
     if (!res.status) {
         return
     }
     newDbid = res.data.dbID;
+    // Access the dbinfo table in indexedDB to get DBID
     let dbId;
-
-    //查询dbinfo表中是否存在dbid内容
     const dbidInfo = await db["dbinfo"].where("infoname").equals("dbid").toArray();
-    if (dbidInfo.length === 0) { //如果没有数据，表示是第一次初始化
+    // If no data is queried, it means this is the first time the initialization has been run
+    if (dbidInfo.length === 0) {
         dbId = newDbid
-        //向server表中写入数据库id
+        // Write the DBID information to the dbinfo table
         db["dbinfo"].add({ infoname: "dbid", infovalue: dbId })
             .then(res => {
-                console.log("向dbinfo存储最新dbid成功:", res);
+                console.log("Successfully wrote the DBID to dbinfo.");
             })
             .catch((err) => {
-                console.error("向dbinfo存储最新dbid成功:", err);
+                console.error("Failed to write the DBID to the dbinfo table:", err);
             })
     } else {
         dbId = dbidInfo[0].infovalue;
     }
 
-    //判断新旧dbId是否相等
-    if (newDbid !== dbId) { //说明数据库id已经改变
-        //清除所有本地缓存
+    // If the front-end DBID and back-end DBID are not equal,
+    // all content in the front-end database needs to ble cleared.
+    if (newDbid !== dbId) {
+        // Clear all content in the front-end database
         await clearAllDocCache();
-        //向dbinfo表中写入数据库id
+        // Update the DBID information in the dbinfo table
         db["dbinfo"].update("dbid", { infoname: "dbid", infovalue: newDbid })
             .then(res => {
-                console.log("向dbinfo更新dbid成功:", res);
+                console.log("Successfully update the DBID in dbinfo table.");
             })
             .catch((err) => {
-                console.error("向dbinfo更新dbid成功:", err);
+                console.error("Failed to write the DBID to the dbinfo table:", err);
             })
     }
 
-    //请求所有本地缓存
+    // Request the latest cached data from the server
     await reqAllDocCache();
 };
-//清理所有本地缓存
+// Clear all content in the front-end database
 export const clearAllDocCache = async () => {
     for (let [key] of docTable) {
         await clearLocalDb(key);
     };
 };
-//请求所有本地缓存
+// Request the latest cached data from the server
 export const reqAllDocCache = async () => {
     for (let [key] of docTable) {
         await InitDocCache(key);
     };
 }
-// Clear front-end  local cache
+// Clear all content in the front-end  table
 export const clearLocalDb = async (docName) => {
     // Clear all data from the table
     await db[docName].clear()
@@ -301,26 +301,26 @@ export const InitDocCache = async (docName) => {
 export const GetLocalCache = async (archive) => {
     return await db[archive].toArray();
 };
-//anyof获取档案缓存
+// Query data using anyOf
 export const GetCacheAnyOf = async (cacheName, key, arr) => {
     return await db[cacheName].where(key).anyOf(arr).toArray();
 };
-//获取自定义档案缓存
-export const GetUDACache = async (classId) => {
-    const udds = await db.uda.where("udc.id").equals(classId).toArray();
+// Get the User-defined Archive list based on User-define Category ID
+export const GetUDACache = async (categoryID) => {
+    const udds = await db.uda.where("udc.id").equals(categoryID).toArray();
     return udds;
 };
-//根据类别ID获取执行项目缓存
-export const GetEPCacheByCategoryId = async (classId) => {
-    return await db.epa.where("epc.id").equals(classId).toArray();
+// Get the Execution Project list based on Execution Project Category ID
+export const GetEPCacheByCategoryId = async (categoryID) => {
+    return await db.epa.where("epc.id").equals(categoryID).toArray();
 };
-//根据类别ID获取现场档案缓存
-export const GetCSACacheByCategoryId = async (classId) => {
-    return await db["csa"].where("csc.id").equals(classId).toArray();
+// Get the Construction Site Archive list based on Construction Site Category ID
+export const GetCSACacheByCategoryId = async (categoryID) => {
+    return await db["csa"].where("csc.id").equals(categoryID).toArray();
 };
-//根据岗位列表获取可用的人员档案
-export const GetPersonsWithOps = async (opIds) => {
-    let persons = await db["person"].where("positionID").anyOf(opIds).and(person => person.status === 0).toArray();
+// Get Person list based on Postion ID
+export const GetPersonsWithOps = async (positionID) => {
+    let persons = await db["person"].where("positionID").anyOf(positionID).and(person => person.status === 0).toArray();
     return persons;
 
 
@@ -431,7 +431,7 @@ export const transEPsToBackend = async (epas) => {
     return newEpas;
 };
 
-//执行模板前端数据转后端数据
+// Convert EPT frontend data to backend-consumble data
 export function transEITToBackend(eit) {
     //拷贝数据
     const newEit = cloneDeep(eit);
@@ -489,7 +489,7 @@ export function transEITToBackend(eit) {
     });
     return newEit;
 }
-//执行模板批量前端转后端数据
+// Convert EPTs frontend data to backend-consumble data
 export const transEITsToBackend = async (eits) => {
     const newEits = cloneDeep(eits);
     async function transEits() {
