@@ -17,35 +17,19 @@ import { reqGetRLList, reqGetRLsCache } from "../../api/riskLevel";
 import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
 import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
-
 import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
+import { table, pickFields } from "./schema";
 import { message } from "mui-message";
 
 let cryptoKey;
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 const db = new Dexie('scDb');
-db.version(1).stores({
-    dbinfo: "infoname",
-    tsinfo: "docname,ts",
-    department: "id,status,ts",
-    person: "id,deptID,positionID,status,ts",
-    udc: "id,status,ts",
-    uda: "id,udc.id,status,ts",
-    epc: "id,status,ts",
-    csc: "id,status,ts",
-    cso: "id,code,status,ts",
-    csa: "id,code,csc.id,status,ts",
-    epa: "id,code,epc.id,resultType.id,status,ts",
-    ept: "id,code,status,ts",
-    risklevel: "id,status,ts",
-    dc: "id,status,ts",
-    position: "id,status,ts",
-    tc: "id,status,ts",
-    ppe: "id,status,ts",
-});
+db.version(1).stores(table);
 
 // Get Archive by ID
-export const GetCacheDocById = async (cacheName, id) => {
-    let value = await db[cacheName].get(id);
+export const GetCacheDocById = async (archive, id) => {
+    let value = await db[archive].get(id);
     return value;
 };
 
@@ -78,25 +62,46 @@ const importCryptoKey = async (key) => {
 
 // The backend persons encrypt the data and then transfer it to the frontend-comsumble data
 const transPersonToFrontend = async (persons) => {
-    console.log("cryptoKey:", cryptoKey);
-    // 加密函数
-    const encoder = new TextEncoder();
+    const startTime = dayjs();
+    const newPersons = [];
+    for (const p of persons) {
+        const newP = await encryptData("person", p);
+        newPersons.push(newP)
+    }
+    return newPersons;
+};
+
+// Encrypt data
+const encryptData = async (type, data) => {
+    // Get table index entries
+    const indexFields = table[type];
+    const newData = pickFields(data, indexFields);
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
-    console.log("iv:",iv.toString())
-    persons.map((person) => {
-        const nameEncrypt = encoder.encode(JSON.stringify(person.name));
-       /*  const encryptedData = await window.crypto.subtle.encrypt(
+    const dataEncrypt = encoder.encode(JSON.stringify(data));
+    const encryptedData = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        cryptoKey,
+        dataEncrypt
+    );
+    newData.iv = iv;
+    newData.encryptedData = encryptedData;
+    return newData;
+};
+
+// Decrypt data array
+const decryptDataArr = async (type, dataArr) => {
+    const newDataArr = [];
+    for (const data of dataArr) {
+        const { iv, encryptedData } = data;
+        const decrypted = await window.crypto.subtle.decrypt(
             { name: "AES-GCM", iv: iv },
             cryptoKey,
-            nameEncrypt
-        ); */
-        // console.log("encryptedData:", encryptedData);
-        person.email = "";
-        person.mobile = "";
-        person.iv = "thisiv";
-        return person;
-    })
-    return persons;
+            encryptedData
+        )
+        const decodedData = decoder.decode(decrypted);
+        newDataArr.push(JSON.parse(decodedData));
+    }
+    return newDataArr;
 };
 
 // Convert EPs backend data to frontend-consumble data
@@ -183,17 +188,17 @@ const transEITsToFrontend = async (eits) => {
 
 // IndexedDB table definition
 export const docTable = new Map([
-    ["csa", { description: "Construction Site Archive", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
-    ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
-    ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
-    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
-    ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend }],
-    ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
-    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
-    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
-    ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
-    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
-    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+    ["csa", { description: "Construction Site Archive", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend, encrypt: false }],
+    ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend, encrypt: true }],
+    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc, encrypt: false }],
+    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc, encrypt: false }],
     /* 
   
     ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
@@ -374,11 +379,28 @@ export const InitDocCache = async (docName) => {
 };
 // Get Local Master Data Cache
 export const GetLocalCache = async (archive) => {
-    return await db[archive].toArray();
+    let result = [];
+    const archiveDefine = docTable.get(archive);
+    console.log("archiveDefine:",archiveDefine);
+    if (archiveDefine.encrypt) {
+        const encryptedArr = await db[archive].toArray();
+        result = await decryptDataArr(archive,encryptedArr);
+    } else {
+        result = await db[archive].toArray();
+    }
+    return result;
 };
 // Query data using anyOf
-export const GetCacheAnyOf = async (cacheName, key, arr) => {
-    return await db[cacheName].where(key).anyOf(arr).toArray();
+export const GetCacheAnyOf = async (archive, key, arr) => {
+    let result = [];
+    const archiveDefine = docTable.get(archive);
+    if (archiveDefine.encrypt) {
+        const encryptedArr = await db[archive].where(key).anyOf(arr).toArray();
+        result = await decryptDataArr(archive,encryptedArr);
+    } else {
+        result = await db[archive].where(key).anyOf(arr).toArray();
+    }
+    return result;
 };
 // Get the User-defined Archive list based on User-define Category ID
 export const GetUDACache = async (categoryID) => {
@@ -396,9 +418,8 @@ export const GetCSACacheByCategoryId = async (categoryID) => {
 // Get Person list based on Postion ID
 export const GetPersonsWithOps = async (positionID) => {
     let persons = await db["person"].where("positionID").anyOf(positionID).and(person => person.status === 0).toArray();
-    return persons;
-
-
+    const decryptPersons = await decryptDataArr("person", persons);
+    return decryptPersons;
 };
 // Convert EP frontend data to backend-consumable data
 export function transEPToBackend(eid) {
