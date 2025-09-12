@@ -19,17 +19,19 @@ import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
 import { table, pickFields } from "./schema";
+import { importCryptoKey, encryptData, decryptDataArr } from "./encrypt";
 import { message } from "mui-message";
 
-let cryptoKey;
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
 const db = new Dexie('scDb');
 db.version(1).stores(table);
 
 // Get Archive by ID
 export const GetCacheDocById = async (archive, id) => {
     let value = await db[archive].get(id);
+    const archiveDefine = docTable.get(archive);
+    if (archiveDefine.encrypt) {
+        
+    }
     return value;
 };
 
@@ -38,70 +40,14 @@ const commonTransDoc = async (docs) => {
     return docs;
 };
 
-// Import cryptoKey
-const importCryptoKey = async (key) => {
-    let rawKey;
-    if (typeof atob === "function") {
-        const binary = atob(key);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-        rawKey = bytes.buffer;
-    } else {
-        const buf = Buffer.from(key, 'base64');
-        rawKey = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-    }
-    cryptoKey = await crypto.subtle.importKey(
-        "raw", rawKey,
-        { name: "AES-GCM" },
-        true,
-        ["encrypt", "decrypt"]
-    )
-};
-
 // The backend persons encrypt the data and then transfer it to the frontend-comsumble data
 const transPersonToFrontend = async (persons) => {
-    const startTime = dayjs();
     const newPersons = [];
     for (const p of persons) {
         const newP = await encryptData("person", p);
         newPersons.push(newP)
     }
     return newPersons;
-};
-
-// Encrypt data
-const encryptData = async (type, data) => {
-    // Get table index entries
-    const indexFields = table[type];
-    const newData = pickFields(data, indexFields);
-    const iv = window.crypto.getRandomValues(new Uint8Array(12));
-    const dataEncrypt = encoder.encode(JSON.stringify(data));
-    const encryptedData = await window.crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: iv },
-        cryptoKey,
-        dataEncrypt
-    );
-    newData.iv = iv;
-    newData.encryptedData = encryptedData;
-    return newData;
-};
-
-// Decrypt data array
-const decryptDataArr = async (type, dataArr) => {
-    const newDataArr = [];
-    for (const data of dataArr) {
-        const { iv, encryptedData } = data;
-        const decrypted = await window.crypto.subtle.decrypt(
-            { name: "AES-GCM", iv: iv },
-            cryptoKey,
-            encryptedData
-        )
-        const decodedData = decoder.decode(decrypted);
-        newDataArr.push(JSON.parse(decodedData));
-    }
-    return newDataArr;
 };
 
 // Convert EPs backend data to frontend-consumble data
@@ -130,8 +76,8 @@ const transEPsToFrontend = async (epas) => {
                 case 530:
                 case 540:
                 case 550:
-                    newEpa.defaultValue = newEpa.defaultValue !== "0" ? await GetCacheDocById(newEpa.resultType.frontdb, parseInt(newEpa.defaultValue)) : GetDataTypeDefaultValue(newEpa.resultType.id);
-                    newEpa.errorValue = newEpa.errorValue !== "0" ? await GetCacheDocById(newEpa.resultType.frontdb, parseInt(newEpa.errorValue)) : GetDataTypeDefaultValue(newEpa.resultType.id);
+                    newEpa.defaultValue = newEpa.defaultValue !== "0" ? await GetCacheDocById(newEpa.resultType.frontDb, parseInt(newEpa.defaultValue)) : GetDataTypeDefaultValue(newEpa.resultType.id);
+                    newEpa.errorValue = newEpa.errorValue !== "0" ? await GetCacheDocById(newEpa.resultType.frontDb, parseInt(newEpa.errorValue)) : GetDataTypeDefaultValue(newEpa.resultType.id);
                     break;
                 default:
                     console.error("No matching DataType");
@@ -171,10 +117,10 @@ const transEITsToFrontend = async (eits) => {
                     case 530:
                     case 540:
                     case 550:
-                        row.defaultValue = row.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
-                        row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
-                        row.eid.defaultValue = row.eid.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.eid.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
-                        row.eid.errorValue = row.eid.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontdb, parseInt(row.eid.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.defaultValue = row.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.eid.defaultValue = row.eid.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.eid.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.eid.errorValue = row.eid.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.eid.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
                         break;
                     default:
                         console.error("No matching DataType");
@@ -381,7 +327,6 @@ export const InitDocCache = async (docName) => {
 export const GetLocalCache = async (archive) => {
     let result = [];
     const archiveDefine = docTable.get(archive);
-    console.log("archiveDefine:",archiveDefine);
     if (archiveDefine.encrypt) {
         const encryptedArr = await db[archive].toArray();
         result = await decryptDataArr(archive,encryptedArr);

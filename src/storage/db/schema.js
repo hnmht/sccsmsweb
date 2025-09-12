@@ -18,7 +18,7 @@ export const table = {
     tc: "id,status,ts",
     ppe: "id,status,ts",
 };
-
+// Field selector
 export const pickFields = (data, fieldsStr) => {
     const fields = fieldsStr.split(",").map(f => f.trim());
     const result = {};

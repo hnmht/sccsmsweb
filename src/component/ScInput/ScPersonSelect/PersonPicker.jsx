@@ -74,7 +74,7 @@ const PersonPicker = ({ clickItemAction, doubleClickItemAction, cancelClickActio
         // Request the latest Person Master Data from the server
         await InitDocCache(personName);
         // Get Local Person Master Data.
-        const newPersons = await GetCacheAnyOf(personName, "deptid", selectedDeptIds);  
+        const newPersons = await GetCacheAnyOf(personName, "deptID", selectedDeptIds);  
         setPersons(newPersons);
     };
 
