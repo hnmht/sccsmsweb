@@ -44,7 +44,7 @@ export const encryptData = async (type, data) => {
 };
 
 // Encrypt dataArr
-export const encryptDataArr = async (type,dataArr) => {
+export const encryptDataArr = async (type, dataArr) => {
     const newDataArr = [];
     // Get table index entries
     const indexFields = table[type];
@@ -65,7 +65,10 @@ export const encryptDataArr = async (type,dataArr) => {
 };
 
 // Decrypt data
-export const decryptData = async (type, data) => {
+export const decryptData = async (data) => {
+    if (!data) {
+        return
+    }
     const { iv, encryptedData } = data;
     const decrypted = await window.crypto.subtle.decrypt(
         { name: "AES-GCM", iv: iv },
@@ -77,6 +80,9 @@ export const decryptData = async (type, data) => {
 
 // Decrypt data array
 export const decryptDataArr = async (dataArr) => {
+    if (!dataArr) {
+        return
+    }
     const newDataArr = [];
     for (const data of dataArr) {
         const { iv, encryptedData } = data;

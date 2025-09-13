@@ -1,4 +1,6 @@
-
+// Define indexedDB name
+export const dbName = "scDb";
+// Define the database table schema
 export const table = {
     dbinfo: "infoname",
     tsinfo: "docname,ts",
@@ -18,6 +20,29 @@ export const table = {
     tc: "id,status,ts",
     ppe: "id,status,ts",
 };
+
+// Define wether the table needs to be encrypted.
+export const tableEncrypted = {
+    dbinfo: false,
+    tsinfo: false,
+    department: false,
+    person: true,
+    udc: false,
+    uda: false,
+    epc: false,
+    csc: false,
+    cso: false,
+    csa: false,
+    epa: false,
+    ept: false,
+    risklevel: false,
+    dc: false,
+    position: false,
+    tc: false,
+    ppe: false,
+};
+ 
+
 // Field selector
 export const pickFields = (data, fieldsStr) => {
     const fields = fieldsStr.split(",").map(f => f.trim());

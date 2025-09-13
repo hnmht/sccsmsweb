@@ -18,18 +18,16 @@ import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
 import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
-import { table } from "./schema";
-import { importCryptoKey, encryptData, decryptDataArr,decryptData } from "./encrypt";
-import { message } from "mui-message";
+import { dbName, table, tableEncrypted } from "./schema";
+import { importCryptoKey, encryptData, decryptDataArr, decryptData } from "./encrypt";
 
-const db = new Dexie('scDb');
+const db = new Dexie(dbName);
 db.version(1).stores(table);
 
 // Get Archive by ID
 export const GetCacheDocById = async (archive, id) => {
     let value = await db[archive].get(id);
-    const archiveDefine = docTable.get(archive);
-    if (archiveDefine.encrypt) {
+    if (tableEncrypted[archive]) {
         value = decryptData(value);
     }
     return value;
@@ -134,19 +132,18 @@ const transEITsToFrontend = async (eits) => {
 
 // IndexedDB table definition
 export const docTable = new Map([
-    ["csa", { description: "Construction Site Archive", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend, encrypt: false }],
-    ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend, encrypt: true }],
-    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc, encrypt: false }],
-    /* 
-  
+    ["department", { description: "Department master data", reqAllFunc: reqGetSimpDepts, reqCacheFunc: reqGetSimpDeptsCache, transToFrontFunc: commonTransDoc }],
+    ["person", { description: "Person master date", reqAllFunc: reqGetPersons, reqCacheFunc: reqGetPersonsCache, transToFrontFunc: transPersonToFrontend }],
+    ["position", { description: "Position master data", reqAllFunc: reqGetPositionList, reqCacheFunc: reqGetPositionCache, transToFrontFunc: commonTransDoc }],
+    ["risklevel", { description: "Risk Level", reqAllFunc: reqGetRLList, reqCacheFunc: reqGetRLsCache, transToFrontFunc: commonTransDoc }],
+    ["udc", { description: "User-defined Category", reqAllFunc: reqGetUDCList, reqCacheFunc: reqGetUDCsCache, transToFrontFunc: commonTransDoc }],
+    ["uda", { description: "User-defined Archive", reqAllFunc: reqGetUDAAll, reqCacheFunc: reqGetUDACache, transToFrontFunc: commonTransDoc }],
+    ["csc", { description: "Construction Site Category", reqAllFunc: reqGetSimpCSCList, reqCacheFunc: reqGetSimpCSCCache, transToFrontFunc: commonTransDoc }],
+    ["csa", { description: "Construction Site Archive", reqAllFunc: reqGetCSList, reqCacheFunc: reqGetCSCache, transToFrontFunc: commonTransDoc }],
+    ["cso", { description: "Construction Site Options", reqAllFunc: reqGetCSOs, reqCacheFunc: reqGetCSOCache, transToFrontFunc: commonTransDoc }],
+    ["epc", { description: "Execution Project Category", reqAllFunc: reqGetSimpEPCList, reqCacheFunc: reqGetSimpEPCCache, transToFrontFunc: commonTransDoc }],
+    ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend }],
+    /*   
     ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
     ["documentclass", { description: "文档类别", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
     ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
@@ -326,8 +323,7 @@ export const InitDocCache = async (docName) => {
 // Get Local Master Data Cache
 export const GetLocalCache = async (archive) => {
     let result = [];
-    const archiveDefine = docTable.get(archive);
-    if (archiveDefine.encrypt) {
+    if (tableEncrypted[archive]) {
         const encryptedArr = await db[archive].toArray();
         result = await decryptDataArr(encryptedArr);
     } else {
@@ -338,8 +334,8 @@ export const GetLocalCache = async (archive) => {
 // Query data using anyOf
 export const GetCacheAnyOf = async (archive, key, arr) => {
     let result = [];
-    const archiveDefine = docTable.get(archive);
-    if (archiveDefine.encrypt) {
+
+    if (tableEncrypted[archive]) {
         const encryptedArr = await db[archive].where(key).anyOf(arr).toArray();
         result = await decryptDataArr(encryptedArr);
     } else {
@@ -363,7 +359,7 @@ export const GetCSACacheByCategoryId = async (categoryID) => {
 // Get Person list based on Postion ID
 export const GetPersonsWithOps = async (positionID) => {
     let persons = await db["person"].where("positionID").anyOf(positionID).and(person => person.status === 0).toArray();
-    const decryptPersons = await decryptDataArr( persons);
+    const decryptPersons = await decryptDataArr(persons);
     return decryptPersons;
 };
 // Convert EP frontend data to backend-consumable data
