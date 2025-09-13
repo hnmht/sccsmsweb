@@ -18,8 +18,8 @@ import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/documentClass";
 import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
 import { reqGetLPList, reqGetLPCache } from "../../api/laborProtection";
 import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
-import { table, pickFields } from "./schema";
-import { importCryptoKey, encryptData, decryptDataArr } from "./encrypt";
+import { table } from "./schema";
+import { importCryptoKey, encryptData, decryptDataArr,decryptData } from "./encrypt";
 import { message } from "mui-message";
 
 const db = new Dexie('scDb');
@@ -30,7 +30,7 @@ export const GetCacheDocById = async (archive, id) => {
     let value = await db[archive].get(id);
     const archiveDefine = docTable.get(archive);
     if (archiveDefine.encrypt) {
-        
+        value = decryptData(value);
     }
     return value;
 };
@@ -329,7 +329,7 @@ export const GetLocalCache = async (archive) => {
     const archiveDefine = docTable.get(archive);
     if (archiveDefine.encrypt) {
         const encryptedArr = await db[archive].toArray();
-        result = await decryptDataArr(archive,encryptedArr);
+        result = await decryptDataArr(encryptedArr);
     } else {
         result = await db[archive].toArray();
     }
@@ -341,7 +341,7 @@ export const GetCacheAnyOf = async (archive, key, arr) => {
     const archiveDefine = docTable.get(archive);
     if (archiveDefine.encrypt) {
         const encryptedArr = await db[archive].where(key).anyOf(arr).toArray();
-        result = await decryptDataArr(archive,encryptedArr);
+        result = await decryptDataArr(encryptedArr);
     } else {
         result = await db[archive].where(key).anyOf(arr).toArray();
     }
@@ -363,7 +363,7 @@ export const GetCSACacheByCategoryId = async (categoryID) => {
 // Get Person list based on Postion ID
 export const GetPersonsWithOps = async (positionID) => {
     let persons = await db["person"].where("positionID").anyOf(positionID).and(person => person.status === 0).toArray();
-    const decryptPersons = await decryptDataArr("person", persons);
+    const decryptPersons = await decryptDataArr( persons);
     return decryptPersons;
 };
 // Convert EP frontend data to backend-consumable data

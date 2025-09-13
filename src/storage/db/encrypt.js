@@ -1,5 +1,5 @@
 
-import { table,pickFields } from "./schema";
+import { table, pickFields } from "./schema";
 let cryptoKey;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -43,8 +43,40 @@ export const encryptData = async (type, data) => {
     return newData;
 };
 
+// Encrypt dataArr
+export const encryptDataArr = async (type,dataArr) => {
+    const newDataArr = [];
+    // Get table index entries
+    const indexFields = table[type];
+    for (const data of dataArr) {
+        const newData = pickFields(data, indexFields);
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const dataEncrypt = encoder.encode(JSON.stringify(data));
+        const encryptedData = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv },
+            cryptoKey,
+            dataEncrypt
+        );
+        newData.iv = iv;
+        newData.encryptedData = encryptedData;
+        newDataArr.push(newData);
+    }
+    return newDataArr;
+};
+
+// Decrypt data
+export const decryptData = async (type, data) => {
+    const { iv, encryptedData } = data;
+    const decrypted = await window.crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        cryptoKey,
+        encryptedData
+    )
+    return decoder.decode(decrypted);
+};
+
 // Decrypt data array
-export const decryptDataArr = async (type, dataArr) => {
+export const decryptDataArr = async (dataArr) => {
     const newDataArr = [];
     for (const data of dataArr) {
         const { iv, encryptedData } = data;
