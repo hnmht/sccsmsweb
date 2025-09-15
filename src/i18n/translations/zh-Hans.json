@@ -208,6 +208,13 @@
     "isOnsitePhoto": "现场拍照",
     "Y": "是",
     "N": "否",
+    "model": "规格型号",
+    "unit": "计量单位",
+    "addPPE": "增加劳保用品",
+    "modifyPPE": "修改劳保用品",
+    "viewPPE": "查看劳保用品",
+    "modelPlaceholder": "请输入规格型号",
+    "unitPlaceholder": "请输入计量单位",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

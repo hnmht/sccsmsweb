@@ -1,144 +1,141 @@
 import { useState, useCallback, useEffect, Fragment } from "react";
 import { Dialog } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { message } from "mui-message";
 
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
-import EditLaborProtection from "./editLP";
+import EditPPE from "./editPPE";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 
-import { reqGetLPList, reqDeleteLP, reqDeleteLPs } from "../../../api/laborProtection";
+import { reqGetPPEList, reqDeletePPE, reqDeletePPEs } from "../../../api/ppe";
 import { InitDocCache } from "../../../storage/db/db";
 
-const LaborProtection = () => {
+// Personal Protective Equipment
+const PPE = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
-        oriLP: undefined,
+        oriPPE: undefined,
         isOpen: false,
         isNew: false,
         isModify: false
     });
+    const {t} = useTranslation();
 
     useEffect(() => {
         async function getData() {
-            handleReqLPList();
+            handleReqPPEList();
         }
         getData();
     }, []);
 
-    //从服务器获取列表
-    const handleReqLPList = async () => {
-        const resp = await reqGetLPList();
-        let newLPs = [];
-        if (resp.data.status === 0) {
-            newLPs = resp.data.data;
-        } else {
-            message.warning(resp.data.statusMsg);
+    // Request PPE list from server
+    const handleReqPPEList = async () => {
+        const resp = await reqGetPPEList();
+        let newPPEs = [];
+        if (resp.status) {
+            newPPEs = resp.data;
         }
-        setRows(newLPs);
+        setRows(newPPEs);
     };
 
-    //表体行点击复制新增按钮
+    // Actions after click the copyAdd button in the body
     const handleCopyAdd = (item) => {
         setDiagStatus({
-            oriLP: item,
+            oriPPE: item,
             isOpen: true,
             isNew: true,
             isModify: false
         });
     };
-    //表体行点击编辑按钮
-    const handleLPEdit = (item) => {
+    // Actions after click the Edit button in the body
+    const handlePPEEdit = (item) => {
         setDiagStatus({
-            oriLP: item,
+            oriPPE: item,
             isOpen: true,
             isNew: false,
             isModify: true
         });
     }
-    //表体行点击删除按钮
+    // Actions after click the Delete button in the body
     const handleRowDelete = async (item) => {
-        const delRes = await reqDeleteLP(item);
-        if (delRes.data.status === 0) {
-            message.success("删除劳保用品'" + item.name + "'成功");
-            //刷新
-            handleReqLPList();
-        } else {
-            message.error("删除劳保用品'" + item.name + "'失败:" + delRes.data.statusMsg);
-        }
-        //更新缓存
-        await InitDocCache("laborprotection");
+        const delRes = await reqDeletePPE(item);
+        if (delRes.status) {
+            message.success(t("delSuccessfule"));
+            // Refresh
+            handleReqPPEList();
+        } 
+        // Sync the front-end cache with server
+        await InitDocCache("ppe");
     }
-    //表体行点击详情按钮
+    // Actions after click the Detail button in the body
     const handleOPDetail = (item) => {
         setDiagStatus({
-            oriLP: item,
+            oriPPE: item,
             isOpen: true,
             isNew: false,
             isModify: false
         });
     }
 
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = useCallback(() => {
         setDiagStatus({
-            oriLP: undefined,
+            oriPPE: undefined,
             isOpen: false,
             isNew: false,
             isModify: false
         });
     }, []);
 
-    //表头点击增加按钮
-    const handleAddLP = () => {
+    // Actions after click the add button in the header
+    const handleAddPPE = () => {
         setDiagStatus({
-            oriLP: undefined,
+            oriPPE: undefined,
             isOpen: true,
             isNew: true,
             isModify: false
         });
     };
-    //表头点击批量删除按钮
+    // Actions after click the batch delete button in the header
     const handleDelMultiple = async (lps) => {
-        const delRes = await reqDeleteLPs(lps);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
-            handleReqLPList();
-        } else {
-            message.error(delRes.data.statusMsg);
-        }
-        //更新本地缓存
-        await InitDocCache("laborprotection");
+        const delRes = await reqDeletePPEs(lps);
+        if (delRes.status) {
+            message.success(t("batchDelSuccessful"));
+            // Refresh
+            handleReqPPEList();
+        } 
+        // Sync the front-end cache with server
+        await InitDocCache("ppe");
     }
-    //对话框编辑用户自定义档案类别页面点击确定按钮
-    const handleAddLPOk = useCallback(() => {
+    // Actions after click ok button in the dialog
+    const handleAddPPEOk = useCallback(() => {
         setDiagStatus({
-            oriLP: undefined,
+            oriPPE: undefined,
             isOpen: false,
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求用户自定义档案类别列表数据
-        handleReqLPList();
+        // Request the latest PPE list
+        handleReqPPEList();
     }, []);
 
 
     return (
         <Fragment>
-            <PageTitle pageName="劳保用品档案" displayHelp={true} helpUrl="/helps/laborProtection" />
+            <PageTitle pageName={t("MenuPPE")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 rows={rows}
                 columns={columns}
-                addAction={handleAddLP}
-                refreshAction={handleReqLPList}
+                addAction={handleAddPPE}
+                refreshAction={handleReqPPEList}
                 rowActionsDefine={rowActionsDefine}
                 delMultipleDisabled={delMultipleDisabled}
                 delMultipleAction={handleDelMultiple}
                 rowCopyAdd={handleCopyAdd}
-                rowEdit={handleLPEdit}
+                rowEdit={handlePPEEdit}
                 rowDelete={handleRowDelete}
                 rowViewDetail={handleOPDetail}
             />
@@ -150,14 +147,14 @@ const LaborProtection = () => {
                 sx={{ '& .MuiDialog-paper': { p: 0, minWidth: 800 } }}
                 closeAfterTransition={false}
             >
-                <EditLaborProtection
+                <EditPPE
                     diagStatus={diagStatus}
                     onCancel={handleDiagClose}
-                    onOk={handleAddLPOk}
+                    onOk={handleAddPPEOk}
                 />
             </Dialog>
         </Fragment>
     );
 }
 
-export default LaborProtection;
+export default PPE;

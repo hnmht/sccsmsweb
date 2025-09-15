@@ -26,7 +26,7 @@ const UDA = Loadable(lazy(() => import("./pages/protected/uda/uda"))); //自定�
 const EPC = Loadable(lazy(() => import("./pages/protected/epc/epc")));  //执行项目分类
 const EPA = Loadable(lazy(() => import("./pages/protected/epa/epa"))); //执行项目
 const RiskLevel = Loadable(lazy(() => import("./pages/protected/riskLevel/riskLevel"))); //风险等级
-const LaborProtection = Loadable(lazy(() => import("./pages/protected/laborProtection/laborProtection"))); //劳保用品（存货）档案
+const PPE = Loadable(lazy(() => import("./pages/protected/ppe/ppe"))); //劳保用品（存货）档案
 
 //文档
 const DocumentClass = Loadable(lazy(() => import("./pages/protected/documentClass/documentClass"))); //文档类别
@@ -230,8 +230,8 @@ const routes = [
                 element: <RiskLevel />
             },
             {
-                path: "/private/archive/laborProtection",
-                element: <LaborProtection />
+                path: "/private/masterData/personalProtectiveEquipment",
+                element: <PPE />
             },
             {
                 path: "/private/template/execItemTemplate",

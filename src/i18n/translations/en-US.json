@@ -210,6 +210,14 @@
     "Y":"Y",
     "N":"N",
 
+    "model":"Model",
+    "unit":"Unit",
+    "addPPE":"Add PPE",
+    "modifyPPE":"Modify PPE",
+    "viewPPE":"View PPE",
+    "modelPlaceholder":"Please enter the specification/model",
+    "unitPlaceholder":"Please enter the unit of measurement",
+
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
@@ -283,7 +291,7 @@
     "MenuEPC": "Execution Project Category",
     "MenuEP": "Execution Project",
     "MenuRL": "Risk Level",
-    "MenuPPE": "Personal Protection Equipment",
+    "MenuPPE": "Personal Protective Equipment",
     "MenuTemplate": "Template",
     "MenuEPT": "Execution Project Template",
     "MenuPermission": "Permission",

@@ -6,156 +6,144 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
-import { reqAddLP, reqEditLP, reqCheckLPCode } from '../../../api/laborProtection';
+import { reqAddPPE, reqEditPPE, reqCheckPPECode } from '../../../api/ppe';
 import { InitDocCache } from '../../../storage/db/db';
-import { getCurrentPerson } from '../pub';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
+
 
 //获取初始值
 const getInitialValues = async (diagStatus) => {
-    const { isNew, isModify, oriLP } = diagStatus;
+    const { isNew, isModify, oriPPE } = diagStatus;
 
     const person = await getCurrentPerson();
-    let newLP = {};
+    let newPPE = {};
     if (isNew) {
-        if (oriLP) {//复制新增
-            newLP = cloneDeep(oriLP);
-            newLP.id = 0;
-            newLP.code = "";
-            newLP.createuser = person;
-            newLP.modifyuser = { id: 0, code: "", name: "" };
-            newLP.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newLP.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
+        if (oriPPE) {//复制新增
+            newPPE = cloneDeep(oriPPE);
+            newPPE.id = 0;
+            newPPE.code = "";
+            newPPE.creator = person;
+            newPPE.modifier = { id: 0, code: "", name: "" };
+            newPPE.createDate = DateTimeFormat(new Date(), "LLL");
+            newPPE.modifyDate = DateTimeFormat(new Date(), "LLL");
         } else {
-            newLP = { //新增
+            newPPE = { //新增
                 id: 0,
                 code: "",
                 name: "",
                 model: "",
                 unit: "",
                 description: "",
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: DateTimeFormat(new Date(), "LLL")
             };
         }
     } else {
-        if (!oriLP) { //错误
+        if (!oriPPE) { //错误
             return
         } else {
             if (isModify) {//编辑
-                newLP = cloneDeep(oriLP);
-                newLP.createdate = dayjs(newLP.createdate).format("YYYYMMDDHHmm");
-                newLP.modifyuser = person;
-                newLP.modifydate = dayjs(newLP.modifydate).format("YYYYMMDDHHmm");
+                newPPE = cloneDeep(oriPPE);
+                newPPE.createDate = DateTimeFormat(newPPE.createDate, "LLL");
+                newPPE.modifier = person;
+                newPPE.modifyDate = DateTimeFormat(newPPE.modifyDate, "LLL");
             } else { //查看
-                newLP = cloneDeep(oriLP);
-                newLP.createdate = dayjs(newLP.createdate).format("YYYYMMDDHHmm");
-                newLP.modifydate = dayjs(newLP.modifydate).format("YYYYMMDDHHmm");
+                newPPE = cloneDeep(oriPPE);
+                newPPE.createDate = DateTimeFormat(newPPE.createDate, "LLL");
+                newPPE.modifyDate = DateTimeFormat(newPPE.modifyDate, "LLL");
             }
         }
     }
-
-    return newLP;
-};
-//检查错误值
-const isError = (errors) => {
-    let number = 0;
-    for (let key in errors) {
-        if (errors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
+    return newPPE;
 };
 
-const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
+// Add, Modify Personal Protective Equipment 
+const EditPPE = ({ diagStatus, onCancel, onOk }) => {
     const { isOpen, isNew, isModify } = diagStatus;
-    const [currentLP, setCurrentLP] = useState(undefined);
+    const [currentPPE, setCurrentPPE] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
-            const initLP = await getInitialValues(diagStatus);
-            setCurrentLP(initLP);
+            const initPPE = await getInitialValues(diagStatus);
+            setCurrentPPE(initPPE);
         }
         if (diagStatus.isOpen) {
             initValue();
         }
     }, [diagStatus]);
 
-    //scinput组件获取内容后传入
+    // Date processing actions after the data is passed into the ScInput Components
     const handleGetValue = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
-        if (!isOpen || !isEdit || currentLP === undefined) {
+        if (!isOpen || !isEdit || currentPPE === undefined) {
             return
         }
-        //更新errors
+        // Changeerrors value
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的信息
-        setCurrentLP((prevState) => {
-            //深拷贝方法
+        // Change currentPPE value
+        setCurrentPPE((prevState) => {
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
         });
     };
 
-    //增加或修改劳保用品档案
-    const handleAddOP = async () => {
-        let thisOP = cloneDeep(currentLP);
-        delete thisOP.createdate;
-        delete thisOP.modifydate;
-        if (isModify) {//修改
-            const editRes = await reqEditLP(thisOP);
-            if (editRes.data.status === 0) {
-                message.success("修改劳保用品'" + thisOP.name + "'成功");
+    // Add or Modify PPE 
+    const handleAddPPE = async () => {
+        let thisPPE = cloneDeep(currentPPE);
+        delete thisPPE.createDate;
+        delete thisPPE.modifyDate;
+        if (isModify) {// Modify
+            const editRes = await reqEditPPE(thisPPE);
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改劳保用品'" + thisOP.name + "'失败:" + editRes.data.statusMsg);
             }
-        } else {//增加
-            const addRes = await reqAddLP(thisOP);
-            if (addRes.data.status === 0) {
-                message.success("新增劳保用品‘" + thisOP.name + "’成功");
+        } else {// Add
+            const addRes = await reqAddPPE(thisPPE);
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增劳保用品‘" + thisOP.name + "’失败:" + addRes.data.statusMsg);
             }
         }
-        //刷新本地缓存
-        await InitDocCache("laborprotection");
+        // Sync the frent-end cache with server
+        await InitDocCache("ppe");
     }
-    //检是编码是否存在
+    // Check if the PPE Code exists
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
-        let opId = currentLP.id ? currentLP.id : 0;
-        let resp = await reqCheckLPCode({ id: opId, "code": value }, false);
-        if (resp.data.status === 0) {
+        let opId = currentPPE.id ? currentPPE.id : 0;
+        let resp = await reqCheckPPECode({ id: opId, "code": value }, false);
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
 
-    return currentLP
+    return currentPPE
         ? <>
-            <DialogTitle>{isNew ? "增加劳保用品" : isModify ? "修改劳保用品" : "劳保用品详情"}</DialogTitle>
+            <DialogTitle>{t(isNew ? "addPPE" : isModify ? "modifyPPE" : "viewPPE")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -164,11 +152,11 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="编码"
+                            itemShowName="code"
                             itemKey="code"
-                            initValue={currentLP.code}
+                            initValue={currentPPE.code}
                             pickDone={handleGetValue}
-                            placeholder="请输入劳保用品编码"
+                            placeholder="codePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestCode}
                             key="code"
@@ -179,11 +167,11 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="名称"
+                            itemShowName="name"
                             itemKey="name"
-                            initValue={currentLP.name}
+                            initValue={currentPPE.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入劳保用品名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={false}
                             key="name"
                         />
@@ -193,11 +181,11 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="规格型号"
+                            itemShowName="model"
                             itemKey="model"
-                            initValue={currentLP.model}
+                            initValue={currentPPE.model}
                             pickDone={handleGetValue}
-                            placeholder="请输入劳保用品规格型号"
+                            placeholder="modelPlaceholder"
                             isBackendTest={false}
                             key="model"
                         />
@@ -207,11 +195,11 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="计量单位"
+                            itemShowName="unit"
                             itemKey="unit"
-                            initValue={currentLP.unit}
+                            initValue={currentPPE.unit}
                             pickDone={handleGetValue}
-                            placeholder="请输入劳保用品计量单位"
+                            placeholder="unitPlaceholder"
                             isBackendTest={false}
                             key="unit"
                         />
@@ -221,17 +209,17 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="说明"
+                            itemShowName="description"
                             itemKey="description"
-                            initValue={currentLP.description}
+                            initValue={currentPPE.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入劳保用品说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
                             key="description"
                         />
-                    </Grid>                   
+                    </Grid>
                 </Grid>
                 <MoreInfo>
                     <Grid item xs={3}>
@@ -239,25 +227,25 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentLP.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentPPE.creator}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentLP.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentPPE.createDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -265,25 +253,25 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentLP.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentPPE.modifier}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentLP.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentPPE.modifyDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -292,10 +280,10 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
             <DialogActions sx={{ p: 2 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={isError(errors)} onClick={handleAddOP}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddPPE}>{t(isModify ? "save" : "add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{(t("back"))}</Button>
                 }
             </DialogActions>
         </>
@@ -303,4 +291,4 @@ const EditLaborProtection = ({ diagStatus, onCancel, onOk }) => {
 
 };
 
-export default EditLaborProtection;
+export default EditPPE;
