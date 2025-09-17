@@ -7,9 +7,9 @@ import {
     Tooltip,
     IconButton
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import { message } from "mui-message";
-
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
@@ -17,13 +17,14 @@ import EditDClass from "./editDC";
 import PubTree from "../../../component/ScInput/ScPub/PubTree";
 
 import { treeToArr } from "../../../utils/tree";
-import { reqGetDCList, reqDeleteDC, reqDeleteDCs } from "../../../api/documentClass";
+import { reqGetDCList, reqDeleteDC, reqDeleteDCs } from "../../../api/dc";
 
 import { GetLocalCache, InitDocCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 import useContentHeight from "../../../hooks/useContentHeight";
 
-function DocumentClass() {
+// Document Category
+function DocumengCategory() {
     const [rows, setRows] = useState([]);
     const [simpDcs, setSimpDcs] = useState([]);
     const [selectedDcIds, setSelectedDcIds] = useState([]);
@@ -35,11 +36,13 @@ function DocumentClass() {
     });
     const filterDcs = rows.filter(dc => selectedDcIds.includes(dc.id));
     const contentHeight = useContentHeight();
+    const { t } = useTranslation();
+
     useEffect(() => {
         async function getData() {
-            //从本地缓存获取简化类别列表
-            await InitDocCache("documentclass");
-            let newSimpDcs = await GetLocalCache("documentclass");
+            // Get simplified document category list from local cache
+            await InitDocCache("dc");
+            let newSimpDcs = await GetLocalCache("dc");
             let newSelectedDcIds = [];
             newSimpDcs.forEach(simpDc => {
                 newSelectedDcIds.push(simpDc.id);
@@ -51,20 +54,20 @@ function DocumentClass() {
         getData();
     }, []);
 
-    //获取类别列表
+    // Request document category list from server
     const handleReqDocList = async () => {
         const docResp = await reqGetDCList();
         let docList = [];
-        if (docResp.data.status === 0) {
-            docList = docResp.data.data;
+        if (docResp.status) {
+            docList = docResp.data;
         }
         setRows(docList);
     };
-    //获取简化类别列表
+    // Get simplified document categories from local cache
     const handleGetSimpDcs = async (isGetAllIds = true) => {
-        await InitDocCache("documentclass");
-        //从本地缓存获取简化类别列表
-        let newSimpDcs = await GetLocalCache("documentclass");
+        await InitDocCache("dc");
+        // Get simplified document category list from local cache
+        let newSimpDcs = await GetLocalCache("dc");
         let newSelectedDcIds = [];
         if (isGetAllIds) {
             newSimpDcs.forEach(simpDc => {
@@ -76,7 +79,7 @@ function DocumentClass() {
         setSimpDcs(newSimpDcs);
         setSelectedDcIds(newSelectedDcIds);
     };
-    //弹出对话框关闭/取消
+    // Close the dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -86,7 +89,7 @@ function DocumentClass() {
         });
     };
 
-    //表头点击增加按钮
+    // Actions after clicking the add button in the header
     const handleAddDoc = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -96,21 +99,17 @@ function DocumentClass() {
         });
     };
 
-    //表头点击批量删除
+    // Actions after clicking the bulk delete button in the header
     const handleDelMultipleAction = async (docs) => {
         const delRes = await reqDeleteDCs(docs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error(delRes.data.statusMsg);
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));           
         }
-        //刷新
+        // Refresh
         handleGetSimpDcs();
         handleReqDocList();
     };
-    //对话框编辑用户自定义档案类别页面点击确定按钮
+    // Actions after clicking OK in the add/edit dialog
     const handelAddDocOk = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -118,11 +117,11 @@ function DocumentClass() {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求档案列表数据
+        // Refresh
         handleReqDocList();
         handleGetSimpDcs();
     };
-    //表体点击复制新增按钮
+    // Actions after clicking the copy add button in the body
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -131,7 +130,7 @@ function DocumentClass() {
             isModify: false
         });
     };
-    //表体点击详情按钮
+    // Actions after clicking the detail button in the body
     const handleRowDetail = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -141,7 +140,7 @@ function DocumentClass() {
         });
 
     };
-    //表体点击编辑按钮
+    // Actions after clicking the edit button in the body
     const handleRowEdit = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -151,35 +150,29 @@ function DocumentClass() {
         });
 
     };
-    //表体点击删除按钮
+    // Actions after clicking the delete button in the body
     const handleRowDelete = async (doc) => {
         const delRes = await reqDeleteDC(doc);
-        if (delRes.data.status === 0) {
-            message.success("删除类别" + doc.name + "成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error("删除类别" + doc.name + "失败:" + delRes.data.statusMsg);
-        }
-
-        //刷新
+        if (delRes.status) {
+            message.success(t("delSuccessful"));           
+        } 
+        // Refresh
         handleGetSimpDcs();
         handleReqDocList();
     };
-    //树状视图选择
+    // Actions after clicking a node in the tree
     const handleEicsTreeClick = async (item, type) => {
-        //type 0 末级; 1父级; 3 全部;
         let dcids = [];
-        if (type === 0) {
+        if (type === 0) { // Final level
             dcids.push(item.id);
-        } else if (type === 1) {
+        } else if (type === 1) { // Parent level
             const tree = [];
             tree.push(item);
             let allChilds = treeToArr(tree);
             allChilds.forEach(item1 => {
                 dcids.push(item1.id);
             })
-        } else if (type === 3) {
+        } else if (type === 3) { // All
             item.forEach(item3 => {
                 dcids.push(item3.id);
             })
@@ -189,7 +182,7 @@ function DocumentClass() {
 
     return (
         <React.Fragment>
-            <PageTitle pageName="文档类别" displayHelp={true} helpUrl="/helps/documentclass" />
+            <PageTitle pageName={t("MenuDC")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2} >
                 <Grid item xs={2}>
@@ -203,8 +196,8 @@ function DocumentClass() {
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择类别
-                                <Tooltip title="刷新" placement="top">
+                                {t("chooseCategory")}
+                                <Tooltip title={t("refresh")} placement="top">
                                     <IconButton onClick={handleGetSimpDcs}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
@@ -214,7 +207,7 @@ function DocumentClass() {
                         sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="类别"
+                            docName={t("category")}
                             isDisplayAll={true}
                             oriDocs={simpDcs}
                             onDocClick={handleEicsTreeClick}
@@ -261,4 +254,4 @@ function DocumentClass() {
     );
 }
 
-export default DocumentClass;
+export default DocumengCategory;

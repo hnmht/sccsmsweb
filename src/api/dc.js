@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取执行文档类别列表
+// Request document category list from server
 export function reqGetDCList(isLoading = true) {
     return request({
         url: "/dc/list",
@@ -9,7 +9,7 @@ export function reqGetDCList(isLoading = true) {
     });
 }
 
-//获取简化版执行文档类别列表
+// Request simplified document category list from server
 export function reqGetSimpDCList(isLoading = true) {
     return request({
         url: "/dc/simplist",
@@ -18,17 +18,17 @@ export function reqGetSimpDCList(isLoading = true) {
     });
 }
 
-//获取简化版执行文档类别缓存
+// Request simplified document category list from front-end cache
 export function reqGetSimpDCCache(data, isLoading = true) {
     return request({
-        url: "/dc/simpcache",
+        url: "/dc/cache",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//增加执行文档类别
+// Add a document category
 export function reqAddDC(data, isLoading = true) {
     return request({
         url: "/dc/add",
@@ -38,7 +38,7 @@ export function reqAddDC(data, isLoading = true) {
     });
 }
 
-//编辑执行文档类别
+// Edit a document category
 export function reqEditDC(data, isLoading = true) {
     return request({
         url: "/dc/edit",
@@ -48,26 +48,26 @@ export function reqEditDC(data, isLoading = true) {
     });
 }
 
-//删除执行文档类别
+// Delete a document category
 export function reqDeleteDC(data, isLoading = true) {
     return request({
-        url: "/dc/delete",
+        url: "/dc/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//批量删除执行文档类别
+// Bulk delete document categories
 export function reqDeleteDCs(data, isLoading = true) {
     return request({
-        url: "/dc/deletes",
+        url: "/dc/dels",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//检查执行文档类别档案名称是否存在
+// Check if the document category name is Existed
 export function reqCheckDCName(data, isLoading = true) {
     return request({
         url: "/dc/checkname",

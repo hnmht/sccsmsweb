@@ -29,7 +29,7 @@ const RiskLevel = Loadable(lazy(() => import("./pages/protected/riskLevel/riskLe
 const PPE = Loadable(lazy(() => import("./pages/protected/ppe/ppe"))); //劳保用品（存货）档案
 
 //文档
-const DocumentClass = Loadable(lazy(() => import("./pages/protected/documentClass/documentClass"))); //文档类别
+const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); //文档类别
 const UploadDocument = Loadable(lazy(() => import("./pages/protected/uploadDocument/uploadDocument"))); //上传文档
 const LookupDocument = Loadable(lazy(() => import("./pages/protected/lookupDocument/lookupDocument"))); //查阅文档
 //培训课程
@@ -150,8 +150,8 @@ const routes = [
                 element: <DisposeDoc />
             },
             {
-                path: "/private/document/class",
-                element: <DocumentClass />
+                path: "/private/document/category",
+                element: <DC />
             },
             {
                 path: "/private/document/upload",

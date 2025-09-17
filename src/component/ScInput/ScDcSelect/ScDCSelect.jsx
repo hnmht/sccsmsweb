@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     IconButton,
     Stack,
@@ -8,16 +8,18 @@ import {
     Dialog,
     Tooltip,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { DocumentClassIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import DCPicker from "./DcPIcker";
-const zeroValue = { id: 0, name: "", description: "", fatherid: 0, status: 0 };
 
-// 600 文档类别单选组件
+const zeroValue = { id: 0, name: "", description: "", fatherid: 0, status: 0 };
+// 600 Document Category Select Single Component
 const ScDCSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [currentDoc, setCurrentDoc] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const { t } = useTranslation();
 
     useEffect(() => {
         setCurrentDoc(initValue);
@@ -28,46 +30,46 @@ const ScDCSelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleOnBlur();
     };
-    //对话框点击取消按钮
+    // Action on dialog cancel button click
     const handleDiagCancel = () => {
         setDialogOpen(false);
     };
-    //对话框点击确定按钮
+    // Action on dialog ok button click
     const handleDiagOk = () => {
         setDialogOpen(false);
         handleOnBlur();
     };
-    //检查档案值
+    // Check and pick value
     const handleOnBlur = async (doc = currentDoc) => {
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (doc.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(doc);
         }
         setErrInfo(err);
         pickDone(doc, itemKey, positionID, rowIndex, err);
     };
-    //点击清除按钮
+    // Clear current selected value
     const handleClear = () => {
         setCurrentDoc(zeroValue);
         handleOnBlur(zeroValue);
     }
-    //档案列表单击
-    const handleDocClick = (item, type) => { //type:0 没有下级部门 1 有下级部门
+    // Actions after click the item in the dialog.
+    const handleDocClick = (item, type) => {
         setCurrentDoc(item);
         handleOnBlur(item);
     };
-    //档案列表双击
-    const handleDocDoubleClick = (item, type) => {//type:0 没有下级部门 1 有下级部门
+    // Actions after double click the item in the dialog.
+    const handleDocDoubleClick = (item, type) => {
         setCurrentDoc(item);
         handleOnBlur(item);
         setDialogOpen(false);
@@ -76,7 +78,7 @@ const ScDCSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -94,7 +96,7 @@ const ScDCSelect = memo((props) => {
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {currentDoc.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small"><ClearIcon /></IconButton>
                                         </span>
@@ -105,7 +107,7 @@ const ScDCSelect = memo((props) => {
                                     ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择类别" placement="top">
+                                <Tooltip title={t("chooseCategory")} placement="top">
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <DocumentClassIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -129,7 +131,7 @@ const ScDCSelect = memo((props) => {
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {currentDoc.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small"><ClearIcon /></IconButton>
                                     </span>
@@ -140,7 +142,7 @@ const ScDCSelect = memo((props) => {
                                 ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择类别" placement="top">
+                            <Tooltip title={t("chooseCategory")} placement="top">
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                         <DocumentClassIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -169,7 +171,3 @@ const ScDCSelect = memo((props) => {
 });
 
 export default ScDCSelect;
-
-ScDCSelect.defaultProps = {
-    initValue: zeroValue,
-};
