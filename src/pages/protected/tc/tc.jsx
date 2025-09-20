@@ -59,7 +59,7 @@ const TC = () => {
     const handleDelMultipleAction = async (docs) => {
         const delRes = await reqDeleteTCs(docs);
         if (delRes.status) {
-            message.success(t("batchDelSuccess"));
+            message.success(t("batchDeleteSuccessful"));
         }
         // refresh
         handleReqDocList();

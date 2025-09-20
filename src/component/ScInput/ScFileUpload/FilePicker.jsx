@@ -74,17 +74,14 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
             };
             fileArr.push(file);
         }
-        console.log("fileArr", fileArr);
         // Request server check which files are already uploaded
         let getFilesHashRes = await reqGetFilesByHash(fileArr);
-        console.log("getFilesHashRes", getFilesHashRes);
         if (!getFilesHashRes.status) {
             setIsLoading(false);
             return
         }
         // Get the file details from server response
         let fileArr1 = getFilesHashRes.data;
-        // console.log("fileArr1", fileArr1);
 
         // Upload the filtered,un-uploaded files to server
         let willUploadFileNumber = 0;
@@ -96,8 +93,13 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
                 if (file.isImage === 0) {
                     formData.append("files", selectedFiles[file.fileKey]);
                 } else {
-                    const compressedFile = await imageCompression(selectedFiles[file.fileKey], compressOption);
-                    formData.append("files", compressedFile);
+                    try {
+                        const compressedFile = await imageCompression(selectedFiles[file.fileKey], compressOption);
+                        formData.append("files", compressedFile);
+                    } catch (error) {
+                        console.error("image compression error:", error);
+                        formData.append("files", selectedFiles[file.fileKey]);
+                    }
                 }
                 formData.append("fileKey", file.fileKey);
                 formData.append("hash", file.hash);

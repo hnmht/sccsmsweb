@@ -123,21 +123,7 @@ const checkIsImage = (buf) => {
     return { isImage: 0, type: "none" };
 };
 
-/* //aes加密方法
-export const Encrypt = (word) => {
-    let srcs = CryptoJS.enc.Utf8.parse(word);
-    let encrypted = CryptoJS.AES.encrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
-    return encrypted.ciphertext.toString().toUpperCase();
-};
 
-//aes解密方法
-export const  Decrypt = (word) => {
-    let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
-    let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-    let decrypt = CryptoJS.AES.decrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
-    let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
-    return decryptedStr.toString();
-}; */
 
 
 

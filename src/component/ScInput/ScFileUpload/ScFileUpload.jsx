@@ -50,7 +50,6 @@ const ScFileUpload = (props) => {
             return
         }
         let voucherFiles = filesToVoucherFiles(initValue, items);
-        console.log("voucherFiles", voucherFiles);
         let err = { isErr: false, msg: "" };
         if (items.length === 0 && !allowNull) {
             err = { isErr: true, msg: "cannotEmpty" };
