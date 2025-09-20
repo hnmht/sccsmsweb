@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取课程列表
+// Request Training Course list from backend
 export function reqGetTCList(isLoading = true) {
     return request({
         url: "/tc/list",
@@ -8,7 +8,7 @@ export function reqGetTCList(isLoading = true) {
         isLoading
     });
 }
-//获取课程缓存
+// Request Training Course Frontend Cache from backend
 export function reqGetTCCache(data, isLoading = true) {
     return request({
         url: "/tc/cache",
@@ -18,7 +18,7 @@ export function reqGetTCCache(data, isLoading = true) {
     });
 }
 
-//增加课程
+// Add new Training Course
 export function reqAddTC(data, isLoading = true) {
     return request({
         url: "/tc/add",
@@ -28,7 +28,7 @@ export function reqAddTC(data, isLoading = true) {
     });
 }
 
-//编辑课程
+// Modify Training Course
 export function reqEditTC(data, isLoading = true) {
     return request({
         url: "/tc/edit",
@@ -38,26 +38,26 @@ export function reqEditTC(data, isLoading = true) {
     });
 }
 
-//删除课程
+// Delete Training Course
 export function reqDeleteTC(data, isLoading = true) {
     return request({
-        url: "/tc/delete",
+        url: "/tc/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//批量删除课程
+// Batch Delete Training Courses
 export function reqDeleteTCs(data, isLoading = true) {
     return request({
-        url: "/tc/deletes",
+        url: "/tc/dels",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//检查执行课程档案名称是否存在
+// Check if Training Course name is duplicate
 export function reqCheckTCName(data, isLoading = true) {
     return request({
         url: "/tc/checkname",

@@ -5,10 +5,9 @@ import Loadable from "./component/Loadable";
 import AuthLayout from "./layouts/Auth";
 import DashboardLayout from "./layouts/Dashboard";
 import PresentationLayout from "./layouts/Presentation";
-
-//引导页面
+// Intro Page
 import Landing from "./pages/presentation/Landing";
-//登录页面
+// Landing Page
 import SignIn from "./pages/auth/SignIn";
 import AuthGuard from "./layouts/components/guards/AuthGuard";
 import Page404 from "./pages/auth/Page404";
@@ -16,24 +15,24 @@ import Page203 from "./pages/auth/Page203";
 import ProtectedPage from "./pages/protected/ProtectedPage";
 import DownloadApp from "./pages/downloadApp/downloadApp";
 
-//档案
-const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); //部门档案
-const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); //现场档案类别
-const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); //岗位档案
-const CSA = Loadable(lazy(() => import("./pages/protected/csa/csa"))); //现场档案
-const UDC = Loadable(lazy(() => import("./pages/protected/udc/udc")));  //自定义档案类别
-const UDA = Loadable(lazy(() => import("./pages/protected/uda/uda"))); //自定义档案
-const EPC = Loadable(lazy(() => import("./pages/protected/epc/epc")));  //执行项目分类
-const EPA = Loadable(lazy(() => import("./pages/protected/epa/epa"))); //执行项目
-const RiskLevel = Loadable(lazy(() => import("./pages/protected/riskLevel/riskLevel"))); //风险等级
-const PPE = Loadable(lazy(() => import("./pages/protected/ppe/ppe"))); //劳保用品（存货）档案
+// Msster Data
+const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); // Department
+const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); // Construction Site Category
+const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); // Position
+const CSA = Loadable(lazy(() => import("./pages/protected/csa/csa"))); // Construction Site Archive
+const UDC = Loadable(lazy(() => import("./pages/protected/udc/udc")));  // User Defined Category
+const UDA = Loadable(lazy(() => import("./pages/protected/uda/uda"))); // User Define Archive
+const EPC = Loadable(lazy(() => import("./pages/protected/epc/epc")));  // Execution Project Category
+const EPA = Loadable(lazy(() => import("./pages/protected/epa/epa"))); // Execution Project
+const RiskLevel = Loadable(lazy(() => import("./pages/protected/riskLevel/riskLevel"))); // Risk Level
+const PPE = Loadable(lazy(() => import("./pages/protected/ppe/ppe"))); // Personal Protective Equipment
 
 //文档
-const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); //文档类别
+const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); // Doucment Category
 const UploadDocument = Loadable(lazy(() => import("./pages/protected/uploadDocument/uploadDocument"))); //上传文档
 const LookupDocument = Loadable(lazy(() => import("./pages/protected/lookupDocument/lookupDocument"))); //查阅文档
 //培训课程
-const TrainCourse = Loadable(lazy(() => import("./pages/protected/trainCourse/trainCourse"))); //培训课程
+const TC = Loadable(lazy(() => import("./pages/protected/tc/tc"))); // Training Course
 const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/trainRecord"))); //培训记录
 const GiveLessons = Loadable(lazy(() => import("./pages/protected/giveLessons/giveLessons"))); //授课查询
 const ReceiveTraining = Loadable(lazy(() => import("./pages/protected/receiveTraining/receiveTraining"))); //受训查询
@@ -162,35 +161,35 @@ const routes = [
                 element: <LookupDocument />
             },
             {
-                path: "/private/train/course",
-                element: <TrainCourse />
+                path: "/private/training/course",
+                element: <TC />
             },
             {
-                path: "/private/train/record",
+                path: "/private/training/record",
                 element: <TrainRecord />
             },
             {
-                path: "/private/train/givelessons",
+                path: "/private/training/givelessons",
                 element: <GiveLessons />
             },
             {
-                path: "/private/train/receivetraining",
+                path: "/private/training/receivetraining",
                 element: <ReceiveTraining />
             },
             {
-                path: "/private/lpa/quota",
+                path: "/private/ppe/quota",
                 element: <LpaQuota />
             },
             {
-                path: "/private/lpa/issuedvoucher",
+                path: "/private/ppe/issuedvoucher",
                 element: <LpaIssueDoc />
             },
             {
-                path: "/private/lpa/issuedquery",
+                path: "/private/ppe/issuedquery",
                 element: <LpaQuery />
             },
             {
-                path: "/private/lpa/wizard",
+                path: "/private/ppe/wizard",
                 element: <LpaWizard />
             },
             {

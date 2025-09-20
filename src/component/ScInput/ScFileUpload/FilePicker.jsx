@@ -13,12 +13,13 @@ import {
     IconButton,
     Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { UploadIcon, DeleteIcon, FileIcon, DownloadIcon } from "../../PubIcon/PubIcon";
 import imageCompression from "browser-image-compression";
 import { message } from "mui-message";
 import ModalImage from "react-modal-image";
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat } from "../../../i18n/dayjs";
 import { Divider } from "../../ScMui/ScMui";
 import { getFileInfo } from "../../../utils/hash";
 import { RemoveDupObjectArr } from "../../../utils/tools";
@@ -31,107 +32,106 @@ const compressOption = {
     useWebWorker: true,
     preserveExif: true,
 };
-
-const fileSource = new Map([
-    ["browser", "电脑端选择"],
-    ["mobileshoot", "移动端拍照"],
-    ["mobilechoose", "移动端选择"],
-    ["", "未知"]
-]);
-const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxSize, chooseType }) => {
+// Files picker and upload component
+const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxSize = 20, chooseType = "image/*" }) => {
     const [files, setFiles] = useState(initFiles);
     const [isLoading, setIsLoading] = useState(false);
+    const { t } = useTranslation();
 
+    // Actions after select files
     const handleFileSelect = async (event) => {
         setIsLoading(true);
-        let selectedFiles = event.target.files; //本次选择的文件
-        if (selectedFiles.length === 0) { //如果没有选择文件则直接返回
+        // Get the selected files
+        let selectedFiles = event.target.files;
+        // If no files selected, return 
+        if (selectedFiles.length === 0) {
             setIsLoading(false);
             return
         }
-        let formData = new FormData(); //准备formData
-
-        // console.log("selectedFiles:",selectedFiles);
-        let fileArr = []; //本次所有选择的文件hash数组
-        //获取所有文件的hash值       
+        // Prepare formData for upload
+        let formData = new FormData();
+        // Prepare an array to store all selected file hashes
+        let fileArr = [];
+        // Get All selected file hashes       
         for (let i = 0; i < selectedFiles.length; i++) {
-            //检查文件大小
+            // Check file size
             if ((selectedFiles[i].size / 1024) > (fileMaxSize * 1024)) {
-                message.error(`单个文件不能大于${fileMaxSize}M`);
+                message.error(t("singleFileExceed", { fileName: selectedFiles[i].name, size: fileMaxSize }));
                 setIsLoading(false);
                 return
             }
             const fileInfo = await getFileInfo(selectedFiles[i], false);
             let file = {
-                filekey: i,
-                originfilename: selectedFiles[i].name,
-                filetype: fileInfo.fileType,
-                isimage: fileInfo.isImage,
+                fileKey: i,
+                originFileName: selectedFiles[i].name,
+                fileType: fileInfo.fileType,
+                isImage: fileInfo.isImage,
                 model: fileInfo.Model,
                 longitude: fileInfo.longitude,
                 latitude: fileInfo.latitude,
-                filehash: fileInfo.fileHash,
-                datetimeoriginal: fileInfo.DateTimeOriginal,
+                hash: fileInfo.fileHash,
+                dateTimeOriginal: fileInfo.DateTimeOriginal,
             };
             fileArr.push(file);
         }
-        //请求服务器检查文件hash值
+        console.log("fileArr", fileArr);
+        // Request server check which files are already uploaded
         let getFilesHashRes = await reqGetFilesByHash(fileArr);
-        //检查服务器返回错误情况
-        if (getFilesHashRes.data.status !== 0) {
-            message.error("向服务器请求检查重复文件出错:" + getFilesHashRes.data.statusMsg);
+        console.log("getFilesHashRes", getFilesHashRes);
+        if (!getFilesHashRes.status) {
             setIsLoading(false);
             return
         }
-        let fileArr1 = getFilesHashRes.data.data; //服务器返回的文件列表
+        // Get the file details from server response
+        let fileArr1 = getFilesHashRes.data;
+        // console.log("fileArr1", fileArr1);
 
-        //筛选出未上传的文件写入formData准备上传
+        // Upload the filtered,un-uploaded files to server
         let willUploadFileNumber = 0;
         for (let i = 0; i < fileArr1.length; i++) {
             const file = fileArr1[i];
-            if (file.fileid === 0) { //未从服务器获取详情,即服务器不存在的文件
+            // If id is 0, means this file is not uploaded
+            if (file.id === 0) {
                 willUploadFileNumber++
-                if (file.isimage === 0) {
-                    formData.append("files", selectedFiles[file.filekey]);
+                if (file.isImage === 0) {
+                    formData.append("files", selectedFiles[file.fileKey]);
                 } else {
-                    const compressedFile = await imageCompression(selectedFiles[file.filekey], compressOption);
+                    const compressedFile = await imageCompression(selectedFiles[file.fileKey], compressOption);
                     formData.append("files", compressedFile);
                 }
-                formData.append("filekey", file.filekey);
-                formData.append("filehash", file.filehash);
-                formData.append("filename", file.originfilename);
-                formData.append("filetype", file.filetype);
-                formData.append("isimage", file.isimage);
-                formData.append("model", file.model); //相机型号
-                formData.append("DateTimeOriginal", file.datetimeoriginal); //初始拍摄时间
-                formData.append("latitude", file.latitude);//纬度
-                formData.append("longitude", file.longitude);//经度  
+                formData.append("fileKey", file.fileKey);
+                formData.append("hash", file.hash);
+                formData.append("fileName", file.originFileName);
+                formData.append("fileType", file.fileType);
+                formData.append("isImage", file.isImage);
+                formData.append("model", file.model);
+                formData.append("DateTimeOriginal", file.dateTimeOriginal);
+                formData.append("latitude", file.latitude);
+                formData.append("longitude", file.longitude);
                 formData.append("source", "browser");
-                //从fileArr1中删除
+                // Delete this file from fileArr1, so that after upload we only need to merge the two arrays
                 fileArr1.splice(i, 1);
                 i--;
             }
         }
-        //向服务器上传文件
+        // If there are files to be uploaded, upload them
         if (willUploadFileNumber > 0) {
-            const uploadRes = await reqUploadFiles(formData, false);    //将未获取hash值的文件进行上传
-            if (uploadRes.data.status !== 0) {
-                // message.error("向服务器上传文件时出错" + uploadRes.data.statusMsg);
+            const uploadRes = await reqUploadFiles(formData, false);
+            if (!uploadRes.status) {
                 return
             }
-            //根据返回的数据修改服务器返回的文件列表
-            const uploadFiles = uploadRes.data.data;
-            //合并fileArr1 和 uploadFiles
+            // Get the uploaded files from server response
+            const uploadFiles = uploadRes.data;
+            // Merge the uploaded files into fileArr1
             fileArr1 = fileArr1.concat(uploadFiles);
-            // console.log("合并后的fileArr1:", fileArr1);
         }
         const newFiles = [...files, ...fileArr1];
-        const fileNumber = newFiles.length; //原有的文件数量
-        const removeDupFiles = RemoveDupObjectArr(newFiles, "fileid");
+        const fileNumber = newFiles.length;
+        // Remove duplicate files based on id
+        const removeDupFiles = RemoveDupObjectArr(newFiles, "id");
         if (fileNumber > removeDupFiles.length) {
-            message.warning(`已经去除${fileNumber - removeDupFiles.length}个重复项`)
+            message.warning(t("fileRemoved", { number: fileNumber - removeDupFiles.length }));
         }
-        // console.log("去重后的文件:", removeDupFiles);
         setIsLoading(false);
         setFiles(removeDupFiles);
     };
@@ -143,14 +143,13 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
     };
 
     const ImageTitle = ({ file, index }) => {
-
         const handleDownloadFile = () => {
-            axios.get(file.fileurl, { responseType: 'blob' }).then(res => {
+            axios.get(file.fileUrl, { responseType: 'blob' }).then(res => {
                 const blob = new Blob([res.data])
                 let a = document.createElement('a')
                 a.href = URL.createObjectURL(blob)
-                if (file.originfilename !== "") {
-                    a.download = file.originfilename
+                if (file.originFileName !== "") {
+                    a.download = file.originFileName
                 }
                 a.click()
             })
@@ -160,34 +159,39 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
             <Grid container>
                 <Grid item xs={11}>
                     <Grid container>
-                        <Grid item xs={6}>
-                            经度: {file.longitude.toFixed(6)}
+                        {
+                            file.isImage === 1
+                                ? <>
+                                    <Grid item xs={6}>
+                                        {t("longitude") + ":" + file.longitude.toFixed(6)}
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        {t("latitude") + ":" + file.latitude.toFixed(6)}
+                                    </Grid>
+                                </>
+                                : null
+                        }
+                        <Grid item xs={12}>
+                            {t("uploadTime") + ":" + DateTimeFormat(file.uploadtime, "LLL")}
                         </Grid>
-                        <Grid item xs={6}>
-                            纬度: {file.latitude.toFixed(6)}
-                        </Grid>
-                        <Grid item xs={6}>
-                            上传时间: {dayjs(file.uploadtime).format("YY-MM-DD HH:mm")}
-                        </Grid>
-                        <Grid item xs={6}>
-                            来源: {fileSource.get(file.source)}
+                        <Grid item xs={12}>
+                            {t("fileSource") + ":" + t(file.source)}
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={1}>
                     <Grid item xs={12}>
-                        <Tooltip title="下载"  sx={{ padding: 0, margin: 0 }}>
+                        <Tooltip title={t("downloadFile")} sx={{ padding: 0, margin: 0 }}>
                             <span>
                                 <IconButton onClick={handleDownloadFile}>
                                     <DownloadIcon color="info" />
                                 </IconButton>
                             </span>
                         </Tooltip>
-                        {/* <a href={file.fileurl} download={file.originfilename}>下载</a> */}
                     </Grid>
-                    <Grid  item xs={12}>
+                    <Grid item xs={12}>
                         {isEdit
-                            ? <Tooltip title="删除" sx={{padding:0,margin:0}}>
+                            ? <Tooltip title={t("delete")} sx={{ padding: 0, margin: 0 }}>
                                 <span>
                                     <IconButton onClick={() => handleDeleteClick(index)}>
                                         <DeleteIcon color="error" fontSize="small" />
@@ -211,7 +215,7 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
             }
             <DialogTitle
                 sx={{ height: 48, pb: 4, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", px: 4 }}>
-                文件
+                {t("files")}
                 <Box>
                     <input
                         accept={chooseType}
@@ -223,7 +227,7 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
                         disabled={!isEdit || isOnsitePhoto}
                     />
                     <label htmlFor="raised-button-file">
-                        <Tooltip title="选择文件上传">
+                        <Tooltip title={t("selectFiles")} sx={{ padding: 0, margin: 0 }}>
                             <span>
                                 <Button color="primary" component="span" disabled={!isEdit || isOnsitePhoto}>
                                     <UploadIcon fontSize="medium" />
@@ -242,18 +246,18 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
                     gap={8}
                 >
                     {files.map((file, index) => {
-                        return (<ImageListItem variant="standard" key={file.fileid} cols={1} rows={1} sx={{ overflow: "hidden", height: 256 }}>
-                            {file.isimage === 1
+                        return (<ImageListItem variant="standard" key={file.id} cols={1} rows={1} sx={{ overflow: "hidden", height: 256 }}>
+                            {file.isImage === 1
                                 ? <ModalImage
-                                    small={file.fileurl}
-                                    large={file.fileurl}
-                                    alt={file.fileid}
+                                    small={file.fileUrl}
+                                    large={file.fileUrl}
+                                    alt={file.id}
                                     showRotate={true}
                                     hideDownload
                                 />
                                 : <Box>
                                     <FileIcon color="primary" />
-                                    <Typography variant="subtitle1">{file.originfilename}</Typography>
+                                    <Typography variant="subtitle1">{file.originFileName}</Typography>
                                 </Box>
                             }
                             <ImageListItemBar
@@ -267,20 +271,14 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
             <DialogActions>
                 {isEdit
                     ? <>
-                        <Button color="error" onClick={onCancel} >取消</Button>
-                        <Button variant="contained" onClick={() => onOk(files)}>确定</Button>
+                        <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                        <Button variant="contained" onClick={() => onOk(files)}>{t("ok")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </>
     );
 };
-
-
-FilePicker.defaultProps = {
-    fileMaxSize: 20,
-    chooseType: "image/*",
-}
 
 export default FilePicker;

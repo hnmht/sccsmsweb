@@ -8,17 +8,19 @@ import {
     InputBase,
     Dialog,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { FileIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import FilePicker from "./FilePicker";
 
 import { voucherFilesToFiles, filesToVoucherFiles } from "./constructor";
 
-//902 文件上传
+//902 Multi file upload
 const ScFileUpload = (props) => {
-    const { fileMaxSize, chooseType, positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc, isOnsitePhoto } = props;
+    const { fileMaxSize = 20, chooseType = "image/*", positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc, isOnsitePhoto = false } = props;
     const [files, setFiles] = useState(voucherFilesToFiles(initValue));
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const {t} = useTranslation();
 
     useEffect(() => {
         handleTransfer();
@@ -29,30 +31,29 @@ const ScFileUpload = (props) => {
         setFiles(voucherFilesToFiles(initValue));
     }, [initValue]);
 
-    //关闭选择dialog
+    // Close dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
-        // handleTransfer();
     };
     const handleSelectedOk = (items) => {
         setDialogOpen(false);
         handleTransfer(items);
     };
-
-    //点击按钮
+    // Actions after click icon button
     const handleIconClick = () => {
         setDialogOpen(true);
     };
 
-    //向父组件传递数据
+    // Transfer files to parent component
     const handleTransfer = async (items = files) => {
         if (!isEdit) {
             return
         }
         let voucherFiles = filesToVoucherFiles(initValue, items);
+        console.log("voucherFiles", voucherFiles);
         let err = { isErr: false, msg: "" };
         if (items.length === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(voucherFiles);
         }
@@ -61,12 +62,10 @@ const ScFileUpload = (props) => {
         pickDone(voucherFiles, itemKey, positionID, rowIndex, err);
     };
 
-    // console.log("initValue:",initValue);
-
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -76,7 +75,7 @@ const ScFileUpload = (props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled
                     name={itemKey}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={files.length}
                     error={errInfo.isErr}
                     InputProps={{
@@ -86,7 +85,7 @@ const ScFileUpload = (props) => {
                                     ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
-                                <Tooltip title="文件" placement="top">
+                                <Tooltip title={t("files")} placement="top">
                                     <IconButton onClick={handleIconClick} size="small">
                                         <FileIcon color="success" fontSize="small" />
                                     </IconButton>
@@ -100,7 +99,7 @@ const ScFileUpload = (props) => {
                     id={`${itemKey}${positionID}${rowIndex}`}
                     disabled
                     name={itemKey}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={files.length}
                     error={errInfo.isErr}
                     endAdornment={
@@ -109,7 +108,7 @@ const ScFileUpload = (props) => {
                                 ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
-                            <Tooltip title="文件" placement="top">
+                            <Tooltip title={t("files")} placement="top">
                                 <IconButton onClick={handleIconClick} size="small">
                                     <FileIcon color="success" fontSize="small" />
                                 </IconButton>
@@ -137,12 +136,5 @@ const ScFileUpload = (props) => {
         </>
     );
 };
-
-ScFileUpload.defaultProps = {
-    isOnsitePhoto: false,
-    fileMaxSize: 20,
-    chooseType: "image/*",
-};
-
 export default memo(ScFileUpload);
 

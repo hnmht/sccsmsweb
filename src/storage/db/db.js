@@ -15,7 +15,7 @@ import { reqGetSimpCSCList, reqGetSimpCSCCache } from "../../api/csc";
 import { reqGetPositionList, reqGetPositionCache } from "../../api/position";
 import { reqGetRLList, reqGetRLsCache } from "../../api/riskLevel";
 import { reqGetSimpDCList, reqGetSimpDCCache } from "../../api/dc";
-import { reqGetTCList, reqGetTCCache } from "../../api/trainCourse";
+import { reqGetTCList, reqGetTCCache } from "../../api/tc";
 import { reqGetPPEList, reqGetPPECache } from "../../api/ppe";
 import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
 import { dbName, table, tableEncrypted } from "./schema";
@@ -145,9 +145,10 @@ export const docTable = new Map([
     ["epa", { description: "Execution Project", reqAllFunc: reqGetEPList, reqCacheFunc: reqGetEPCache, transToFrontFunc: transEPsToFrontend }],
     ["ppe", { description: "Personal Protective Equipment", reqAllFunc: reqGetPPEList, reqCacheFunc: reqGetPPECache, transToFrontFunc: commonTransDoc }],
     ["dc", { description: "Document Category", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
+    ["tc", { description: "Training Course", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
+
     /*   
     ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
-    ["traincourse", { description: "课程档案", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
  */
 ]);
 

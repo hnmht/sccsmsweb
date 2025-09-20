@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "@mui/material";
 import { message } from "mui-message";
 
@@ -6,12 +7,14 @@ import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import EditTC from "./editTC";
-import { reqDeleteTC, reqDeleteTCs } from "../../../api/trainCourse";
+import { reqDeleteTC, reqDeleteTCs } from "../../../api/tc";
 
 import { GetLocalCache, InitDocCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 
-const TrainCourse = () => {
+
+// Training Course 
+const TC = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         currentDoc: undefined,
@@ -19,19 +22,20 @@ const TrainCourse = () => {
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         handleReqDocList();
     }, []);
 
-    //获取类别列表
+    // Request Training Course list
     const handleReqDocList = async () => {
-        await InitDocCache("traincourse");
-        let newTcs = await GetLocalCache("traincourse");
+        await InitDocCache("tc");
+        let newTcs = await GetLocalCache("tc");
         setRows(newTcs);
     };
 
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -41,7 +45,7 @@ const TrainCourse = () => {
         });
     };
 
-    //表头点击增加按钮
+    // Actions after click Add button in header
     const handleAddDoc = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -51,20 +55,16 @@ const TrainCourse = () => {
         });
     };
 
-    //表头点击批量删除
+    // Actions after click batch delete button in header
     const handleDelMultipleAction = async (docs) => {
         const delRes = await reqDeleteTCs(docs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error(delRes.data.statusMsg);
+        if (delRes.status) {
+            message.success(t("batchDelSuccess"));
         }
-        //刷新
+        // refresh
         handleReqDocList();
     };
-    //对话框编辑用户自定义档案类别页面点击确定按钮
+    // Actions after click OK button in dialog
     const handelAddDocOk = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -72,10 +72,10 @@ const TrainCourse = () => {
             isNew: false,
             isModify: false
         });
-        //重新向服务器请求档案列表数据
+        // refresh
         handleReqDocList();
     };
-    //表体点击复制新增按钮
+    // Actions after click copyAdd button in table body
     const handleRowCopyAdd = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -84,7 +84,7 @@ const TrainCourse = () => {
             isModify: false
         });
     };
-    //表体点击详情按钮
+    // Actions after click detail button in table body
     const handleRowDetail = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -94,7 +94,7 @@ const TrainCourse = () => {
         });
 
     };
-    //表体点击编辑按钮
+    // Actions after click edit button in table body
     const handleRowEdit = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -104,22 +104,18 @@ const TrainCourse = () => {
         });
 
     };
-    //表体点击删除按钮
+    // Actions after click delete button in table body
     const handleRowDelete = async (doc) => {
         const delRes = await reqDeleteTC(doc);
-        if (delRes.data.status === 0) {
-            message.success("删除课程" + doc.name + "成功");
-            //刷新
-            handleReqDocList();
-        } else {
-            message.error("删除课程" + doc.name + "失败:" + delRes.data.statusMsg);
-        }
-        //刷新
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
+        } 
+        // refresh
         handleReqDocList();
     };
     return (
-        <React.Fragment>
-            <PageTitle pageName="培训课程" displayHelp={true} helpUrl="/helps/trainCourse" />
+        <Fragment>
+            <PageTitle pageName={t("MenuTC")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 rows={rows}
@@ -151,8 +147,8 @@ const TrainCourse = () => {
                     onOk={handelAddDocOk}
                 />
             </Dialog>
-        </React.Fragment>
+        </Fragment>
     );
 }
 
-export default TrainCourse;
+export default TC;
