@@ -132,7 +132,7 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
         // Remove duplicate files based on id
         const removeDupFiles = RemoveDupObjectArr(newFiles, "id");
         if (fileNumber > removeDupFiles.length) {
-            message.warning(t("fileRemoved", { number: fileNumber - removeDupFiles.length }));
+            message.warning(t("duplicateFileRemoved", { count: fileNumber - removeDupFiles.length }));
         }
         setIsLoading(false);
         setFiles(removeDupFiles);

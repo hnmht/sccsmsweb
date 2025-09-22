@@ -225,9 +225,8 @@
     "files": "Attachments",
     "filesPlaceholder": "Please upload attachments",
     "singleFileExceed": "Single file '{{fileName}}' cannot exceed {{size}}M.",
-    "fileRemoved_one": "{{number}} file have been removed.",
-    "fileRemoved_other": "{{number}} files have been removed.",
-
+    "duplicateFileRemoved_one": "A duplicate file was removed.",
+    "duplicateFileRemoved_other": "{{ count }} duplicate files was removed.",
     "uploadTime": "Upload Time",
     "fileSource": "File Source",
     "downloadFile": "Download File",
