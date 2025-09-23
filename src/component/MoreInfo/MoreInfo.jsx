@@ -25,7 +25,7 @@ const MoreInfo = ({ children }) => {
     return (
         <>
             <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <Typography component="label" variant="body3">{expanded ? "" : t("more")}</Typography>
+                <Typography component="p" variant="body3">{expanded ? "" : t("more")}</Typography>
                 <ExpandMore
                     expand={expanded}
                     onClick={handleExpandClick}

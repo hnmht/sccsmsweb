@@ -27,6 +27,7 @@ const ScTextInput = memo(({
 }) => {
     const [textValue, setTextValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `${itemKey}${positionID}${rowIndex}`;
     const { t } = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
@@ -65,15 +66,15 @@ const ScTextInput = memo(({
 
     return (positionID !== 1
         ? <>
-            <InputLabel htmlFor={`input${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+            <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
                 type={"text"}
-                id={`textfield${itemKey}${positionID}${rowIndex}`}
+                id={id}
                 disabled={!isEdit}
                 multiline={isMultiline}
                 rows={rowNumber}
-                name={`textfield${itemKey}${positionID}${rowIndex}`}
+                name={id}
                 placeholder={isEdit ? t(placeholder) : ""}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
@@ -82,28 +83,22 @@ const ScTextInput = memo(({
                 InputProps={{
                     endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
                 }}
-                inputProps={{
-                    id: `input${itemKey}${positionID}${rowIndex}`
-                }}
             />
         </>
         : <InputBase
             fullWidth
             type={"text"}
-            id={`inputbase${itemKey}${positionID}${rowIndex}`}
+            id={id}
             disabled={!isEdit}
             multiline={isMultiline}
             rows={rowNumber}
-            name={itemKey}
+            name={id}
             placeholder={isEdit ? t(placeholder) : ""}
             onChange={(event) => handleOnChange(event)}
             value={textValue}
             onBlur={handleOnBlur}
             error={errInfo.isErr}
             endAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null}
-            inputProps={{
-                id: `input${itemKey}${positionID}${rowIndex}`
-            }}
         />
     );
 });

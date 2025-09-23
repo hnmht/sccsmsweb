@@ -15,7 +15,8 @@ const ScNumberInput = memo((props) => {
     const { positionID = -1, rowIndex = -1, allowNull = false, isEdit = true, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest = false, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue.toString());
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const {t} = useTranslation();
+    const id = `${itemKey}${positionID}${rowIndex}`;
+    const { t } = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
             setTextValue(initValue.toString());
@@ -62,29 +63,35 @@ const ScNumberInput = memo((props) => {
     const materialUITextFieldProps = positionID !== 1 ?
         {
             fullWidth: true,
-            id: `${itemKey}${positionID}${rowIndex}`,
+            id: id,
             disabled: !isEdit,
-            name: itemKey,
+            name: id,
             placeholder: t(placeholder),
             onChange: (event) => handleOnChange(event),
             InputProps: {
                 sx: { "& input": { textAlign: "right" } },
                 endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
             },
+            inputProps: {
+                id: id
+            },
             onBlur: handleOnBlur,
             error: errInfo.isErr,
         }
         : {
             fullWidth: true,
-            id: `${itemKey}${positionID}${rowIndex}`,
+            id: id,
             disabled: !isEdit,
-            name: itemKey,
+            name: id,
             placeholder: t(placeholder),
             onChange: (event) => handleOnChange(event),
             endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
             onBlur: handleOnBlur,
             error: errInfo.isErr,
             sx: { "& input": { textAlign: "right" } },
+            inputProps: {
+                id: id
+            }
         }
         ;
 
