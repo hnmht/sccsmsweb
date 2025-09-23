@@ -7,7 +7,7 @@ import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import EditTC from "./editTC";
-import { reqDeleteTC, reqDeleteTCs } from "../../../api/tc";
+import { reqDeleteTC, reqDeleteTCs, reqGetTCList } from "../../../api/tc";
 
 import { GetLocalCache, InitDocCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
@@ -30,9 +30,13 @@ const TC = () => {
 
     // Request Training Course list
     const handleReqDocList = async () => {
-        await InitDocCache("tc");
-        let newTcs = await GetLocalCache("tc");
+        const res = await reqGetTCList();
+        let newTcs = [];
+        if (res.status) {
+            newTcs = res.data;
+        } 
         setRows(newTcs);
+        InitDocCache("tc");
     };
 
     // Close dialog
@@ -109,7 +113,7 @@ const TC = () => {
         const delRes = await reqDeleteTC(doc);
         if (delRes.status) {
             message.success(t("delSuccessful"));
-        } 
+        }
         // refresh
         handleReqDocList();
     };

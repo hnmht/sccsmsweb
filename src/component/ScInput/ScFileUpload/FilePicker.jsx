@@ -174,7 +174,7 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
                                 : null
                         }
                         <Grid item xs={12}>
-                            {t("uploadTime") + ":" + DateTimeFormat(file.uploadtime, "LLL")}
+                            {t("uploadTime") + ":" + DateTimeFormat(file.uploadTime, "LLL")}
                         </Grid>
                         <Grid item xs={12}>
                             {t("fileSource") + ":" + t(file.source)}
@@ -207,6 +207,8 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
             </Grid>
         )
     };
+
+    console.log("files", files);
 
     return (
         <>
