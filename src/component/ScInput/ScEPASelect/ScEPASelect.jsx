@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import  { useState, memo, useEffect } from "react";
 import {
     IconButton,
     Stack,
@@ -8,29 +8,31 @@ import {
     Tooltip,
     InputBase,
 } from "@mui/material";
-import { EIDIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import EidPicker from "./EidPicker";
+import { EPAIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
+import EPAPicker from "./EPAPicker";
+import { useTranslation } from "react-i18next";
 const zeroValue = {
     id: 0,
     code: "",
     name: "",
-    itemclass: { id: 0, name: "", description: "", fatherid: 0, status: 0 },
+    epc: { id: 0, name: "", description: "", fatherID: 0, status: 0 },
     description: "",
     status: 0,
-    resulttype: { id: 301, name: "文本", dataType: "string", inputMode: "输入" },
+    resultType: { id: 301, name: "text", dataType: "string", inputMode: "input" },
     udc: { id: 0, name: "", description: "" },
-    defaultvalue: "",
-    ischeckerror: 0,
-    errorvalue: "",
-    isrequirefile: 0,
-    isonsitephoto: 0,
+    defaultValue: "",
+    isCheckError: 0,
+    errorValue: "",
+    isRequireFile: 0,
+    isOnsitePhoto: 0,
 };
-//560 执行项目档案单选组件
-const ScEIDSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+//560 The EPA Single-Select Component
+const ScEPASelect = memo((props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
+    const {t} = useTranslation();
 
     useEffect(() => {
         setSelectItem(initValue);
@@ -40,16 +42,14 @@ const ScEIDSelect = memo((props) => {
         handleTransfer();
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
-
-
-    //向父组件传递数据
+    // Send data to the parent component 
     const handleTransfer = async (item = selectItem) => {
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(item);
         }
@@ -58,28 +58,28 @@ const ScEIDSelect = memo((props) => {
 
         pickDone(item, itemKey, positionID, rowIndex, err);
     };
-    //关闭选择dialog
+    // Close Dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
-    //点击确定按钮
+    // Actions after click the ok button in dialog
     const handleOkClick = () => {
-        // 向父组件传递数据
+        // Send data to the parent component
         handleTransfer();
-        //关闭对话框
+        // Close dialog
         setDialogOpen(false);
     }
-    //点击清除按钮
+    // Actions after click the clear button 
     const handleClear = () => {
         setSelectItem(zeroValue);
         handleTransfer(zeroValue);
     }
-    //单击项目
+    // Actions after click item
     const handleClickItem = (item) => {
         setSelectItem(item);
     };
-    //双击项目
+    // Actions after double click item
     const handleDoubleClickItem = (item) => {
         setSelectItem(item);
         handleTransfer(item);
@@ -89,7 +89,7 @@ const ScEIDSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -111,7 +111,7 @@ const ScEIDSelect = memo((props) => {
                                     : null
                                 }
                                 {selectItem.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -120,10 +120,10 @@ const ScEIDSelect = memo((props) => {
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择档案" placement="top">
+                                <Tooltip title={t("choose")} placement="top">
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
-                                            <EIDIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
+                                            <EPAIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                         </IconButton>
                                     </span>
                                 </Tooltip>
@@ -142,7 +142,7 @@ const ScEIDSelect = memo((props) => {
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {selectItem.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
                                             <ClearIcon fontSize="small" />
@@ -155,10 +155,10 @@ const ScEIDSelect = memo((props) => {
                                 ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择档案" placement="top">
+                            <Tooltip title={t("choose")} placement="top">
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
-                                        <EIDIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
+                                        <EPAIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                     </IconButton>
                                 </span>
                             </Tooltip>
@@ -172,7 +172,7 @@ const ScEIDSelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <EidPicker
+                <EPAPicker
                     clickItemAction={handleClickItem}
                     doubleClickItemAction={handleDoubleClickItem}
                     cancelClickAction={handleDiagClose}
@@ -183,9 +183,5 @@ const ScEIDSelect = memo((props) => {
         </>
     );
 });
+export default ScEPASelect;
 
-export default ScEIDSelect;
-
-ScEIDSelect.defaultProps = {
-    initValue: zeroValue,
-};

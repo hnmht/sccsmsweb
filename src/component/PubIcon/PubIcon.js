@@ -29,7 +29,7 @@ import ErrorIcon from "@mui/icons-material/Error";//错误图标
 import ClockIcon from "@mui/icons-material/AccessTime";//时间图标
 import DeptIcon from "@mui/icons-material/Apartment";//部门图标
 import EPCIcon from "@mui/icons-material/Widgets"; //执行项目类别图标
-import EIDIcon from "@mui/icons-material/EventNote";//执行项目档案图标
+import EPAIcon from "@mui/icons-material/EventNote";//执行项目档案图标
 import PersonIcon from "@mui/icons-material/Group";//人员档案图标
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";//折叠图标
 import CSCIcon from "@mui/icons-material/HolidayVillage";//现场档案类别图标
@@ -101,7 +101,7 @@ export {
     ClockIcon,
     DeptIcon,
     EPCIcon,
-    EIDIcon,
+    EPAIcon,
     PersonIcon,
     ExpandLessIcon,
     CSCIcon,

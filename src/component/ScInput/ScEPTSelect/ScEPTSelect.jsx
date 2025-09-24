@@ -9,7 +9,7 @@ import {
     Dialog,
 } from "@mui/material";
 import { EITIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import EitPicker from "./EitPicker";
+import EPTPicker from "./EPTPicker";
 
 const zeroValue = { id: 0, code: "", name: "", description: "" };
 
@@ -157,7 +157,7 @@ const ScEITSelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <EitPicker
+                <EPTPicker
                     clickItemAction={handleClickItem}
                     doubleClickItemAction={handleDoubleClickItem}
                     cancelClickAction={handleDiagClose}

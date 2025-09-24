@@ -9,6 +9,7 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { RefreshIcon } from "../../PubIcon/PubIcon";
 import PubTree from "../ScPub/PubTree";
 import DocTable from "../../DocTable/DocTable";
@@ -16,75 +17,66 @@ import { columns } from "./tableConstructor";
 import { treeToArr } from "../../../utils/tree";
 import { GetLocalCache, InitDocCache,GetCacheAnyOf } from "../../../storage/db/db";
 
-const EIDName = "exectiveitem";
-const EICName = "exectiveitemclass";
+const EPAName = "epa";
+const EPCName = "epc";
 
-const EIDPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
-    const [eics, setEics] = useState([]);
-    const [eids, setEids] = useState([]);
-    const [selectedEICids, setSelectedEICids] = useState([]);
+const EPAPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+    const [epcs, setEpcs] = useState([]);
+    const [epas, setEpas] = useState([]);
+    const [selectedEPCids, setSelectedEPCids] = useState([]);
+    const {t} = useTranslation();
 
      useEffect(() => {
-        handleGetEICsCache();
-        // handleGetEIDsCache();        
+        handleGetEPCsCache();      
     }, []);
-    //获取执行项目类别本地存储数据
-    const handleGetEICsCache = async () => {
-        const localEICs = await GetLocalCache(EICName);
-        // console.log("获取了本地执行项目类别缓存");
-        setEics(localEICs);
-    };
-    //获取执行项目档案所有本地存储数据
-    // const handleGetEIDsCache = async () => {
-    //     const localEIDs = await GetLocalCache(EIDName);
-    //     console.log("获取了本地执行项目缓存");
-    //     setEids(localEIDs);
-    // }; 
-
-    //刷新执行项目类别档案
+    // Get Execution Project Category from front-end cache
+    const handleGetEPCsCache = async () => {
+        const localEPCs = await GetLocalCache(EPCName);
+        setEpcs(localEPCs);
+    };  
+    // Refresh Execution Project Category 
     const handleRefreshEics =  async () => {
-        //向服务器请求最新执行项目类别档案缓存
-        await InitDocCache(EICName);
-        //获取本地缓存
-        let newEics = await GetLocalCache(EICName);
-        //刷新执行项目档案类别
-        setEics(newEics);
+        // Request latest EPC list for front-end cache
+        await InitDocCache(EPCName);
+        // Get EPC list from front-end cache
+        let newEics = await GetLocalCache(EPCName);
+        // Refresh
+        setEpcs(newEics);
     };
-    //刷新执行项目档案
-    const handleRefreshEids = async () => {
-        //向服务器请求最新执行项目档案缓存
-        await InitDocCache(EIDName);
-        //获取本地缓存 
-        let newEIds = await GetCacheAnyOf(EIDName, "itemclass.id",selectedEICids);
-        setEids(newEIds);
+    // Refresh Execution Project Archaive 
+    const handleRefreshEpas = async () => {
+        // Request latest EPA list for front-end cache
+        await InitDocCache(EPAName);
+        // Get EPA list from front-end cache 
+        let newEPAs = await GetCacheAnyOf(EPAName, "epc.id",selectedEPCids);
+        setEpas(newEPAs);
     };
-    //项目分类tree单击
+    // Actions after click EPC item
     const handleEicClick = async (item, type) => {
-        //type 0 末级 1 父级 3 全部
         let classIds = [];
-        if (type === 0) {
+        if (type === 0) { // Leaf
             classIds.push(item.id);
-        } else if (type === 1) {
+        } else if (type === 1) { // Parent
             const tree = [];
             tree.push(item);
             let allChilds = treeToArr(tree);
             allChilds.forEach(item1 => {
                 classIds.push(item1.id);
             })
-        } else if (type === 3) {
+        } else if (type === 3) { // All
             item.forEach(item3 => {
                 classIds.push(item3.id);
             })
         }
-        //获取本地缓存执行项目档案
-        const localEids = await GetCacheAnyOf("exectiveitem", "itemclass.id", classIds);
-        setEids(localEids);
-        setSelectedEICids(classIds);
+        // Get EPAs from front-end list by EPC id
+        const localEPAs = await GetCacheAnyOf("epa", "epc.id", classIds);
+        setEpas(localEPAs);
+        setSelectedEPCids(classIds);
     };
 
     return (
         <>
-            <DialogTitle>选择项目</DialogTitle>
+            <DialogTitle>{t("chooseEPA")}</DialogTitle>
             <Grid container spacing={1}>
                 <Grid item xs={3}>
                     <List
@@ -97,8 +89,8 @@ const EIDPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, o
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择类别
-                                <Tooltip title="刷新" placement="top">
+                                {t("chooseCategory")}
+                                <Tooltip title={t("refresh")} placement="top">
                                     <IconButton onClick={handleRefreshEics}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
@@ -108,11 +100,11 @@ const EIDPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, o
                         sx={{ width: "100%", height: 700, overflow: "auto", p: 0, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="类别"
+                            docName="EPCCategory"
                             isDisplayAll={true}
-                            oriDocs={eics}
+                            oriDocs={epcs}
                             onDocClick={handleEicClick}
-                            selectDocIDs={selectedEICids}
+                            selectDocIDs={selectedEPCids}
                             onDocDoubleClick={handleEicClick}
                             isEdit={true}
                         />
@@ -121,9 +113,9 @@ const EIDPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, o
                 <Grid item xs={9} maxWidth={640}>
                     <DocTable
                         columns={columns}
-                        refreshAction={handleRefreshEids}
-                        rows={eids}
-                        docListTitle="选择项目"
+                        refreshAction={handleRefreshEpas}
+                        rows={epas}
+                        docListTitle={"chooseEPA"}
                         clickItem={clickItemAction}
                         doubleClickItem={doubleClickItemAction}
                         isMultiple={false}
@@ -131,11 +123,11 @@ const EIDPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, o
                 </Grid>
             </Grid>
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction} >取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction} >{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );
 };
 
-export default EIDPicker;
+export default EPAPicker;
