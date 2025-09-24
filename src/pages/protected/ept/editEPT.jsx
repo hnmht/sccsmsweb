@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Stack,
     Grid,
@@ -8,55 +8,55 @@ import {
     Tooltip,
     Button,
 } from "@mui/material";
-import { CopyAddRowIcon, DeleteRowIcon } from "../../../../component/PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
+import { CopyAddRowIcon, DeleteRowIcon } from "../../../component/PubIcon/PubIcon";
 import { cloneDeep } from "lodash";
 
-import ScInput from "../../../../component/ScInput";
-import Loader from "../../../../component/Loader/Loader";
-import { MultiSortByArr } from "../../../../utils/tools";
-import { reqAddEIT, reqEditEIT, reqCheckEITCode } from "../../../../api/exectiveTemplate";
+import ScInput from "../../../component/ScInput";
+import Loader from "../../../component/Loader/Loader";
+import { MultiSortByArr } from "../../../utils/tools";
+import { reqAddEPT, reqEditEPT, reqCheckEPTCode } from "../../../api/ept";
 import { message } from "mui-message";
 import { voucherRow } from "./voucherConstructor";
-import { transEITToBackend } from "../../../../storage/db/db";
+import { transEPTToBackend } from "../../../storage/db/db";
 import { bodyColumns } from "./voucherConstructor";
-import dayjs from "../../../../utils/myDayjs";
-import { getCurrentPerson } from "../../pub";
-import { ScVoucherBody, ScVoucherBodyRow } from "../../../../component/ScVoucher";
-import { generateVoucherErrors ,checkVoucherErrors} from "../../pub";
+import { DateTimeFormat } from "../../../i18n/dayjs";
+import { getCurrentPerson, generateVoucherErrors, checkVoucherErrors } from "../pub/pubFunction";
+import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 
-//UDC零值
-const zeroUDC = { id: 0, code: "", name: "", description: "", docclass: { id: 0, name: "" }, fatherid: 0 };
-//生成初始数据
-const getInitialValues = async (oriEIT, isNew, isModify) => {
+// User Defined Category default value
+const zeroUDC = { id: 0, code: "", name: "", description: "", isLevel: 0 };
+// Generate EPT initial values
+const getInitialValues = async (oriEPT, isNew, isModify) => {
     const person = await getCurrentPerson();
-    let newEIT = {};
-    if (isNew) { //是否新增单据        
-        if (oriEIT) { //复制新增
-            newEIT = cloneDeep(oriEIT);
-            newEIT.id = 0; //表头id修改
-            newEIT.code = "";//修改编码
-            newEIT.createuser = person;
-            newEIT.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newEIT.modifyuser = { id: 0, code: "", name: "" };
-            newEIT.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newEIT.body.map((row) => {
+    let newEPT = {};
+    if (isNew) { // Add a new EPT        
+        if (oriEPT) { // Copy add based on the original EPT
+            newEPT = cloneDeep(oriEPT);
+            newEPT.id = 0;
+            newEPT.code = "";
+            newEPT.creator = person;
+            newEPT.createDate = DateTimeFormat(new Date(), "LLL");
+            newEPT.modifier = { id: 0, code: "", name: "" };
+            newEPT.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newEPT.body.map((row) => {
                 row.id = 0;
                 row.hid = 0;
                 return row;
             });
-        } else { //新增空白单据
-            newEIT = {
+        } else { // Add a new EPT   
+            newEPT = {
                 id: 0,
                 code: "",
                 name: "",
                 description: "",
                 status: 0,
-                allowaddrow: 0,
-                allowdelrow: 0,
-                createuser: person,
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifyuser: { id: 0, code: "", name: "" },
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+                allowAddRow: 0,
+                allowDelRow: 0,
+                creator: person,
+                createDate: DateTimeFormat(new Date(), "LLL"),
+                modifier: { id: 0, code: "", name: "" },
+                modifyDate: DateTimeFormat(new Date(), "LLL"),
                 dr: 0,
                 body: [
                     voucherRow
@@ -64,74 +64,75 @@ const getInitialValues = async (oriEIT, isNew, isModify) => {
             };
         }
     } else {
-        if (!oriEIT) {
+        if (!oriEPT) {
             return
         } else {
-            if (isModify) { //编辑
-                newEIT = cloneDeep(oriEIT);
-                newEIT.createdate = dayjs(newEIT.createdate).format("YYYYMMDDHHmm");
-                newEIT.modifyuser = person;
-                newEIT.modifydate = dayjs(newEIT.modifydate).format("YYYYMMDDHHmm");
-            } else {
-                newEIT = cloneDeep(oriEIT);
-                newEIT.createdate = dayjs(newEIT.createdate).format("YYYYMMDDHHmm");
-                newEIT.modifydate = dayjs(newEIT.modifydate).format("YYYYMMDDHHmm");
+            if (isModify) { // Modify existing EPT
+                newEPT = cloneDeep(oriEPT);
+                newEPT.createDate = DateTimeFormat(newEPT.createDate, "LLL");
+                newEPT.modifier = person;
+                newEPT.modifyDate = DateTimeFormat(newEPT.modifyDate, "LLL");
+            } else { // View existing EPT
+                newEPT = cloneDeep(oriEPT);
+                newEPT.createDate = DateTimeFormat(newEPT.createDate, "LLL");
+                newEPT.modifyDate = DateTimeFormat(newEPT.modifyDate, "LLL");
             }
         }
     }
-
-    return newEIT;
+    return newEPT;
 };
 
-const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, onOk }) => {
+// Add or Edit or View EPT dialog
+const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
     const [voucherData, setVoucherData] = useState((undefined));
-    const [errors, setErrors] = useState(() => generateVoucherErrors(oriEIT ? oriEIT.body.length : 1));
+    const [errors, setErrors] = useState(() => generateVoucherErrors(oriEPT ? oriEPT.body.length : 1));
     const isEdit = !(!isModify && !isNew);
-
+    const { t } = useTranslation();
     useEffect(() => {
         async function initVoucher() {
-            const newEIT = await getInitialValues(oriEIT, isNew, isModify);
-            setVoucherData(newEIT);
+            const newEPT = await getInitialValues(oriEPT, isNew, isModify);
+            setVoucherData(newEPT);
         }
         if (isOpen) {
             initVoucher();
         }
-    }, [isOpen, oriEIT, isModify, isNew]);
-
-    //获取值以后的操作
-    const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
+    }, [isOpen, oriEPT, isModify, isNew]);
+    // Process after the ScInput component gets the value
+    const handleGetValue = async (value, itemKey, positionID, rowIndex, errMsg) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
-        //设置单据值
+        // Change voucherData
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
             switch (positionID) {
+                // if positionID=0, it means the field is in the header
                 case 0:
-                    if (itemkey === "allowdelrow") {
-                        newData.body.map(row => row.allowdelrow = value);
+                    if (itemKey === "allowDelRow") {
+                        newData.body.map(row => row.allowDelRow = value);
                     }
-                    newData[itemkey] = value;
+                    newData[itemKey] = value;
                     break;
                 case 1:
-                    //如果修改的是表体字段
-                    if (itemkey === "eid" && value.id !== 0 && value.id !== prevState.body[rowIndex].eid.id) {
-                        // console.log("修改了eid字段,重新生成默认值");
-                        newData.body[rowIndex].allowdelrow = newData.allowdelrow;
-                        newData.body[rowIndex].defaultvalue = value.defaultvalue;
+                    // If PositionID=1, it means the field is in the body
+                    if (itemKey === "epa" && value.id !== 0 && value.id !== prevState.body[rowIndex].epa.id) {
+                        // Change epa field, then change related fields
+                        newData.body[rowIndex].allowDelRow = newData.allowDelRow;
+                        newData.body[rowIndex].defaultValue = value.defaultValue;
                         newData.body[rowIndex].description = value.description;
-                        newData.body[rowIndex].defaultvaluedisp = value.defaultvaluedisp;
-                        newData.body[rowIndex].ischeckerror = value.ischeckerror;
-                        newData.body[rowIndex].errorvalue = value.errorvalue;
-                        newData.body[rowIndex].errorvaluedisp = value.errorvaluedisp;
-                        newData.body[rowIndex].isrequirefile = value.isrequirefile;
-                        newData.body[rowIndex].isonsitephoto = value.isonsitephoto;
-                        newData.body[rowIndex].risklevel = value.risklevel;
+                        newData.body[rowIndex].defaultValueDisp = value.defaultValueDisp;
+                        newData.body[rowIndex].isCheckError = value.isCheckError;
+                        newData.body[rowIndex].errorValue = value.errorValue;
+                        newData.body[rowIndex].errorValueDisp = value.errorValueDisp;
+                        newData.body[rowIndex].isRequireFile = value.isRequireFile;
+                        newData.body[rowIndex].isOnsitePhoto = value.isOnsitePhoto;
+                        newData.body[rowIndex].riskLevel = value.riskLevel;
                     }
-                    newData.body[rowIndex][itemkey] = value;
+                    newData.body[rowIndex][itemKey] = value;
                     break;
                 case 2:
-                    newData[itemkey] = value;
+                    // If PositionID=2, it means the field is in the footer
+                    newData[itemKey] = value;
                     break;
                 default:
                     break;
@@ -139,18 +140,18 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
             return newData;
         });
 
-        //设置错误信息
+        // change errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
                 case 0:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 case 1:
-                    newErrors.body[rowIndex][itemkey] = errMsg;
+                    newErrors.body[rowIndex][itemKey] = errMsg;
                     break;
                 case 2:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 default:
                     break;
@@ -158,20 +159,20 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
             return newErrors;
         });
     };
-    //获取错误信息以后的操作
-    const handleGetErr = async(value, itemkey, positionID, rowIndex, errMsg) => {
-        //设置错误信息
+    // Process after the ScInput component gets the error message
+    const handleGetErr = async (value, itemKey, positionID, rowIndex, errMsg) => {
+        // change errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
                 case 0:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 case 1:
-                    newErrors.body[rowIndex][itemkey] = errMsg;
+                    newErrors.body[rowIndex][itemKey] = errMsg;
                     break;
                 case 2:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 default:
                     break;
@@ -179,69 +180,67 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
             return newErrors;
         });
     };
-    //增行
+    // Actions after clicking Add Row button
     const handleAddRow = () => {
-        //生成表体数据
+        // Generate new row
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
-        //根据表头是否允许删行填写表体是否允许删行
-        newRow.allowdelrow = newVoucherData.allowdelrow;
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+        // Populate the new row's allowDelRow with the header's allowDelRow
+        newRow.allowDelRow = newVoucherData.allowDelRow;
+        // Auto-generate row number
+        if (newVoucherData.body.length === 1) { // If there is only one row in the body
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]))
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]))
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
 
-        //生成错误信息数据
+        // Generate error information data
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
     };
-    //复制增行
+    // Add row by a copy of the current row
     const handleCopyAddRow = (index) => {
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherData.body[index]);
-        //生成错误信息数据
+        // Generate error information data
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
 
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+        // Auto-generate row number
+        if (newVoucherData.body.length === 1) { // If there is only one row in the body
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]))
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]))
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
-        //修改复制行的id和hid
+        // Reset id and hid to 0
         newRow.id = 0;
         newRow.hid = 0;
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
     };
-    //删行
+    // Delete the current row
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能删除最后一行!");
+            message.error(t("cannotDeleteLastRow"));
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
-        if (isModify) {
-            //判断是否在编辑状态下新增的行
-            if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接删除掉
+        if (isModify) {// If it is in modify state            
+            if (row.id === 0) { // If it is a newly added row, delete it directly
+                newVoucherData.body.splice(index, 1);
                 newErrors.body.splice(index, 1);
-            } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改删除标志
-                newErrors.body[index] = {}; //将删除掉的行所有错误信息归零
+            } else { // If it is an existing row, set the delete flag
+                newVoucherData.body[index].dr = 1;  
+                newErrors.body[index] = {}; 
             }
-        } else {
-            //新增状态下直接删除行
+        } else { // is it is in new state
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
@@ -249,37 +248,30 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
         setVoucherData(newVoucherData);
 
     };
-    //增加执行档案
-    const handleAddEIT = async () => {
-        //转换数据到后端格式
-        const thisEIT = transEITToBackend(voucherData);
+    // Add or Edit EPT
+    const handleAddEPT = async () => {
+        // Transform the voucherData to the data structure required by the backend
+        const thisEPT = transEPTToBackend(voucherData);
         if (isModify) {
-            let editRes = await reqEditEIT(thisEIT);
-            if (editRes.data.status === 0) {
-                message.success("修改执行模板'" + thisEIT.name + "'成功");
+            let editRes = await reqEditEPT(thisEPT);
+            if (editRes.status) {
+                message.success(t("modifySuccessful"));
                 onOk()
-            } else {
-                message.error("修改执行模板'" + thisEIT.name + "'失败:" + editRes.data.statusMsg);
-            }
+            } 
         } else {
-
-            let addRes = await reqAddEIT(thisEIT);
-            if (addRes.data.status === 0) {
-                message.success("新增执行模板'" + thisEIT.name + "'成功");
+            let addRes = await reqAddEPT(thisEPT);
+            if (addRes.status) {
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增执行模板'" + thisEIT.name + "'失败:" + addRes.data.statusMsg);
             }
-
-
         }
     };
-    //检查执行档案编码是否存在
+    // Check if the EPT code exsst
     const handleBackendTestCode = async (value) => {
         let err = { isErr: false, msg: "" };
         let docId = voucherData.id ? voucherData.id : 0;
-        let checkResp = await reqCheckEITCode({ id: docId, code: value });
-        if (checkResp.data.status === 0) {
+        let checkResp = await reqCheckEPTCode({ id: docId, code: value });
+        if (checkResp.status) {
             err = { isErr: false, msg: "" };
         } else {
             err = { isErr: true, msg: checkResp.data.statusMsg };
@@ -287,10 +279,12 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
         return err;
     };
 
+    console.log("voucherData:",voucherData);
+
     return voucherData !== undefined
-        ? <Stack component="div" id="eidtEIT" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
+        ? <Stack component="div" id="eidtEPT" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
             <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                <Typography variant="h3" component={"h3"}>执行模板</Typography>
+                <Typography variant="h3" component={"h3"}>{t("ept")}</Typography>
             </Stack>
             <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                 <Grid container id="VoucherHeader" spacing={2}>
@@ -299,11 +293,11 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="编码"
+                            itemShowName="code"
                             itemKey="code"
                             initValue={voucherData.code}
                             pickDone={handleGetValue}
-                            placeholder="请输入模板编码"
+                            placeholder="codePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestCode}
                             key="code"
@@ -316,27 +310,27 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={voucherData.name}
                             pickDone={handleGetValue}
-                            placeholder="请输入模板名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={false}
                             key="name"
                             positionID={0}
                             rowIndex={-1}
                         />
-                    </Grid> 
+                    </Grid>
                     <Grid item xs={6}>
                         <ScInput
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={voucherData.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入模板说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             key="description"
                             positionID={0}
@@ -350,12 +344,12 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={403}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="允许增行"
-                            itemKey="allowaddrow"
-                            initValue={voucherData.allowaddrow}
-                            pickDone={handleGetValue}                           
+                            itemShowName="allowAddRow"
+                            itemKey="allowAddRow"
+                            initValue={voucherData.allowAddRow}
+                            pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="allowaddrow"
+                            key="allowAddRow"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -365,12 +359,12 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={403}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="允许删行"
-                            itemKey="allowdelrow"
-                            initValue={voucherData.allowdelrow}
+                            itemShowName="allowDelRow"
+                            itemKey="allowDelRow"
+                            initValue={voucherData.allowDelRow}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="allowdelrow"
+                            key="allowDelRow"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -380,7 +374,7 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={402}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="停用"
+                            itemShowName="disable"
                             itemKey="status"
                             initValue={voucherData.status}
                             pickDone={handleGetValue}
@@ -391,14 +385,13 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             color="warning"
                         />
                     </Grid>
-                    
                 </Grid>
             </Stack>
             <ScVoucherBody bodyColumns={bodyColumns} addRowAction={handleAddRow} addRowVisible={isEdit}>
                 <ScVoucherBodyRow>
                     {voucherData.body.map((row, index) => {
                         return row.dr === 0
-                            ? (<tr key={"bodyrow" + row.rownumber}>
+                            ? (<tr key={"bodyrow" + row.rowNumber}>
                                 <td>
                                     <Tooltip title="复制增行" key={`rowCopyAdd${index}`}>
                                         <span>
@@ -420,12 +413,12 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={302}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="行号"
-                                        itemKey="rownumber"
-                                        initValue={row.rownumber}
+                                        itemShowName="rowNumber"
+                                        itemKey="rowNumber"
+                                        initValue={row.rowNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="rownumber"
+                                        key="rowNumber"
                                         positionID={1}
                                         rowIndex={index}
                                     />
@@ -435,12 +428,12 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={560}
                                         allowNull={false}
                                         isEdit={isEdit}
-                                        itemShowName="执行项目"
-                                        itemKey="eid"
-                                        initValue={row.eid}
+                                        itemShowName="epa"
+                                        itemKey="epa"
+                                        initValue={row.epa}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="eid"
+                                        key="epa"
                                         positionID={1}
                                         rowIndex={index}
                                     />
@@ -450,13 +443,13 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={590}
                                         allowNull={false}
                                         isEdit={isEdit}
-                                        itemShowName="风险等级"
-                                        itemKey="risklevel"
-                                        initValue={row.risklevel}
+                                        itemShowName="riskLevel"
+                                        itemKey="riskLevel"
+                                        initValue={row.riskLevel}
                                         pickDone={handleGetValue}
                                         pickErr={handleGetErr}
                                         isBackendTest={false}
-                                        key="risklevel"
+                                        key="riskLevel"
                                         positionID={1}
                                         rowIndex={index}
                                     />
@@ -466,12 +459,12 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={403}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="允许删行"
-                                        itemKey="allowdelrow"
-                                        initValue={row.allowdelrow}
+                                        itemShowName="allowDelRow"
+                                        itemKey="allowDelRow"
+                                        initValue={row.allowDelRow}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="allowdelrow"
+                                        key="allowDelRow"
                                         positionID={1}
                                         rowIndex={index}
                                     />
@@ -481,11 +474,11 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="说明"
+                                        itemShowName="description"
                                         itemKey="description"
                                         initValue={row.description}
                                         pickDone={handleGetValue}
-                                        placeholder="请输入说明"
+                                        placeholder="descriptionPlaceholder"
                                         isBackendTest={false}
                                         key="description"
                                         positionID={1}
@@ -494,18 +487,18 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                 </td>
                                 <td>
                                     <ScInput
-                                        dataType={row.eid.resulttype.id}
+                                        dataType={row.epa.resultType.id}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="默认值"
-                                        itemKey="defaultvalue"
-                                        initValue={row.defaultvalue}
+                                        itemShowName="defaultValue"
+                                        itemKey="defaultValue"
+                                        initValue={row.defaultValue}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="defaultvalue"
+                                        key="defaultValue"
                                         positionID={1}
                                         rowIndex={index}
-                                        udc={row.eid.udc !== undefined ? row.eid.udc : zeroUDC}
+                                        udc={row.epa.udc !== undefined ? row.epa.udc : zeroUDC}
                                     />
                                 </td>
                                 <td>
@@ -513,45 +506,30 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={403}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="是否检查问题"
-                                        itemKey="ischeckerror"
-                                        initValue={row.ischeckerror}
+                                        itemShowName="isCheckError"
+                                        itemKey="isCheckError"
+                                        initValue={row.isCheckError}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="ischeckerror"
+                                        key="isCheckError"
                                         positionID={1}
                                         rowIndex={index}
                                     />
                                 </td>
                                 <td>
                                     <ScInput
-                                        dataType={row.eid.resulttype.id}
-                                        allowNull={!row.ischeckerror}
+                                        dataType={row.epa.resultType.id}
+                                        allowNull={!row.isCheckError}
                                         isEdit={isEdit}
-                                        itemShowName="错误值"
-                                        itemKey="errorvalue"
-                                        initValue={row.errorvalue}
+                                        itemShowName="errorValue"
+                                        itemKey="errorValue"
+                                        initValue={row.errorValue}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="errorvalue"
+                                        key="errorValue"
                                         positionID={1}
                                         rowIndex={index}
-                                        udc={row.eid.udc !== undefined ? row.eid.udc : zeroUDC}
-                                    />
-                                </td>
-                                <td>
-                                    <ScInput
-                                        dataType={403}
-                                        allowNull={true}
-                                        isEdit={isEdit}
-                                        itemShowName="必传附件"
-                                        itemKey="isrequirefile"
-                                        initValue={row.isrequirefile}
-                                        pickDone={handleGetValue}
-                                        isBackendTest={false}
-                                        key="isrequirefile"
-                                        positionID={1}
-                                        rowIndex={index}
+                                        udc={row.epa.udc !== undefined ? row.epa.udc : zeroUDC}
                                     />
                                 </td>
                                 <td>
@@ -559,33 +537,37 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                                         dataType={403}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="必须现场拍照"
-                                        itemKey="isonsitephoto"
-                                        initValue={row.isonsitephoto}
+                                        itemShowName="isRequireFile"
+                                        itemKey="isRequireFile"
+                                        initValue={row.isRequireFile}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="isonsitephoto"
+                                        key="isRequireFile"
                                         positionID={1}
                                         rowIndex={index}
                                     />
                                 </td>
-                                
+                                <td>
+                                    <ScInput
+                                        dataType={403}
+                                        allowNull={true}
+                                        isEdit={isEdit}
+                                        itemShowName="isOnsitePhoto"
+                                        itemKey="isOnsitePhoto"
+                                        initValue={row.isOnsitePhoto}
+                                        pickDone={handleGetValue}
+                                        isBackendTest={false}
+                                        key="isOnsitePhoto"
+                                        positionID={1}
+                                        rowIndex={index}
+                                    />
+                                </td>
+
                             </tr>
                             )
                             : null
                     })}
                 </ScVoucherBodyRow>
-                {/*  <ScVoucherBodyFooter>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>5</td>
-                    <td>6</td>
-                    <td>7</td>
-                    <td>8</td>
-                    <td>9</td>
-                </ScVoucherBodyFooter> */}
             </ScVoucherBody>
             <Stack component="div" id="voucherRoot">
                 <Grid container id="voucherRoot" spacing={2}>
@@ -594,27 +576,27 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={voucherData.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={voucherData.creator}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                             positionID={2}
                             rowIndex={-1}
                         />
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建日期"
-                            itemKey="createdate"
-                            initValue={voucherData.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={voucherData.createDate}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                             positionID={2}
                             rowIndex={-1}
                         />
@@ -624,27 +606,27 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={voucherData.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={voucherData.modifier}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                             positionID={2}
                             rowIndex={-1}
                         />
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={307}
+                            dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="更新日期"
-                            itemKey="modifydate"
-                            initValue={voucherData.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={voucherData.modifyDate}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                             positionID={2}
                             rowIndex={-1}
                         />
@@ -654,10 +636,10 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
             <DialogActions sx={{ m: 1 }}>
                 {isEdit
                     ? <>
-                        <Button color="error" onClick={onCancel} >取消</Button>
-                        <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddEIT}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                        <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddEPT}>{t(isModify ? "save" : "add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
 
             </DialogActions>
@@ -666,4 +648,4 @@ const EditEexctiveItemTemplate = ({ isOpen, isNew, isModify, oriEIT, onCancel, o
 
 };
 
-export default EditEexctiveItemTemplate;
+export default EditEPT;

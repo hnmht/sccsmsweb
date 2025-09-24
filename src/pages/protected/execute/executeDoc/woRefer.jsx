@@ -15,7 +15,7 @@ const WORefer = ({ title, conditions,cancelClickAction,okClickAction,filterActio
             let querystring = transConditionsToString(conditions);
             const res = await reqReferWO({ querystring: querystring });
             let newRows = [];
-            if (res.data.status === 0) {
+            if (res.status) {
                 newRows = res.data.data;
             }
             setRows(newRows);

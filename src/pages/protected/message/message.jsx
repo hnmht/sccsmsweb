@@ -43,7 +43,7 @@ const Message = () => {
     const handleToReadMessage = async (msg) => {
 
         const res = await reqToReadMsg(msg);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("消息成功标记为已读");
         } else {
             message.error("消息标记为已读失败:" + res.data.statusMsg);
@@ -65,7 +65,7 @@ const Message = () => {
         let queryString = transConditionsToString(cons);
         let res = await reqReadComments({ queryString: queryString });
         let newRows = [];
-        if (res.data.status === 0 && res.data.data != null) {
+        if (res.status && res.data.data != null) {
             newRows = res.data.data;
         } else {
             message.warning(res.data.statusMsg);

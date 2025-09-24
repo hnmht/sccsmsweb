@@ -24,7 +24,7 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
     //提交按钮    
     const handelComiit = async() => {
         const addRes = await reqAddEDComment(commentData);
-        if (addRes.data.status === 0) {
+        if (addRes.status) {
             message.success("增加批注成功");
         } else {
             message.error("增加批注失败:"+addRes.data.statusMsg);

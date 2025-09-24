@@ -244,14 +244,14 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
   
         if (isModify) {
             const editRes = await reqEditTR(thisTR);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改培训记录成功,单据编号:" + editRes.data.data.billnumber);
             } else {
                 message.error("修改培训记录失败" + editRes.data.statusMsg);
             }
         } else {
             const addRes = await reqAddTR(thisTR);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增培训记录成功,单据编号:" + addRes.data.data.billnumber);
             } else {
                 message.error("新增培训记录失败" + addRes.data.statusMsg);

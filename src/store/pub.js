@@ -29,7 +29,7 @@ export const getUserInfo = async (token) => {
 export const getAppInfo = async () => {
     const res = await reqPubSysInfo();
     let newInfo = undefined;
-    if (res.data.status === 0) {
+    if (res.status) {
         newInfo = res.data.data;
     }
     store.dispatch(setAppinfo(newInfo));

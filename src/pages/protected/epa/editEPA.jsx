@@ -165,7 +165,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
         let err = { isErr: false, msg: "" };
         let checkResp = await reqCheckEPCode({ id: currentEP.id, epc: EPC, code: value }, false);
 
-        if (checkResp.data.status === 0) {
+        if (checkResp.status) {
             err = { isErr: false, msg: "" };
         } else {
             err = { isErr: true, msg: checkResp.data.statusMsg };

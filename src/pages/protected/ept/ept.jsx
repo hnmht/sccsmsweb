@@ -1,115 +1,113 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "@mui/material";
 import { message } from "mui-message";
 
-import { Divider } from "../../../../component/ScMui/ScMui";
-import PageTitle from "../../../../component/PageTitle/PageTitle";
-import DocList from "../../../../component/DocList/DocList";
-import EditEexctiveItemTemplate from "./editEIT";
-import { InitDocCache, GetLocalCache } from "../../../../storage/db/db";
+import { Divider } from "../../../component/ScMui/ScMui";
+import PageTitle from "../../../component/PageTitle/PageTitle";
+import DocList from "../../../component/DocList/DocList";
+import EditEPT from "./editEPT";
+import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./tableConstructor";
-import { transEITToBackend, transEITsToBackend } from "../../../../storage/db/db";
-import { reqDeleteEIT, reqDeleteEITs } from "../../../../api/exectiveTemplate";
-
-function ExecItemTemplate() {
+import { transEPTToBackend, transEPTsToBackend } from "../../../storage/db/db";
+import { reqDeleteEPT, reqDeleteEPTs } from "../../../api/ept";
+// Execution Project Template
+const EPT = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
-        currentEIT: undefined,
+        currentEPT: undefined,
         diagOpen: false,
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getData() {
-            handleGetEITList();
+            handleGetEPTList();
         }
         getData();
     }, []);
-    //获取执行项目模板列表
-    const handleGetEITList = async () => {
-        //从服务器下载最新数据到本地数据库
-        await InitDocCache("exectivetemplate");
-        //从本地数据库获取最新执行模板
-        const eits = await GetLocalCache("exectivetemplate");
-        setRows(eits);
+    // Get EPT list
+    const handleGetEPTList = async () => {
+        // Refresh local cache
+        await InitDocCache("ept");
+        // Read from local cache
+        const epts = await GetLocalCache("ept");
+        setRows(epts);
     };
-    //弹出对话框关闭/取消
+    // Close dialog
     const handleDiagClose = () => {
         setDiagStatus({
-            currentEIT: undefined,
+            currentEPT: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
     };
 
-    //弹出框点击确定按钮
+    // Actions after click OK button in dialog
     const handleDiagOk = () => {
         setDiagStatus({
-            currentEIT: undefined,
+            currentEPT: undefined,
             diagOpen: false,
             isNew: false,
             isModify: false
         });
-        //刷新界面数据
-        handleGetEITList();
+        // Refresh EPT list
+        handleGetEPTList();
     };
-    //点击表头增加按钮
+    // Actions after click Add button in header
     const handleAddDoc = () => {
         setDiagStatus({
-            currentEIT: undefined,
+            currentEPT: undefined,
             diagOpen: true,
             isNew: true,
             isModify: false
         });
     };
-    //表头点击批量删除
+    // Actions after click batch delete button in header
     const handleDelMultipleAction = async (docs) => {
-        const delDocs = await transEITsToBackend(docs);
-        const delRes = await reqDeleteEITs(delDocs);
-        if (delRes.data.status === 0) {
-            message.success("批量删除成功");
-        } else {
-            message.error(delRes.data.statusMsg);
+        const delDocs = await transEPTsToBackend(docs);
+        const delRes = await reqDeleteEPTs(delDocs);
+        if (delRes.status) {
+            message.success(t("batchDeleteSuccessful"));
         }
-        //更新本地缓存
-        handleGetEITList();
+        // refresh
+        handleGetEPTList();
     };
-    //点击表体编辑按钮
+    // Actions after click edit button in table body
     const handleRowEdit = (item) => {
         setDiagStatus({
-            currentEIT: item,
+            currentEPT: item,
             diagOpen: true,
             isNew: false,
             isModify: true
         });
 
     };
-    //点击表体删除按钮
+    // Actions after click delete button in table body
     const handleRowDelete = async (item) => {
-        const delEIT = await transEITToBackend(item);
-        const delRes = await reqDeleteEIT(delEIT);
-        if (delRes.data.status === 0) {
-            message.success("删除执行模板'" + delEIT.name + "'成功");
-            handleGetEITList();
-        } else {
-            message.error("删除执行模板'" + delEIT.name + "'失败:" + delRes.data.statusMsg);
+        const delEPT = await transEPTToBackend(item);
+        const delRes = await reqDeleteEPT(delEPT);
+        if (delRes.status) {
+            message.success(t("delSuccessful"));
+            handleGetEPTList();
         }
     };
-    //点击表体复制新增按钮
+    // Actions after click copyAdd button in table body
     const handleRowCopyAdd = (item) => {
         setDiagStatus({
-            currentEIT: item,
+            currentEPT: item,
             diagOpen: true,
             isNew: true,
             isModify: false
         });
     };
-    //点击表体详情按钮
+    // Actions after click detail button in table body
     const handleRowDetail = (item) => {
         setDiagStatus({
-            currentEIT: item,
+            currentEPT: item,
             diagOpen: true,
             isNew: false,
             isModify: false
@@ -117,14 +115,14 @@ function ExecItemTemplate() {
     };
 
     return (
-        <React.Fragment>
-            <PageTitle pageName="执行模板" displayHelp={true} helpUrl="/helps/execItemTemplate" />
+        <Fragment>
+            <PageTitle pageName={t("MenuEPT")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 rows={rows}
                 columns={columns}
                 addAction={handleAddDoc}
-                refreshAction={handleGetEITList}
+                refreshAction={handleGetEPTList}
                 delMultipleDisabled={delMultipleDisabled}
                 delMultipleAction={handleDelMultipleAction}
                 rowActionsDefine={rowActionsDefine}
@@ -141,17 +139,17 @@ function ExecItemTemplate() {
                 open={diagStatus.diagOpen}
                 closeAfterTransition={false}
             >
-                <EditEexctiveItemTemplate
+                <EditEPT
                     isOpen={diagStatus.diagOpen}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
-                    oriEIT={diagStatus.currentEIT}
+                    oriEPT={diagStatus.currentEPT}
                     onCancel={handleDiagClose}
                     onOk={handleDiagOk}
                 />
             </Dialog>
-        </React.Fragment>
+        </Fragment>
     );
 }
 
-export default ExecItemTemplate;
+export default EPT;

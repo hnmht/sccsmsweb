@@ -64,7 +64,7 @@ function RiskTrend() {
         async function initData() {
             const res = await reqGetRiskTrend({ startdate: interval.startdate, enddate: interval.enddate });
             let newData = { startdate: "", enddate: "", risktrends: [] };
-            if (res.data.status === 0) {
+            if (res.status) {
                 newData = res.data.data;
             } else {
                 message.error("请求数据错误:" + res.data.statusMsg);

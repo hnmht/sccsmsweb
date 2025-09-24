@@ -29,7 +29,7 @@ const LpaIssueDoc = () => {
             let queryString = transConditionsToString(generateLDConditions());
             let ldsRes = await reqGetLDList({ queryString: queryString });
             let newLds = [];
-            if (ldsRes.data.status === 0) {
+            if (ldsRes.status) {
                 newLds = ldsRes.data.data;
             } else {
                 message.warning(ldsRes.data.statusMsg);
@@ -101,7 +101,7 @@ const LpaIssueDoc = () => {
         let queryString = transConditionsToString(cons);
         let ldsRes = await reqGetLDList({ queryString: queryString });
         let newLds = [];
-        if (ldsRes.data.status === 0) {
+        if (ldsRes.status) {
             newLds = ldsRes.data.data;
         } else {
             message.warning(ldsRes.data.statusMsg);
@@ -113,7 +113,7 @@ const LpaIssueDoc = () => {
     const handleViewAction = async (item) => {
         const detailRes = await reqGetLDDetail(item);
         let trDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             trDetail = detailRes.data.data;
 
         } else {
@@ -134,7 +134,7 @@ const LpaIssueDoc = () => {
     const handleRowEdit = async (item) => {
         const detailRes = await reqGetLDDetail(item);
         let trDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             trDetail = detailRes.data.data;
         } else {
             message.error("向服务器请求数据时出错:" + detailRes.data.statusMsg);
@@ -152,7 +152,7 @@ const LpaIssueDoc = () => {
     //表体删除按钮
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteLD(item);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success(`删除劳保用品发放单${delRes.data.data.billnumber}成功`);
         } else {
             message.error(`删除劳保用品发放单${item.billnumber}失败:${delRes.data.statusMsg}`);
@@ -164,7 +164,7 @@ const LpaIssueDoc = () => {
     //表体确认
     const handleRowConfirm = async (item) => {
         const confirmRes = await reqConfirmLD(item);
-        if (confirmRes.data.status === 0) {
+        if (confirmRes.status) {
             message.success(`确认劳保用品发放单${confirmRes.data.data.billnumber}成功`);
         } else {
             message.error(`确认劳保用品发放单${item.billnumber}失败:${confirmRes.data.statusMsg}`);
@@ -177,7 +177,7 @@ const LpaIssueDoc = () => {
     //表体取消确认
     const handleRowCancelConfirm = async (item) => {
         const cancelRes = await reqCancelConfirmLD(item);
-        if (cancelRes.data.status === 0) {
+        if (cancelRes.status) {
             message.success(`取消确认劳保用品发放单${cancelRes.data.data.billnumber}成功`);
         } else {
             message.error(`取消确认劳保用品发放单${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);

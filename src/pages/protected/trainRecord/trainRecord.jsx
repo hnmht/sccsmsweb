@@ -29,7 +29,7 @@ const TrainRecord = () => {
             let queryString = transConditionsToString(generateTRConditions());
             let trsRes = await reqGetTRList({ queryString: queryString });
             let newTrs = [];
-            if (trsRes.data.status === 0) {
+            if (trsRes.status) {
                 newTrs = trsRes.data.data;
             } else {
                 message.warning(trsRes.data.statusMsg);
@@ -101,7 +101,7 @@ const TrainRecord = () => {
         let queryString = transConditionsToString(cons);
         let trsRes = await reqGetTRList({ queryString: queryString });
         let newTrs = [];
-        if (trsRes.data.status === 0) {
+        if (trsRes.status) {
             newTrs = trsRes.data.data;
         } else {
             message.warning(trsRes.data.statusMsg);
@@ -114,7 +114,7 @@ const TrainRecord = () => {
         const detailRes = await reqGetTRDetail(item);
 
         let trDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             trDetail = detailRes.data.data;
 
         } else {
@@ -135,7 +135,7 @@ const TrainRecord = () => {
     const handleRowEdit = async (item) => {
         const detailRes = await reqGetTRDetail(item);
         let trDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             trDetail = detailRes.data.data;
         } else {
             message.error("向服务器请求数据时出错:" + detailRes.data.statusMsg);
@@ -153,7 +153,7 @@ const TrainRecord = () => {
     //表体删除按钮
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteTR(item);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success(`删除培训记录${delRes.data.data.billnumber}成功`);
         } else {
             message.error(`删除培训记录${delRes.data.data.billnumber}失败:${delRes.data.statusMsg}`);
@@ -165,7 +165,7 @@ const TrainRecord = () => {
     //表体确认
     const handleRowConfirm = async (item) => {
         const confirmRes = await reqConfirmTR(item);
-        if (confirmRes.data.status === 0) {
+        if (confirmRes.status) {
             message.success(`确认培训记录${confirmRes.data.data.billnumber}成功`);
         } else {
             message.error(`确认培训记录${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
@@ -178,7 +178,7 @@ const TrainRecord = () => {
     //表体取消确认
     const handleRowCancelConfirm = async (item) => {
         const cancelRes = await reqCancelConfirmTR(item);
-        if (cancelRes.data.status === 0) {
+        if (cancelRes.status) {
             message.success(`取消确认培训记录${cancelRes.data.data.billnumber}成功`);
         } else {
             message.error(`取消确认培训记录${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);

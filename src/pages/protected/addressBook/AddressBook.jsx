@@ -41,7 +41,7 @@ function AddressBook() {
     const handlePersonsRefresh = async () => {
         const res = await reqGetPersons();
         let newPersons = [];
-        if (res.data.status === 0) {
+        if (res.status) {
             newPersons = res.data.data;
         }
         setPersons(newPersons);

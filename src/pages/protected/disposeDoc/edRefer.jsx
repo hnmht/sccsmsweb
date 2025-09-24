@@ -15,7 +15,7 @@ const EDRefer = ({ title, conditions, cancelClickAction, okClickAction, filterAc
             let querystring = transConditionsToString(conditions);
             const res = await reqReferED({ querystring: querystring });
             let newRows = [];
-            if (res.data.status === 0) {
+            if (res.status) {
                 newRows = res.data.data;
             }
             setRows(newRows);

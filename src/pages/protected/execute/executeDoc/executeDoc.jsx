@@ -31,7 +31,7 @@ function ExecuteDoc() {
             let queryString = transConditionsToString(generateEDConditions());
             let edsRes = await reqGetEDList({ queryString: queryString });
             let newEds = [];
-            if (edsRes.data.status === 0) {
+            if (edsRes.status) {
                 newEds = edsRes.data.data;
             } else {
                 message.warning(edsRes.data.statusMsg);
@@ -141,7 +141,7 @@ function ExecuteDoc() {
         let queryString = transConditionsToString(cons);
         let edsRes = await reqGetEDList({ queryString: queryString });
         let newEds = [];
-        if (edsRes.data.status === 0) {
+        if (edsRes.status) {
             newEds = edsRes.data.data;
         } else {
             message.warning(edsRes.data.statusMsg);
@@ -154,7 +154,7 @@ function ExecuteDoc() {
         const detailRes = await reqGetEDDetail(item);
         
         let edDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             edDetail = await transEDDetailToFronted(detailRes.data.data);
             
         } else {
@@ -175,7 +175,7 @@ function ExecuteDoc() {
     const handleRowEdit = async (item) => {
          const detailRes = await reqGetEDDetail(item);
         let edDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             edDetail = await transEDDetailToFronted(detailRes.data.data);
         } else {
             message.error("向服务器请求数据时出错:"+detailRes.data.statusMsg);
@@ -194,7 +194,7 @@ function ExecuteDoc() {
     //表体删除按钮
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteED(item);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success(`删除指令单${delRes.data.data.billnumber}成功`);
         } else {
             message.error(`删除指令单${delRes.data.data.billnumber}失败:${delRes.data.statusMsg}`);
@@ -206,7 +206,7 @@ function ExecuteDoc() {
     //表体确认
     const handleRowConfirm = async(item) => {
         const confirmRes = await reqConfirmED(item);
-        if (confirmRes.data.status === 0) {
+        if (confirmRes.status) {
             message.success(`确认指令单${confirmRes.data.data.billnumber}成功`);
         } else {
             message.error(`确认指令单${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
@@ -219,7 +219,7 @@ function ExecuteDoc() {
     //表体取消确认
     const handleRowCancelConfirm = async(item) => {
         const cancelRes = await reqCancelConfirmED(item);
-        if (cancelRes.data.status === 0) {
+        if (cancelRes.status) {
             message.success(`取消确认指令单${cancelRes.data.data.billnumber}成功`);
         } else {
             message.error(`取消确认指令单${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);

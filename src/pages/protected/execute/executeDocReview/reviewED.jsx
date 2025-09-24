@@ -50,7 +50,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
             //获取批注记录
             let newComments = [];
             const commentsRes = await reqGetEDComments({ hid: newED.id })
-            if (commentsRes.data.status === 0 ) {
+            if (commentsRes.status ) {
                 if (commentsRes.data.data.comments !== null) {
                     newComments = commentsRes.data.data.comments;
                 }                
@@ -61,7 +61,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
             //获取审阅记录
             let newReviews = [];
             const reviewRes = await reqGetEDReviews({ hid: newED.id });
-            if (reviewRes.data.status === 0) {
+            if (reviewRes.status) {
                 if (reviewRes.data.data.reviews !== null) {
                     newReviews = reviewRes.data.data.reviews;
                 }                
@@ -114,7 +114,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
         //获取批注记录
         let newComments = [];
         const commentsRes = await reqGetEDComments({ hid: voucherData.id })
-        if (commentsRes.data.status === 0) {
+        if (commentsRes.status) {
             newComments = commentsRes.data.data.comments;
         } else {
             message.error("刷新批注列表失败:" + commentsRes.data.statusMsg);
@@ -139,7 +139,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
             consumeseconds: dayjs(new Date()).diff(dayjs(startTime), "seconds")
         };
         const addRes = await reqAddEDReview(reviewRecord);
-        if (addRes.data.status === 0) {
+        if (addRes.status) {
             message.success("本次审阅" + reviewRecord.consumeseconds + "秒.");
         } else {
             message.error("审阅记录提交服务器失败:" + addRes.data.statusMsg);

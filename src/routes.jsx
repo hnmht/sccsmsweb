@@ -37,14 +37,14 @@ const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/tr
 const GiveLessons = Loadable(lazy(() => import("./pages/protected/giveLessons/giveLessons"))); //授课查询
 const ReceiveTraining = Loadable(lazy(() => import("./pages/protected/receiveTraining/receiveTraining"))); //受训查询
 
-//劳保用品
+// Personal Protective Equipment
 const LpaQuota = Loadable(lazy(() => import("./pages/protected/lpaQuota/lpaQuota"))); //劳保用品定额
 const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWizard"))); //发放向导
 const LpaIssueDoc = Loadable(lazy(() => import("./pages/protected/lpaIssueDoc/lpaIssueDoc"))); //发放单
 const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery"))); //发放查询
 
-//模板
-const ExecItemTemplate = Loadable(lazy(() => import("./pages/protected/template/execItemTemplate/execItemTemplate")));
+// Execution Project Template
+const EPT = Loadable(lazy(() => import("./pages/protected/ept/ept")));
 //指令单
 const WorkOrderDoc = Loadable(lazy(() => import("./pages/protected/workOrder/workOrderDoc")));  //指令单
 //权限界面
@@ -233,8 +233,8 @@ const routes = [
                 element: <PPE />
             },
             {
-                path: "/private/template/execItemTemplate",
-                element: <ExecItemTemplate />
+                path: "/private/template/executionProjectTemplate",
+                element: <EPT />
             },
             {
                 path: "/private/reports/workOrderStat",

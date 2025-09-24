@@ -28,7 +28,7 @@ function WorkOrderDoc() {
             let queryString = transConditionsToString(generateConditions());
             let wosRes = await reqGetWOList({ queryString: queryString });
             let newWos = [];
-            if (wosRes.data.status === 0) {
+            if (wosRes.status) {
                 newWos = wosRes.data.data;
             } else {
                 message.warning(wosRes.data.statusMsg);
@@ -70,7 +70,7 @@ function WorkOrderDoc() {
         let queryString = transConditionsToString(cons);
         let wosRes = await reqGetWOList({ queryString: queryString });
         let newWos = [];
-        if (wosRes.data.status === 0) {
+        if (wosRes.status) {
             newWos = wosRes.data.data;
         } else {
             message.warning(wosRes.data.statusMsg);
@@ -101,7 +101,7 @@ function WorkOrderDoc() {
     const handleViewAction = async (item) => {
         let res = await reqGetWODetail(item);
         let newDiagStatus = {};
-        if (res.data.status === 0) {
+        if (res.status) {
             let woDetail = await transWoDetailToFronted(res.data.data);
             newDiagStatus = {
                 isOpen: true,
@@ -126,7 +126,7 @@ function WorkOrderDoc() {
     const handleEditAction = async (item) => {
         let res = await reqGetWODetail(item);
         let newDiagStatus = {};
-        if (res.data.status === 0) {
+        if (res.status) {
             let woDetail = await transWoDetailToFronted(res.data.data);
             newDiagStatus = {
                 isOpen: true,
@@ -151,7 +151,7 @@ function WorkOrderDoc() {
     const handleRowCopyAdd = async (item) => {
         let res = await reqGetWODetail(item);
         let newDiagStatus = {};
-        if (res.data.status === 0) {
+        if (res.status) {
             let woDetail = await transWoDetailToFronted(res.data.data);
             newDiagStatus = {
                 isOpen: true,
@@ -175,7 +175,7 @@ function WorkOrderDoc() {
     //行删除按钮点击
     const handleRowDelete = async (item) => {
         let res = await reqDeleteWO(item);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("删除" + item.billnumber + "指令单成功");
         } else {
             message.error("删除" + item.billnumber + "指令单失败:" + res.data.statusMsg);
@@ -187,7 +187,7 @@ function WorkOrderDoc() {
     //行确认按钮点击
     const handleConfirmRow = async (item) => {
         let res = await reqConfirmWO(item);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("确认" + item.billnumber + "指令单成功");
         } else {
             message.error("确认" + item.billnumber + "指令单失败:" + res.data.statusMsg);
@@ -199,7 +199,7 @@ function WorkOrderDoc() {
     //行取消确认按钮点击
     const handleCancelConfirmRow = async (item) => {
         let res = await reqCancelConfirmWO(item);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("取消确认" + item.billnumber + "指令单成功");
         } else {
             message.error("取消确认" + item.billnumber + "指令单失败:" + res.data.statusMsg);
@@ -211,7 +211,7 @@ function WorkOrderDoc() {
     //批量删除按钮点击
     const handleDelMultipleAction = async (docs) => {
         const delsRes = await reqDeleteWOs(docs);
-        if (delsRes.data.status === 0) {
+        if (delsRes.status) {
             message.success("批量删除指令单成功");
             handleRefreshList(conditions);
         } else {

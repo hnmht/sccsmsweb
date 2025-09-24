@@ -150,13 +150,12 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
             }
         } else {// Add EPC            
             const addRes = await reqAddEPC(thisDoc);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("addSuccessful");
                 onOk();
             }
         }
     }
-
 
     return currentDoc
         ? <>

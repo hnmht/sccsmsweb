@@ -147,7 +147,7 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
         delete thisDoc.modifydate;
         if (isModify) {
             let editRes = await reqEditDoc(thisDoc);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改档案'" + thisDoc.name + "'成功");
                 onOk();
             } else {
@@ -155,7 +155,7 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
             }
         } else {
             let addRes = await reqAddDoc(thisDoc);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增档案‘" + thisDoc.name + "’成功");
                 onOk();
             } else {

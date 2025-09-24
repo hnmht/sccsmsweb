@@ -19,7 +19,7 @@ const WorkOrderStat = () => {
         let queryString = transConditionsToString(cons);
         let worsRes = await reqWOReport({ queryString: queryString });
         let newRows = [];
-        if (worsRes.data.status === 0) {
+        if (worsRes.status) {
             newRows = worsRes.data.data;
         } else {
             message.warning(worsRes.data.statusMsg);

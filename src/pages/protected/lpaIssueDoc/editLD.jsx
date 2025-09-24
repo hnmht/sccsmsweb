@@ -203,14 +203,14 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
 
         if (isModify) {
             const editRes = await reqEditLD(thisLD);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改劳保用品发放单成功,单据编号:" + editRes.data.data.billnumber);
             } else {
                 message.error("修改劳保用品发放单失败" + editRes.data.statusMsg);
             }
         } else {
             const addRes = await reqAddLD(thisLD);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增劳保用品发放单成功,单据编号:" + addRes.data.data.billnumber);
             } else {
                 message.error("新增劳保用品发放单失败" + addRes.data.statusMsg);

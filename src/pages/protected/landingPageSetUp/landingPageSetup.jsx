@@ -66,7 +66,7 @@ const LandingPageSetUp = () => {
         async function initialData() {
             let infoRes = await reqLandingPageInfo();
             let info = {};
-            if (infoRes.data.status === 0) {
+            if (infoRes.status) {
                 info = infoRes.data.data;
             } else {
                 message.error("获取首页设置信息出错:" + infoRes.data.statusMsg);
@@ -116,7 +116,7 @@ const LandingPageSetUp = () => {
     const handleModifySetup = async () => {
         let newInfo = cloneDeep(currentSetup);
         const modifyRes = await reqModifyLandingPageInfo(newInfo);
-        if (modifyRes.data.status === 0) {
+        if (modifyRes.status) {
             newInfo = modifyRes.data.data;
             message.success("修改成功!");
         } else {

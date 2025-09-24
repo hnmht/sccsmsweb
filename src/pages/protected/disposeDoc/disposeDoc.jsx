@@ -30,7 +30,7 @@ function DisposeDoc() {
             let queryString = transConditionsToString(generateDDConditions());
             let ddsRes = await reqDDList({ queryString: queryString });
             let newDds = [];
-            if (ddsRes.data.status === 0) {
+            if (ddsRes.status) {
                 newDds = ddsRes.data.data;
             } else {
                 message.warning(ddsRes.data.statusMsg);
@@ -45,7 +45,7 @@ function DisposeDoc() {
         let queryString = transConditionsToString(cons);
         let ddsRes = await reqDDList({ queryString: queryString });
         let newDds = [];
-        if (ddsRes.data.status === 0) {
+        if (ddsRes.status) {
             newDds = ddsRes.data.data;
         } else {
             message.warning(ddsRes.data.statusMsg);
@@ -162,7 +162,7 @@ function DisposeDoc() {
     //表体点击删除按钮
     const handleRowDelete=async (item) => {
         const delRes = await reqDeleteDD(item);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success(`删除处理单${delRes.data.data.billnumber}成功`);
         } else {
             message.error(`删除处理单${delRes.data.data.billnumber}失败:${delRes.data.statusMsg}`);
@@ -174,7 +174,7 @@ function DisposeDoc() {
     //表体确认
     const handleRowConfirm = async (item) => {
         const confirmRes = await reqConfirmDD(item);
-        if (confirmRes.data.status === 0) {
+        if (confirmRes.status) {
             message.success(`确认处理单${confirmRes.data.data.billnumber}成功`);
         } else {
             message.error(`确认处理单${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
@@ -187,7 +187,7 @@ function DisposeDoc() {
     //表体取消确认
     const handleRowCancelConfirm = async (item) => {
         const cancelRes = await reqCancelConfirmDD(item);
-        if (cancelRes.data.status === 0) {
+        if (cancelRes.status) {
             message.success(`取消确认处理单${cancelRes.data.data.billnumber}成功`);
         } else {
             message.error(`取消确认处理单${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);

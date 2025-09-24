@@ -29,7 +29,7 @@ const ExecuteDocReview = () => {
             let queryString = transConditionsToString(generateEDConditions());
             let edsRes = await reqGetPagingEDReviewList({ queryString: queryString, page: 0, perPage: 10 });
             let newEds = { eds: [], count: 0 };
-            if (edsRes.data.status === 0) {
+            if (edsRes.status) {
                 newEds = edsRes.data.data;
             } else {
                 message.warning(edsRes.data.statusMsg);
@@ -46,7 +46,7 @@ const ExecuteDocReview = () => {
         let edsRes = await reqGetPagingEDReviewList({ queryString: queryString, page: page1, perpage: perPage1 });
         let newEds = { eds: [], count: 0, page: 0, perpage: perPage1 };
 
-        if (edsRes.data.status === 0) {
+        if (edsRes.status) {
             newEds = edsRes.data.data;
         } else {
             message.warning(edsRes.data.statusMsg);
@@ -90,7 +90,7 @@ const ExecuteDocReview = () => {
     const handleViewAction = async (item) => {
         const detailRes = await reqGetEDDetail(item);
         let edDetail = {};
-        if (detailRes.data.status === 0) {
+        if (detailRes.status) {
             edDetail = await transEDDetailToFronted(detailRes.data.data);
         } else {
             message.error(detailRes.data.statusMsg);
@@ -106,7 +106,7 @@ const ExecuteDocReview = () => {
     //表体确认
     const handleRowConfirm = async (item) => {
         const confirmRes = await reqConfirmED(item);
-        if (confirmRes.data.status === 0) {
+        if (confirmRes.status) {
             message.success(`确认指令单${confirmRes.data.data.billnumber}成功`);
         } else {
             message.error(`确认指令单${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
@@ -119,7 +119,7 @@ const ExecuteDocReview = () => {
     //表体取消确认
     const handleRowCancelConfirm = async (item) => {
         const cancelRes = await reqCancelConfirmED(item);
-        if (cancelRes.data.status === 0) {
+        if (cancelRes.status) {
             message.success(`取消确认指令单${cancelRes.data.data.billnumber}成功`);
         } else {
             message.error(`取消确认指令单${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);

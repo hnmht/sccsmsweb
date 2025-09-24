@@ -70,7 +70,7 @@ function Calendar() {
         let newEvents = [];
         if (person.id !== 0 && dur !== undefined) {
             const res = await reqGetEvents({ userid: person.id, start: dur.start, end: dur.end });
-            if (res.data.status === 0) {
+            if (res.status) {
                 if (res.data.data.resultnumber > 0) {
                     newEvents = res.data.data.events;
                 }

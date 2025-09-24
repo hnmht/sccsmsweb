@@ -29,7 +29,7 @@ const Profile = () => {
         async function initialData() {
             let userRes = await reqUserInfo();
             let user = {};
-            if (userRes.data.status === 0) {
+            if (userRes.status) {
                 user = userRes.data.data;
             } else {
                 message.error("获取当前用户信息失败:" + userRes.data.statusMsg);
@@ -69,7 +69,7 @@ const Profile = () => {
         delete thisUser.modifydate;
         delete thisUser.roles;
         const modifyRes = await reqModifyProfile(thisUser);
-        if (modifyRes.data.status === 0) {
+        if (modifyRes.status) {
             thisUser = modifyRes.data.data;
             message.success("修改成功!");
         } else {

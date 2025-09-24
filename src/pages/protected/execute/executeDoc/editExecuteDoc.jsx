@@ -312,14 +312,14 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
         const thisED = transEDToBackend(voucherData);
         if (isModify) {
             const editRes = await reqEditED(thisED);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改执行单成功,单据编号:" + editRes.data.data.billnumber);
             } else {
                 message.error("修改执行单失败" + editRes.data.statusMsg);
             }
         } else {
             const addRes = await reqAddED(thisED);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增执行单成功,单据编号:" + addRes.data.data.billnumber);
             } else {
                 message.error("新增执行单失败" + addRes.data.statusMsg);

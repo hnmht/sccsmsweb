@@ -139,7 +139,7 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
         if (isModify) {
             let editRes = await reqEditDD(thisDD);
             // console.log(thisDD);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改问题处理单" + thisDD.billnumber + "成功");
                 onOk();
             } else {
@@ -147,7 +147,7 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
             }
         } else {
             let addRes = await reqAddDD(thisDD);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增问题处理单成功,单据编号:" + addRes.data.data.billnumber);
                 onOk();
             } else {

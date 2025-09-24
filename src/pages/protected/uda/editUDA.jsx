@@ -111,7 +111,7 @@ const EditUDA = ({ isOpen, isNew, isModify, oriUDA, UDC, onCancel, onOk }) => {
             }
         } else {
             let addRes = await reqAddUDA(thisUDA);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success(t("addSuccessful"));
                 onOk();
             }

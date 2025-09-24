@@ -241,14 +241,14 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
 
         if (isModify) {
             let editRes = await reqEditWO(thisWO);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改编号" + thisWO.billnumber + "指令单成功!");
             } else {
                 message.error("修改编号" + thisWO.billnumber + "指令单失败:" + editRes.data.statusMsg);
             }
         } else {
             let addRes = await reqAddWO(thisWO);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增指令单成功,单据编号:" + addRes.data.data.billnumber);
             } else {
                 message.error("新增指令单失败" + addRes.data.statusMsg);

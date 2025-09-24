@@ -9,7 +9,7 @@ import DocList from "../../../component/DocList/DocList";
 import EditTC from "./editTC";
 import { reqDeleteTC, reqDeleteTCs, reqGetTCList } from "../../../api/tc";
 
-import { GetLocalCache, InitDocCache } from "../../../storage/db/db";
+import { InitDocCache } from "../../../storage/db/db";
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 
 
@@ -34,7 +34,7 @@ const TC = () => {
         let newTcs = [];
         if (res.status) {
             newTcs = res.data;
-        } 
+        }
         setRows(newTcs);
         InitDocCache("tc");
     };

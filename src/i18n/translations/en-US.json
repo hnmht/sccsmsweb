@@ -235,6 +235,10 @@
     "mobileShoot":"Mobile Shoot",
     "mobileUpload":"Mobile Upload",
 
+    "cannotDeleteLastRow": "Cannot delete the last row.",
+    "ept":"Execution Project Template",
+    
+
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
     "author": "HaiTao Meng",

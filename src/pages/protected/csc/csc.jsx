@@ -100,7 +100,7 @@ function CSC() {
     // Actions after click the batch delete button in the header.
     const handleDelMultipleAction = async (docs) => {
         const delRes = await reqDeleteCSCs(docs, true);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success(t('batchDeleteSuccessful'));
         }
         // Refresh

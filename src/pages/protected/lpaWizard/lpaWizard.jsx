@@ -69,7 +69,7 @@ const LpaWizard = () => {
         //从服务器请求符合条件的岗位列表
         const opsRes = await reqGetPeriodOps({ period: value.period });
         let newOPs = [];
-        if (opsRes.data.status === 0) {
+        if (opsRes.status) {
             newOPs = opsRes.data.data.ops;
         } else {
             message.warning("获取岗位列表错误:" + opsRes.data.statusMsg);
@@ -102,7 +102,7 @@ const LpaWizard = () => {
         let vNumbers = [];
         let resTips = "";
 
-        if (wizardRes.data.status === 0) {
+        if (wizardRes.status) {
             resTips = "劳保用品发放向导生成发放单成功!";
             vNumbers = wizardRes.data.data.vouchernumbers;
         } else {

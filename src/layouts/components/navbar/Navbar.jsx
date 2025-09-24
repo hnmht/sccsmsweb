@@ -39,7 +39,7 @@ const Navbar = ({ onDrawerToggle }) => {
     async function getSysInfo() {
       const res = await reqPubSysInfo();
       let newSysInfo = undefined;
-      if (res.data.status === 0) {
+      if (res.status) {
         newSysInfo = res.data.data;
       }
       setSysInfo(newSysInfo);

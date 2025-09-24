@@ -238,14 +238,14 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
         const periodDis = PeriodDisplay.get(thisLQ.period);
         if (isModify) {
             let editRes = await reqEditLQ(thisLQ);
-            if (editRes.data.status === 0) {
+            if (editRes.status) {
                 message.success("修改" + thisLQ.op.name + periodDis +"岗位定额成功!");
             } else {
                 message.error("修改" + thisLQ.op.name + + periodDis + "岗位定额失败:" + editRes.data.statusMsg);
             }
         } else {
             let addRes = await reqAddLQ(thisLQ);
-            if (addRes.data.status === 0) {
+            if (addRes.status) {
                 message.success("新增" + thisLQ.op.name + + periodDis + "岗位定额成功.");
             } else {
                 message.error("新增" + thisLQ.op.name + + periodDis + "岗位定额失败:" + addRes.data.statusMsg);
@@ -257,7 +257,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
     const handleCheckSameOP = async (value) => {
         let err = { isErr: false, msg: "" };
         let resp = await reqCheckOPQuota({ id: voucherData.id, op: value, "period": voucherData.period }, false);
-        if (resp.data.status === 0) {
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
             err = { isErr: true, msg: resp.data.statusMsg };
@@ -268,7 +268,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
     const handleCheckSamePeriod = async (value) => {
         let err = { isErr: false, msg: "" };
         let resp = await reqCheckOPQuota({ id: voucherData.id, op: voucherData.op, "period": value }, false);
-        if (resp.data.status === 0) {
+        if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
             err = { isErr: true, msg: resp.data.statusMsg };

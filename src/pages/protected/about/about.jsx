@@ -11,7 +11,7 @@ const About = () => {
         async function initAppInfo() {
             const res = await reqPubSysInfo();
             let newInfo = undefined;
-            if (res.data.status === 0) {
+            if (res.status) {
                 newInfo = res.data.data;
             }
             setAppInfo(newInfo);

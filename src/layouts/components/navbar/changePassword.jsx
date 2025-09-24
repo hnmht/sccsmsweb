@@ -42,7 +42,7 @@ function ChangePassword({ user, onCancel }) {
         async function getKey() {
             const res = await reqGetPublicKey(false);
             let pk = "";
-            if (res.data.status === 0) {
+            if (res.status) {
                 pk = res.data.data;
             } else {
                 message.error("获取公玥失败:" + res.data.statusMsg);
@@ -69,7 +69,7 @@ function ChangePassword({ user, onCancel }) {
         thisParams.newpwd = encryptor.encrypt(thisParams.newpwd);
         thisParams.confirmnewpwd = encryptor.encrypt(thisParams.confirmnewpwd);
         const res = await reqChangePwd(thisParams);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("密码修改成功");
             onCancel();
         } else {

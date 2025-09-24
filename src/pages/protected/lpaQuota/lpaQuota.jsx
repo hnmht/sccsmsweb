@@ -29,7 +29,7 @@ const LpaQuota = () => {
             let queryString = transConditionsToString(generateConditions());
             let lqsRes = await reqGetLQList({ queryString: queryString });
             let newLqs = [];
-            if (lqsRes.data.status === 0) {
+            if (lqsRes.status) {
                 newLqs = lqsRes.data.data;
             } else {
                 message.warning(lqsRes.data.statusMsg);
@@ -71,7 +71,7 @@ const LpaQuota = () => {
         let queryString = transConditionsToString(cons);
         let lqsRes = await reqGetLQList({ queryString: queryString });
         let newLqs = [];
-        if (lqsRes.data.status === 0) {
+        if (lqsRes.status) {
             newLqs = lqsRes.data.data;
         } else {
             message.warning(lqsRes.data.statusMsg);
@@ -102,7 +102,7 @@ const LpaQuota = () => {
     const handleViewAction = async (item) => {
         let res = await reqGetLQDetail(item);
         let newDiagStatus = {};
-        if (res.data.status === 0) {
+        if (res.status) {
             let lqDetail = res.data.data;
             newDiagStatus = {
                 isOpen: true,
@@ -127,7 +127,7 @@ const LpaQuota = () => {
     const handleEditAction = async (item) => {
         let res = await reqGetLQDetail(item);
         let newDiagStatus = {};
-        if (res.data.status === 0) {
+        if (res.status) {
             let lqDetail = res.data.data;
             newDiagStatus = {
                 isOpen: true,
@@ -152,7 +152,7 @@ const LpaQuota = () => {
     const handleRowCopyAdd = async (item) => {
         let res = await reqGetLQDetail(item);
         let newDiagStatus = {};
-        if (res.data.status === 0) {
+        if (res.status) {
             let lqDetail = res.data.data;
             newDiagStatus = {
                 isOpen: true,
@@ -177,7 +177,7 @@ const LpaQuota = () => {
     const handleRowDelete = async (item) => {
         let periodDis = PeriodDisplay.get(item.period); 
         let res = await reqDeleteLQ(item);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("删除" + item.op.name + periodDis + "定额成功");
         } else {
             message.error("删除" + item.op.name + periodDis + "定额失败:" + res.data.statusMsg);
@@ -190,7 +190,7 @@ const LpaQuota = () => {
     const handleConfirmRow = async (item) => {
         let periodDis = PeriodDisplay.get(item.period); 
         let res = await reqConfirmLQ(item);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("确认" + item.op.name + periodDis + "定额成功");
         } else {
             message.error("确认" + item.op.name + periodDis + "定额失败:" + res.data.statusMsg);
@@ -203,7 +203,7 @@ const LpaQuota = () => {
     const handleCancelConfirmRow = async (item) => {
         let periodDis = PeriodDisplay.get(item.period); 
         let res = await reqCancelConfirmLQ(item);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("取消确认" + item.op.name + periodDis + "定额成功");
         } else {
             message.error("取消确认" + item.op.name + periodDis + "定额失败:" + res.data.statusMsg);

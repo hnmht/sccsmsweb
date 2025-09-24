@@ -47,7 +47,7 @@ const Registration = () => {
     const getAppInfo = async () => {
         const res = await reqPubSysInfo();
         let newInfo = undefined;
-        if (res.data.status === 0) {
+        if (res.status) {
             newInfo = res.data.data;
         }
         setAppInfo(newInfo);
@@ -78,7 +78,7 @@ const Registration = () => {
     //申请许可
     const handleRegistration = async () => {
         const res = await reqRegistration(orgInfo, true);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("申请免费许可成功!");
         } else {
             message.error("申请免费许可失败:" + res.data.statusMsg);
@@ -89,7 +89,7 @@ const Registration = () => {
     //生成许可申请文件
     const handleGenerateKeyGen = async () => {
         const res = await reqGenerateKeyGen(orgInfo,true);
-        if (res.data.status === 0) {
+        if (res.status) {
             message.success("生成许可申请文件成功,请将服务器安装文件夹下的license.gen文件发送给软件提供商!");
         } else {
             message.error("生成许可申请文件失败:" + res.data.statusMsg);

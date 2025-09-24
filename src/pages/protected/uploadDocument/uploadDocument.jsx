@@ -36,7 +36,7 @@ const UploadDocument = () => {
             let docRes = await reqGetDocPage({ dc: dc1, page: page1, perpage: perPage1 });
             let newDocs = { docs: [], count: 0, page: 0, perpage: perPage1 };
 
-            if (docRes.data.status === 0) {
+            if (docRes.status) {
                 newDocs = docRes.data.data;
             } else {
                 message.warning(docRes.data.statusMsg);
@@ -106,7 +106,7 @@ const UploadDocument = () => {
     const handleRowDelete = async (doc) => {        
         //向服务器请求删除
         const delRes = await reqDeleteDoc(doc);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success("删除文档" + doc.name + "成功");
         } else {
             message.error("删除文档" + doc.name + "失败:" + delRes.data.statusMsg);        }
@@ -116,7 +116,7 @@ const UploadDocument = () => {
     //表头点击批量删除
     const handleDelMultipleAction = async (docs) => {      
         const delRes = await reqDeleteDocs(docs);
-        if (delRes.data.status === 0) {
+        if (delRes.status) {
             message.success("批量删除成功");
         } else {
             message.error("批量删除失败:"+delRes.data.statusMsg);

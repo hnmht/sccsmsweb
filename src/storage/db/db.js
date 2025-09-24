@@ -8,7 +8,7 @@ import { reqGetUDCList, reqGetUDCsCache } from "../../api/udc";
 import { reqGetUDAAll, reqGetUDACache } from "../../api/uda";
 import { reqGetSimpEPCList, reqGetSimpEPCCache } from "../../api/epc";
 import { reqGetEPList, reqGetEPCache } from "../../api/epa";
-import { reqGetEITList, reqGetEITCache } from "../../api/exectiveTemplate";
+import { reqGetEPTList, reqGetEPTCache } from "../../api/ept";
 import { reqGetCSList, reqGetCSCache } from "../../api/csa";
 import { reqGetCSOCache, reqGetCSOs } from "../../api/cso";
 import { reqGetSimpCSCList, reqGetSimpCSCCache } from "../../api/csc";
@@ -86,9 +86,9 @@ const transEPsToFrontend = async (epas) => {
     return epas;
 };
 // Convert EPTs backend data to frontend-consumble data
-const transEITsToFrontend = async (eits) => {
+const transEPTsToFrontend = async (eits) => {
     // let startTime = new Date();
-    async function transEITs() {
+    async function transEPTs() {
         for (let eit of eits) {
             for (let row of eit.body) {
                 switch (row.eid.resultType.id) {
@@ -126,7 +126,7 @@ const transEITsToFrontend = async (eits) => {
             }
         }
     }
-    await transEITs();
+    await transEPTs();
     return eits;
 };
 
@@ -146,10 +146,7 @@ export const docTable = new Map([
     ["ppe", { description: "Personal Protective Equipment", reqAllFunc: reqGetPPEList, reqCacheFunc: reqGetPPECache, transToFrontFunc: commonTransDoc }],
     ["dc", { description: "Document Category", reqAllFunc: reqGetSimpDCList, reqCacheFunc: reqGetSimpDCCache, transToFrontFunc: commonTransDoc }],
     ["tc", { description: "Training Course", reqAllFunc: reqGetTCList, reqCacheFunc: reqGetTCCache, transToFrontFunc: commonTransDoc }],
-
-    /*   
-    ["exectivetemplate", { description: "执行模板", reqAllFunc: reqGetEITList, reqCacheFunc: reqGetEITCache, transToFrontFunc: transEITsToFrontend }],
- */
+    ["ept", { description: "Execution Project Template", reqAllFunc: reqGetEPTList, reqCacheFunc: reqGetEPTCache, transToFrontFunc: transEPTsToFrontend }],
 ]);
 
 // Initialize indexedDB database
@@ -471,7 +468,7 @@ export const transEPsToBackend = async (epas) => {
 };
 
 // Convert EPT frontend data to backend-consumble data
-export function transEITToBackend(eit) {
+export function transEPTToBackend(eit) {
     //拷贝数据
     const newEit = cloneDeep(eit);
     delete newEit.createdate;
@@ -529,7 +526,7 @@ export function transEITToBackend(eit) {
     return newEit;
 }
 // Convert EPTs frontend data to backend-consumble data
-export const transEITsToBackend = async (eits) => {
+export const transEPTsToBackend = async (eits) => {
     const newEits = cloneDeep(eits);
     async function transEits() {
         for (let newEit of newEits) {

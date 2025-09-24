@@ -21,7 +21,7 @@ const LookupDocument = () => {
         let queryString = transConditionsToString(cons);
         let res = await reqGetDocReport({ queryString: queryString });
         let newRows = [];
-        if (res.data.status === 0) {
+        if (res.status) {
             newRows = res.data.data;
         } else {
             message.warning(res.data.statusMsg);
