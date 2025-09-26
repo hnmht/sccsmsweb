@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback, memo, useLayoutEffect } from "react";
 import { Stack, SpeedDial, SpeedDialIcon, SpeedDialAction, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { AddRowIcon, ToTopIcon, ToBottomIcon } from "../PubIcon/PubIcon";
 import styled from "@emotion/styled";
 import { ColumnWidthContext } from "./columnContext";
 
-
+// Body header style
 const BodyHeaderStyled = styled.table`  
     display: grid;
     left:0px;
@@ -66,14 +67,14 @@ const BodyHeaderStyled = styled.table`
         border-color: #517ea5;
     }
 `;
-//创建单据体表头
+// Voucher body Header
 const createBodyHeaders = (bodyCols) => {
     return bodyCols.map((col) => ({
         col: col,
         ref: useRef(),
     }));
 };
-//自动生成单据体表头宽度
+// Generate Voucher Body Header width text string
 const transColWidth = (headers) => {
     const gridCols = [];
     let width = 0;
@@ -92,7 +93,7 @@ const transColWidth = (headers) => {
     };
 };
 
-const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, title = "表体", actionComponent = null }) => {
+const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, title = "Voucher Body", actionComponent = null }) => {
     const [colWidth, setColWidth] = useState(transColWidth(bodyColumns));
     const bodyHeaderRef = useRef(null);
     const columns = createBodyHeaders(bodyColumns);
@@ -100,8 +101,9 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
     const [tableHeight, setTableHeight] = useState('auto');
     const bodyRowRef = useRef(null);
     const [bodyScroll, setBodyScroll] = useState({ position: "top", count: 1 });
+    const { t } = useTranslation();
 
-    //调整表体内容显示
+    // Pin the table body content to the top or bottom
     useLayoutEffect(() => {
         if (bodyScroll.position === "top") {
             bodyRowRef.current.scrollTop = 0;
@@ -116,7 +118,7 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
             return newState;
         });
     };
-    //增行
+    // Actions after click Add Row button
     const handleAddRow = () => {
         addRowAction();
         handleScrollTo("bottom");
@@ -125,12 +127,12 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
     useEffect(() => {
         setTableHeight(bodyHeaderRef.current.offsetHeight);
     }, []);
-    //鼠标按下
+
+    // Pressing the mouse button starts displaying the column header drag indicator line.
     const mouseDown = (event, index) => {
-        // console.log("mouseDown event:",event);
         setActiveIndex(index);
     };
-    //鼠标移动
+    // Drag the mousefan
     const mouseMove = useCallback((e) => {
         if (!e) {
             return
@@ -139,7 +141,9 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
         const gridColumns = columns.map((col, i) => {
             if (i === activeIndex) {
                 const currentWidth = e.clientX + scrollLeft - col.ref.current.offsetLeft;
-                if (currentWidth >= col.col.minWidth && currentWidth <= col.col.maxWidth) {//如果调整的宽度在最大值和最小值之间，则返回调整值                    
+                // If the adjusted width value is between the maximum and mininum values.
+                // the adjusted value is returned 
+                if (currentWidth >= col.col.minWidth && currentWidth <= col.col.maxWidth) {                   
                     return currentWidth;
                 }
             }
@@ -154,11 +158,11 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
             width: width
         });
     }, [activeIndex, columns, setColWidth]);
-    //鼠标释放
+    // Release the mouse button
     const mouseUp = useCallback(() => {
         setActiveIndex(null);
     }, [setActiveIndex]);
-    //增加监听
+    // Add mouse event listeners
     useEffect(() => {
         if (activeIndex !== null) {
             window.addEventListener("mousemove", mouseMove);
@@ -178,7 +182,7 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
             <Stack component="div" id="relativeContainer" sx={{ position: "relative", overflow: "hidden" }}>
                 <Stack component="div" id="bodyTitleArea" sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: 1 }} >
                     <Typography variant="subtitle2">{title}</Typography>
-                    <Stack component={"div"} id="bodyTitleAction" sx={{ display: "flex", flexDirection: "row",alignItems:"center" }} >
+                    <Stack component={"div"} id="bodyTitleAction" sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                         {actionComponent}
                     </Stack>
                 </Stack>
@@ -194,11 +198,11 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
                         icon={<SpeedDialIcon />}
                     >
                         {addRowVisible
-                            ? <SpeedDialAction key="bodyRowAdd" icon={<AddRowIcon color="secondary" />} tooltipTitle="增行" onClick={handleAddRow} />
+                            ? <SpeedDialAction key="bodyRowAdd" icon={<AddRowIcon color="secondary" />} tooltipTitle={t("addRow")} onClick={handleAddRow} />
                             : null
                         }
-                        <SpeedDialAction key="bodyRowScrollBotton" icon={<ToBottomIcon color="secondary" />} tooltipTitle="末行" onClick={() => handleScrollTo("bottom")} />
-                        <SpeedDialAction key="bodyRowScrollTop" icon={<ToTopIcon color="secondary" />} tooltipTitle="首行" onClick={() => handleScrollTo("top")} />
+                        <SpeedDialAction key="bodyRowScrollBotton" icon={<ToBottomIcon color="secondary" />} tooltipTitle={t("lastRow")} onClick={() => handleScrollTo("bottom")} />
+                        <SpeedDialAction key="bodyRowScrollTop" icon={<ToTopIcon color="secondary" />} tooltipTitle={t("firstRow")} onClick={() => handleScrollTo("top")} />
                     </SpeedDial>
                     <Stack component="div" id="bodyContainer" style={{ width: "100%" }}>
                         <BodyHeaderStyled ref={bodyHeaderRef} style={{ gridTemplateColumns: colWidth.gridCols, width: colWidth.width }}>
@@ -206,7 +210,7 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
                                 <tr>
                                     {columns.map(({ ref, col }, i) => (
                                         <th ref={ref} key={col.id}>
-                                            <span style={{ color: col.allowNul ? "primary" : "blue" }}>{col.label}</span>
+                                            <span style={{ color: col.allowNul ? "primary" : "blue" }}>{t(col.label)}</span>
                                             <div
                                                 style={{ height: tableHeight }}
                                                 onMouseDown={(event) => mouseDown(event, i)}

@@ -325,7 +325,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={currentEP.resultType.id}
                             allowNull={currentEP.isCheckError === 0}
                             isEdit={isEdit}
-                            itemShowName="errorValueDisp"
+                            itemShowName="errorValue"
                             itemKey="errorValue"
                             initValue={currentEP.errorValue}
                             pickDone={handleGetValue}

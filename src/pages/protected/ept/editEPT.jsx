@@ -391,14 +391,14 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                         return row.dr === 0
                             ? (<tr key={"bodyrow" + row.rowNumber}>
                                 <td>
-                                    <Tooltip title="复制增行" key={`rowCopyAdd${index}`}>
+                                    <Tooltip title={t("copyAddRow")} key={`rowCopyAdd${index}`}>
                                         <span>
                                             <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleCopyAddRow(index)} disabled={!isEdit}>
                                                 <CopyAddRowIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                             </IconButton>
                                         </span>
                                     </Tooltip>
-                                    <Tooltip title="删行" key={`rowDelete${index}`}>
+                                    <Tooltip title={t("deleteRow")} key={`rowDelete${index}`}>
                                         <span>
                                             <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleDeleteRow(index, row)} disabled={!isEdit}>
                                                 <DeleteRowIcon color={isEdit ? "error" : "transparent"} fontSize="small" />
