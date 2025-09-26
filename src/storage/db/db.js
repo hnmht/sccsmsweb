@@ -86,12 +86,12 @@ const transEPsToFrontend = async (epas) => {
     return epas;
 };
 // Convert EPTs backend data to frontend-consumble data
-const transEPTsToFrontend = async (eits) => {
+const transEPTsToFrontend = async (epts) => {
     // let startTime = new Date();
     async function transEPTs() {
-        for (let eit of eits) {
-            for (let row of eit.body) {
-                switch (row.eid.resultType.id) {
+        for (let ept of epts) {
+            for (let row of ept.body) {
+                switch (row.epa.resultType.id) {
                     case 301:
                     case 306:
                     case 307:
@@ -99,15 +99,15 @@ const transEPTsToFrontend = async (eits) => {
                     case 302:
                         row.defaultValue = parseFloat(row.defaultValue);
                         row.errorValue = parseFloat(row.errorValue);
-                        row.eid.defaultValue = parseFloat(row.eid.defaultValue);
-                        row.eid.errorValue = parseFloat(row.eid.errorValue);
+                        row.epa.defaultValue = parseFloat(row.epa.defaultValue);
+                        row.epa.errorValue = parseFloat(row.epa.errorValue);
                         break;
                     case 401:
                     case 404:
                         row.defaultValue = parseInt(row.defaultValue);
                         row.errorValue = parseInt(row.errorValue);
-                        row.eid.defaultValue = parseInt(row.eid.defaultValue);
-                        row.eid.errorValue = parseInt(row.eid.errorValue);
+                        row.epa.defaultValue = parseInt(row.epa.defaultValue);
+                        row.epa.errorValue = parseInt(row.epa.errorValue);
                         break;
                     case 510:
                     case 520:
@@ -115,10 +115,10 @@ const transEPTsToFrontend = async (eits) => {
                     case 530:
                     case 540:
                     case 550:
-                        row.defaultValue = row.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
-                        row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
-                        row.eid.defaultValue = row.eid.defaultValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.eid.defaultValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
-                        row.eid.errorValue = row.eid.errorValue !== "0" ? await GetCacheDocById(row.eid.resultType.frontDb, parseInt(row.eid.errorValue)) : GetDataTypeDefaultValue(row.eid.resultType.id);
+                        row.defaultValue = row.defaultValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontDb, parseInt(row.defaultValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
+                        row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontDb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
+                        row.epa.defaultValue = row.epa.defaultValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontDb, parseInt(row.epa.defaultValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
+                        row.epa.errorValue = row.epa.errorValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontDb, parseInt(row.epa.errorValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
                         break;
                     default:
                         console.error("No matching DataType");
@@ -127,7 +127,7 @@ const transEPTsToFrontend = async (eits) => {
         }
     }
     await transEPTs();
-    return eits;
+    return epts;
 };
 
 // IndexedDB table definition
@@ -362,8 +362,8 @@ export const GetPersonsWithOps = async (positionID) => {
     return decryptPersons;
 };
 // Convert EP frontend data to backend-consumable data
-export function transEPToBackend(eid) {
-    const newEpa = cloneDeep(eid);
+export function transEPToBackend(epa) {
+    const newEpa = cloneDeep(epa);
     switch (newEpa.resultType.id) {
         case 301:
             newEpa.defaultValueDisp = newEpa.defaultValue;
@@ -468,13 +468,13 @@ export const transEPsToBackend = async (epas) => {
 };
 
 // Convert EPT frontend data to backend-consumble data
-export function transEPTToBackend(eit) {
-    //拷贝数据
-    const newEit = cloneDeep(eit);
-    delete newEit.createdate;
-    delete newEit.modifydate;
+export function transEPTToBackend(ept) {
+    // Copy Data
+    const newEit = cloneDeep(ept);
+    delete newEit.createDate;
+    delete newEit.modifyDate;
     newEit.body.map((row) => {
-        switch (row.eid.resultType.id) {
+        switch (row.epa.resultType.id) {
             case 301:
                 row.defaultValueDisp = row.defaultValue;
                 row.errorValueDisp = row.errorValue;
@@ -494,15 +494,15 @@ export function transEPTToBackend(eit) {
                 row.errorValueDisp = row.errorValue;
                 break;
             case 401:
-                row.defaultValueDisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
+                row.defaultValueDisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "male" : "female";
                 row.defaultValue = row.defaultValue.toString();
-                row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
+                row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "male" : "female";
                 row.errorValue = row.errorValue.toString();
                 break;
             case 404:
-                row.defaultValueDisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
+                row.defaultValueDisp = row.defaultValue === 0 ? "N" : row.defaultValue === 1 ? "Y" : "";
                 row.defaultValue = row.defaultValue.toString();
-                row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "是" : "否";
+                row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "Y" : "N";
                 row.errorValue = row.errorValue.toString();
                 break;
             case 510:
@@ -519,21 +519,21 @@ export function transEPTToBackend(eit) {
             default:
                 console.error("No matching DataType");
         }
-        row.eid.defaultValue = "";
-        row.eid.errorValue = "";
+        row.epa.defaultValue = "";
+        row.epa.errorValue = "";
         return row;
     });
     return newEit;
 }
 // Convert EPTs frontend data to backend-consumble data
-export const transEPTsToBackend = async (eits) => {
-    const newEits = cloneDeep(eits);
+export const transEPTsToBackend = async (epts) => {
+    const newEits = cloneDeep(epts);
     async function transEits() {
         for (let newEit of newEits) {
-            delete newEit.createdate;
-            delete newEit.modifydate;
+            delete newEit.createDate;
+            delete newEit.modifyDate;
             for (let row of newEit.body) {
-                switch (row.eid.resultType.id) {
+                switch (row.epa.resultType.id) {
                     case 301:
                         row.defaultValueDisp = row.defaultValue;
                         row.errorValueDisp = row.errorValue;
@@ -553,15 +553,15 @@ export const transEPTsToBackend = async (eits) => {
                         row.errorValueDisp = row.errorValue;
                         break;
                     case 401:
-                        row.defaultValueDisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "男" : "女";
+                        row.defaultValueDisp = row.defaultValue === 0 ? "" : row.defaultValue === 1 ? "male" : "female";
                         row.defaultValue = row.defaultValue.toString();
-                        row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "男" : "女";
+                        row.errorValueDisp = row.errorValue === 0 ? "" : row.errorValue === 1 ? "male" : "female";
                         row.errorValue = row.errorValue.toString();
                         break;
                     case 404:
-                        row.defaultValueDisp = row.defaultValue === 0 ? "否" : row.defaultValue === 1 ? "是" : "";
+                        row.defaultValueDisp = row.defaultValue === 0 ? "N" : row.defaultValue === 1 ? "Y" : "";
                         row.defaultValue = row.defaultValue.toString();
-                        row.errorValueDisp = row.errorValue === 0 ? "否" : row.errorValue === 1 ? "是" : "";
+                        row.errorValueDisp = row.errorValue === 0 ? "N" : row.errorValue === 1 ? "Y" : "";
                         row.errorValue = row.errorValue.toString();
                         break;
                     case 510:
@@ -578,8 +578,8 @@ export const transEPTsToBackend = async (eits) => {
                     default:
                         console.error("No matching DataType:", row);
                 }
-                row.eid.defaultValue = "";
-                row.eid.errorValue = "";
+                row.epa.defaultValue = "";
+                row.epa.errorValue = "";
             }
         }
     }

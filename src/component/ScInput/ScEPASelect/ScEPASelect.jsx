@@ -24,7 +24,7 @@ const zeroValue = {
     isCheckError: 0,
     errorValue: "",
     isRequireFile: 0,
-    isOnsitePhoto: 0,
+    isOnSitePhoto: 0,
 };
 //560 The EPA Single-Select Component
 const ScEPASelect = memo((props) => {

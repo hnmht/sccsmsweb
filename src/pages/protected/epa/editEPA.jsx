@@ -37,7 +37,7 @@ const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
         isCheckError: 0,
         errorValue: "",
         isRequireFile: 0,
-        isOnsitePhoto: 0,
+        isOnSitePhoto: 0,
         riskLevel: { id: 0, name: "", color: "white", description: "" },
         creator: person,
         modifier: { id: 0, code: "", name: "" },
@@ -143,8 +143,6 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
         let thisEP = transEPToBackend(currentEP);        
         delete thisEP.createDate;
         delete thisEP.modifyDate;
-
-        console.log("thisEP:",thisEP);
 
         if (isModify) {
             let editRes = await reqEditEP(thisEP);
@@ -357,9 +355,9 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                             dataType={403}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="isOnsitePhoto"
-                            itemKey="isOnsitePhoto"
-                            initValue={currentEP.isOnsitePhoto}
+                            itemShowName="isOnSitePhoto"
+                            itemKey="isOnSitePhoto"
+                            initValue={currentEP.isOnSitePhoto}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             placeholder=""

@@ -125,7 +125,7 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                         newData.body[rowIndex].errorValue = value.errorValue;
                         newData.body[rowIndex].errorValueDisp = value.errorValueDisp;
                         newData.body[rowIndex].isRequireFile = value.isRequireFile;
-                        newData.body[rowIndex].isOnsitePhoto = value.isOnsitePhoto;
+                        newData.body[rowIndex].isOnSitePhoto = value.isOnSitePhoto;
                         newData.body[rowIndex].riskLevel = value.riskLevel;
                     }
                     newData.body[rowIndex][itemKey] = value;
@@ -278,8 +278,6 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
         }
         return err;
     };
-
-    console.log("voucherData:",voucherData);
 
     return voucherData !== undefined
         ? <Stack component="div" id="eidtEPT" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
@@ -552,12 +550,12 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                                         dataType={403}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="isOnsitePhoto"
-                                        itemKey="isOnsitePhoto"
-                                        initValue={row.isOnsitePhoto}
+                                        itemShowName="isOnSitePhoto"
+                                        itemKey="isOnSitePhoto"
+                                        initValue={row.isOnSitePhoto}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="isOnsitePhoto"
+                                        key="isOnSitePhoto"
                                         positionID={1}
                                         rowIndex={index}
                                     />

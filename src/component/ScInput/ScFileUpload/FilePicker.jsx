@@ -33,7 +33,7 @@ const compressOption = {
     preserveExif: true,
 };
 // Files picker and upload component
-const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxSize = 20, chooseType = "image/*" }) => {
+const FilePicker = ({ isEdit, isOnSitePhoto, onOk, onCancel, initFiles, fileMaxSize = 20, chooseType = "image/*" }) => {
     const [files, setFiles] = useState(initFiles);
     const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
@@ -228,12 +228,12 @@ const FilePicker = ({ isEdit, isOnsitePhoto, onOk, onCancel, initFiles, fileMaxS
                         multiple
                         type="file"
                         onChange={handleFileSelect}
-                        disabled={!isEdit || isOnsitePhoto}
+                        disabled={!isEdit || isOnSitePhoto}
                     />
                     <label htmlFor="raised-button-file">
                         <Tooltip title={t("selectFiles")} sx={{ padding: 0, margin: 0 }}>
                             <span>
-                                <Button color="primary" component="span" disabled={!isEdit || isOnsitePhoto}>
+                                <Button color="primary" component="span" disabled={!isEdit || isOnSitePhoto}>
                                     <UploadIcon fontSize="medium" />
                                 </Button>
                             </span>

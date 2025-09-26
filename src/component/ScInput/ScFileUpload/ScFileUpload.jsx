@@ -16,7 +16,7 @@ import { voucherFilesToFiles, filesToVoucherFiles } from "./constructor";
 
 //902 Multi file upload
 const ScFileUpload = (props) => {
-    const { fileMaxSize = 20, chooseType = "image/*", positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc, isOnsitePhoto = false } = props;
+    const { fileMaxSize = 20, chooseType = "image/*", positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc, isOnSitePhoto = false } = props;
     const [files, setFiles] = useState(voucherFilesToFiles(initValue));
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
@@ -127,7 +127,7 @@ const ScFileUpload = (props) => {
                     chooseType={chooseType}
                     initFiles={files}
                     isEdit={isEdit}
-                    isOnsitePhoto={isOnsitePhoto}
+                    isOnSitePhoto={isOnSitePhoto}
                     onCancel={handleDiagClose}
                     onOk={handleSelectedOk}
                 />

@@ -424,7 +424,7 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 key="disposefiles"
                                 positionID={0}
                                 rowIndex={-1}
-                                isOnsitePhoto={false}
+                                isOnSitePhoto={false}
                             />
                         </Grid>
                         <Grid item xs={2}>

@@ -1,19 +1,34 @@
-import React, { memo, useState, useEffect } from "react";
+import { Fragment, memo, useState, useEffect } from "react";
 import {
     InputLabel,
     FormControl,
     Select,
     MenuItem,
     Tooltip,
-    InputBase,
+    InputBase as InputBaseMUI,
     OutlinedInput,
 } from "@mui/material";
-import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { useTranslation } from "react-i18next";
+import { ErrorIcon } from "../../PubIcon/PubIcon";
+
 const zeroValue = 2;
+// Fixed an error caused by a MUI bug.
+const InputBase = ({ notched, ...rest }) => {
+    return <InputBaseMUI {...rest} />
+};
 //404 Select Yes or No Component
-const ScSelectYesOrNo = memo((props) => {
-    const { positionID = 0, rowIndex = 0, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
+const ScSelectYesOrNo = memo(({
+    rowIndex = 0,
+    positionID = 0,
+    allowNull,
+    isEdit,
+    itemShowName,
+    itemKey,
+    initValue = zeroValue,
+    pickDone,
+    isBackendTest,
+    backendTestFunc = () => { }
+}) => {
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const id = `${itemKey}_${positionID}_${rowIndex}`;
@@ -31,7 +46,7 @@ const ScSelectYesOrNo = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //向父组件传递数据
+    // To pass data to parent component
     const handleTransfer = async (value = fieldValue) => {
         if (!isEdit) {
             return
@@ -46,25 +61,22 @@ const ScSelectYesOrNo = memo((props) => {
         pickDone(value, itemKey, positionID, rowIndex, err);
     };
 
-    //选择变化
+    // Actions after MenuItem change.
     const handleOnChange = (event) => {
         let newValue = event.target.value;
         setFieldValue(newValue);
         handleTransfer(newValue);
     }
-
     return (
-        <>
+        <Fragment>
             {positionID !== 1
-                ? <InputLabel id={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <FormControl fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
                 <Select
                     disabled={!isEdit}
-                    labelId={id}
                     id={id}
-                    name={id}
                     displayEmpty
                     onChange={(event) => handleOnChange(event)}
                     value={fieldValue}
@@ -72,18 +84,8 @@ const ScSelectYesOrNo = memo((props) => {
                     sx={{ flex: 1 }}
                     input={
                         positionID !== 1
-                            ? <OutlinedInput
-                                startAdornment={
-                                    errInfo.isErr
-                                        ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
-                                        : null}
-                            />
-                            : <InputBase
-                                startAdornment={
-                                    errInfo.isErr
-                                        ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
-                                        : null}
-                            />
+                            ? <OutlinedInput id={id} fullWidth startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
+                            : <InputBase id={id} fullWidth startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
                     }
                 >
                     <MenuItem key={2} value={2}></MenuItem>
@@ -91,7 +93,7 @@ const ScSelectYesOrNo = memo((props) => {
                     <MenuItem key={1} value={1}>{t("Y")}</MenuItem>
                 </Select>
             </FormControl>
-        </>
+        </Fragment>
     );
 });
 

@@ -37,9 +37,9 @@ function ChangePassword({ user, onCancel }) {
     });
     const [errors, setErrors] = useState({});
     const [publicKey, setPublicKey] = useState("");
-    //获取publicKey
+    // Get PublicKey
     useEffect(() => {
-        async function getKey() {
+        async function getKey() {            
             const res = await reqGetPublicKey(false);
             let pk = "";
             if (res.status) {

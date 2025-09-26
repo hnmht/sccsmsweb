@@ -581,7 +581,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                         <ScInput
                                             dataType={902}
                                             allowNull={true}
-                                            isOnsitePhoto={false}
+                                            isOnSitePhoto={false}
                                             isEdit={isEdit}
                                             itemShowName="附件"
                                             itemKey="files"

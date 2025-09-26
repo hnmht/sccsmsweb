@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     DialogTitle,
     Grid,
@@ -15,27 +15,27 @@ import PubTree from "../ScPub/PubTree";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { treeToArr } from "../../../utils/tree";
-import { GetLocalCache, InitDocCache,GetCacheAnyOf } from "../../../storage/db/db";
+import { GetLocalCache, InitDocCache, GetCacheAnyOf } from "../../../storage/db/db";
 
 const EPAName = "epa";
 const EPCName = "epc";
 
-const EPAPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+const EPAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [epcs, setEpcs] = useState([]);
     const [epas, setEpas] = useState([]);
     const [selectedEPCids, setSelectedEPCids] = useState([]);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
-     useEffect(() => {
-        handleGetEPCsCache();      
+    useEffect(() => {
+        handleGetEPCsCache();
     }, []);
     // Get Execution Project Category from front-end cache
     const handleGetEPCsCache = async () => {
         const localEPCs = await GetLocalCache(EPCName);
         setEpcs(localEPCs);
-    };  
+    };
     // Refresh Execution Project Category 
-    const handleRefreshEics =  async () => {
+    const handleRefreshEics = async () => {
         // Request latest EPC list for front-end cache
         await InitDocCache(EPCName);
         // Get EPC list from front-end cache
@@ -48,7 +48,7 @@ const EPAPicker = ({clickItemAction, doubleClickItemAction, cancelClickAction, o
         // Request latest EPA list for front-end cache
         await InitDocCache(EPAName);
         // Get EPA list from front-end cache 
-        let newEPAs = await GetCacheAnyOf(EPAName, "epc.id",selectedEPCids);
+        let newEPAs = await GetCacheAnyOf(EPAName, "epc.id", selectedEPCids);
         setEpas(newEPAs);
     };
     // Actions after click EPC item

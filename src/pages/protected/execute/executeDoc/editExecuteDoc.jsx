@@ -663,7 +663,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                         <ScInput
                                             dataType={902}
                                             allowNull={row.isrequirefile === 0}
-                                            isOnsitePhoto={row.isonsitephoto === 1}
+                                            isOnSitePhoto={row.isonsitephoto === 1}
                                             isEdit={isEdit}
                                             itemShowName="附件"
                                             itemKey="files"

@@ -100,7 +100,7 @@ export const CellDept = (row, column) => {
 export const CellPosition = (row, column) => {
     return row.position.name;
 };
-// Gender display content
+// Gender display content 
 export const CellGender = (row) => {
     const v = row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
     return i18n.t(v);
