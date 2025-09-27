@@ -75,7 +75,7 @@ export const decryptData = async (data) => {
         cryptoKey,
         encryptedData
     )
-    return decoder.decode(decrypted);
+    return JSON.parse(decoder.decode(decrypted));
 };
 
 // Decrypt data array

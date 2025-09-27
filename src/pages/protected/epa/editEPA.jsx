@@ -140,7 +140,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
 
     // Add Or Edit Execution Project
     const handleAddEP = async () => {
-        let thisEP = transEPToBackend(currentEP);        
+        let thisEP = transEPToBackend(currentEP);
         delete thisEP.createDate;
         delete thisEP.modifyDate;
 

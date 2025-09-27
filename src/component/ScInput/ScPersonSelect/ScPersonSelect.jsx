@@ -81,7 +81,6 @@ const ScPersonSelect = ({
         handleTransfer();
         setDialogOpen(false);
     };
-
     return (
         <>
             {positionID !== 1
