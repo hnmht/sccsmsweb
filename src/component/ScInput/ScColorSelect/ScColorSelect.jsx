@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     Tooltip,
     InputLabel,
@@ -46,7 +46,7 @@ const ScSelectColor = memo((props) => {
         pickDone(value, itemKey, positionID, rowIndex, err);
     };
 
-    //选择变化
+    // Actions after the Item change
     const handleOnChange = (event) => {
         let newValue = event.target.value;
         setFieldValue(newValue);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, Grid, Button, Paper } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { message } from "mui-message";
 import { cloneDeep } from "lodash";
 
@@ -9,20 +10,14 @@ import Loader from "../../../component/Loader/Loader";
 import ScInput from "../../../component/ScInput";
 import { reqUserInfo, reqModifyProfile } from "../../../api/user";
 import useContentHeight from "../../../hooks/useContentHeight";
+import { checkVoucherNoBodyErrors } from "../pub/pubFunction";
+import { getUserInfo } from "../../../store/pub";
 
-const checkError = (errors) => {
-    let number = 0;
-    for (let key in errors) {
-        if (errors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
-};
 const Profile = () => {
     const [currentUser, setCurrentUser] = useState(undefined);
     const [isEdit, setIsEdit] = useState(false);
     const [errors, setErrors] = useState({});
+    const {t} = useTranslation();
 
     const contentHeight = useContentHeight();
     useEffect(() => {
@@ -30,11 +25,8 @@ const Profile = () => {
             let userRes = await reqUserInfo();
             let user = {};
             if (userRes.status) {
-                user = userRes.data.data;
-            } else {
-                message.error("获取当前用户信息失败:" + userRes.data.statusMsg);
-                user = undefined;
-            }
+                user = userRes.data;
+            } 
             setCurrentUser(user);
         }
         initialData();
@@ -44,43 +36,42 @@ const Profile = () => {
         if (currentUser === undefined || !isEdit) {
             return
         }
-        //更新errors
+        // Change errors value
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的用户信息
+        // Change currentUser value
         setCurrentUser((prevState) => {
-
-            // 结构赋值方法
             return ({
                 ...prevState,
                 [itemkey]: value,
             });
         });
     };
-    //修改提交
+    // Submit the modified information to the server
     const handleModifyUser = async () => {
-        let thisUser = cloneDeep(currentUser);
-        delete thisUser.menulist;
-        delete thisUser.createdate;
-        delete thisUser.modifydate;
+        let thisUser = cloneDeep(currentUser);       
+        delete thisUser.menuList;
+        delete thisUser.createDate;
+        delete thisUser.modifyDate;
         delete thisUser.roles;
         const modifyRes = await reqModifyProfile(thisUser);
         if (modifyRes.status) {
-            thisUser = modifyRes.data.data;
-            message.success("修改成功!");
-        } else {
-            message.error("向服务器提交修改信息错误:" + modifyRes.data.statusMsg);
-        }
+            thisUser = modifyRes.data;
+            message.success(t("modifySuccessful"));
+        } 
         setCurrentUser(thisUser);
         setIsEdit(false);
+        // Update Redux
+        getUserInfo();
+
     };
 
     return (<>
-        <PageTitle pageName="个人中心" />
+        <PageTitle pageName={t("MenuProfile")} />
         <Divider my={2} />
         <Paper sx={{ width: "100%", minHeight: contentHeight, mt: 2, backgroundColor: "paper" }}>
             {currentUser !== undefined
@@ -92,11 +83,11 @@ const Profile = () => {
                                     dataType={901}
                                     allowNull={true}
                                     isEdit={isEdit}
-                                    itemShowName="头像"
+                                    itemShowName="avatar"
                                     itemKey="avatar"
                                     initValue={currentUser.avatar}
                                     pickDone={handleGetValue}
-                                    placeholder="请选择头像"
+                                    placeholder=""
                                     isBackendTest={false}
                                     key="avatar"
                                 />
@@ -108,11 +99,11 @@ const Profile = () => {
                                             dataType={301}
                                             allowNull={false}
                                             isEdit={false}
-                                            itemShowName="用户编码"
+                                            itemShowName="code"
                                             itemKey="code"
                                             initValue={currentUser.code}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入用户编码"
+                                            placeholder="codePlaceholder"
                                             isBackendTest={false}
                                             key="code"
                                         />
@@ -122,11 +113,11 @@ const Profile = () => {
                                             dataType={301}
                                             allowNull={false}
                                             isEdit={false}
-                                            itemShowName="用户名称"
+                                            itemShowName="name"
                                             itemKey="name"
                                             initValue={currentUser.name}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入用户名称"
+                                            placeholder="namePlaceholder"
                                             isBackendTest={false}
                                             key="name"
                                         />
@@ -136,11 +127,11 @@ const Profile = () => {
                                             dataType={401}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="性别"
+                                            itemShowName="gender"
                                             itemKey="gender"
                                             initValue={currentUser.gender}
                                             pickDone={handleGetValue}
-                                            placeholder="请选择性别"
+                                            placeholder=""
                                             key="gender"
                                             isBackendTest={false}
                                         />
@@ -150,11 +141,11 @@ const Profile = () => {
                                             dataType={520}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="所属部门"
+                                            itemShowName="department"
                                             itemKey="department"
                                             initValue={currentUser.department}
                                             pickDone={handleGetValue}
-                                            placeholder="请选择部门"
+                                            placeholder="deptPlaceholder"
                                             key="department"
                                             isBackendTest={false}
                                         />
@@ -164,11 +155,11 @@ const Profile = () => {
                                             dataType={304}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="手机号码"
+                                            itemShowName="mobile"
                                             itemKey="mobile"
                                             initValue={currentUser.mobile}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入手机号码"
+                                            placeholder="mobilePlaceholder"
                                             key="mobile"
                                             isBackendTest={false}
                                         />
@@ -178,26 +169,25 @@ const Profile = () => {
                                             dataType={305}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="电子邮件"
+                                            itemShowName="email"
                                             itemKey="email"
                                             initValue={currentUser.email}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入电子邮件"
+                                            placeholder="emailPlaceholder"
                                             key="email"
                                             isBackendTest={false}
                                         />
                                     </Grid>
-
                                     <Grid item xs={12} >
                                         <ScInput
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="用户说明"
+                                            itemShowName="description"
                                             itemKey="description"
                                             initValue={currentUser.description}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入用户说明"
+                                            placeholder="descriptionPlaceholder"
                                             isBackendTest={false}
                                             isMultiline={true}
                                             rowNumber={2}
@@ -211,10 +201,10 @@ const Profile = () => {
                             <Grid item xs={12} textAlign="right" pr={36}>
                                 {isEdit
                                     ? <>
-                                        <Button color='error' variant='contained' onClick={() => setIsEdit(false)} sx={{ mr: 5 }}>取消</Button>
-                                        <Button variant='contained' disabled={checkError(errors)} onClick={handleModifyUser}>保存</Button>
+                                        <Button color='error' variant='contained' onClick={() => setIsEdit(false)} sx={{ mr: 5 }}>{t("cancel")}</Button>
+                                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleModifyUser}>{t("save")}</Button>
                                     </>
-                                    : <Button variant="contained" onClick={() => setIsEdit(true)} >修改</Button>
+                                    : <Button variant="contained" onClick={() => setIsEdit(true)} >{t("edit")}</Button>
                                 }
                             </Grid>
                         </Grid>

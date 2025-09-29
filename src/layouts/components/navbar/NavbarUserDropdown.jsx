@@ -76,7 +76,7 @@ function NavbarUserDropdown() {
           color="inherit"
           size="large"
         >
-          <Avatar alt="user avatar" src={user.avatar.fileurl} />
+          <Avatar alt="user avatar" src={user.avatar.fileUrl} />
         </IconButton>
       </Tooltip>
       <Menu

@@ -4,6 +4,7 @@ import { reqPubSysInfo } from "../api/pub";
 import store from "./index";
 import { resetUser, setUserInfo } from "./slice/user";
 import { setAppinfo } from "./slice/appInfo";
+import { getToken } from "../storage/token";
 
 export const logout = async () => {
     const res = await reqLogout();
@@ -12,11 +13,15 @@ export const logout = async () => {
     }
     store.dispatch(resetUser());
 };
-
-export const getUserInfo = async (token) => {
+// Get User Details
+export const getUserInfo = async () => {
+    const token = getToken();
+    if (!token) {
+        console.error("Token not found")
+        return
+    }
     const userInfoRes = await reqUserInfo(token, false);
     if (!userInfoRes.status) {
-        // message.error(`请求用户信息失败:${userInfoRes.data.statusMsg}!`)
         console.warn(userInfoRes.data.statusMsg);
         return false;
     }

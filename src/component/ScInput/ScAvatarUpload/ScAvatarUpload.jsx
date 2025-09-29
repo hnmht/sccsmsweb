@@ -7,6 +7,7 @@ import {
     Typography,
     TextField,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { CameraIcon } from "../../PubIcon/PubIcon";
 import imageCompression from "browser-image-compression";
 import { message } from "mui-message";
@@ -24,79 +25,77 @@ function ScAvatarUpload(props) {
     const { fieldIndex, rowIndex, isEdit, itemKey, initValue, pickDone } = props;
     const [avatar, setAvatar] = useState(initValue);
     const [isLoading, setIsLoading] = useState(false); 
-    //选中文件后执行的操作
+    const { t } = useTranslation();
+    // Actions after select file
     const handleFileSelect = async (event) => {
         setIsLoading(true);
         let images = event.target.files;
         if (images.length === 0) {
-            message.error("没有选择图片!");
+            message.error(t("noFileSelected"));
             setIsLoading(false);
             return
         }
         let file = images[0];
         if ((file.size / 1024) > 5120) {
-            message.error("图片不能大于5M")
+            message.error(t("singleFileExceed",{fileName:file.name,size:5}))
             setIsLoading(false);
             return
         }
-        let formData = new FormData(); //准备formData
-        //获取文件信息值
+        let formData = new FormData(); 
+        // Get file details
         let fileInfo = await getFileInfo(file);
         if (fileInfo.isImage === 0) {
-            message.error("必须上传图片格式文件");
+            message.error(t("fileMustBeImage"));
             setIsLoading(false);
             return
         }
+        // Request server check which file is already uplodaed
         let getFilesHashRes = await reqGetFileByHash({
-            filekey: 0,
-            originfilename: file.name,
-            filetype: fileInfo.fileType,
-            isimage: fileInfo.isImage,
+            fileKey: 0,
+            originFileName: file.name,
+            fileType: fileInfo.fileType,
+            isImage: fileInfo.isImage,
             model: fileInfo.Model,
             longitude: fileInfo.longitude,
             latitude: fileInfo.latitude,
-            filehash: fileInfo.fileHash,
-            datetimeoriginal: fileInfo.DateTimeOriginal,
+            hash: fileInfo.fileHash,
+            dateTimeOriginal: fileInfo.DateTimeOriginal,
         },false);
-
-        //检查服务器返回错误情况
-        if (getFilesHashRes.data.status !== 0) {
-            message.error("向服务器请求检查重复文件出错:" + getFilesHashRes.data.statusMsg);
+        // Check the request response
+        if (!getFilesHashRes.status) {
             setIsLoading(false);
             return
         }
         let newAvatar = {};
-        //如果文件不存在，则需要上传文件
-        if (getFilesHashRes.data.data.fileid === 0) {
-            //压缩文件           
+        // If id is 0, that means file is not uploaded
+        if (getFilesHashRes.data.id === 0) {
+            // To compress the image           
             const compressedFile = await imageCompression(file, compressOption);
             formData.append("files", compressedFile);
-            formData.append("filekey",0);
-            formData.append("filehash", fileInfo.fileHash);
-            formData.append("filename", file.name);
-            formData.append("filetype", fileInfo.fileType);
-            formData.append("isimage", fileInfo.isImage);
+            formData.append("fileKey",0);
+            formData.append("hash", fileInfo.fileHash);
+            formData.append("fileName", file.name);
+            formData.append("fileType", fileInfo.fileType);
+            formData.append("isImage", fileInfo.isImage);
             formData.append("model", fileInfo.Model); //相机型号
             formData.append("DateTimeOriginal", fileInfo.DateTimeOriginal); //初始拍摄时间
             formData.append("latitude", fileInfo.latitude);//纬度
             formData.append("longitude", fileInfo.longitude);//经度 
-            formData.append("source","browser");
-            
-            //向服务器上传文件
+            formData.append("source","browser");            
+            // Upload the file to server
             const uploadRes = await reqUploadFiles(formData,false);
-            if (uploadRes.data.status !== 0) {
-                message.error("向服务器上传文件时出错" + uploadRes.data.statusMsg);
+            if (!uploadRes.status) {
                 setIsLoading(false);
                 return
             }
-           newAvatar = uploadRes.data.data[0];
+           newAvatar = uploadRes.data[0];
         } else {
-            newAvatar = getFilesHashRes.data.data;
+            newAvatar = getFilesHashRes.data;
         }       
         
         setAvatar(newAvatar);
         setIsLoading(false);
-        //将值反馈给父组件
+        // Pass the value to the parent component
         let err = { isErr: false, msg: "" };
         pickDone(newAvatar, itemKey, fieldIndex, rowIndex, err);
     }
@@ -118,7 +117,7 @@ function ScAvatarUpload(props) {
                     cursor: 'pointer'
                 }}
             >
-                <Avatar alt="Avatar" src={avatar.fileurl} sx={{ width: 72, height: 72 }} />
+                <Avatar alt="Avatar" src={avatar.fileUrl} sx={{ width: 72, height: 72 }} />
                 {isEdit
                     ? <Box
                         sx={{
@@ -136,12 +135,11 @@ function ScAvatarUpload(props) {
                     >
                         <Stack spacing={0.5} alignItems="center">
                             <CameraIcon style={{ color: "blue", fontSize: '2rem' }} />
-                            <Typography sx={{ color: 'blue', fontWeight: "bold" }}>上传</Typography>
+                            <Typography sx={{ color: 'blue', fontWeight: "bold" }}>{t("upload")}</Typography>
                         </Stack>
                     </Box>
                     : null
                 }
-
             </FormLabel>
             <TextField
                 disabled={!isEdit}

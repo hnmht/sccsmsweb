@@ -248,6 +248,10 @@
     "copyAddRow":"Copy and insert a new row",
     "deleteRow":"Delete Row",
 
+    "noFileSelected":"No file selected",
+    "fileMustBeImage":"The file format must be an image format",
+    "upload":"Upload",
+
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
     "author": "HaiTao Meng",
