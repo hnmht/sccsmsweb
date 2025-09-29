@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     InputLabel,
     TextField,
@@ -7,10 +7,11 @@ import {
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { useTranslation } from "react-i18next";
 // 303 Password Input component
-const ScPasswordInput = memo((props) => {
+const ScPasswordInput = (props) => {
     const { positionID,fieldIndex, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [textValue, setTextValue] = useState("");
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `303_${itemKey}_${positionID}_${rowIndex}`;
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -47,13 +48,13 @@ const ScPasswordInput = memo((props) => {
 
     return (
         <>
-            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+            <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
                 type="password"
-                id={`${itemKey}${positionID}${rowIndex}`}
+                id={id}
                 disabled={!isEdit}
-                name={itemKey}
+                name={id}
                 placeholder={isEdit ? t(placeholder) : ""}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
@@ -65,6 +66,6 @@ const ScPasswordInput = memo((props) => {
             />
         </>
     );
-});
+};
 
-export default ScPasswordInput;
+export default memo(ScPasswordInput);

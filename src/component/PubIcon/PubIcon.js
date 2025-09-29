@@ -50,7 +50,7 @@ import PhoneIcon from "@mui/icons-material/PhoneOutlined";//电话图标
 import DeleteRowIcon from "@mui/icons-material/PlaylistRemove";//删行图标
 import CopyAddRowIcon from "@mui/icons-material/ContentCopy";//复制增行图标
 import LevelIcon from "@mui/icons-material/AccountTree";//层级图标
-import EITIcon from "@mui/icons-material/FormatListNumbered"; //执行模板图标
+import EPTIcon from "@mui/icons-material/FormatListNumbered"; //执行模板图标
 import ConfirmAllIcon from '@mui/icons-material/PlaylistPlay'; //批量确认
 import CancelConfirmAllIcon from '@mui/icons-material/LowPriorityRounded'; //批量取消确认
 import CancelConfirmIcon from '@mui/icons-material/UndoRounded'; //取消确认
@@ -122,7 +122,7 @@ export {
     DeleteRowIcon,
     CopyAddRowIcon,
     LevelIcon,
-    EITIcon,
+    EPTIcon,
     ConfirmAllIcon,
     CancelConfirmAllIcon,
     CancelConfirmIcon,

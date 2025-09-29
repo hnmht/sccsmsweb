@@ -1,4 +1,4 @@
-import ScDataTypeSelect from "./ScDataTypeSelect/ScDataTypeSelect"; //101 数据类型输入组件
+import ScDataTypeSelect from "./ScDataTypeSelect/ScDataTypeSelect"; //101 Date Type Select Input Component
 import ScTextInput from "./ScTextInput/ScTextInput"; //301 文本输入组件
 import ScNumberInput from "./ScNumberInput/ScNumberInput"; //302 数字输入组件
 import ScPasswordInput from "./ScPasswordInput/ScPasswordInput"; //303 密码输入组件
@@ -30,7 +30,7 @@ import ScRLSelect from "./ScRiskLevelSelect/ScRiskLevelSelect"; //590 风险等�
 import ScDCSelect from "./ScDcSelect/ScDCSelect"; //600 文档类别单选组件
 import ScPositionSelect from "./ScPositionSelect/ScPositionSelect"; //610 岗位选择组件
 import ScTcSelect from "./ScTCSelect/ScTcSelect"; //620 课程选择
-import ScLpSelect from "./ScLPSelect/ScLpSelect"; //630 劳保用品选择
+import ScPPESelect from "./ScPPESelect/ScPPESelect"; //630 劳保用品选择
 
 import ScAvatarUpload from "./ScAvatarUpload/ScAvatarUpload"; //901 头像上传
 import ScFileUpload from "./ScFileUpload/ScFileUpload"; //902 文件上传
@@ -102,7 +102,7 @@ const ScInput = (props) => {
         case 620:
             return <ScTcSelect {...props} />;
         case 630:
-            return <ScLpSelect {...props} />;
+            return <ScPPESelect {...props} />;
         case 901:
             return <ScAvatarUpload {...props} />;
         case 902:

@@ -20,6 +20,7 @@ const ScFileUpload = (props) => {
     const [files, setFiles] = useState(voucherFilesToFiles(initValue));
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `902_${itemKey}_${positionID}_${rowIndex}`;
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -64,16 +65,16 @@ const ScFileUpload = (props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="number"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled
-                    name={itemKey}
+                    name={id}
                     placeholder={t(placeholder)}
                     value={files.length}
                     error={errInfo.isErr}
@@ -95,9 +96,9 @@ const ScFileUpload = (props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled
-                    name={itemKey}
+                    name={id}
                     placeholder={t(placeholder)}
                     value={files.length}
                     error={errInfo.isErr}

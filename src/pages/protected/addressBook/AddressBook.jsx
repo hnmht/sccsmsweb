@@ -15,6 +15,7 @@ import {
     IconButton,
     Tooltip
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { EmailIcon, PhoneIcon, RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
 import { matchSorter } from "match-sorter";
@@ -26,43 +27,45 @@ import { reqGetPersons } from "../../../api/person";
 import { MultiSortByArr } from "../../../utils/tools";
 import useContentHeight from "../../../hooks/useContentHeight";
 
-const keys = ["code", "name", "deptname", "description", "email", "mobile", "deptcode"];
+
+const keys = ["code", "name", "deptName", "description", "email", "mobile", "deptCode"];
 const sortArr = [{ field: "id", order: "asc" }];
 
 function AddressBook() {
     const [persons, setPersons] = useState([]);
     const [keyword, setKeyword] = useState("");
+    const {t} = useTranslation();
     const contentHeight = useContentHeight();
 
     useEffect(() => {
         handlePersonsRefresh();
     }, []);
-    //刷新人员
+    // Refresh List
     const handlePersonsRefresh = async () => {
         const res = await reqGetPersons();
         let newPersons = [];
         if (res.status) {
-            newPersons = res.data.data;
+            newPersons = res.data;
         }
         setPersons(newPersons);
     };
 
     return (
         <>
-            <PageTitle pageName="通讯录" displayHelp={true} helpUrl="/helps/addressBookWeb" />
-            <Divider my={2} />
+            <PageTitle pageName={t("MenuAddressBook")} displayHelp={false} helpUrl="#" />
+            <Divider my={0} />
             <Card sx={{ height: contentHeight }}>
                 <CardContent>
                     <Box
                         bgcolor="background.paper"
-                        sx={{ height: 48, my: 2, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", px: 0 }}
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", px: 0 }}
                     >
                         <Input
-                            placeholder="输入关键字搜索"
+                            placeholder={t("enterToSearch")}
                             value={keyword}
                             onChange={(event) => setKeyword(event.target.value)}
                         />
-                        <Tooltip title="刷新" placement="top">
+                        <Tooltip title={t("refresh")} placement="top">
                             <IconButton onClick={handlePersonsRefresh}>
                                 <RefreshIcon color="primary" />
                             </IconButton>
@@ -84,7 +87,7 @@ function AddressBook() {
                                                                 <Avatar alt={person.code} src={person.avatar.fileurl} />
                                                             }
                                                             title={person.name}
-                                                            subheader={person.deptname}
+                                                            subheader={person.deptName}
                                                         />
                                                         <Divider />
                                                         <CardContent>
@@ -126,8 +129,6 @@ function AddressBook() {
                     </Box>
                 </CardContent>
             </Card>
-
-
         </>
     );
 }

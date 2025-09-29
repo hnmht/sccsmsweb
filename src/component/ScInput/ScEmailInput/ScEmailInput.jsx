@@ -9,11 +9,12 @@ import { useTranslation } from "react-i18next";
 // Email regular expression
 const mailRegex = new RegExp(/^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
 
-//305
-const ScEmailInput = memo((props) => {
+//305 Seacloud Email input component
+const ScEmailInput = (props) => {
     const { positionID, fieldIndex, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `520_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -53,14 +54,14 @@ const ScEmailInput = memo((props) => {
 
     return (
         <>
-            <InputLabel htmlFor={`emailinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+            <InputLabel htmlFor={`id`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
                 autoComplete="true"
                 type="text"
-                id={`emailinput${itemKey}${positionID}${rowIndex}`}
+                id={`id`}
                 disabled={!isEdit}
-                name={itemKey}
+                name={id}
                 placeholder={t(placeholder)}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
@@ -72,6 +73,6 @@ const ScEmailInput = memo((props) => {
             />
         </>
     );
-});
+};
 
-export default ScEmailInput;
+export default memo(ScEmailInput);

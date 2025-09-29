@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     Tooltip,
     InputLabel,
@@ -8,13 +8,17 @@ import {
     InputBase,
     OutlinedInput
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
+
 const zeroValue = "month";
-//407 周期选择
-const ScPeriodSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
+//407 Seacloud Period Select component
+const ScPeriodSelect = (props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue=zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `407_${itemKey}_${positionID}_${rowIndex}`;
+    const {t} = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -28,14 +32,14 @@ const ScPeriodSelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //向父组件传递数据
+    // Pass data to the parent component
     const handleTransfer = async (value = fieldValue) => {
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (value === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(value);
         }
@@ -43,7 +47,7 @@ const ScPeriodSelect = memo((props) => {
         pickDone(value, itemKey, positionID, rowIndex, err);
     };
 
-    //选择变化
+    // Actions after the item changed
     const handleOnChange = (event) => {
         let newValue = event.target.value;
         setFieldValue(newValue);
@@ -53,38 +57,34 @@ const ScPeriodSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`input${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
                 : null
             }
-            <FormControl id={`${itemKey}${positionID}${rowIndex}`} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
+            <FormControl id={id} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
                 <Select
                     disabled={!isEdit}
-                    id={`select${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     displayEmpty
                     onChange={(event) => handleOnChange(event)}
                     value={fieldValue}
                     error={errInfo.isErr}
                     input={positionID !== 1
-                        ? <OutlinedInput id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
-                        : <InputBase id={`input${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
+                        ? <OutlinedInput id={id} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
+                        : <InputBase id={id} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
                     sx={{ flex: 1 }}
                 >
-                    <MenuItem key={"month"} value={"month"}>月</MenuItem>
-                    <MenuItem key={"day"} value={"day"}>日</MenuItem>
-                    <MenuItem key={"week"} value={"week"}>周</MenuItem>
-                    <MenuItem key={"meadow"} value={"meadow"}>旬</MenuItem>
-                    <MenuItem key={"halfmoon"} value={"halfmoon"}>半月</MenuItem>
-                    <MenuItem key={"quarter"} value={"quarter"}>季</MenuItem>
-                    <MenuItem key={"halfayear"} value={"halfayear"}>半年</MenuItem>
-                    <MenuItem key={"year"} value={"year"}>年</MenuItem>
+                    <MenuItem key={"month"} value={"month"}>{t("month")}</MenuItem>
+                    <MenuItem key={"day"} value={"day"}>{t("day")}</MenuItem>
+                    <MenuItem key={"week"} value={"week"}>{t("week")}</MenuItem>
+                    <MenuItem key={"tenDayPeriod"} value={"tenDayPeriod"}>{t("tenDayPeriod")}</MenuItem>
+                    <MenuItem key={"halfMonth"} value={"halfMonth"}>{t("halfMonth")}</MenuItem>
+                    <MenuItem key={"quarter"} value={"quarter"}>{t("quarter")}</MenuItem>
+                    <MenuItem key={"halfAYear"} value={"halfAYear"}>{t("halfAYear")}</MenuItem>
+                    <MenuItem key={"year"} value={"year"}>{t("year")}</MenuItem>
                 </Select>
             </FormControl>
         </>
     );
-});
-
-ScPeriodSelect.defaultProps = {
-    initValue: zeroValue,
 };
 
-export default ScPeriodSelect;
+export default memo(ScPeriodSelect);

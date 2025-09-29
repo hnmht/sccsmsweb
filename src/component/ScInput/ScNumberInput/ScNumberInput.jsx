@@ -11,11 +11,11 @@ import { cloneDeep } from "lodash";
 import { useTranslation } from "react-i18next";
 const zeroValue = 0.00;
 // 302 Seacloud Number Input Component
-const ScNumberInput = memo((props) => {
+const ScNumberInput = (props) => {
     const { positionID = -1, rowIndex = -1, allowNull = false, isEdit = true, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest = false, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue.toString());
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const id = `${itemKey}${positionID}${rowIndex}`;
+    const id = `302_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
@@ -98,7 +98,7 @@ const ScNumberInput = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <NumericFormat
@@ -110,6 +110,6 @@ const ScNumberInput = memo((props) => {
             />
         </>
     );
-});
+};
 
-export default ScNumberInput;
+export default memo(ScNumberInput);

@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect, forwardRef } from "react";
+import { useState, memo, useEffect, forwardRef } from "react";
 import {
     InputLabel,
     TextField,
@@ -33,10 +33,11 @@ const mobileFormat = forwardRef(function mobileFormat(props, ref) {
 });
 
 // 304 Mobile phone number input component
-const ScMobileInput = memo((props) => {
+const ScMobileInput = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [textValue, setTextValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `304_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -71,17 +72,17 @@ const ScMobileInput = memo((props) => {
     const handleOnChange = (event) => {
         setErrInfo({ isErr: false, msg: "" });
         setTextValue(event.target.value);
-    }
+    };
 
     return (
         <>
-            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+            <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
                 type="text"
-                id={`${itemKey}${positionID}${rowIndex}`}
+                id={id}
                 disabled={!isEdit}
-                name={itemKey}
+                name={id}
                 placeholder={isEdit ? t(placeholder) : ""}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
@@ -94,6 +95,6 @@ const ScMobileInput = memo((props) => {
             />
         </>
     );
-});
+};
 
-export default ScMobileInput;
+export default memo(ScMobileInput);

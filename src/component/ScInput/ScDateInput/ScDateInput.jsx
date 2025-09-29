@@ -13,11 +13,12 @@ import { DateInputMask, dayjs } from "../../../i18n/dayjs";
 
 const defaultValue = dayjs(new Date());
 
-// 306 SeaCloud Date input Components
+// 306 SeaCloud Date input Component
 const ScDateInput = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = defaultValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [dateValue, setDateValue] = useState(initValue ? initValue : defaultValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `306_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
     const mask = DateInputMask();
     useEffect(() => {
@@ -50,7 +51,7 @@ const ScDateInput = (props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`dateinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <DatePicker
@@ -65,9 +66,9 @@ const ScDateInput = (props) => {
                         ? <TextField
                             {...params}
                             fullWidth
-                            id={`dateinput${itemKey}${positionID}${rowIndex}`}
+                            id={id}
                             disabled={!isEdit}
-                            name={`dateinput${itemKey}${positionID}${rowIndex}`}
+                            name={id}
                             error={errInfo.isErr}
                             InputProps={{
                                 ...params.InputProps,
@@ -86,9 +87,9 @@ const ScDateInput = (props) => {
                         : <InputBase
                             {...params}
                             fullWidth
-                            id={`dateinput${itemKey}${positionID}${rowIndex}`}
+                            id={id}
                             disabled={!isEdit}
-                            name={`dateinput${itemKey}${positionID}${rowIndex}`}
+                            name={id}
                             error={errInfo.isErr}
                             InputProps={{
                                 ...params.InputProps,

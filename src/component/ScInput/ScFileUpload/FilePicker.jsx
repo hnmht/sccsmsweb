@@ -208,8 +208,6 @@ const FilePicker = ({ isEdit, isOnSitePhoto, onOk, onCancel, initFiles, fileMaxS
         )
     };
 
-    console.log("files", files);
-
     return (
         <>
             {isLoading

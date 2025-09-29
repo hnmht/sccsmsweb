@@ -1,10 +1,9 @@
 import {
     Typography
 } from "@mui/material";
-// The Status Cell displays content
-const CellStatus = (row) => {
-    return row.status === 0 ? "normal" : "disable";
-};
+import { cellStatus } from "../ScPub/PubFunction";
+import { CellDescription } from "../ScPub/PubComponent";
+
 // The EPC Cell display content
 const CellEPCName = (row) => {
     return row.epc.name;
@@ -25,11 +24,6 @@ const CellRiskLevel = (row, column) => {
     </div>);
 };
 
-// The description cell display content
-const CellDescription = (row, column) => {
-    return <span style={{ width: column.minWidth, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>{row.description}</span>;
-};
-
 // The UDC Cell display content
 const CellUDCName = (row) => {
     return row.udc.name;
@@ -41,7 +35,7 @@ export const columns = [
     { id: "name", label: "name", alignment: "center", minWidth: 60, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
     { id: "riskLevel", label: "riskLevel", alignment: "center", minWidth: 60, visible: true, sortField: "riskLevel.name", sort: true, display: { type: 1, cell1: CellRiskLevel } },
     { id: "description", label: "description", alignment: "center", minWidth: 160, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
-    { id: "status", label: "status", alignment: "center", minWidth: 60, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
+    { id: "status", label: "status", alignment: "center", minWidth: 60, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: cellStatus } },
     { id: "epc", label: "epc", alignment: "center", minWidth: 60, visible: false, sortField: "itemclass.name", sort: true, display: { type: 1, cell1: CellEPCName } },
     { id: "resultType", label: "resultType", alignment: "center", minWidth: 60, visible: true, sortField: "resultType.name", sort: true, display: { type: 1, cell1: CellResultType } },
     { id: "udc", label: "udc", alignment: "center", minWidth: 60, visible: false, sortField: "udc.name", sort: true, display: { type: 1, cell1: CellUDCName } },

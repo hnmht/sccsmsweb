@@ -27,7 +27,7 @@ const ScTextInput = memo(({
 }) => {
     const [textValue, setTextValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const id = `${itemKey}${positionID}${rowIndex}`;
+    const id = `301_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
@@ -69,12 +69,12 @@ const ScTextInput = memo(({
             <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
-                type={"text"}
+                type={"text"}       
                 id={id}
+                name={id}
                 disabled={!isEdit}
                 multiline={isMultiline}
-                rows={rowNumber}
-                name={id}
+                rows={rowNumber}                
                 placeholder={isEdit ? t(placeholder) : ""}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
@@ -82,7 +82,7 @@ const ScTextInput = memo(({
                 error={errInfo.isErr}
                 InputProps={{
                     endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
-                }}
+}}
             />
         </>
         : <InputBase

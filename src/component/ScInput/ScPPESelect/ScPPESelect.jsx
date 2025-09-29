@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import  { memo, useState, useEffect } from "react";
 import {
     TextField,
     InputBase,
@@ -9,12 +9,12 @@ import {
     Dialog,
 } from "@mui/material";
 import { LaborProtectionIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import LpPicker from "./LpPicker";
+import PPEPicker from "./PPEPicker";
 
 const zeroValue = { id: 0,code:"", name: "",model:"",unit:"", description: "" };
 
 //630 劳保用品选择
-const ScLpSelect = memo((props) => {
+const ScPPESelect = memo((props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -157,7 +157,7 @@ const ScLpSelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <LpPicker
+                <PPEPicker
                     clickItemAction={handleClickItem}
                     doubleClickItemAction={handleDoubleClickItem}
                     cancelClickAction={handleDiagClose}
@@ -169,8 +169,8 @@ const ScLpSelect = memo((props) => {
     );
 });
 
-export default ScLpSelect;
+export default ScPPESelect;
 
-ScLpSelect.defaultProps = {
+ScPPESelect.defaultProps = {
     initValue: zeroValue,
 }

@@ -4,51 +4,53 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 
-const docName = "exectivetemplate";
+const docName = "ept";
 
-const EITPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
-    const [eits, setEits] = useState([]);
+const EPTPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+    const [epts, setEpts] = useState([]);
+    const {t} = useTranslation();
 
-    //组件加载时加载本地自定义档案类别
+    // Retrieve the EPT list from the front-end cache when the component loads
     useEffect(() => {
-        async function reqLocalEits() {
-            const localUdcs = await GetLocalCache(docName);
-            setEits(localUdcs);
+        async function reqLocalEpts() {
+            const localEpts = await GetLocalCache(docName);
+            setEpts(localEpts);
         }
-        reqLocalEits();
+        reqLocalEpts();
     }, []);
 
-    //刷新
-    const handleRefreshEits = async () => {
-        //向服务器请求数据
+    // Refresh EPT list
+    const handleRefreshEpts = async () => {
+        // Request Latest EPT from server
         await InitDocCache(docName);
-        let newEits = await GetLocalCache(docName);
-        //刷新最新的执行档案模板
-        setEits(newEits);
+        let newEpts = await GetLocalCache(docName);
+        // Refresh
+        setEpts(newEpts);
     };
 
     return (
         <>
-            <DialogTitle>选择执行模板</DialogTitle>
+            <DialogTitle>{t("chooseEPT")}</DialogTitle>
             <DocTable
                 columns={columns}
-                refreshAction={handleRefreshEits}
-                rows={eits}
-                docListTitle="选择模板"
+                refreshAction={handleRefreshEpts}
+                rows={epts}
+                docListTitle="EPTlist"
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("Ok")}</Button>
             </DialogActions>
         </>
     );
 };
 
-export default EITPicker;
+export default EPTPicker;

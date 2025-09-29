@@ -1,4 +1,4 @@
-import  { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     IconButton,
     Stack,
@@ -27,12 +27,13 @@ const zeroValue = {
     isOnSitePhoto: 0,
 };
 //560 The EPA Single-Select Component
-const ScEPASelect = memo((props) => {
+const ScEPASelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
-    const {t} = useTranslation();
+    const id = `560_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
 
     useEffect(() => {
         setSelectItem(initValue);
@@ -89,7 +90,7 @@ const ScEPASelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
@@ -97,10 +98,10 @@ const ScEPASelect = memo((props) => {
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
-                    placeholder={isEdit ? placeholder : ""}
+                    name={id}
+                    placeholder={isEdit ? t(placeholder) : ""}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     InputProps={{
@@ -133,10 +134,10 @@ const ScEPASelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
-                    placeholder={isEdit ? placeholder : ""}
+                    name={id}
+                    placeholder={isEdit ? t(placeholder) : ""}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     endAdornment={
@@ -182,6 +183,6 @@ const ScEPASelect = memo((props) => {
             </Dialog>
         </>
     );
-});
-export default ScEPASelect;
+};
+export default memo(ScEPASelect);
 

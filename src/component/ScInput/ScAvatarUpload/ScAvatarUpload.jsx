@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import {
     Stack,
     FormLabel,
@@ -20,11 +20,12 @@ const compressOption = {
     useWebWorker: true,
     preserveExif: true,
 };
-
-function ScAvatarUpload(props) {
-    const { fieldIndex, rowIndex, isEdit, itemKey, initValue, pickDone } = props;
+// 901 Avator Upload Component
+const ScAvatarUpload = (props) => {
+    const { fieldIndex = 0, rowIndex = 0, positionID = 0, isEdit, itemKey, initValue, pickDone } = props;
     const [avatar, setAvatar] = useState(initValue);
-    const [isLoading, setIsLoading] = useState(false); 
+    const [isLoading, setIsLoading] = useState(false);
+    const id = `901_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
     // Actions after select file
     const handleFileSelect = async (event) => {
@@ -37,11 +38,11 @@ function ScAvatarUpload(props) {
         }
         let file = images[0];
         if ((file.size / 1024) > 5120) {
-            message.error(t("singleFileExceed",{fileName:file.name,size:5}))
+            message.error(t("singleFileExceed", { fileName: file.name, size: 5 }))
             setIsLoading(false);
             return
         }
-        let formData = new FormData(); 
+        let formData = new FormData();
         // Get file details
         let fileInfo = await getFileInfo(file);
         if (fileInfo.isImage === 0) {
@@ -49,7 +50,7 @@ function ScAvatarUpload(props) {
             setIsLoading(false);
             return
         }
-        // Request server check which file is already uplodaed
+        // Request server check which file is already uploaded
         let getFilesHashRes = await reqGetFileByHash({
             fileKey: 0,
             originFileName: file.name,
@@ -60,7 +61,7 @@ function ScAvatarUpload(props) {
             latitude: fileInfo.latitude,
             hash: fileInfo.fileHash,
             dateTimeOriginal: fileInfo.DateTimeOriginal,
-        },false);
+        }, false);
         // Check the request response
         if (!getFilesHashRes.status) {
             setIsLoading(false);
@@ -72,7 +73,7 @@ function ScAvatarUpload(props) {
             // To compress the image           
             const compressedFile = await imageCompression(file, compressOption);
             formData.append("files", compressedFile);
-            formData.append("fileKey",0);
+            formData.append("fileKey", 0);
             formData.append("hash", fileInfo.fileHash);
             formData.append("fileName", file.name);
             formData.append("fileType", fileInfo.fileType);
@@ -81,18 +82,18 @@ function ScAvatarUpload(props) {
             formData.append("DateTimeOriginal", fileInfo.DateTimeOriginal); //初始拍摄时间
             formData.append("latitude", fileInfo.latitude);//纬度
             formData.append("longitude", fileInfo.longitude);//经度 
-            formData.append("source","browser");            
+            formData.append("source", "browser");
             // Upload the file to server
-            const uploadRes = await reqUploadFiles(formData,false);
+            const uploadRes = await reqUploadFiles(formData, false);
             if (!uploadRes.status) {
                 setIsLoading(false);
                 return
             }
-           newAvatar = uploadRes.data[0];
+            newAvatar = uploadRes.data[0];
         } else {
             newAvatar = getFilesHashRes.data;
-        }       
-        
+        }
+
         setAvatar(newAvatar);
         setIsLoading(false);
         // Pass the value to the parent component
@@ -108,7 +109,7 @@ function ScAvatarUpload(props) {
 
             }
             <FormLabel
-                htmlFor={itemKey}
+                htmlFor={id}
                 sx={{
                     position: 'relative',
                     borderRadius: '50%',
@@ -148,7 +149,7 @@ function ScAvatarUpload(props) {
                     multiple: false,
                     accept: "image/*",
                 }}
-                id={itemKey}
+                id={id}
                 label="Outlined"
                 variant="outlined"
                 sx={{ display: 'none' }}
@@ -158,4 +159,4 @@ function ScAvatarUpload(props) {
     );
 }
 
-export default ScAvatarUpload;
+export default memo(ScAvatarUpload);

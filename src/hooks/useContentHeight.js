@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-
+const adjustHeight = 205;
 function useContentHeight() {
-    const [contentHeight, setContentHeight] = useState(window.innerHeight - 241);
+    const [contentHeight, setContentHeight] = useState(window.innerHeight - adjustHeight);
 
     useEffect(() => {
         function debounce(fn, interval) {
@@ -16,7 +16,7 @@ function useContentHeight() {
         }
 
         const debouncedHandleResize = debounce(() => {
-            setContentHeight(window.innerHeight - 241);
+            setContentHeight(window.innerHeight - adjustHeight);
         }, 1000);
 
         window.addEventListener('resize', debouncedHandleResize);

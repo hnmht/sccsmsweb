@@ -13,7 +13,6 @@ import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import PubTree from "../ScPub/PubTree";
 
 const docName = "csc";
-
 const CSCPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [oriDocs, setOriDocs] = useState([]);
     const { t } = useTranslation();

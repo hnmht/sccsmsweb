@@ -15,11 +15,12 @@ import CSCPicker from "./CscPicker";
 const zeroValue = { id: 0, name: "", description: "", fatherid: 0, status: 0 };
 
 // 525 Constriction Site Category
-const ScCSCSelect = memo((props) => {
+const ScCSCSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [currentDoc, setCurrentDoc] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `525_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -79,14 +80,14 @@ const ScCSCSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
                     name={itemKey}
                     placeholder={isEdit ? t(placeholder) : null}
@@ -122,9 +123,9 @@ const ScCSCSelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={isEdit ? t(placeholder) : null}
                     value={currentDoc.name}
                     onBlur={handleOnBlur}
@@ -169,6 +170,6 @@ const ScCSCSelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScCSCSelect;
+export default memo(ScCSCSelect);

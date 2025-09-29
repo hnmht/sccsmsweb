@@ -14,11 +14,12 @@ import DCPicker from "./DcPIcker";
 
 const zeroValue = { id: 0, name: "", description: "", fatherid: 0, status: 0 };
 // 600 Document Category Select Single Component
-const ScDCSelect = memo((props) => {
+const ScDCSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [currentDoc, setCurrentDoc] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `600_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -78,14 +79,14 @@ const ScDCSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
                     name={itemKey}
                     placeholder={isEdit ? placeholder : null}
@@ -121,7 +122,7 @@ const ScDCSelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
                     name={itemKey}
                     placeholder={isEdit ? placeholder : null}
@@ -168,6 +169,6 @@ const ScDCSelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScDCSelect;
+export default memo(ScDCSelect);

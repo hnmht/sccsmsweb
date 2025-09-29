@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     DialogTitle,
     DialogActions,
@@ -8,9 +8,9 @@ import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 
-const docName = "laborprotection";
+const docName = "ppe";
 
-const LpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
+const LpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [lps, setLps] = useState([]);
 
     //组件加载时加载档案
@@ -20,7 +20,7 @@ const LpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, o
             setLps(localLps);
         }
         reqLocalLps();
-    },[]);
+    }, []);
 
     //刷新
     const handleRefreshLps = async () => {

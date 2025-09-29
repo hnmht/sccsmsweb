@@ -1,6 +1,6 @@
 import { storeObject,readObject,removeItem } from "./storage";
 
-const tokenKey = "sceneweb";
+const tokenKey = "sccss";
 //从本地存储读取token
 export const getToken = () => {
     return readObject(tokenKey);

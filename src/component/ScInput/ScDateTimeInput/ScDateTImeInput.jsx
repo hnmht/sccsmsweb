@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 import {
     InputLabel,
@@ -11,11 +11,12 @@ import { DateTimeInputMask, dayjs } from "../../../i18n/dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useTranslation } from "react-i18next";
 const zeroValue = dayjs(new Date());
-//307
+//307 Seacloud Date time Input Component
 const ScDateTimeInput = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [dateValue, setDateValue] = useState(initValue ? initValue : zeroValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `307_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
     const mask = DateTimeInputMask();
     useEffect(() => {
@@ -50,7 +51,7 @@ const ScDateTimeInput = (props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`datetimeinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <DateTimePicker
@@ -65,9 +66,9 @@ const ScDateTimeInput = (props) => {
                         ? <TextField
                             {...params}
                             fullWidth
-                            id={`datetimeinput${itemKey}${positionID}${rowIndex}`}
+                            id={id}
                             disabled={!isEdit}
-                            name={`datetimeinput${itemKey}${positionID}${rowIndex}`}
+                            name={id}
                             error={errInfo.isErr}
                             InputProps={{
                                 ...params.inputProps,
@@ -87,9 +88,9 @@ const ScDateTimeInput = (props) => {
                         : <InputBase
                             {...params}
                             fullWidth
-                            id={`datetimeinput${itemKey}${positionID}${rowIndex}`}
+                            id={id}
                             disabled={!isEdit}
-                            name={`datetimeinput${itemKey}${positionID}${rowIndex}`}
+                            name={id}
                             error={errInfo.isErr}
                             InputProps={{
                                 ...params.inputProps,

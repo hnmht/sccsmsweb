@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import { useState, memo } from "react";
 import {
     Box,
     TextField,
@@ -10,11 +10,11 @@ import { useTranslation } from "react-i18next";
 
 //101 Data Type selection input component(Cannot be empty) 
 const ScDataTypeSelect = (props) => {
-    const { t } = useTranslation();
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [currentType, setCurrentType] = useState(initValue ? initValue : DataTypes[0]);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-
+    const id = `101_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
     // Check value and pass it to the parents
     const handleOnBlur = async (doc = currentType) => {
         if (!isEdit) {
@@ -42,9 +42,9 @@ const ScDataTypeSelect = (props) => {
 
     return (
         <>
-            <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+            <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <Autocomplete
-                id={`${itemKey}${positionID}${rowIndex}`}
+                id={id}
                 options={DataTypes}
                 disabled={!isEdit}
                 disableClearable={true}

@@ -190,7 +190,7 @@ const Profile = () => {
                                             placeholder="descriptionPlaceholder"
                                             isBackendTest={false}
                                             isMultiline={true}
-                                            rowNumber={2}
+                                            rowNumber={4}
                                             key="description"
                                         />
                                     </Grid>

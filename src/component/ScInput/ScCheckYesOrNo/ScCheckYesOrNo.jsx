@@ -1,4 +1,4 @@
-import  { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     Stack,
     Checkbox,
@@ -15,10 +15,11 @@ function intTransBool(i) {
     return i === 1;
 };
 
-//403 CheckBox Yes Or No Components
-const ScCheckYesOrNo = memo((props) => {
+//403 CheckBox Yes Or No Component
+const ScCheckYesOrNo = (props) => {
     const { positionID, rowIndex, isEdit, itemShowName, itemKey, initValue = 0, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
+    const id = `403_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -49,7 +50,7 @@ const ScCheckYesOrNo = memo((props) => {
                     <Checkbox
                         disabled={!isEdit}
                         checked={intTransBool(fieldValue)}
-                        id={`checkbox${itemKey}${positionID}${rowIndex}`}
+                        id={id}
                         sx={{ mt: 0, mr: 2 }}
                         color={props.color ? props.color : "primary"}
                         onChange={handleOnBlur}
@@ -59,7 +60,7 @@ const ScCheckYesOrNo = memo((props) => {
                 : <Checkbox
                     disabled={!isEdit}
                     checked={intTransBool(fieldValue)}
-                    id={`checkbox${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     sx={{ mt: 0, mr: 2 }}
                     color={props.color ? props.color : "primary"}
                     onChange={handleOnBlur}
@@ -67,6 +68,6 @@ const ScCheckYesOrNo = memo((props) => {
             }
         </>
     );
-});
+};
 
-export default ScCheckYesOrNo;
+export default memo(ScCheckYesOrNo);
