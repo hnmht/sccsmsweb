@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     IconButton,
     Stack,
@@ -8,20 +8,22 @@ import {
     Dialog,
     Tooltip,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { SceneIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import SceneItemPicker from "./SiPicker";
+import CSAPicker from "./CSAPicker";
 import { GetLocalCache } from "../../../storage/db/db";
 import { columns, GetDynamicColumns } from "./tableConstructor";
 
-const zeroValue = { id: 0, code: "", name: "", itemclass: {}, status: 0, respdept: {}, respperson: {} };
-//570 现场档案单选组件
-const ScSISelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+const zeroValue = { id: 0, code: "", name: "", csc: {}, status: 0, respDept: {}, respPerson: {} };
+//570 Seacloud Construction Site Archive Select Input Component
+const ScCSASelect = (props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [sceneItem, setSceneItem] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-
     const [dynamicColumns, setDynamicColumns] = useState(columns);
+    const id = `570_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getDycols() {
@@ -41,74 +43,74 @@ const ScSISelect = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //关闭选择dialog
+    // Close Dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
 
-    //选中现场档案
-    const handleSIClick = (item) => {
+    // Actions after click CSA item 
+    const handleCSAClick = (item) => {
         setSceneItem(item);
     };
-    //双击选中档案
-    const handleSIDoubleClick = (item) => {
+    // Actions after Double Click CSA item
+    const handleCSADoubleClick = (item) => {
         setSceneItem(item);
         handleOkClick();
     };
 
-    //检查值及向父组件传递数据
+    // Transmit data to the parent component
     const handleTransfer = async (doc = sceneItem) => {
         if (!isEdit) {
             return
         }
         let err = { isErr: false, msg: "" };
         if (doc.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(doc);
         }
         setErrInfo(err);
         pickDone(doc, itemKey, positionID, rowIndex, err);
     };
-    //点击清除按钮
+    // Actions after click the clear button
     const handleClear = () => {
         setSceneItem(zeroValue);
         handleTransfer(zeroValue);
     };
-    //点击确定按钮
+    // Actions after click the ok button
     const handleOkClick = () => {
-        //向父组件传递数据
+        // Transmit data 
         handleTransfer();
-        //关闭对话框
+        // Close dialog
         setDialogOpen(false);
     };
 
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
-                    placeholder={isEdit ? placeholder : ""}
+                    name={id}
+                    placeholder={isEdit ? t(placeholder) : ""}
                     value={sceneItem.name}
                     error={errInfo.isErr}
                     InputProps={{
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {errInfo.isErr
-                                    ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                    ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
                                 {sceneItem.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -117,7 +119,7 @@ const ScSISelect = memo((props) => {
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择档案" placement="top" >
+                                <Tooltip title={t("chooseCSA")} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <SceneIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -130,20 +132,20 @@ const ScSISelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
-                    placeholder={isEdit ? placeholder : ""}
+                    name={id}
+                    placeholder={isEdit ? t(placeholder) : ""}
                     value={sceneItem.name}
                     error={errInfo.isErr}
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {errInfo.isErr
-                                ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
                             {sceneItem.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
                                             <ClearIcon fontSize="small" />
@@ -152,7 +154,7 @@ const ScSISelect = memo((props) => {
                                 </Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择档案" placement="top" >
+                            <Tooltip title={t("chooseCSA")} placement="top" >
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                         <SceneIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -169,9 +171,9 @@ const ScSISelect = memo((props) => {
                 onClose={handleDiagClose}
                 closeAfterTransition={false}
             >
-                <SceneItemPicker
-                    clickItemAction={handleSIClick}
-                    doubleClickItemAction={handleSIDoubleClick}
+                <CSAPicker
+                    clickItemAction={handleCSAClick}
+                    doubleClickItemAction={handleCSADoubleClick}
                     cancelClickAction={handleDiagClose}
                     okClickAction={handleOkClick}
                     currentItem={sceneItem}
@@ -180,10 +182,7 @@ const ScSISelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScSISelect;
+export default memo(ScCSASelect);
 
-ScSISelect.defaultProps = {
-    initValue: zeroValue,
-}

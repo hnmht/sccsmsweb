@@ -24,7 +24,7 @@ import ScUDCSelect from "./ScUDCSelect/ScUDCSelect"; //530 自定义档案类别
 import ScEPCSelect from "./ScEPCSelect/ScEPCSelect"; //540 执行项目类别单选组件
 import ScUDASelect from "./ScUDASelect/ScUDASelect"; //550 自定义档案单选组件
 import ScEPASelect from "./ScEPASelect/ScEPASelect"; //560 执行项目档案单选组件
-import ScSISelect from "./ScSISelect/ScSISelect"; // 570 现场档案单选组件
+import ScCSASelect from "./ScCSASelect/ScCSASelect"; // 570 现场档案单选组件
 import ScEPTSelect from "./ScEPTSelect/ScEPTSelect"; //580 执行模板档案
 import ScRLSelect from "./ScRiskLevelSelect/ScRiskLevelSelect"; //590 风险等级单选组件
 import ScDCSelect from "./ScDcSelect/ScDCSelect"; //600 文档类别单选组件
