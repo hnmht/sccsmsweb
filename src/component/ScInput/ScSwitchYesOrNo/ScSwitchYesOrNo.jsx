@@ -14,11 +14,12 @@ function intTransBool(i) {
     return i === 0 ? false : true;
 }
 
-// 402 Switch
-const ScSwitchYesOrNo = memo((props) => {
-    const {positionID, fieldIndex, rowIndex, isEdit, itemShowName, itemKey, initValue = 0, pickDone, isBackendTest, backendTestFunc } = props;
+// 402 Seacloud Switch Input Yes Or No component
+const ScSwitchYesOrNo = (props) => {
+    const { positionID, fieldIndex, rowIndex, isEdit, itemShowName, itemKey, initValue = 0, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
-    const {t} = useTranslation();
+    const id = `402_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
             setFieldValue(initValue);
@@ -41,12 +42,12 @@ const ScSwitchYesOrNo = memo((props) => {
 
     return (
         <FormControlLabel
-            id={`label${itemKey}${positionID}${rowIndex}`}
+            id={id}
             control={
                 <Switch
                     disabled={!isEdit}
                     checked={intTransBool(fieldValue)}
-                    id={`switch${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     sx={{ mt: 0, mr: 0 }}
                     color={props.color ? props.color : "primary"}
                     onChange={handleOnBlur}
@@ -55,8 +56,6 @@ const ScSwitchYesOrNo = memo((props) => {
             labelPlacement='start'
         />
     );
-});
+};
 
-
-
-export default ScSwitchYesOrNo;
+export default memo(ScSwitchYesOrNo);

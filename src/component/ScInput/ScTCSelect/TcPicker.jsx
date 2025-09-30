@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     DialogTitle,
     DialogActions,
@@ -7,49 +7,50 @@ import {
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
+import { useTranslation } from "react-i18next";
 
-const docName = "traincourse";
+const docName = "tc";
 
-const TcPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
+const TCPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [tcs, setTcs] = useState([]);
+    const { t } = useTranslation();
 
-    //组件加载时加载本地自定义档案类别
+    // Get the TC list from the cache on component load.
     useEffect(() => {
         async function reqLoaclTcs() {
             const localTcs = await GetLocalCache(docName);
             setTcs(localTcs);
         }
         reqLoaclTcs();
-    },[]);
+    }, []);
 
-    //刷新
+    // Refresh
     const handleRefreshTcs = async () => {
-        //向服务器请求数据
+        // Request latest TC Archive from backend server
         await InitDocCache(docName);
         let newTcs = await GetLocalCache(docName);
-        console.log("newTcs:",newTcs);
-        //刷新
+        // Refresh
         setTcs(newTcs);
     };
 
     return (
         <>
-            <DialogTitle>选择课程</DialogTitle>
+            <DialogTitle>{t("chooseTC")}</DialogTitle>
             <DocTable
                 columns={columns}
                 refreshAction={handleRefreshTcs}
                 rows={tcs}
-                docListTitle="选择课程"
+                docListTitle="TrainingCourse"
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );
 };
 
-export default TcPicker;
+export default TCPicker;

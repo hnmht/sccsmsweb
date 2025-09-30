@@ -19,15 +19,15 @@ import { treeToArr } from "../../../utils/tree";
 const CSCName = "csc";
 const CSAName = "csa";
 
-const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem,columns }) => {
+const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem, columns }) => {
     const [csas, setCSAs] = useState([]);
     const [cscs, setCSCs] = useState([]);
     const [selectedCSCIds, setSelectedCSCIds] = useState([]);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
-        async function getLocalDatas() {          
-            const newCSCs = await GetLocalCache(CSCName);      
+        async function getLocalDatas() {
+            const newCSCs = await GetLocalCache(CSCName);
             setCSCs(newCSCs);
         }
         getLocalDatas();
@@ -53,7 +53,7 @@ const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
         }
         // Get CSA list from front-end cache
         const localCSAs = await GetCacheAnyOf(CSAName, "csc.id", cscIDs);
-        
+
         setCSAs(localCSAs);
         setSelectedCSCIds(cscIDs);
     };

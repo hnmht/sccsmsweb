@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     TextField,
     InputBase,
@@ -9,17 +9,18 @@ import {
     Dialog,
 } from "@mui/material";
 import { TrainCourseIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
-import TcPicker from "./TcPicker";
+import TcPicker from "./TCPicker";
 
-const zeroValue = { id: 0, name: "", classhour: 1, isexamine: 0, description: "" };
+const zeroValue = { id: 0, name: "", classHour: 1, isExamine: 0, description: "" };
 
-//611 培训课程选择
-const ScTcSelect = memo((props) => {
+// 611 Seacloud Traning Course Select Input Component
+const ScTCSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-
+    const id = `611_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
     useEffect(() => {
         setSelectItem(initValue);
     }, [initValue]);
@@ -28,12 +29,11 @@ const ScTcSelect = memo((props) => {
         handleTransfer();
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
-
-    //向父组件传递数据
+    // Transmit data to the parent component
     const handleTransfer = async (item = selectItem) => {
         let err = { isErr: false, msg: "" };
         if (item.id === 0 && !allowNull) {
-            err = { isErr: true, msg: "不允许为空" };
+            err = { isErr: true, msg: "cannotEmpty" };
         } else if (isBackendTest) {
             err = await backendTestFunc(item);
         }
@@ -43,60 +43,59 @@ const ScTcSelect = memo((props) => {
         }
         pickDone(item, itemKey, positionID, rowIndex, err);
     };
-    //单击项目
+    // Actions after click TC item
     const handleClickItem = (item) => {
         setSelectItem(item);
     };
-    //双击项目
+    // Actions after double click TC item
     const handleDoubleClickItem = (item) => {
         setSelectItem(item);
         handleTransfer(item);
         setDialogOpen(false);
     };
-    //点击清除按钮
+    // Actions after click clear button
     const handleClear = () => {
         setSelectItem(zeroValue);
         handleTransfer(zeroValue);
     };
-
-    //关闭选择dialog
+    // Close dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
         handleTransfer();
     };
-    //点击确定按钮
+    // Actions after click ok button
     const handleOkClick = () => {
-        // 向父组件传递数据
+        // Transmit data to the parent component
         handleTransfer();
-        //关闭对话框
+        // Close dialog
         setDialogOpen(false);
     };
 
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
-                    placeholder={placeholder}
+                    name={id}
+                    placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     InputProps={{
                         endAdornment:
                             <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                                 {errInfo.isErr
-                                    ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                    ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
                                 {selectItem.id !== 0 && isEdit && allowNull
-                                    ? <Tooltip title="清除数据" placement="top">
+                                    ? <Tooltip title={t("refresh")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
                                                 <ClearIcon fontSize="small" />
@@ -105,7 +104,7 @@ const ScTcSelect = memo((props) => {
                                     </Tooltip>
                                     : null
                                 }
-                                <Tooltip title="选择课程" placement="top" >
+                                <Tooltip title={t("chooseTC")} placement="top" >
                                     <span>
                                         <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                             <TrainCourseIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -118,10 +117,10 @@ const ScTcSelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
-                    placeholder={placeholder}
+                    name={id}
+                    placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
                     endAdornment={
@@ -131,7 +130,7 @@ const ScTcSelect = memo((props) => {
                                 : null
                             }
                             {selectItem.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
                                             <ClearIcon fontSize="small" />
@@ -140,7 +139,7 @@ const ScTcSelect = memo((props) => {
                                 </Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择课程" placement="top" >
+                            <Tooltip title={t("chooseTC")} placement="top" >
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                         <TrainCourseIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -167,10 +166,6 @@ const ScTcSelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScTcSelect;
-
-ScTcSelect.defaultProps = {
-    initValue: zeroValue,
-}
+export default memo(ScTCSelect);

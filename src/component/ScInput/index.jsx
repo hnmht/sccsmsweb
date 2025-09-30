@@ -29,7 +29,7 @@ import ScEPTSelect from "./ScEPTSelect/ScEPTSelect"; //580 执行模板档案
 import ScRLSelect from "./ScRiskLevelSelect/ScRiskLevelSelect"; //590 风险等级单选组件
 import ScDCSelect from "./ScDcSelect/ScDCSelect"; //600 文档类别单选组件
 import ScPositionSelect from "./ScPositionSelect/ScPositionSelect"; //610 岗位选择组件
-import ScTcSelect from "./ScTCSelect/ScTcSelect"; //620 课程选择
+import ScTCSelect from "./ScTCSelect/ScTCSelect"; //620 课程选择
 import ScPPESelect from "./ScPPESelect/ScPPESelect"; //630 劳保用品选择
 
 import ScAvatarUpload from "./ScAvatarUpload/ScAvatarUpload"; //901 头像上传
@@ -90,7 +90,7 @@ const ScInput = (props) => {
         case 560:
             return <ScEPASelect {...props} />;
         case 570:
-            return <ScSISelect {...props} />;
+            return <ScCSASelect {...props} />;
         case 580:
             return <ScEPTSelect {...props} />;
         case 590:
@@ -100,7 +100,7 @@ const ScInput = (props) => {
         case 610:
             return <ScPositionSelect {...props} />;
         case 620:
-            return <ScTcSelect {...props} />;
+            return <ScTCSelect {...props} />;
         case 630:
             return <ScPPESelect {...props} />;
         case 901:

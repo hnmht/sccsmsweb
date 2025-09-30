@@ -264,6 +264,7 @@
     "year":"Year",
     "choosePPE":"Select PPE",
     "chooseCSA":"Select Construction Site",
+    "chooseTC":"Select Training Course",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
