@@ -1,40 +1,41 @@
 import ScDataTypeSelect from "./ScDataTypeSelect/ScDataTypeSelect"; //101 Date Type Select Input Component
-import ScTextInput from "./ScTextInput/ScTextInput"; //301 文本输入组件
-import ScNumberInput from "./ScNumberInput/ScNumberInput"; //302 数字输入组件
-import ScPasswordInput from "./ScPasswordInput/ScPasswordInput"; //303 密码输入组件
-import ScMobileInput from "./ScMobileInput/ScMobileInput"; //304 移动电话号码输入组件
-import ScEmailInput from "./ScEmailInput/ScEmailInput"; //305 电子邮件输入组件
-import ScDateInput from "./ScDateInput/ScDateInput"; //306 日期输入组件
-import ScDateTimeInput from "./ScDateTimeInput/ScDateTImeInput"; //307 日期时间输入组件
 
-import ScGenderSelect from "./ScGenderSelect/ScGendeSelectr"; //401 选择性别
-import ScSwitchYesOrNo from "./ScSwitchYesOrNo/ScSwitchYesOrNo"; //402 switch选择是否
-import ScCheckYesOrNo from "./ScCheckYesOrNo/ScCheckYesOrNo"; //403 CheckBox选择是否
-import ScSelectYesOrNo from "./ScSelectYesOrNo/ScSelectYesOrNo"; //404 Select是否选择
-import ScVoucherStatus from "./ScVoucherStatus/ScVoucherStatus"; //405 单据状态显示
-import ScColorSelect from "./ScColorSelect/ScColorSelect"; //406 选择颜色
-import ScPeriodSelect from "./ScPeriodSelect/ScPeriodSelect"; //407 选择周期
+import ScTextInput from "./ScTextInput/ScTextInput"; //301 Text Input
+import ScNumberInput from "./ScNumberInput/ScNumberInput"; //302 Number Input
+import ScPasswordInput from "./ScPasswordInput/ScPasswordInput"; //303 Password Input
+import ScMobileInput from "./ScMobileInput/ScMobileInput"; //304 Mobile Input
+import ScEmailInput from "./ScEmailInput/ScEmailInput"; //305 Email Input
+import ScDateInput from "./ScDateInput/ScDateInput"; //306 Date Input
+import ScDateTimeInput from "./ScDateTimeInput/ScDateTImeInput"; //307 Date time Input 
 
-import ScRoleSelects from "./ScRoleSelects/ScRoleSelects"; //501 角色列表多选组件
-import ScPersonSelects from "./ScPersonSelects/ScPersonSelects"; // 502 人员多选组件
-import ScPersonSelect from "./ScPersonSelect/ScPersonSelect"; // 510 人员单选组件
-import ScDeptSelect from "./ScDeptSelect/ScDeptSelect"; //520 部门单选
-import ScCSCSelect from "./ScCSCSelect/ScCSCSelect"; //525 现场档案分类单选
-import ScUDCSelect from "./ScUDCSelect/ScUDCSelect"; //530 自定义档案类别单选组件
-import ScEPCSelect from "./ScEPCSelect/ScEPCSelect"; //540 执行项目类别单选组件
-import ScUDASelect from "./ScUDASelect/ScUDASelect"; //550 自定义档案单选组件
-import ScEPASelect from "./ScEPASelect/ScEPASelect"; //560 执行项目档案单选组件
-import ScCSASelect from "./ScCSASelect/ScCSASelect"; // 570 现场档案单选组件
-import ScEPTSelect from "./ScEPTSelect/ScEPTSelect"; //580 执行模板档案
-import ScRLSelect from "./ScRiskLevelSelect/ScRiskLevelSelect"; //590 风险等级单选组件
-import ScDCSelect from "./ScDcSelect/ScDCSelect"; //600 文档类别单选组件
-import ScPositionSelect from "./ScPositionSelect/ScPositionSelect"; //610 岗位选择组件
-import ScTCSelect from "./ScTCSelect/ScTCSelect"; //620 课程选择
-import ScPPESelect from "./ScPPESelect/ScPPESelect"; //630 劳保用品选择
+import ScGenderSelect from "./ScGenderSelect/ScGendeSelectr"; //401 Gender Select Input
+import ScSwitchYesOrNo from "./ScSwitchYesOrNo/ScSwitchYesOrNo"; //402 Switch Input Yes Or No 
+import ScCheckYesOrNo from "./ScCheckYesOrNo/ScCheckYesOrNo"; //403 CheckBox Input Yes Or No
+import ScSelectYesOrNo from "./ScSelectYesOrNo/ScSelectYesOrNo"; //404 Select Input Yes Or No
+import ScVoucherStatus from "./ScVoucherStatus/ScVoucherStatus"; //405 Display Voucher Status
+import ScColorSelect from "./ScColorSelect/ScColorSelect"; //406 Color Select Input
+import ScPeriodSelect from "./ScPeriodSelect/ScPeriodSelect"; //407 Perios Select Input
 
-import ScAvatarUpload from "./ScAvatarUpload/ScAvatarUpload"; //901 头像上传
-import ScFileUpload from "./ScFileUpload/ScFileUpload"; //902 文件上传
-import ScImpageUpload from "./ScImageUpload/ScImageUpload"; //903 图像文件上传
+import ScRoleSelects from "./ScRoleSelects/ScRoleSelects"; //501 Roles Multiple Select Input
+import ScPersonSelects from "./ScPersonSelects/ScPersonSelects"; // 502 Persons Multiple Select Input
+import ScPersonSelect from "./ScPersonSelect/ScPersonSelect"; // 510 Person Select Input
+import ScDeptSelect from "./ScDeptSelect/ScDeptSelect"; //520 Department Select Input
+import ScCSCSelect from "./ScCSCSelect/ScCSCSelect"; //525 Construction Site Categroy Select Input
+import ScUDCSelect from "./ScUDCSelect/ScUDCSelect"; //530 User-define Category Select Input
+import ScEPCSelect from "./ScEPCSelect/ScEPCSelect"; //540 Execution Project Category Select Input
+import ScUDASelect from "./ScUDASelect/ScUDASelect"; //550 User-define Archive Select Input
+import ScEPASelect from "./ScEPASelect/ScEPASelect"; //560 Execution Project Select Input
+import ScCSASelect from "./ScCSASelect/ScCSASelect"; //570 Construction Site Select Input
+import ScEPTSelect from "./ScEPTSelect/ScEPTSelect"; //580 Execution Project Template Select Input
+import ScRLSelect from "./ScRiskLevelSelect/ScRiskLevelSelect"; //590 Risk Level Select Input
+import ScDCSelect from "./ScDcSelect/ScDCSelect"; //600 Document Category Select Input
+import ScPositionSelect from "./ScPositionSelect/ScPositionSelect"; //610 Position Select Input
+import ScTCSelect from "./ScTCSelect/ScTCSelect"; //620 Training Course Select Input
+import ScPPESelect from "./ScPPESelect/ScPPESelect"; //630 Personal Protective Equipment Select Input
+
+import ScAvatarUpload from "./ScAvatarUpload/ScAvatarUpload"; //901 Avatar File Upload
+import ScFileUpload from "./ScFileUpload/ScFileUpload"; //902 Multiple Files Upload
+import ScImpageUpload from "./ScImageUpload/ScImageUpload"; //903 Image File Upload
 
 const ScInput = (props) => {
     const {

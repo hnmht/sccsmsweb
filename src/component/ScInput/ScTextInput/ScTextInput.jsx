@@ -10,7 +10,7 @@ import { ErrorIcon } from "../../PubIcon/PubIcon";
 const zeroValue = "";
 
 // 301 Text Input component
-const ScTextInput = memo(({
+const ScTextInput = ({
     positionID = -1,
     rowIndex = -1,
     allowNull = false,
@@ -101,6 +101,6 @@ const ScTextInput = memo(({
             endAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null}
         />
     );
-});
+};
 
-export default ScTextInput;
+export default memo(ScTextInput);

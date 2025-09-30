@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect } from "react";
 import {
     IconButton,
     Stack,
@@ -16,11 +16,12 @@ const zeroValue = { id: 0, code: "", name: "", description: "", docclass: { id: 
 const udcZeroValue = { id: 0, name: "", description: "" }
 
 //550 User-defined Archive selection input component
-const ScUDDSelect = memo((props) => {
+const ScUDDSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc, udc = udcZeroValue } = props;
     const [selectItem, setSelectItem] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
+    const id = `550_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -80,8 +81,7 @@ const ScUDDSelect = memo((props) => {
         <>
             {positionID !== 1
                 ? <InputLabel
-                    id={`textfield${itemKey}${positionID}${rowIndex}`}
-                    htmlFor={`textfield${itemKey}${positionID}${rowIndex}`}
+                    htmlFor={id}
                     sx={{ color: allowNull ? "primary" : "blue" }}
                 >
                     {t(itemShowName)}
@@ -92,9 +92,9 @@ const ScUDDSelect = memo((props) => {
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`textfield${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
@@ -128,9 +128,9 @@ const ScUDDSelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={placeholder}
                     value={selectItem.name}
                     error={errInfo.isErr}
@@ -176,7 +176,7 @@ const ScUDDSelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScUDDSelect;
+export default memo(ScUDDSelect);
 

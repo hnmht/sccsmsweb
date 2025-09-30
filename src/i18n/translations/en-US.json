@@ -265,6 +265,10 @@
     "choosePPE":"Select PPE",
     "chooseCSA":"Select Construction Site",
     "chooseTC":"Select Training Course",
+    "free":"Free",
+    "confirmed":"Confirmed",
+    "executing":"Executing",
+    "completed":"Completed",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

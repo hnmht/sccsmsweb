@@ -85,8 +85,8 @@ export const DataIcon = (props) => {
     return <Icon {...otherPorps} />;
 };
 
-//单据状态
-export const VoucherStatus = ["自由态", "确认态", "执行态", "完成态"];
+// Voucher status
+export const VoucherStatus = ["free", "confirmed", "executing", "completed"];
 
 //周期显示
 export const PeriodDisplay = new Map([

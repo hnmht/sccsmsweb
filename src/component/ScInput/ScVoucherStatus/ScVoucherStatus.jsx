@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     Tooltip,
     InputLabel,
@@ -10,11 +10,13 @@ import {
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
 const zeroValue = 0;
-//401
-const ScVoucherStatus = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
+// 401 Seacloud Voucher Status Component
+const ScVoucherStatus = (props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `530_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -28,7 +30,7 @@ const ScVoucherStatus = memo((props) => {
         // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
 
-    //向父组件传递数据
+    // Transmit data to the parent component
     const handleTransfer = async (value = fieldValue) => {
         if (!isEdit) {
             return
@@ -41,7 +43,7 @@ const ScVoucherStatus = memo((props) => {
         pickDone(value, itemKey, positionID, rowIndex, err);
     };
 
-    //选择变化
+    // Actions after the state changed
     const handleOnChange = (event) => {
         let newValue = event.target.value;
         setFieldValue(newValue);
@@ -51,34 +53,30 @@ const ScVoucherStatus = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`outlineinput${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
-            <FormControl id={`formcontrol${itemKey}${positionID}${rowIndex}`} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
+            <FormControl fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
                 <Select
                     disabled={!isEdit}
-                    id={`select${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     displayEmpty
                     onChange={(event) => handleOnChange(event)}
                     value={fieldValue}
                     error={errInfo.isErr}
                     input={positionID !== 1
-                        ? <OutlinedInput id={`outlineinput${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
-                        : <InputBase id={`inputbase${itemKey}${positionID}${rowIndex}`} startAdornment={errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
+                        ? <OutlinedInput id={id} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
+                        : <InputBase id={id} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
                     sx={{ flex: 1 }}
                 >
-                    <MenuItem key={0} value={0}>自由态</MenuItem>
-                    <MenuItem key={1} value={1}>确认态</MenuItem>
-                    <MenuItem key={2} value={2}>执行态</MenuItem>
-                    <MenuItem key={3} value={3}>完成态</MenuItem>
+                    <MenuItem key={0} value={0}>{t("free")}</MenuItem>
+                    <MenuItem key={1} value={1}>{t("confirmed")}</MenuItem>
+                    <MenuItem key={2} value={2}>{t("executing")}</MenuItem>
+                    <MenuItem key={3} value={3}>{t("completed")}</MenuItem>
                 </Select>
             </FormControl>
         </>
     );
-});
-
-ScVoucherStatus.defaultProps = {
-    initValue: zeroValue,
 };
 
-export default ScVoucherStatus;
+export default memo(ScVoucherStatus);

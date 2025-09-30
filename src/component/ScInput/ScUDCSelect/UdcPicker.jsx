@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     DialogTitle,
     DialogActions,
@@ -10,9 +10,10 @@ import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 
 const docName = "udc";
-const UdcPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem}) => {
+
+const UdcPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [udcs, setUdcs] = useState([]);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     // Get User-defined categories from the frontend cache when the component loads.
     useEffect(() => {
         async function getLocalUDCs() {
@@ -20,7 +21,7 @@ const UdcPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
             setUdcs(localUdcs);
         }
         getLocalUDCs();
-    },[]);
+    }, []);
 
     // Actions after click the refresh button in the table head.
     const handleRefreshUdcs = async () => {
