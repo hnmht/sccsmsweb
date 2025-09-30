@@ -7,48 +7,50 @@ import {
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
+import { useTranslation } from "react-i18next";
 
 const docName = "ppe";
 
-const LpPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
-    const [lps, setLps] = useState([]);
+const PPEPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+    const [ppes, setPpes] = useState([]);
+    const { t } = useTranslation();
 
-    //组件加载时加载档案
+    // Get the list from the front-end cache when the component loads.
     useEffect(() => {
         async function reqLocalLps() {
-            const localLps = await GetLocalCache(docName);
-            setLps(localLps);
+            const localPpes = await GetLocalCache(docName);
+            setPpes(localPpes);
         }
         reqLocalLps();
     }, []);
 
-    //刷新
+    // Refresh
     const handleRefreshLps = async () => {
-        //向服务器请求数据
+        // Request the latest PPE from backend server
         await InitDocCache(docName);
-        let newLps = await GetLocalCache(docName);
-        //刷新
-        setLps(newLps);
+        let newPpes = await GetLocalCache(docName);
+        // Refresh
+        setPpes(newPpes);
     };
 
     return (
         <>
-            <DialogTitle>选择劳保用品</DialogTitle>
+            <DialogTitle>{t("choosePPE")}</DialogTitle>
             <DocTable
                 columns={columns}
                 refreshAction={handleRefreshLps}
-                rows={lps}
-                docListTitle="选择劳保用品"
+                rows={ppes}
+                docListTitle="PPEList"
                 clickItem={clickItemAction}
                 doubleClickItem={doubleClickItemAction}
                 isMultiple={false}
             />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={okClickAction}>{t("ok")}</Button>
             </DialogActions>
         </>
     );
 };
 
-export default LpPicker;
+export default PPEPicker;

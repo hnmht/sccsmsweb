@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     TextField,
     InputBase,
@@ -15,11 +15,12 @@ import RLPicker from "./RLPicker";
 const zeroValue = { id: 0, name: "", color: "white", description: "" };
 
 //590  Risk Level Selection Input Component
-const ScRLSelect = memo((props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue= zeroValue, pickDone, pickErr = ()=>{}, placeholder, isBackendTest, backendTestFunc } = props;
+const ScRLSelect = (props) => {
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, pickErr = () => { }, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `590_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     // Check the value and past it to the parent
@@ -100,16 +101,16 @@ const ScRLSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled
-                    name={itemKey}
+                    name={id}
                     placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
@@ -145,9 +146,9 @@ const ScRLSelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled
-                    name={itemKey}
+                    name={id}
                     placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
@@ -196,7 +197,7 @@ const ScRLSelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScRLSelect;
+export default memo(ScRLSelect);
 

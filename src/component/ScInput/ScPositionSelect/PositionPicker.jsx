@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./tableConstructor";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
+
 const docName = "position";
 
 const PositionPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {

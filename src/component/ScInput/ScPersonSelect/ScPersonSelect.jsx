@@ -11,8 +11,8 @@ import {
 import { PersonIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import PersonPicker from "./PersonPicker";
 import { useTranslation } from "react-i18next";
-const zeroValue = { id: 0, code: "", name: "", avater: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" };
 
+const zeroValue = { id: 0, code: "", name: "", avater: { filekey: 0, fileurl: "" }, deptID: 0, deptCode: "", description: "" };
 //510 Person Archive selection input component
 const ScPersonSelect = ({
     positionID = -1,
@@ -31,6 +31,7 @@ const ScPersonSelect = ({
     const [person, setPerson] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `510_${itemKey}_${positionID}_${rowIndex}`;
 
     useEffect(() => {
         setPerson(initValue);
@@ -84,16 +85,16 @@ const ScPersonSelect = ({
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={isEdit ? t(placeholder) : ""}
                     value={person.name}
                     error={errInfo.isErr}
@@ -127,9 +128,9 @@ const ScPersonSelect = ({
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={isEdit ? t(placeholder) : ""}
                     value={person.name}
                     error={errInfo.isErr}

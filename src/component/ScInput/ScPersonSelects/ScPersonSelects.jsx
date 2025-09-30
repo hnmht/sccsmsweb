@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import {
     InputLabel,
     Tooltip
@@ -8,7 +8,8 @@ import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import DocTable from "../../DocTable/DocTable";
 import { columns } from "./constructor";
-const personName = "person";
+
+const docName = "person";
 
 //502 Person multi-select component
 const ScPersonSelects = (props) => {
@@ -16,13 +17,13 @@ const ScPersonSelects = (props) => {
     const [persons, setPersons] = useState([]);
     const [selectedPersons, setSelectedPersons] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-
+    const id = `502_${itemKey}_${positionID}_${rowIndex}`;
     const {t} = useTranslation();
 
     useEffect(() => {
         async function getData() {
             // Get Local Person Master Data cache
-            const newPersons = await GetLocalCache(personName);
+            const newPersons = await GetLocalCache(docName);
             // Update persons
             setPersons(newPersons);
         }
@@ -33,9 +34,9 @@ const ScPersonSelects = (props) => {
     // Update Person Master data
     const handleRefreshPersons = async () => {
         // Request the latest Person Master Data from the server 
-        await InitDocCache(personName);
+        await InitDocCache(docName);
         // Get Local Person Master Data cache
-        const newPersons = await GetLocalCache(personName);
+        const newPersons = await GetLocalCache(docName);
         // Update persons
         setPersons(newPersons);
     };
@@ -64,15 +65,15 @@ const ScPersonSelects = (props) => {
 
     return (
         <>
-            <InputLabel key={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>
+            <InputLabel key={id} sx={{ color: allowNull ? "primary" : "blue" }}>
                 {t(itemShowName)}
                 {errInfo.isErr
-                    ? <Tooltip id={`${itemKey}${positionID}${rowIndex}`} title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                    ? <Tooltip id={id} title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                     : null
                 }
             </InputLabel>
             <DocTable
-                id={`${itemKey}${positionID}${rowIndex}`}
+                id={id}
                 isEdit={isEdit}
                 columns={columns}
                 refreshAction={handleRefreshPersons}

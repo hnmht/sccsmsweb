@@ -16,8 +16,8 @@ const zeroValue = 2;
 const InputBase = ({ notched, ...rest }) => {
     return <InputBaseMUI {...rest} />
 };
-//404 Select Yes or No Component
-const ScSelectYesOrNo = memo(({
+//404 Seacloud Select Input Yes or No Component
+const ScSelectYesOrNo = ({
     rowIndex = 0,
     positionID = 0,
     allowNull,
@@ -31,7 +31,7 @@ const ScSelectYesOrNo = memo(({
 }) => {
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const id = `${itemKey}_${positionID}_${rowIndex}`;
+    const id = `404_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -95,6 +95,6 @@ const ScSelectYesOrNo = memo(({
             </FormControl>
         </Fragment>
     );
-});
+};
 
-export default ScSelectYesOrNo;
+export default memo(ScSelectYesOrNo);

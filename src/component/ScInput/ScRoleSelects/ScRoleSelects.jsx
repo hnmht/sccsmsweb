@@ -30,11 +30,13 @@ function transRoles(roles, initValue) {
     }
     return roles;
 }
-const ScRoleSelect = memo((props) => {
+// 501 Seacloud Role Multiple Select Input Component
+const ScRoleSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [roles, setRoles] = useState([]);
     const [selectedRoles, setSelectedRoles] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `501_${itemKey}_${positionID}_${rowIndex}`;
     const {t} = useTranslation();
     const tRoles = transRoles(roles, selectedRoles);
     useEffect(() => {
@@ -93,7 +95,7 @@ const ScRoleSelect = memo((props) => {
                 }
             </InputLabel>
             <List
-                id={`list${itemKey}${positionID}${rowIndex}`}
+                id={id}
                 dense
                 component="div"
                 role="list"
@@ -123,6 +125,6 @@ const ScRoleSelect = memo((props) => {
             </List>
         </>
     );
-});
+};
 
-export default ScRoleSelect;
+export default memo(ScRoleSelect);

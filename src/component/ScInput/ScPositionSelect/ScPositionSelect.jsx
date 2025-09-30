@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
     TextField,
     InputBase,
@@ -14,12 +14,13 @@ import PositionPicker from "./PositionPicker";
 
 const zeroValue = { id: 0, name: "", description: "", status: 0 };
 
-//610 Position
-const ScPositionSelect = memo((props) => {
+//610 Seacloud Position Select Input Component
+const ScPositionSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [selectItem, setSelectItem] = useState(initValue ? initValue : { id: 0, name: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
+    const id = `610_${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -77,16 +78,16 @@ const ScPositionSelect = memo((props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={`${itemKey}${positionID}${rowIndex}`} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             {positionID !== 1
                 ? <TextField
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={t(placeholder)}
                     value={selectItem.name}
                     error={errInfo.isErr}
@@ -120,9 +121,9 @@ const ScPositionSelect = memo((props) => {
                 : <InputBase
                     fullWidth
                     type="text"
-                    id={`${itemKey}${positionID}${rowIndex}`}
+                    id={id}
                     disabled={!isEdit}
-                    name={itemKey}
+                    name={id}
                     placeholder={placeholder}
                     value={selectItem.name}
                     error={errInfo.isErr}
@@ -133,7 +134,7 @@ const ScPositionSelect = memo((props) => {
                                 : null
                             }
                             {selectItem.id !== 0 && isEdit && allowNull
-                                ? <Tooltip title="清除数据" placement="top">
+                                ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
                                             <ClearIcon fontSize="small" />
@@ -142,7 +143,7 @@ const ScPositionSelect = memo((props) => {
                                 </Tooltip>
                                 : null
                             }
-                            <Tooltip title="选择岗位" placement="top" >
+                            <Tooltip title={t("choosePosition")} placement="top" >
                                 <span>
                                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                                         <OperatingPostIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -169,6 +170,6 @@ const ScPositionSelect = memo((props) => {
             </Dialog>
         </>
     );
-});
+};
 
-export default ScPositionSelect;
+export default memo(ScPositionSelect);

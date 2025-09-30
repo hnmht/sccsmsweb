@@ -14,6 +14,7 @@ import { InitDocCache, GetLocalCache, GetCacheAnyOf } from "../../../storage/db/
 import PubTree from "../ScPub/PubTree";
 import DocTable from "../../DocTable/DocTable";
 import { treeToArr } from "../../../utils/tree";
+
 const SICName = "sceneitemclass";
 const SIName = "sceneitem";
 
