@@ -1,14 +1,15 @@
+import { ConvertToUnixDate, ConvertToUnixDateTime } from "../../i18n/dayjs";
 export const Comparisons = [
-    { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-    { id: "notequal", label: '不等于', value: '!=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-    { id: "lessthan", label: '小于', value: '<', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-    { id: "greaterthan", label: '大于', value: '>', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-    { id: "lessthanequal", label: '小于等于', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-    { id: "greaterthanequal", label: '大于等于', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-    { id: "contain", label: '包含', value: 'ilike', addCharacter: true, addStart: "%", addEnd: "%", needInput: true, applicable: ["string"] },
-    { id: "notcontain", label: '不包含', value: 'not ilike', addCharacter: true, addStart: "%", addEnd: "%", needInput: true, applicable: ["string"] },
-    { id: "null", label: '为空', value: 'is null', addCharacter: false, needInput: false, applicable: ["object", "string", "int", "number"] },
-    { id: "notnull", label: '不为空', value: 'is not null', addCharacter: false, applicable: ["object", "string", "int", "number"] },
+    { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
+    { id: "notequal", label: 'notEqual', value: '!=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
+    { id: "lessthan", label: 'lessThan', value: '<', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
+    { id: "greaterthan", label: 'greaterThan', value: '>', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
+    { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
+    { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
+    { id: "contain", label: 'contain', value: 'ilike', addCharacter: true, addStart: "%", addEnd: "%", needInput: true, applicable: ["string"] },
+    { id: "notcontain", label: 'notContain', value: 'not ilike', addCharacter: true, addStart: "%", addEnd: "%", needInput: true, applicable: ["string"] },
+    { id: "null", label: 'null', value: 'is null', addCharacter: false, needInput: false, applicable: ["object", "string", "int", "number"] },
+    { id: "notnull", label: 'notNull', value: 'is not null', addCharacter: false, applicable: ["object", "string", "int", "number"] },
 ];
 
 export const transConditionsToString = (conditions) => {
@@ -22,6 +23,14 @@ export const transConditionsToString = (conditions) => {
         cs = cs + con.compare.value + " ";
 
         switch (con.field.resultType) {
+            case "date":
+                const unixDate = ConvertToUnixDate(con.value);
+                cs = cs + "to_timestamp(" + unixDate + ") ";
+                break;
+            case "dateTime":
+                const unixTime = ConvertToUnixDateTime(con.value);
+                cs = cs + "to_timestamp(" + unixTime + ") ";
+                break;
             case "number":
                 cs = cs + con.value + " ";
                 break;
@@ -30,10 +39,10 @@ export const transConditionsToString = (conditions) => {
                 break;
             case "string":
                 if (con.compare.addCharacter) {
-                    cs = cs + "'" + con.compare.addStart + con.value + con.compare.addEnd + "' ";                    
+                    cs = cs + "'" + con.compare.addStart + con.value + con.compare.addEnd + "' ";
                 } else {
                     cs = cs + "'" + con.value + "' ";
-                }               
+                }
                 break;
             case "object":
                 cs = cs + con.value.id + " ";
