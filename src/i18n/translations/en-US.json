@@ -290,6 +290,8 @@
 
     "confirmSuccessful":"Confirm successful",
     "unconfirmSuccessful":"Unconfirm successful",
+    "chooseTime":"Select Time",
+    "chooseDate":"Select Date",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

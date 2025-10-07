@@ -18,7 +18,7 @@ const zeroValue = { id: 0, code: "", name: "", csc: {}, status: 0, respDept: {},
 //570 Seacloud Construction Site Archive Select Input Component
 const ScCSASelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
-    const [sceneItem, setSceneItem] = useState(initValue);
+    const [csa, setCsa] = useState(initValue);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const [dynamicColumns, setDynamicColumns] = useState(columns);
@@ -27,7 +27,7 @@ const ScCSASelect = (props) => {
 
     useEffect(() => {
         async function getDycols() {
-            const options = await GetLocalCache("sceneitemoption");
+            const options = await GetLocalCache("cso");
             let newDyCols = GetDynamicColumns(columns, options);
             setDynamicColumns(newDyCols);
         }
@@ -35,7 +35,7 @@ const ScCSASelect = (props) => {
     }, []);
 
     useEffect(() => {
-        setSceneItem(initValue);
+        setCsa(initValue);
     }, [initValue]);
 
     useEffect(() => {
@@ -51,16 +51,16 @@ const ScCSASelect = (props) => {
 
     // Actions after click CSA item 
     const handleCSAClick = (item) => {
-        setSceneItem(item);
+        setCsa(item);
     };
     // Actions after Double Click CSA item
     const handleCSADoubleClick = (item) => {
-        setSceneItem(item);
+        setCsa(item);
         handleOkClick();
     };
 
     // Transmit data to the parent component
-    const handleTransfer = async (doc = sceneItem) => {
+    const handleTransfer = async (doc = csa) => {
         if (!isEdit) {
             return
         }
@@ -75,7 +75,7 @@ const ScCSASelect = (props) => {
     };
     // Actions after click the clear button
     const handleClear = () => {
-        setSceneItem(zeroValue);
+        setCsa(zeroValue);
         handleTransfer(zeroValue);
     };
     // Actions after click the ok button
@@ -100,7 +100,7 @@ const ScCSASelect = (props) => {
                     disabled={!isEdit}
                     name={id}
                     placeholder={isEdit ? t(placeholder) : ""}
-                    value={sceneItem.name}
+                    value={csa.name}
                     error={errInfo.isErr}
                     InputProps={{
                         endAdornment:
@@ -109,7 +109,7 @@ const ScCSASelect = (props) => {
                                     ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
-                                {sceneItem.id !== 0 && isEdit && allowNull
+                                {csa.id !== 0 && isEdit && allowNull
                                     ? <Tooltip title={t("clear")} placement="top">
                                         <span>
                                             <IconButton onClick={handleClear} size="small">
@@ -136,7 +136,7 @@ const ScCSASelect = (props) => {
                     disabled={!isEdit}
                     name={id}
                     placeholder={isEdit ? t(placeholder) : ""}
-                    value={sceneItem.name}
+                    value={csa.name}
                     error={errInfo.isErr}
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
@@ -144,7 +144,7 @@ const ScCSASelect = (props) => {
                                 ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
-                            {sceneItem.id !== 0 && isEdit && allowNull
+                            {csa.id !== 0 && isEdit && allowNull
                                 ? <Tooltip title={t("clear")} placement="top">
                                     <span>
                                         <IconButton onClick={handleClear} size="small">
@@ -176,7 +176,7 @@ const ScCSASelect = (props) => {
                     doubleClickItemAction={handleCSADoubleClick}
                     cancelClickAction={handleDiagClose}
                     okClickAction={handleOkClick}
-                    currentItem={sceneItem}
+                    currentItem={csa}
                     columns={dynamicColumns}
                 />
             </Dialog>

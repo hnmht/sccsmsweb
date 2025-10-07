@@ -29,7 +29,6 @@ const WorkOrder = () => {
         async function getWOs() {
             // Convert the query conditions to a string
             let queryString = transConditionsToString(generateConditions());
-            // console.log("queryString:", queryString);
             let wosRes = await reqGetWOList({ queryString: queryString });
             let newWos = [];
             if (wosRes.status) {

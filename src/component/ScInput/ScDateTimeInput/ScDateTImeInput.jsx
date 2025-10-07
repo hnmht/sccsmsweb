@@ -1,11 +1,12 @@
 import { useState, useEffect, memo } from "react";
-import { ErrorIcon } from "../../PubIcon/PubIcon";
+import { ErrorIcon, ClockIcon } from "../../PubIcon/PubIcon";
 import {
     InputLabel,
     TextField,
     Tooltip,
     InputBase,
-    InputAdornment
+    InputAdornment,
+    Stack
 } from "@mui/material";
 import { DateTimeInputMask, dayjs } from "../../../i18n/dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -48,6 +49,8 @@ const ScDateTimeInput = (props) => {
         pickDone(newValue, itemKey, positionID, rowIndex, err);
     };
 
+    const OpenPickIcon = () => <ClockIcon color={isEdit ? "success" : "transparent"} fontSize="small" sx={{ margin: 0, padding: 0 }} />
+
     return (
         <>
             {positionID !== 1
@@ -61,7 +64,14 @@ const ScDateTimeInput = (props) => {
                     handleOnBlur(newValue);
                 }}
                 inputFormat={mask}
-                renderInput={(params) => {
+                disabled={!isEdit}
+                components={{
+                    OpenPickerIcon: OpenPickIcon
+                }}
+                componentsProps={{
+                    endAdornment: { sx: { margin: 0, padding: 0 } }
+                }}
+                renderInput={({ InputProps, ...params }) => {
                     return positionID !== 1
                         ? <TextField
                             {...params}
@@ -71,16 +81,18 @@ const ScDateTimeInput = (props) => {
                             name={id}
                             error={errInfo.isErr}
                             InputProps={{
-                                ...params.inputProps,
+                                ...InputProps,
                                 endAdornment: (
-                                    <>
-                                        {params.InputProps?.endAdornment}
-                                        <InputAdornment position="end">
+                                    <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
+                                        <InputAdornment position="end" sx={{ margin: 0, padding: 0 }}>
                                             {
                                                 errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
                                             }
+                                            <Tooltip title={t("chooseTime")} placement="top">
+                                                {InputProps?.endAdornment}
+                                            </Tooltip>
                                         </InputAdornment>
-                                    </>
+                                    </Stack>
 
                                 )
                             }}
@@ -92,26 +104,37 @@ const ScDateTimeInput = (props) => {
                             disabled={!isEdit}
                             name={id}
                             error={errInfo.isErr}
-                            InputProps={{
-                                ...params.inputProps,
-                                endAdornment: (
-                                    <>
-                                        {params.InputProps?.endAdornment}
-                                        <InputAdornment position="end">
-                                            {
-                                                errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
-                                            }
-                                        </InputAdornment>
-                                    </>
-
-                                )
-                            }}
+                            endAdornment={
+                                <InputAdornment
+                                    position="end"
+                                    sx={{
+                                        "& .MuiInputAdornment-root": {
+                                            marginLeft: 0,
+                                            padding: 0,
+                                        },
+                                        "& .MuiButtonBase-root": {
+                                            margin: 0,
+                                            paddingX: 1,
+                                        }
+                                    }}>
+                                    {
+                                        errInfo.isErr
+                                            ? <Tooltip title={t(errInfo.msg)} placement="top">
+                                                <ErrorIcon fontSize="small" color="error" />
+                                            </Tooltip>
+                                            : null
+                                    }
+                                    <Tooltip title={t("chooseTime")} placement="top">
+                                        {InputProps?.endAdornment}
+                                    </Tooltip>
+                                </InputAdornment>
+                            }
                         />
                 }}
             />
         </>
     );
-}
+};
 
 export default memo(ScDateTimeInput);
 

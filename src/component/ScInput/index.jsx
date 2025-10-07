@@ -6,7 +6,7 @@ import ScPasswordInput from "./ScPasswordInput/ScPasswordInput"; //303 Password 
 import ScMobileInput from "./ScMobileInput/ScMobileInput"; //304 Mobile Input
 import ScEmailInput from "./ScEmailInput/ScEmailInput"; //305 Email Input
 import ScDateInput from "./ScDateInput/ScDateInput"; //306 Date Input
-import ScDateTimeInput from "./ScDateTimeInput/ScDateTImeInput"; //307 Date time Input 
+import ScDateTimeInput from "./ScDateTimeInput/ScDateTimeInput"; //307 Date time Input 
 
 import ScGenderSelect from "./ScGenderSelect/ScGendeSelectr"; //401 Gender Select Input
 import ScSwitchYesOrNo from "./ScSwitchYesOrNo/ScSwitchYesOrNo"; //402 Switch Input Yes Or No 

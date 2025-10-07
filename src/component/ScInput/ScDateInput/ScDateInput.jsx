@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { ErrorIcon } from "../../PubIcon/PubIcon";
+import { ErrorIcon, CalendarMonthIcon } from "../../PubIcon/PubIcon";
 import {
     InputLabel,
     TextField,
@@ -12,7 +12,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateInputMask, dayjs } from "../../../i18n/dayjs";
 
 const defaultValue = dayjs(new Date());
-
 // 306 SeaCloud Date input Component
 const ScDateInput = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = defaultValue, pickDone, isBackendTest, backendTestFunc } = props;
@@ -37,7 +36,7 @@ const ScDateInput = (props) => {
         if (!isEdit) {
             return
         }
-        let err = { isErr: false, msg: "" };
+        let err = { isErr: true, msg: "" };
         if (newValue === undefined && !allowNull) {
             err = { isErr: true, msg: "cannotEmpty" };
         } else if (newValue !== undefined && !dayjs(newValue).isValid()) {
@@ -48,6 +47,9 @@ const ScDateInput = (props) => {
         setErrInfo(err);
         pickDone(newValue, itemKey, positionID, rowIndex, err);
     };
+
+    const DatePickIcon = () => <CalendarMonthIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
+
     return (
         <>
             {positionID !== 1
@@ -61,6 +63,9 @@ const ScDateInput = (props) => {
                 }}
                 inputFormat={mask}
                 disabled={!isEdit}
+                components={{
+                    OpenPickerIcon: DatePickIcon,
+                }}
                 renderInput={(params) => {
                     return positionID !== 1
                         ? <TextField
@@ -73,14 +78,30 @@ const ScDateInput = (props) => {
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: (
-                                    <>
-                                        {params.InputProps?.endAdornment}
-                                        <InputAdornment position="end">
-                                            {
-                                                errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
+                                    <InputAdornment
+                                        position="end"
+                                        sx={{
+                                            "& .MuiInputAdornment-root": {
+                                                marginLeft: 0,
+                                                padding: 0,
+                                            },
+                                            "& .MuiButtonBase-root": {
+                                                margin: 0,
+                                                paddingX: 1,
                                             }
-                                        </InputAdornment>
-                                    </>
+                                        }}
+                                    >
+                                        {
+                                            errInfo.isErr
+                                                ? <Tooltip title={t(errInfo.msg)} placement="top">
+                                                    <ErrorIcon fontSize="small" color="error" />
+                                                </Tooltip>
+                                                : null
+                                        }
+                                        <Tooltip title={t("chooseDate")} placement="top">
+                                            {params.InputProps?.endAdornment}
+                                        </Tooltip>
+                                    </InputAdornment>
                                 )
                             }}
                         />
@@ -91,20 +112,31 @@ const ScDateInput = (props) => {
                             disabled={!isEdit}
                             name={id}
                             error={errInfo.isErr}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <>
+                            endAdornment={
+                                <InputAdornment
+                                    position="end"
+                                    sx={{
+                                        "& .MuiInputAdornment-root": {
+                                            marginLeft: 0,
+                                            padding: 0,
+                                        },
+                                        "& .MuiButtonBase-root": {
+                                            margin: 0,
+                                            paddingX: 1,
+                                        }
+                                    }}
+                                >
+                                    {
+                                        errInfo.isErr
+                                            ? <Tooltip title={errInfo.msg} placement="top">
+                                                <ErrorIcon fontSize="small" color="error" />
+                                            </Tooltip> : null
+                                    }
+                                    <Tooltip title={t("chooseDate")} placement="top">
                                         {params.InputProps?.endAdornment}
-                                        <InputAdornment position="end">
-                                            {
-                                                errInfo.isErr ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null
-                                            }
-
-                                        </InputAdornment>
-                                    </>
-                                )
-                            }}
+                                    </Tooltip>
+                                </InputAdornment>
+                            }
                         />
                 }}
             />

@@ -286,6 +286,10 @@
     "notContain": "不包含",
     "null": "为空",
     "notNull": "不为空",
+    "confirmSuccessful": "确认成功",
+    "unconfirmSuccessful": "取消确认成功",
+    "chooseTime": "选择时间",
+    "chooseDate": "选择日期",
     
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",
