@@ -1,10 +1,10 @@
 import { cloneDeep } from "lodash";
 
-//使用json对象实现深拷贝
+// Deep copy an object using JSON serialization
 export const DeepCloneJSON = (obj) => {
     let newObj = JSON.stringify(obj);
     return JSON.parse(newObj)
-}
+};
 
 /**
     * 数组根据数组对象中的某个属性值进行排序的方法

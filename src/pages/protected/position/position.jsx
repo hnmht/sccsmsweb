@@ -60,7 +60,7 @@ const Position = () => {
     const handleRowDelete = async (item) => {
         const delRes = await reqDeletePosition(item);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
             handleReqPositionList();
         }
         // Get latest position front-end cache

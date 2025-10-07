@@ -1,8 +1,6 @@
 import { useCallback, useState } from "react";
-
 import {
     Stack,
-    Input,
     IconButton,
     Popover,
 } from "@mui/material";
@@ -15,7 +13,7 @@ import ScTooltip from "../ScMui/ScTooltip";
 import ScInput from "../ScMui/ScInput";
 const keytext = "operateButton_";
 
-function OperateArea(props) {
+const OperateArea = (props) => {
     const {
         Columns,
         OriginColumns,
@@ -56,63 +54,62 @@ function OperateArea(props) {
         getKeyWordAction,
     } = props;
 
-    //popover相关
-    //popover打开，进行列定义设置或者排序定义
+    // Popover related
+    // Open the Popover to define column display or sort order
     const [open, setOpen] = useState(false);
-    //popover锚定组件
+    // Popover anchor position
     const [anchorEl, setAnchorEl] = useState(null);
-    //打开popover的类型：排序窗口or列显示设定窗口
+    // Popover display content: Define column or Sort order
     const [popoverType, setPopoverType] = useState(""); //"sort","selectColumn"
-
-    //排序相关：初始化排序设置
+    // Define sort order
     const [sortColumns, setSortColumns] = useState(getSortColumns(Columns));
-    //点击OperateArea组件排序按钮
+    // Actions after click the sort button in the header
     const handleSort = useCallback((event) => {
         setAnchorEl(event.currentTarget);
         setPopoverType("sort");
         setOpen(true);
     }, []);
-    //排序popover中排序确定按钮点击后
+    // Actions after click ok button in the sort Popover
     const handleSortOk = (sortColumns) => {
         setSortColumns(sortColumns);
         setPopoverType("");
         setOpen(false);
-        //加工排序后的数据
+        // Process the sort data
         const sortResult = getOrderBy(sortColumns, Columns);
-        //向上级传递排序结果
+        // Pass the sort data to the parent component
         getOrderByAction(sortResult);
     };
-    //排序popover中排序取消按钮点击后
+    // Actions after click cancel button in the sort Popover
     const handleSortCancel = useCallback((event) => {
         setOpen(false);
         setPopoverType("");
     }, []);
 
-    //点击OperateView设置列显示按钮
+    // Actions after click the Column display button in the header 
     const handleSelectColumn = useCallback((event) => {
         setAnchorEl(event.currentTarget);
         setPopoverType("selectColumn");
         setOpen(true);
     }, []);
-    //popover中设置列确定按钮点击后
+    // Actions after click the ok button in the Colunm setup Popover
     const handleSetColumnOk = (columns) => {
         setOpen(false);
         setPopoverType("");
         getSetColumnAction(columns);
     };
-    //popover中取消设置列按钮点击后
+    // Actions after click the Cancel button in the column setup Popover
     const handleSetColumnCancel = () => {
         setOpen(false);
         setPopoverType("");
     };
 
-    //筛选相关
+    // Search related
     const [keyword, setKeyword] = useState("");
-    //点击开始搜索图标
+    // Actions after click the start search button
     const handleSearch = () => {
         getKeyWordAction(keyword);
     };
-    //搜索关键字输入监听
+    // Actions after keyword input value change
     const keyWordInputChange = (event) => {
         setKeyword(event.target.value);
         if (event.target.value === "") {
@@ -120,12 +117,12 @@ function OperateArea(props) {
         }
     };
 
-    //搜索关键字清除
+    // Actions after click the clear search keyword button
     const handleKeyWordClear = () => {
         setKeyword("");
         getKeyWordAction("");
     };
-    //弹出框关闭
+    // Close dialog
     const handlePopoverClose = () => {
         setAnchorEl(null);
         setOpen(false);
@@ -332,6 +329,6 @@ function OperateArea(props) {
             </Popover>
         </Stack>
     );
-}
+};
 
 export default OperateArea;

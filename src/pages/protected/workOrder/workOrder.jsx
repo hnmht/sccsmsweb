@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "@mui/material";
 import { message } from "mui-message";
 
@@ -11,7 +12,8 @@ import { QueryPanel, transConditionsToString } from "../../../component/QueryPan
 import { columns, rowActionsDefine, generateConditions, QueryFields, transWoDetailToFronted, delMultipleDisabled } from "./constructor";
 import { reqGetWOList, reqGetWODetail, reqDeleteWO, reqDeleteWOs, reqConfirmWO, reqCancelConfirmWO } from "../../../api/workOrder";
 
-function WorkOrderDoc() {
+// Work Order List
+const WorkOrder = () => {
     const [rows, setRows] = useState([]);
     const [conditions, setConditions] = useState(generateConditions());
     const [diagStatus, setDiagStatus] = useState({
@@ -21,23 +23,23 @@ function WorkOrderDoc() {
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getWOs() {
-            //将查询条件转化为String
+            // Convert the query conditions to a string
             let queryString = transConditionsToString(generateConditions());
+            // console.log("queryString:", queryString);
             let wosRes = await reqGetWOList({ queryString: queryString });
             let newWos = [];
             if (wosRes.status) {
-                newWos = wosRes.data.data;
-            } else {
-                message.warning(wosRes.data.statusMsg);
+                newWos = wosRes.data;
             }
             setRows(newWos);
         }
         getWOs();
     }, []);
-    //查询条件对话框关闭
+    // Close dialog
     const handelDiagClose = () => {
         setDiagStatus({
             isOpen: false,
@@ -47,7 +49,7 @@ function WorkOrderDoc() {
             isModify: false
         })
     };
-    //对话框点击确认
+    // Actions after click ok button in the dialog
     const handleDiagOk = (cons) => {
         let newDiagStatus = {
             isOpen: false,
@@ -57,27 +59,26 @@ function WorkOrderDoc() {
             isModify: false
         };
         let newConditions = conditions;
-        if (diagStatus.content !== "edit") {//如果显示的内容是查询条件
+        if (diagStatus.content !== "edit") {
             newConditions = cons;
         }
         setDiagStatus(newDiagStatus);
         setConditions(newConditions);
-        //刷新数据
+        // Refresh 
         handleRefreshList(newConditions);
     };
-    //刷新数据
+    // Request Work date list from backend by condifitons
     const handleRefreshList = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
+        console.log("queryString:", queryString);
         let wosRes = await reqGetWOList({ queryString: queryString });
         let newWos = [];
         if (wosRes.status) {
-            newWos = wosRes.data.data;
-        } else {
-            message.warning(wosRes.data.statusMsg);
+            newWos = wosRes.data;
         }
         setRows(newWos);
     };
-    //过滤按钮点击
+    // Actions after filter button click in the header
     const handleFilterAction = () => {
         setDiagStatus({
             isOpen: true,
@@ -87,7 +88,7 @@ function WorkOrderDoc() {
             isModify: false
         });
     };
-    //增加按钮点击
+    // Actions after click add button in the header
     const handleAddAction = () => {
         setDiagStatus({
             isOpen: true,
@@ -97,12 +98,12 @@ function WorkOrderDoc() {
             isModify: false
         });
     };
-    //行详情按钮点击
+    // Actions after click detail button in the row
     const handleViewAction = async (item) => {
         let res = await reqGetWODetail(item);
         let newDiagStatus = {};
         if (res.status) {
-            let woDetail = await transWoDetailToFronted(res.data.data);
+            let woDetail = await transWoDetailToFronted(res.data);
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",
@@ -111,7 +112,7 @@ function WorkOrderDoc() {
                 isModify: false,
             };
         } else {
-            message.warning(res.data.statusMsg);
+            message.warning(res.data.msg);
             newDiagStatus = {
                 isOpen: false,
                 content: "edit",
@@ -122,12 +123,12 @@ function WorkOrderDoc() {
         }
         setDiagStatus(newDiagStatus);
     };
-    //行编辑按钮点击
+    // Actions after click edit button in the row
     const handleEditAction = async (item) => {
         let res = await reqGetWODetail(item);
         let newDiagStatus = {};
         if (res.status) {
-            let woDetail = await transWoDetailToFronted(res.data.data);
+            let woDetail = await transWoDetailToFronted(res.data);
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",
@@ -136,7 +137,7 @@ function WorkOrderDoc() {
                 isModify: true,
             };
         } else {
-            message.warning(res.data.statusMsg);
+            message.warning(res.data.msg);
             newDiagStatus = {
                 isOpen: false,
                 content: "edit",
@@ -147,12 +148,12 @@ function WorkOrderDoc() {
         }
         setDiagStatus(newDiagStatus);
     };
-    //行复制新增按钮点击
+    // Actions after click copy add button in the row
     const handleRowCopyAdd = async (item) => {
         let res = await reqGetWODetail(item);
         let newDiagStatus = {};
         if (res.status) {
-            let woDetail = await transWoDetailToFronted(res.data.data);
+            let woDetail = await transWoDetailToFronted(res.data);
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",
@@ -172,56 +173,45 @@ function WorkOrderDoc() {
         }
         setDiagStatus(newDiagStatus);
     };
-    //行删除按钮点击
+    // Actions after click delete button in the row
     const handleRowDelete = async (item) => {
         let res = await reqDeleteWO(item);
         if (res.status) {
-            message.success("删除" + item.billnumber + "指令单成功");
-        } else {
-            message.error("删除" + item.billnumber + "指令单失败:" + res.data.statusMsg);
-            return
+            message.success(t("deleteSuccessful"));
+            // refresh
+            handleRefreshList();
         }
-        //刷新数据
-        handleRefreshList();
     };
-    //行确认按钮点击
+    // Actions after click confirm button in the row
     const handleConfirmRow = async (item) => {
         let res = await reqConfirmWO(item);
         if (res.status) {
-            message.success("确认" + item.billnumber + "指令单成功");
-        } else {
-            message.error("确认" + item.billnumber + "指令单失败:" + res.data.statusMsg);
-            return
+            message.success(t("confirmSuccessful"));
+            // refresh
+            handleRefreshList();
         }
-        //刷新数据
-        handleRefreshList();
     };
-    //行取消确认按钮点击
+    // Actions after click unconfirm button it the row
     const handleCancelConfirmRow = async (item) => {
         let res = await reqCancelConfirmWO(item);
         if (res.status) {
-            message.success("取消确认" + item.billnumber + "指令单成功");
-        } else {
-            message.error("取消确认" + item.billnumber + "指令单失败:" + res.data.statusMsg);
-            return
+            message.success(t("unconfirmSuccessful"));
+            // refresh
+            handleRefreshList();
         }
-        //刷新数据
-        handleRefreshList();
     };
-    //批量删除按钮点击
+    // Actions after click batch delete button in the header
     const handleDelMultipleAction = async (docs) => {
         const delsRes = await reqDeleteWOs(docs);
         if (delsRes.status) {
-            message.success("批量删除指令单成功");
+            message.success(t("batchDeleteSuccessful"));
             handleRefreshList(conditions);
-        } else {
-            message.error("批量删除指令单失败:", delsRes.data.statusMsg);
-        }
+        } 
     };
 
     return (
         <>
-            <PageTitle pageName="指令单" displayHelp={true} helpUrl="/helps/workOrderDocWeb" />
+            <PageTitle pageName={t("MenuWO")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 columns={columns}
@@ -260,7 +250,7 @@ function WorkOrderDoc() {
                         onOk={handleDiagOk}
                     />
                     : <QueryPanel
-                        title="过滤条件"
+                        title="queryConditions"
                         queryFields={QueryFields}
                         initalConditions={conditions}
                         onOk={handleDiagOk}
@@ -271,4 +261,4 @@ function WorkOrderDoc() {
         </>
     );
 }
-export default WorkOrderDoc;
+export default WorkOrder;

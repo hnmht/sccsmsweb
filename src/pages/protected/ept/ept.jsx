@@ -91,7 +91,7 @@ const EPT = () => {
         const delEPT = await transEPTToBackend(item);
         const delRes = await reqDeleteEPT(delEPT);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
             handleGetEPTList();
         }
     };

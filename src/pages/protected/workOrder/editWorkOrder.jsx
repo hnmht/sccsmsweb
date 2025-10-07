@@ -21,7 +21,7 @@ import { GetCacheDocById } from "../../../storage/db/db";
 import { reqAddWO, reqEditWO } from "../../../api/workOrder";
 import { transWOToBackend } from "./constructor";
 
-import { getCurrentPerson, generateVoucherErrors, checkVoucherErrors } from "../pub";
+import { getCurrentPerson, generateVoucherErrors, checkVoucherErrors } from "../pub/pubFunction";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 
 //生成初始数据

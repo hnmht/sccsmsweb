@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
 
 function GlobalMessage(props) {

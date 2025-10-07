@@ -1,7 +1,6 @@
 
-//确定默认排序方式
+// Generate the default sorting array
 export function getSortColumns(tableColumns) {
-    // console.log("getSortColumns tableColumns:",tableColumns);
     let sortColumns = [];
     tableColumns.forEach((column) => {
         if (column.sort) {
@@ -15,11 +14,9 @@ export function getSortColumns(tableColumns) {
         }
     })
     sortColumns[0].sort = true;
-    // sortColumns[0].direction = "asc";
-
     return sortColumns;
 }
-//将列名转化为数组
+// Convert the column names to an array
 export function getColumnsKey(columns) {
     let keys = [];
     columns.forEach((column) => {
@@ -27,8 +24,7 @@ export function getColumnsKey(columns) {
     });
     return keys;
 }
-
-//排序数据转化为orderby
+// Convert sort data to the orderBy array
 export function getOrderBy(sortColumns, tableColumns) {
     let orderBy = [];
     sortColumns.forEach(element => {
@@ -36,7 +32,6 @@ export function getOrderBy(sortColumns, tableColumns) {
             orderBy.push({ field: element.id, order: element.direction });
         }
     });
-    //如果没有选择任何排序列
     if (orderBy.length === 0) {
         getSortColumns(tableColumns).forEach(element => {
             if (element.sort) {
@@ -44,11 +39,10 @@ export function getOrderBy(sortColumns, tableColumns) {
             }
         });
     }
-
     return orderBy;
 }
 
-//导出excel前整理列数据
+// Prepare column data for Excel export
 export function excelColumns(currentColumns) {
     let columns = [];
     currentColumns.forEach((column) => {
@@ -59,7 +53,7 @@ export function excelColumns(currentColumns) {
     return columns;
 }
 
-//导出excel前整理行数据
+// Perpare row data for Excel export
 export function excelRows(currentRows, currentColumns) {
     let excelRows = [];
     currentRows.forEach(row => {

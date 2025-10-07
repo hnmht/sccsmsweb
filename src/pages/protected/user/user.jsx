@@ -104,10 +104,10 @@ const User = () => {
     const handleUserDelete = async (item) => {
         const delRes = await reqDeleteUser(item);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
             handleGetUsers();
         } else {
-            message.error(t("delFailed") + delRes.msg);
+            message.error(t("deleteFailed") + delRes.msg);
         }
         // Get latest front-end cache
         await InitDocCache("person");

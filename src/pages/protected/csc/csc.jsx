@@ -152,7 +152,7 @@ function CSC() {
     const handleRowDelete = async (doc) => {
         const delRes = await reqDeleteCSC(doc);
         if (delRes.status) {
-            message.success(t("delSuccessful"));            
+            message.success(t("deleteSuccessful"));            
         } 
         // Refresh
         handleGetSimpCscs();

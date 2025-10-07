@@ -61,7 +61,7 @@ const RiskLevel = () => {
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteRL(item);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
             // Refresh data
             handleReqRLList();
         }

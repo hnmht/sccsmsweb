@@ -87,11 +87,14 @@ export const CellStatus = (row, column) => {
     return i18n.t(v)
 };
 
-// Voucher status displa content
+// Voucher status display content
 export const CellVoucherStatus = (row, column) => {
     return VoucherStatus[row.status];
 };
-
+// Voucher billDate display content
+export const CellbillDate = (row, column) => {
+    return DateTimeFormat(row.billDate,"LLL");
+};
 // Department display content
 export const CellDept = (row, column) => {
     return row.department.name;

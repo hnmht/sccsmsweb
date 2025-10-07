@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
 import {
     Card,
     CardHeader,
@@ -24,40 +23,39 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
     const { t } = useTranslation();
     const [columns, setColumns] = useState(tableColumns);
     const [currentItem, setCurrentItem] = useState(null);
-
-    //点击选中窗口中的列
+    // Actions after click Item
     const handleItemClick = (column, index) => {
         setCurrentItem(column);
     };
-    //switch改变时
+    // Actions after item switch value change
     const handleDisplayChange = (event, index) => {
         let newColumns = cloneDeep(columns);
         newColumns[index].visible = event.target.checked;
         setColumns(newColumns);
     };
-    //列重置
+    // Actions after Reset column
     const handleRestColumn = () => {
         setColumns(originColumns);
     };
-    //点击向下按钮
+    // Actions after click the down button
     const handleDownOne = () => {
         setColumns(ArrayElementDownOne(columns, currentItem, "id"));
     };
-    //点击向上按钮
+    // Actions after click the up button
     const handleUpOne = () => {
         setColumns(ArrayElementUpOne(columns, currentItem, "id"));
     };
-    //点击置顶按钮
+    // Actions after click the to top button
     const handleToTop = () => {
         setColumns(ArrayElementToTop(columns, currentItem, "id"));
     };
-    //点击置底按钮
+    // Actions after click the to bottom button
     const handleToBottom = () => {
         setColumns(ArrayElementToBottom(columns, currentItem, "id"));
     };
 
     return (
-        <Card sx={{ minWidth: 256, maxHeight: 512 }}>
+        <Card sx={{ minWidth: 384, maxHeight: 512 }}>
             <CardHeader title={t("columnSettings")} />
             <Divider />
             <Grid container>
@@ -139,8 +137,5 @@ function SetColumnView({ tableColumns, setColumnOk, setColumnCancel, originColum
         </Card>
     );
 }
-SetColumnView.propTypes = {
-    tableColumns: PropTypes.array.isRequired,
-};
 
 export default SetColumnView;

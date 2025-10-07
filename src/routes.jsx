@@ -46,7 +46,7 @@ const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery
 // Execution Project Template
 const EPT = Loadable(lazy(() => import("./pages/protected/ept/ept")));
 //指令单
-const WorkOrderDoc = Loadable(lazy(() => import("./pages/protected/workOrder/workOrderDoc")));  //指令单
+const WorkOrder = Loadable(lazy(() => import("./pages/protected/workOrder/workOrder")));  // Work Order
 //权限界面
 const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); //首页
 const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); //日程
@@ -133,7 +133,7 @@ const routes = [
             },
             {
                 path: "/private/workOrder/workOrder",
-                element: <WorkOrderDoc />
+                element: <WorkOrder />
             },
            
             {

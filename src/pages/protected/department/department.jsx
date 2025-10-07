@@ -138,7 +138,7 @@ const Department = () => {
     const handleRowDelete = async (item) => {
         const delRes = await reqDelDept(item);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
         } 
         // Request latest department from server
         handleGetDepts();

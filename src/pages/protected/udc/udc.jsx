@@ -61,7 +61,7 @@ function UserDefineCategory() {
         const delRes = await reqDeleteUDC(item);
         console.log("delRes:",delRes);
         if (delRes.status) {
-            message.success("delSuccessful");
+            message.success("deleteSuccessful");
             // Get the latest udc list
             handleReqUDCList();
         }

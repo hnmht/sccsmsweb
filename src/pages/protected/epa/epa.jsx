@@ -116,7 +116,7 @@ const EPA = () => {
         // Requst the backend to delete this data
         const delRes = await reqDeleteEP(backendDoc);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
         } 
         // Refresh EP list
         handleGetEPList();

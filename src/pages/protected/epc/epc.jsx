@@ -155,7 +155,7 @@ function EPC() {
     const handleRowDelete = async (doc) => {
         const delRes = await reqDeleteEPC(doc);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
         } 
         // refresh
         handleGetSimpEpcs();

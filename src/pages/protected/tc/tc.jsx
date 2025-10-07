@@ -112,7 +112,7 @@ const TC = () => {
     const handleRowDelete = async (doc) => {
         const delRes = await reqDeleteTC(doc);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
         }
         // refresh
         handleReqDocList();

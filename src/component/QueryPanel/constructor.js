@@ -1,4 +1,4 @@
-import { ConvertToUnixDate, ConvertToUnixDateTime } from "../../i18n/dayjs";
+import { ConvertToUnixSecond } from "../../i18n/dayjs";
 export const Comparisons = [
     { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
     { id: "notequal", label: 'notEqual', value: '!=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
@@ -11,7 +11,6 @@ export const Comparisons = [
     { id: "null", label: 'null', value: 'is null', addCharacter: false, needInput: false, applicable: ["object", "string", "int", "number"] },
     { id: "notnull", label: 'notNull', value: 'is not null', addCharacter: false, applicable: ["object", "string", "int", "number"] },
 ];
-
 export const transConditionsToString = (conditions) => {
     let queryString = "";
     conditions.forEach((con, index) => {
@@ -24,11 +23,8 @@ export const transConditionsToString = (conditions) => {
 
         switch (con.field.resultType) {
             case "date":
-                const unixDate = ConvertToUnixDate(con.value);
-                cs = cs + "to_timestamp(" + unixDate + ") ";
-                break;
             case "dateTime":
-                const unixTime = ConvertToUnixDateTime(con.value);
+                const unixTime = ConvertToUnixSecond(con.value);
                 cs = cs + "to_timestamp(" + unixTime + ") ";
                 break;
             case "number":
@@ -52,6 +48,5 @@ export const transConditionsToString = (conditions) => {
         }
         queryString = queryString + cs;
     });
-
     return queryString;
 };

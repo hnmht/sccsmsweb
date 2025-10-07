@@ -9,6 +9,7 @@ import {
     OutlinedInput
 } from "@mui/material";
 import { ErrorIcon } from "../../PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
 const zeroValue = 0;
 // 401 Seacloud Voucher Status Component
 const ScVoucherStatus = (props) => {

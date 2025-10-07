@@ -26,9 +26,8 @@ import { getOrderBy, getSortColumns, getColumnsKey, excelColumns, excelRows } fr
 import { MultiSortByArr } from "../../utils/tools";
 import { DateTimeFormat } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
-import { t } from "i18next";
-
 const Paper = styled(MuiPaper)(spacing);
+const emptyFunc = () => {};
 
 const TableHead = styled(MuiTableHead)`
     ${spacing};
@@ -36,51 +35,51 @@ const TableHead = styled(MuiTableHead)`
     border-bottom: 2px solid ${(props) => props.theme.palette.divider};
 `;
 
-function DocList({
+const DocList = ({
     columns = [],
     rows = [],
     selectColumnVisible = true,
     // Header Add Button
     headAddVisible = true,
     headAddDisabled = false,
-    addAction = () => { },
+    addAction = emptyFunc,
     // Header add Refrence Button
     headRefAddVisible = false,
     headRefAddDisabled = false,
-    addRefAction = () => { },
+    addRefAction = emptyFunc,
     // Header Filter Button
     headFilterVisible = false,
     headFilterDisabled = false,
-    filterAction = () => { },
+    filterAction = emptyFunc,
     // Header Refresh Button
     headRefreshVisible = true,
     headRefreshDisabled = false,
-    refreshAction = () => { },
+    refreshAction = emptyFunc,
     // Header Delete Button
     headDelMultipleVisible = true,
     delMultipleDisabled = () => true,
-    delMultipleAction = () => { },
+    delMultipleAction = emptyFunc,
     // Header Confirm Button 
     headConfirmVisible = false,
     headConfirmDisabled = () => false,
-    confirmMultipleAction = () => { },
+    confirmMultipleAction = emptyFunc,
     // Header Unconfirm Button
     headCancelConfirmVisible = false,
     headCancelConfirmDisabled = () => true,
-    cancelConfirmMultipleAction = () => { },
+    cancelConfirmMultipleAction = emptyFunc,
     // Row Button
     rowActionsDefine = defaultRowActions,
-    rowCopyAdd = () => { },
-    rowViewDetail = () => { },
-    rowEdit = () => { },
-    rowDelete = () => { },
-    rowStart = () => { },
-    rowStop = () => { },
+    rowCopyAdd = emptyFunc,
+    rowViewDetail = emptyFunc,
+    rowEdit = emptyFunc,
+    rowDelete = emptyFunc,
+    rowStart = emptyFunc,
+    rowStop = emptyFunc,
     // Output file default name
     docListTitle = "Document",
     // Height Adjustment Value
     adjustContainerHeight = 102,
-}) {
+}) => {
     const { t } = useTranslation();
     const list = useRef(null);
     const [currentRows, setCurrentRows] = useState(rows);

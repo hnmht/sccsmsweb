@@ -109,7 +109,7 @@ function UserDefineDoc() {
     const handleRowDelete = async (udd) => {
         const delRes = await reqDeleteUDA(udd);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
             handleGetUDAList(currentUDC);
         }
     }

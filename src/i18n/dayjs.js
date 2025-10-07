@@ -59,15 +59,20 @@ const DateToLocalDate = (date) => {
 
 const GenerateUTCZero = () => {
     const zeroTime = dayjs.utc("0001-01-01 00:00:00");
-    console.log(currentTimezone)
     return zeroTime;
+};
+
+const ConvertToUnixSecond = (date) => {
+    return dayjs(date).startOf("day").unix();
+};
+
+const ConvertToUnixNano = (date) => {
+    return dayjs(date).valueOf();
 };
 
 const IsUTCZero = (date) => {
     const utcZero = dayjs.utc("0001-01-01 00:00:00");
     const utcDate = dayjs(date);
-    console.log("utcDate:", utcDate);
-    console.log("utcZero:", utcZero);
     return utcZero.isSame(utcDate);
 };
 
@@ -79,5 +84,7 @@ export {
     DateToLocalDate,
     GenerateUTCZero,
     IsUTCZero,
-    DateTimeInputMask
+    DateTimeInputMask,
+    ConvertToUnixSecond,
+    ConvertToUnixNano
 };

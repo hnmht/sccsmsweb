@@ -30,18 +30,12 @@ export const getUserInfo = async () => {
     return true;
 };
 
-//获取信息
+ // Request App Information from backend server
 export const getAppInfo = async () => {
     const res = await reqPubSysInfo();
     let newInfo = undefined;
     if (res.status) {
-        newInfo = res.data.data;
+        newInfo = res.data;
     }
     store.dispatch(setAppinfo(newInfo));
 }
-
-
-//从服务器获取数据
-export const initStore = async () => {
-
-};

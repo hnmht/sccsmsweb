@@ -1,5 +1,5 @@
 import request from "../utils/request";
-//获取指令单列表
+// Get Work Order List
 export function reqGetWOList(data,isLoading = true) {
     return request({
         url: "/wo/list",
@@ -8,7 +8,7 @@ export function reqGetWOList(data,isLoading = true) {
         isLoading
     });
 }
-//获取指令单详情
+// Get Work Order Details
 export function reqGetWODetail(data, isLoading = true) {
     return request({
         url: "/wo/detail",
@@ -18,7 +18,7 @@ export function reqGetWODetail(data, isLoading = true) {
     });
 }
 
-//增加指令单
+// Add Work Order
 export function reqAddWO(data, isLoading = true) {
     return request({
         url: "/wo/add",
@@ -28,7 +28,7 @@ export function reqAddWO(data, isLoading = true) {
     });
 }
 
-//编辑指令单
+// Modify Work Order
 export function reqEditWO(data, isLoading = true) {
     return request({
         url: "/wo/edit",
@@ -37,27 +37,27 @@ export function reqEditWO(data, isLoading = true) {
         isLoading
     });
 }
-//删除指令单
+// Delete Work Order
 export function reqDeleteWO(data, isLoading = true) {
     return request({
-        url: "/wo/delete",
+        url: "/wo/del",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//批量删除指令单
+// Batch Delete Work Order
 export function reqDeleteWOs(data, isLoading = true) {
     return request({
-        url: "/wo/deletewos",
+        url: "/wo/dels",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//确认指令单
+// Confirm Work Order
 export function reqConfirmWO(data, isLoading = true) {
     return request({
         url: "/wo/confirm",
@@ -67,17 +67,17 @@ export function reqConfirmWO(data, isLoading = true) {
     });
 }
 
-//取消确认指令单
+// Unconfirm Work Order
 export function reqCancelConfirmWO(data, isLoading = true) {
     return request({
-        url: "/wo/cancelconfirm",
+        url: "/wo/unconfirm",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//参照指令单
+// Get the list of Work Order awaitng execution
 export function reqReferWO(data, isLoading = true) {
     return request({
         url: "/wo/refer",

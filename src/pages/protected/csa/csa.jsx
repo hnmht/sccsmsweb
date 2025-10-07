@@ -107,7 +107,7 @@ const CSA = () => {
         // Request the server to delete csa
         const delRes = await reqDeleteCS(doc);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
         } 
         // Get latest csa front-end page
         handleRefreshCSA();

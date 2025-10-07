@@ -154,7 +154,7 @@ function DocumengCategory() {
     const handleRowDelete = async (doc) => {
         const delRes = await reqDeleteDC(doc);
         if (delRes.status) {
-            message.success(t("delSuccessful"));           
+            message.success(t("deleteSuccessful"));           
         } 
         // Refresh
         handleGetSimpDcs();

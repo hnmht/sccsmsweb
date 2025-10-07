@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Card,
     CardHeader,
@@ -20,55 +20,53 @@ import { DownOneIcon, UpOneIcon, ToBottomIcon, ToTopIcon } from "../PubIcon/PubI
 import { getSortColumns } from "./tools";
 import { DeepCloneJSON, ArrayElementDownOne, ArrayElementToTop, ArrayElementUpOne, ArrayElementToBottom } from "../../utils/tools";
 
-function SetSortView({
+const  SetSortView = ({
     sortColumns,
     sortOk,
     sortCancel,
     originColumns
-}) {
+}) => {
     const { t } = useTranslation();
-
     const [currentItem, setCurrentItem] = useState(null);
     const [columns, setColumns] = useState(sortColumns);
 
-    //点击字段排序按钮
+    // Actions after click sort label
     const handleSortLabeClick = (sortDirection, column, index) => {
         let newColumns = DeepCloneJSON(columns);
         newColumns[index].direction = sortDirection === "asc" ? "desc" : "asc";
         setColumns(newColumns);
-    }
-    //选择某一列数据
+    };
+    // Actions after click the column item
     const handleColumnClick = (column, index) => {
         setCurrentItem(column);
         let newColumns = DeepCloneJSON(columns);
         newColumns[index].sort = !newColumns[index].sort;
         setColumns(newColumns);
-    }
-    //点击排序重置按钮
+    };
+    // Actions after click the reset button
     const handleReset = () => {
         const resetSort = getSortColumns(originColumns);
         setColumns(resetSort);
-    }
-
-    //点击向下按钮
+    };
+    // Actions after click the down button
     const handleDownOne = () => {
         setColumns(ArrayElementDownOne(columns, currentItem, "id"));
     };
-    //点击向上按钮
+    // Actions after click the up button
     const handleUpOne = () => {
         setColumns(ArrayElementUpOne(columns, currentItem, "id"));
     };
-    //点击置顶按钮
+    // Actions afer click the to top button
     const handleToTop = () => {
         setColumns(ArrayElementToTop(columns, currentItem, "id"));
     };
-    //点击置底按钮
+    // Actions after click the to bottom button
     const handleToBottom = () => {
         setColumns(ArrayElementToBottom(columns, currentItem, "id"));
     };
 
     return (
-        <Card sx={{ minWidth: 256, maxHeight: 512 }}>
+        <Card sx={{ minWidth: 384, maxHeight: 512 }}>
             <CardHeader
                 title={t("sortingSettings")}                
             />
@@ -159,6 +157,6 @@ function SetSortView({
             </CardActions>
         </Card>
     );
-}
+};
 
 export default SetSortView;

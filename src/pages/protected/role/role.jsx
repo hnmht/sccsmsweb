@@ -87,9 +87,9 @@ const Role = () => {
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteRole(item);
         if (delRes.status) {
-            message.success(t("delSuccessful"));
+            message.success(t("deleteSuccessful"));
         } else {
-            message.error(t("delFailed") + delRes.msg);
+            message.error(t("deleteFailed") + delRes.msg);
         }
         handleReqRoleList();
     };
