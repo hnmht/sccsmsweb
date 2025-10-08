@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import {
     TableContainer,
     Table,
@@ -27,7 +27,7 @@ import { MultiSortByArr } from "../../utils/tools";
 import { DateTimeFormat } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
 const Paper = styled(MuiPaper)(spacing);
-const emptyFunc = () => {};
+const emptyFunc = () => { };
 
 const TableHead = styled(MuiTableHead)`
     ${spacing};
@@ -89,6 +89,7 @@ const DocList = ({
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [orderBy, setOrderBy] = useState(getOrderBy(getSortColumns(columns)));
     const containerHeight = useContentHeight() - adjustContainerHeight;
+    const id = useId()
 
     useEffect(() => {
         setCurrentRows(rows);
@@ -178,6 +179,7 @@ const DocList = ({
     return (
         <Paper sx={{ width: '100%', minHeight: 256, overflow: 'hidden' }}>
             <OperateArea
+                id={id}
                 Columns={currentColumns}
                 OriginColumns={columns}
 
@@ -224,7 +226,7 @@ const DocList = ({
                                 ? <TableCell padding="checkbox">
                                     <Checkbox
                                         color="primary"
-                                        id="doclistheadcheckbox"
+                                        id={`headerCheckBox${id}`}
                                         indeterminate={selectedRows.length > 0 && selectedRows.length < currentRows.length}
                                         checked={selectedRows.length > 0 && selectedRows.length === currentRows.length}
                                         onChange={handleAllSelectChange}

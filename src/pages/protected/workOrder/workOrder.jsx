@@ -208,6 +208,7 @@ const WorkOrder = () => {
         } 
     };
 
+    console.log("rows:",rows);
     return (
         <>
             <PageTitle pageName={t("MenuWO")} displayHelp={false} helpUrl="#" />

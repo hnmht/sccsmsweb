@@ -11,7 +11,7 @@ import SetSortView from "./SetSortView";
 import SetColumnView from "./SetColumnView";
 import ScTooltip from "../ScMui/ScTooltip";
 import ScInput from "../ScMui/ScInput";
-const keytext = "operateButton_";
+const id = "operateButton_";
 
 const OperateArea = (props) => {
     const {
@@ -172,7 +172,7 @@ const OperateArea = (props) => {
             />
             <Stack direction={"row"} alignItems="center">
                 <TableButton
-                    key={keytext + "Add"}
+                    key={id + "Add"}
                     visible={headAddVisible}
                     disabled={headAddDisabled}
                     color="primary"
@@ -184,7 +184,7 @@ const OperateArea = (props) => {
                     aria-describedby="Add"
                 />
                 <TableButton
-                    key={keytext + "AddRef"}
+                    key={id + "AddRef"}
                     visible={headRefAddVisible}
                     disabled={headRefAddDisabled}
                     color="primary"
@@ -196,7 +196,7 @@ const OperateArea = (props) => {
                     aria-describedby="AddRef"
                 />
                 <TableButton
-                    key={keytext + "Refresh"}
+                    key={id + "Refresh"}
                     visible={headRefreshVisible}
                     disabled={headRefreshDisabled}
                     color="primary"
@@ -208,7 +208,7 @@ const OperateArea = (props) => {
                     aria-describedby="Refresh"
                 />
                 <TableButton
-                    key={keytext + "Filter"}
+                    key={id + "Filter"}
                     visible={headFilterVisible}
                     disabled={headFilterDisabled}
                     color="primary"
@@ -220,7 +220,7 @@ const OperateArea = (props) => {
                     aria-describedby="Filter"
                 />
                 <TableButton
-                    key={keytext + "Sort"}
+                    key={id + "Sort"}
                     color="primary"
                     visible={true}
                     icon="SortIcon"
@@ -231,7 +231,7 @@ const OperateArea = (props) => {
                     aria-describedby="Sort"
                 />
                 <TableButton
-                    key={keytext + "Download"}
+                    key={id + "Download"}
                     color="primary"
                     visible={true}
                     icon="DownloadIcon"
@@ -242,7 +242,7 @@ const OperateArea = (props) => {
                     aria-describedby="Download"
                 />
                 <TableButton
-                    key={keytext + "Print"}
+                    key={id + "Print"}
                     color="primary"
                     visible={true}
                     icon="PrintIcon"
@@ -253,7 +253,7 @@ const OperateArea = (props) => {
                     aria-describedby="Print"
                 />
                 <TableButton
-                    key={keytext + "SelectColumn"}
+                    key={id + "SelectColumn"}
                     color="primary"
                     visible={true}
                     icon="SelectColumnIcon"
@@ -264,7 +264,7 @@ const OperateArea = (props) => {
                     aria-describedby="SelectColumn"
                 />
                 <TableButton
-                    key={keytext + "Delmultiple"}
+                    key={id + "Delmultiple"}
                     color="error"
                     visible={headDelMultipleVisible}
                     disabled={delMultipleDisabled}
@@ -276,7 +276,7 @@ const OperateArea = (props) => {
                     aria-describedby="Delmultiple"
                 />
                 <TableButton
-                    key={keytext + "ConfirmMultiple"}
+                    key={id + "ConfirmMultiple"}
                     color="success"
                     visible={headConfirmVisible}
                     disabled={headConfirmDisabled}
@@ -288,7 +288,7 @@ const OperateArea = (props) => {
                     aria-describedby="ConfirmMultiple"
                 />
                 <TableButton
-                    key={keytext + "CancelConfirmMultiple"}
+                    key={id + "CancelConfirmMultiple"}
                     color="warning"
                     visible={headCancelConfirmVisible}
                     disabled={headCancelConfirmDisabled}

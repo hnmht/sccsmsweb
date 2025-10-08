@@ -1,6 +1,6 @@
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
-import { DateTimeFormat } from "../../../i18n/dayjs";
+import { dayjs, DateTimeFormat, CheckTimeZero } from "../../../i18n/dayjs";
 import i18n from "../../../i18n/i18n";
 
 // Get Operator
@@ -67,8 +67,11 @@ export const CellModifier = (row, column) => {
 };
 // Modify date display content
 export const CellModifyTime = (row, column) => {
-    let date = new Date(row.modifyDate);
-    return DateTimeFormat(date);
+    let content = "";
+    if (!CheckTimeZero(row.modifyDate)) {
+        content = DateTimeFormat(row.modifyDate,"LLL")
+    } 
+    return content;
 };
 
 // Confirmer display conent
@@ -77,8 +80,11 @@ export const CellConfirmer = (row, column) => {
 };
 // Confirm date display content
 export const CellConfirmTime = (row, column) => {
-    let date = new Date(row.confirmDate);
-    return DateTimeFormat(date);
+    let content = "";
+    if (!CheckTimeZero(row.confirmDate)) {
+        content = DateTimeFormat(dayjs(row.confirmDate), "LLL")
+    }
+    return content;
 };
 
 // Status display content 
@@ -93,7 +99,7 @@ export const CellVoucherStatus = (row, column) => {
 };
 // Voucher billDate display content
 export const CellbillDate = (row, column) => {
-    return DateTimeFormat(row.billDate,"LLL");
+    return DateTimeFormat(row.billDate, "LL");
 };
 // Department display content
 export const CellDept = (row, column) => {

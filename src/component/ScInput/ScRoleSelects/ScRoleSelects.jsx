@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import {
     List as MuiList,
     Checkbox,
@@ -37,7 +37,7 @@ const ScRoleSelect = (props) => {
     const [selectedRoles, setSelectedRoles] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const id = `501_${itemKey}_${positionID}_${rowIndex}`;
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const tRoles = transRoles(roles, selectedRoles);
     useEffect(() => {
         async function reqRoles() {
@@ -87,7 +87,7 @@ const ScRoleSelect = (props) => {
 
     return (
         <>
-            <InputLabel sx={{ color: allowNull ? "primary" : "blue", marginBottom: 1.25 }}>
+            <InputLabel component={"div"} htmlFor={id} sx={{ color: allowNull ? "primary" : "blue", marginBottom: 1.25 }}>
                 {t(itemShowName)}
                 {errInfo.isErr
                     ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>

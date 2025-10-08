@@ -29,7 +29,7 @@ import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 const getInitialValue = async (oriWO, isNew, isModify) => {
     const person = await getCurrentPerson();
     const dept = await GetCacheDocById("department", person.deptID);
-    const currentDate = dayjs(new Date());
+    const currentDate = dayjs(new Date()).startOf("day");
     let newWO = { // Add new WorkOrder
         id: 0,
         billNumber: "",

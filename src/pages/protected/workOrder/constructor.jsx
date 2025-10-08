@@ -134,14 +134,14 @@ export const generateConditions = () => [
         logic: "and",
         field: { id: 1, value: "workorder_h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
         compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
-        value: dayjs().weekday(0),
+        value: dayjs().weekday(0).startOf("day"),
         isNecessary: true
     },
     {
         logic: "and",
         field: { id: 1, value: "workorder_h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
         compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
-        value: dayjs(new Date()),
+        value: dayjs(new Date()).endOf("day"),
         isNecessary: true
     }
 ];

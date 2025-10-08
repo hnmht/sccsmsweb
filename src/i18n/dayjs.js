@@ -76,6 +76,13 @@ const IsUTCZero = (date) => {
     return utcZero.isSame(utcDate);
 };
 
+const CheckTimeZero = (date) => {
+    if (dayjs(date).isValid()) {
+        return true;
+    }
+    return dayjs(date).valueOf() === 0;
+};
+
 export {
     dayjs,
     DateTimeFormat,
@@ -86,5 +93,6 @@ export {
     IsUTCZero,
     DateTimeInputMask,
     ConvertToUnixSecond,
-    ConvertToUnixNano
+    ConvertToUnixNano,
+    CheckTimeZero
 };

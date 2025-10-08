@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect,useId } from "react";
 import {
     TableContainer,
     Table,
@@ -28,8 +28,7 @@ const TableHead = styled(MuiTableHead)`
     border-top: 2px solid ${(props) => props.theme.palette.divider};
     border-bottom: 2px solid ${(props) => props.theme.palette.divider};
 `;
-function DocTable({
-    id,
+function DocTable({ 
     columns = [],
     rows = [],
     selectRows = [],
@@ -67,6 +66,7 @@ function DocTable({
     const [rowsPerPage, setRowsPerPage] = useState(perPage);
     const [currentColumns, setCurrentColumns] = useState(columns);
     const [orderBy, setOrderBy] = useState(getOrderBy(getSortColumns(columns)));
+    const id = useId();
     useEffect(() => {
         setCurrentRows(rows);
         setPage(0);
@@ -200,7 +200,7 @@ function DocTable({
                                 ? <TableCell padding="checkbox">
                                     <Checkbox
                                         color="primary"
-                                        id="doctableheadcheckbox"
+                                        id={`headerCheckbox${id}`}
                                         indeterminate={selectedRows.length > 0 && selectedRows.length < currentRows.length}
                                         checked={selectedRows.length > 0 && selectedRows.length === currentRows.length}
                                         onChange={handleAllSelectChange}

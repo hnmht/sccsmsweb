@@ -86,7 +86,7 @@ const ScEPCSelect = (props) => {
                     fullWidth
                     type="text"
                     id={id}
-                    disabled={!isEdit}
+                    disabled={true}
                     name={id}
                     placeholder={isEdit ? t(placeholder) : null}
                     value={currentDoc.name}
@@ -121,7 +121,7 @@ const ScEPCSelect = (props) => {
                     fullWidth
                     type="text"
                     id={id}
-                    disabled={!isEdit}
+                    disabled={true}
                     name={id}
                     placeholder={isEdit ? placeholder : null}
                     value={currentDoc.name}

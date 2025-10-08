@@ -22,7 +22,7 @@ const locale = {
         LTS: 'HH:mm:ss',
         L: 'YYYY/MM/DD',
         LL: 'YYYY-M-D',
-        LLL: 'YYYY-M-D h:mm',
+        LLL: 'YYYY-M-D HH:mm',
         LLLL: 'YYYY-M-D ddddAh:mm',
         l: 'YYYY/M/D',
         ll: 'YYYY年M月D日',
