@@ -128,7 +128,7 @@ const ScEPTSelect = (props) => {
                     endAdornment={
                         <Stack sx={{ display: "flex", flexDirection: "row", padding: 0, margin: 0, alignItems: "center" }}>
                             {errInfo.isErr
-                                ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
                             {selectItem.id !== 0 && isEdit && allowNull

@@ -155,8 +155,8 @@ export const voucherRow = {
     executor: { id: 0, code: "", name: "" },
     description: "",
     ept: { id: 0, code: "", name: "" },
-    startTime: dayjs(new Date()),
-    endTime: dayjs(new Date()),
+    startTime: dayjs(new Date()).startOf("day").add(9, "hour"),
+    endTime: dayjs(new Date()).startOf("day").add(17, "hour"),
     status: 0,
     dr: 0
 };

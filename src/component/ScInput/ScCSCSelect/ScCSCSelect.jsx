@@ -106,7 +106,7 @@ const ScCSCSelect = (props) => {
                                     : null
                                 }
                                 {errInfo.isErr
-                                    ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                    ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                     : null
                                 }
                                 <Tooltip title={t("chooseCategory")} placement="top">
@@ -116,7 +116,6 @@ const ScCSCSelect = (props) => {
                                         </IconButton>
                                     </span>
                                 </Tooltip>
-
                             </Stack>,
                     }}
                 />
@@ -141,7 +140,7 @@ const ScCSCSelect = (props) => {
                                 : null
                             }
                             {errInfo.isErr
-                                ? <Tooltip title={errInfo.msg} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
+                                ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>
                                 : null
                             }
                             <Tooltip title={t("chooseCategory")} placement="top">

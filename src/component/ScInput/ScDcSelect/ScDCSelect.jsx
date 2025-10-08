@@ -115,7 +115,6 @@ const ScDCSelect = (props) => {
                                         </IconButton>
                                     </span>
                                 </Tooltip>
-
                             </Stack>,
                     }}
                 />

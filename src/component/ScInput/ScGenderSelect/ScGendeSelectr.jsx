@@ -16,7 +16,8 @@ const ScGenderSelect = (props) => {
     const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
-    const id = `401_${itemKey}_${positionID}_${rowIndex}`;
+    const selectID = `S401${itemKey}_${positionID}_${rowIndex}`;
+    const inputID = `I401${itemKey}_${positionID}_${rowIndex}`;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -56,20 +57,20 @@ const ScGenderSelect = (props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
+                ? <InputLabel htmlFor={inputID} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
-            <FormControl id={id} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
+            <FormControl id={selectID} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>
                 <Select
                     disabled={!isEdit}
-                    id={id}
+                    id={selectID}
                     displayEmpty
                     onChange={(event) => handleOnChange(event)}
                     value={fieldValue}
                     error={errInfo.isErr}
                     input={positionID !== 1
-                        ? <OutlinedInput id={id} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
-                        : <InputBase id={id} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
+                        ? <OutlinedInput id={inputID} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />
+                        : <InputBase id={inputID} startAdornment={errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null} />}
                     sx={{ flex: 1 }}
                 >
                     <MenuItem key={0} value={0}></MenuItem>

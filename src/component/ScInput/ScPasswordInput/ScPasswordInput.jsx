@@ -8,25 +8,22 @@ import { ErrorIcon } from "../../PubIcon/PubIcon";
 import { useTranslation } from "react-i18next";
 // 303 Password Input component
 const ScPasswordInput = (props) => {
-    const { positionID,fieldIndex, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
+    const { positionID, fieldIndex, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue, pickDone, placeholder, isBackendTest, backendTestFunc } = props;
     const [textValue, setTextValue] = useState("");
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const id = `303_${itemKey}_${positionID}_${rowIndex}`;
-    const {t} = useTranslation();
-
+    const { t } = useTranslation();
     useEffect(() => {
         function updateInitvalue() {
             setTextValue(initValue);
         }
-        
         updateInitvalue();
     }, [initValue]);
-    
+
     useEffect(() => {
         handleOnBlur();
-        // eslint-disable-next-line
     }, [allowNull, isBackendTest]);
-    
+
     const handleOnBlur = async () => {
         if (!isEdit) {
             return
@@ -34,7 +31,7 @@ const ScPasswordInput = (props) => {
         let err = { isErr: false, msg: "" };
         if (textValue.trim() === "" && !allowNull) {
             err = { isErr: true, msg: "cannotEmpty" };
-        } else if (isBackendTest) {            
+        } else if (isBackendTest) {
             err = await backendTestFunc(textValue);
         }
         setErrInfo(err);
@@ -44,7 +41,7 @@ const ScPasswordInput = (props) => {
     const handleOnChange = (event) => {
         setErrInfo({ isErr: false, msg: "" });
         setTextValue(event.target.value);
-    }
+    };
 
     return (
         <>

@@ -65,7 +65,7 @@ const ScPersonSelects = (props) => {
 
     return (
         <>
-            <InputLabel key={id} sx={{ color: allowNull ? "primary" : "blue" }}>
+            <InputLabel component={"div"} htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>
                 {t(itemShowName)}
                 {errInfo.isErr
                     ? <Tooltip id={id} title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip>

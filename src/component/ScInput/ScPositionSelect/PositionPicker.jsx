@@ -11,7 +11,7 @@ import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 
 const docName = "position";
 
-const PositionPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
+const PositionPicker = ({id, clickItemAction, doubleClickItemAction, cancelClickAction, okClickAction, currentItem }) => {
     const [ops, setOps] = useState([]);
     const { t } = useTranslation();
 
@@ -37,6 +37,7 @@ const PositionPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAct
         <>
             <DialogTitle>{t("selectPosition")}</DialogTitle>
             <DocTable
+                id={id}
                 columns={columns}
                 refreshAction={handleRefreshOps}
                 rows={ops}

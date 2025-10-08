@@ -69,12 +69,12 @@ const ScTextInput = ({
             <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
             <TextField
                 fullWidth
-                type={"text"}       
+                type={"text"}
                 id={id}
                 name={id}
                 disabled={!isEdit}
                 multiline={isMultiline}
-                rows={rowNumber}                
+                rows={rowNumber}
                 placeholder={isEdit ? t(placeholder) : ""}
                 onChange={(event) => handleOnChange(event)}
                 value={textValue}
@@ -82,7 +82,7 @@ const ScTextInput = ({
                 error={errInfo.isErr}
                 InputProps={{
                     endAdornment: errInfo.isErr ? <Tooltip title={t(errInfo.msg)} placement="top"><ErrorIcon fontSize="small" color="error" /></Tooltip> : null,
-}}
+                }}
             />
         </>
         : <InputBase

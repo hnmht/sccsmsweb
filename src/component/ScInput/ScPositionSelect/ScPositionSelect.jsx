@@ -161,6 +161,7 @@ const ScPositionSelect = (props) => {
                 closeAfterTransition={false}
             >
                 <PositionPicker
+                    id={id}
                     clickItemAction={handleClickItem}
                     doubleClickItemAction={handleDoubleClickItem}
                     cancelClickAction={handleDiagClose}

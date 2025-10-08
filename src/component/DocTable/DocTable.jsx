@@ -29,6 +29,7 @@ const TableHead = styled(MuiTableHead)`
     border-bottom: 2px solid ${(props) => props.theme.palette.divider};
 `;
 function DocTable({
+    id,
     columns = [],
     rows = [],
     selectRows = [],
@@ -172,6 +173,7 @@ function DocTable({
     return (
         <Paper sx={{ width: "100%", overflow: 'hidden', borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper", minHeight: 192 }}>
             <OperateArea
+                id={id}
                 Columns={currentColumns}
                 OriginColumns={columns}
 

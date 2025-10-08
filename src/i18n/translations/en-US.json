@@ -287,11 +287,18 @@
     "notContain":"Not like",
     "null":"Null",
     "notNull":"Not null",
-
     "confirmSuccessful":"Confirm successful",
     "unconfirmSuccessful":"Unconfirm successful",
     "chooseTime":"Select Time",
     "chooseDate":"Select Date",
+    "csa":"Construction Site",
+    "executor":"Executor",
+    "startTime":"Start Time",
+    "endTime":"End Time",
+    "wo":"Work Order",
+    "startTimeExceedEndTime":"The start time cannot be later than the end time",
+    "endTimePrecedeStartTime":"The end time cannot be earlier than the start time",
+
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

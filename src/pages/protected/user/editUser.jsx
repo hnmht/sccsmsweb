@@ -81,6 +81,8 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
                 newUser.confirmPassword = "";
             } else {// View Detail
                 newUser = cloneDeep(oriUser);
+                newUser.password=""
+                newUser.confirmPassword = ""
                 newUser.createDate = DateTimeFormat(newUser.createDate, "LLL");
                 newUser.modifyDate = DateTimeFormat(newUser.modifyDate, "LLL");
             }

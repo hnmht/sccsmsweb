@@ -36,7 +36,7 @@ const ScDateInput = (props) => {
         if (!isEdit) {
             return
         }
-        let err = { isErr: true, msg: "" };
+        let err = { isErr: false, msg: "" };
         if (newValue === undefined && !allowNull) {
             err = { isErr: true, msg: "cannotEmpty" };
         } else if (newValue !== undefined && !dayjs(newValue).isValid()) {

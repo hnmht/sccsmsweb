@@ -290,6 +290,13 @@
     "unconfirmSuccessful": "取消确认成功",
     "chooseTime": "选择时间",
     "chooseDate": "选择日期",
+    "csa": "现场",
+    "executor": "执行人",
+    "startTime": "开始时间",
+    "endTime": "结束时间",
+    "wo": "指令单",
+    "startTimeExceedEndTime": "开始时间不能晚于结束时间",
+    "endTimePrecedeStartTime": "结束时间不能早于开始时间",
     
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

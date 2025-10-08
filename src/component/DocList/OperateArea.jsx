@@ -15,6 +15,7 @@ const keytext = "operateButton_";
 
 const OperateArea = (props) => {
     const {
+        id,
         Columns,
         OriginColumns,
 
@@ -138,7 +139,7 @@ const OperateArea = (props) => {
         >
             <ScInput
                 placeholder="enterToSearch"
-                id="doclistSearchkeyWord"
+                id={`searchInput${id}`}
                 value={keyword}
                 onChange={(event) => keyWordInputChange(event)}
                 startAdornment={
@@ -166,7 +167,7 @@ const OperateArea = (props) => {
                     </ScTooltip>
                 }
                 inputProps={{
-                    id: "doclistSearchkeyWord"
+                    id: `searchInput${id}`
                 }}
             />
             <Stack direction={"row"} alignItems="center">

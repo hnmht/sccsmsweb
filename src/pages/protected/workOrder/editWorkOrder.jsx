@@ -9,7 +9,7 @@ import {
     Button,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { dayjs,DateTimeFormat } from "../../../i18n/dayjs";
+import { dayjs, DateTimeFormat } from "../../../i18n/dayjs";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 
@@ -75,20 +75,20 @@ const getInitialValue = async (oriWO, isNew, isModify) => {
         } else {
             if (isModify) { // Edit                
                 newWO = cloneDeep(oriWO);
-                newWO.createDate = DateTimeFormat(newWO.createDate,"LLL");
+                newWO.createDate = DateTimeFormat(newWO.createDate, "LLL");
                 newWO.modifier = person;
-                newWO.modifyDate = DateTimeFormat(newWO.modifyDate,"LLL");
+                newWO.modifyDate = DateTimeFormat(newWO.modifyDate, "LLL");
                 newWO.confirmer = { id: 0, code: "", name: "" };
-                newWO.confirmDate = DateTimeFormat(newWO.confirmDate,"LLL");
+                newWO.confirmDate = DateTimeFormat(newWO.confirmDate, "LLL");
             } else { // View
                 newWO = cloneDeep(oriWO);
-                newWO.createDate = DateTimeFormat(newWO.createDate,"LLL");
-                newWO.modifyDate = DateTimeFormat(newWO.modifyDate,"LLL");
-                newWO.confirmDate = DateTimeFormat(newWO.confirmDate,"LLL");
+                newWO.createDate = DateTimeFormat(newWO.createDate, "LLL");
+                newWO.modifyDate = DateTimeFormat(newWO.modifyDate, "LLL");
+                newWO.confirmDate = DateTimeFormat(newWO.confirmDate, "LLL");
             }
         }
     }
-    console.log("newWo:",newWO);
+    console.log("newWo:", newWO);
     return newWO;
 };
 
@@ -97,36 +97,36 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
     const [voucherData, setVoucherData] = useState((undefined));
     const [errors, setErrors] = useState(() => generateVoucherErrors(oriWO ? oriWO.body.length : 1));
     const isEdit = !(!isModify && !isNew);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initVoucher() {
-            const newEIT = await getInitialValue(oriWO, isNew, isModify);
-            setVoucherData(newEIT);
+            const newWO = await getInitialValue(oriWO, isNew, isModify);
+            setVoucherData(newWO);
         }
         if (isOpen) {
             initVoucher();
         }
     }, [isOpen, oriWO, isModify, isNew]);
 
-    //获取值以后的操作
-    const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
+    // Get the passed data from the ScInput component
+    const handleGetValue = async (value, itemKey, positionID, rowIndex, errMsg) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
         let startTime = new Date();
-        //设置单据值
+        // Change voucherData
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
             switch (positionID) {
-                case 0://修改表头字段
-                    newData[itemkey] = value;
+                case 0:// Change voucher header
+                    newData[itemKey] = value;
                     break;
-                case 1://如果修改的是表体字段                                       
-                    newData.body[rowIndex][itemkey] = value;
+                case 1:// Change voucher body                                       
+                    newData.body[rowIndex][itemKey] = value;
                     break;
-                case 2:
-                    newData[itemkey] = value;
+                case 2: // change voucher footer
+                    newData[itemKey] = value;
                     break;
                 default:
                     break;
@@ -134,103 +134,101 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
             return newData;
         });
 
-        //设置错误信息
+        // Change errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
                 case 0:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 case 1:
-                    newErrors.body[rowIndex][itemkey] = errMsg;
+                    newErrors.body[rowIndex][itemKey] = errMsg;
                     break;
                 case 2:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 default:
                     break;
             }
             return newErrors;
         });
-        // console.log("更新", itemkey, ",耗时:", new Date() - startTime, "ms");
+        console.log("更新", itemKey, ",耗时:", new Date() - startTime, "ms");
     };
-    //增行
+    // Add Row
     const handleAddRow = () => {
-        //生成表体数据
+        // Deep copy a  new voucherData
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
+        // Automatically generate row number
+        if (newVoucherData.body.length === 1) {
             newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
             newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]))
             newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
-        //自动填写开始时间和结束时间
-        if (newVoucherData.workDate !== "") {
-            newRow.startTime = newVoucherData.workDate + "0800";
-            newRow.endTime = newVoucherData.workDate + "1800";
+        // Automatically fill in the start time and endtime
+        if (dayjs(newVoucherData.workDate).isValid()) {
+            newRow.startTime = dayjs(newVoucherData.workDate).startOf("day").add(9, "hour");
+            newRow.endTime = dayjs(newVoucherData.workDate).startOf("day").add(17, "hour");
         } else {
-            newRow.startTime = dayjs(new Date()).format("YYYYMMDD") + "0800";
-            newRow.endTime = dayjs(new Date()).format("YYYYMMDD") + "1800";
+            newRow.startTime = dayjs(new Date()).startOf("day").add(9, "hour");
+            newRow.endTime = dayjs(new Date()).startOf("day").add(17, "hour");
         }
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
-
-        //生成错误信息数据
+        // Generate new error 
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
     };
-    //复制增行
+    // Copy Current row  content and add a new row
     const handleCopyAddRow = (index) => {
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherData.body[index]);
-        //生成错误信息数据
+        // Generate errors value
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
+        // Generate row number
+        if (newVoucherData.body.length === 1) {
             newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
             newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]))
             newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
-        //修改复制行的id和hid
+        // Change new Row id and hid
         newRow.id = 0;
         newRow.hid = 0;
-
-        if (newVoucherData.workDate !== "") {
-
-            newRow.startTime = newVoucherData.workDate + "0800";
-            newRow.endTime = newVoucherData.workDate + "1800";
+        // Generate startTime and endTime
+        if (dayjs(newVoucherData.workDate).isValid()) {
+            newRow.startTime = dayjs(newVoucherData.workDate).startOf("day").add(9, "hour");
+            newRow.endTime = dayjs(newVoucherData.workDate).startOf("day").add(17, "hour");
         } else {
-            newRow.startTime = dayjs(new Date()).format("YYYYMMDD") + "0800";
-            newRow.endTime = dayjs(new Date()).format("YYYYMMDD") + "1800";
+            newRow.startTime = dayjs(new Date()).startOf("day").add(9, "hour");
+            newRow.endTime = dayjs(new Date()).startOf("day").add(17, "hour");
         }
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
     };
-    //删行
+    // Delete row
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能删除最后一行!");
+            message.error(t("cannotDeleteLastRow"));
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
-        if (isModify) {
-            //判断是否在编辑状态下新增的行
-            if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接删除掉
+        if (isModify) {// Determine if the added row in an editing state            
+            if (row.id === 0) { // If id equals 0, the row was newly added, so delete it.
+                newVoucherData.body.splice(index, 1);
                 newErrors.body.splice(index, 1);
-            } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改删除标志
-                newErrors.body[index] = {}; //将删除掉的行所有错误信息归零
+            } else { // If id is not equal to 0, the row has already been saved to the server,
+                // the row's deletion flag must be modified.
+                newVoucherData.body[index].dr = 1;
+                newErrors.body[index] = {};
             }
         } else {
-            //新增状态下直接删除行
+            // In the Added State, delete the row directly
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
@@ -238,43 +236,37 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
         setVoucherData(newVoucherData);
     };
 
-    //增加&编辑指令单
+    // Add or Edit Work Order
     const handleAddWO = async () => {
-        //转换数据到后端格式
+        // Convert the data to the backend format
         const thisWO = transWOToBackend(voucherData);
-
         if (isModify) {
             let editRes = await reqEditWO(thisWO);
             if (editRes.status) {
-                message.success("修改编号" + thisWO.billNumber + "指令单成功!");
-            } else {
-                message.error("修改编号" + thisWO.billNumber + "指令单失败:" + editRes.data.statusMsg);
+                message.success(t("modifySuccessful"));
             }
         } else {
             let addRes = await reqAddWO(thisWO);
             if (addRes.status) {
-                message.success("新增指令单成功,单据编号:" + addRes.data.data.billNumber);
-            } else {
-                message.error("新增指令单失败" + addRes.data.statusMsg);
+                message.success(t("addSuccessful"));
             }
         }
         onOk();
     };
 
-    //验证开始时间
+    // Check if the startTime is compliant
     const checkStartTime = async (newValue, itemKey, positionID, rowIndex) => {
         let err = { isErr: false, msg: "" };
         if (newValue > voucherData.body[rowIndex].endTime) {
-            err = { isErr: true, msg: "开始时间不能大于结束时间" };
+            err = { isErr: true, msg: "startTimeExceedEndTime" };
         }
         return err;
     };
-    //验证结束时间
+    // Check if the endTime is compliant
     const checkEndTime = async (newValue, itemKey, positionID, rowIndex) => {
         let err = { isErr: false, msg: "" };
-
         if (newValue < voucherData.body[rowIndex].startTime) {
-            err = { isErr: true, msg: "结束时间不能小于开始时间" };
+            err = { isErr: true, msg: "endTimePrecedeStartTime" };
         }
         return err;
     };
@@ -282,7 +274,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
     return voucherData !== undefined
         ? <Stack component="div" id="eidtEIT" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
             <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                <Typography variant="h3" component={"h3"}>指令单</Typography>
+                <Typography variant="h3" component={"h3"}>{t("wo")}</Typography>
             </Stack>
             <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                 <Grid container id="VoucherHeader" spacing={2}>
@@ -294,7 +286,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                             itemShowName="billNumber"
                             itemKey="billNumber"
                             initValue={voucherData.billNumber}
-                            placeholder="自动编号"
+                            placeholder=""
                             isBackendTest={false}
                             key="billNumber"
                             positionID={0}
@@ -326,7 +318,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                             itemKey="department"
                             initValue={voucherData.department}
                             pickDone={handleGetValue}
-                            placeholder="请选择部门"
+                            placeholder="deptPlaceholder"
                             isBackendTest={false}
                             key="department"
                             positionID={0}
@@ -373,7 +365,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                             itemKey="description"
                             initValue={voucherData.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入备注"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             key="description"
                             positionID={0}
@@ -388,14 +380,14 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                         return row.dr === 0
                             ? (<tr key={"bodyrow" + row.rowNumber}>
                                 <td>
-                                    <Tooltip title="复制增行" key={`rowCopyAdd${index}`}>
+                                    <Tooltip title={t("copyAdd")} key={`rowCopyAdd${index}`}>
                                         <span>
                                             <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleCopyAddRow(index)} disabled={!isEdit}>
                                                 <CopyAddRowIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                             </IconButton>
                                         </span>
                                     </Tooltip>
-                                    <Tooltip title="删行" key={`rowDelete${index}`}>
+                                    <Tooltip title={t("deleteRow")} key={`rowDelete${index}`}>
                                         <span>
                                             <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleDeleteRow(index, row)} disabled={!isEdit}>
                                                 <DeleteRowIcon color={isEdit ? "error" : "transparent"} fontSize="small" />
@@ -457,7 +449,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                                         itemKey="description"
                                         initValue={row.description}
                                         pickDone={handleGetValue}
-                                        placeholder="请输入说明"
+                                        placeholder="descriptionPlaceholder"
                                         isBackendTest={false}
                                         key="description"
                                         positionID={1}
