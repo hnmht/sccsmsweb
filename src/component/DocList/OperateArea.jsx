@@ -3,7 +3,10 @@ import {
     Stack,
     IconButton,
     Popover,
+    Checkbox,
+    FormControlLabel
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { getSortColumns, getOrderBy } from "./tools";
 import { CloseIcon, CheckIcon } from "../PubIcon/PubIcon";
 import TableButton from "./TableButton";
@@ -11,7 +14,7 @@ import SetSortView from "./SetSortView";
 import SetColumnView from "./SetColumnView";
 import ScTooltip from "../ScMui/ScTooltip";
 import ScInput from "../ScMui/ScInput";
-const id = "operateButton_";
+
 
 const OperateArea = (props) => {
     const {
@@ -53,8 +56,12 @@ const OperateArea = (props) => {
         getOrderByAction,
         getSetColumnAction,
         getKeyWordAction,
-    } = props;
 
+        dispIncludeDisabled = false,
+        includeDisabled = true,
+        includeDisabledAction = () => { },
+    } = props;
+    const { t } = useTranslation();
     // Popover related
     // Open the Popover to define column display or sort order
     const [open, setOpen] = useState(false);
@@ -137,39 +144,58 @@ const OperateArea = (props) => {
             alignItems={"center"}
             sx={{ p: 2, width: "100%", height: 50 }}
         >
-            <ScInput
-                placeholder="enterToSearch"
-                id={`searchInput${id}`}
-                value={keyword}
-                onChange={(event) => keyWordInputChange(event)}
-                startAdornment={
-                    <ScTooltip title="clear">
-                        <span>
-                            <IconButton
-                                onClick={handleKeyWordClear}
-                                disabled={keyword === ""}
-                            >
-                                <CloseIcon color={keyword === "" ? "divider" : "warning"} fontSize="small" />
-                            </IconButton>
-                        </span>
-                    </ScTooltip>
+            <Stack
+                direction={"row"}
+                alignItems={"center"}
+                justifyContent={"center"}
+            >
+                <ScInput
+                    placeholder="enterToSearch"
+                    id={`searchInput${id}`}
+                    value={keyword}
+                    onChange={(event) => keyWordInputChange(event)}
+                    startAdornment={
+                        <ScTooltip title="clear">
+                            <span>
+                                <IconButton
+                                    onClick={handleKeyWordClear}
+                                    disabled={keyword === ""}
+                                >
+                                    <CloseIcon color={keyword === "" ? "divider" : "warning"} fontSize="small" />
+                                </IconButton>
+                            </span>
+                        </ScTooltip>
+                    }
+                    endAdornment={
+                        <ScTooltip title="startSearch">
+                            <span>
+                                <IconButton
+                                    onClick={handleSearch}
+                                    disabled={keyword === ""}
+                                >
+                                    <CheckIcon color={keyword === "" ? "divider" : "success"} fontSize="small" />
+                                </IconButton>
+                            </span>
+                        </ScTooltip>
+                    }
+                    inputProps={{
+                        id: `searchInput${id}`
+                    }}
+                />
+                {dispIncludeDisabled
+                    ? <FormControlLabel
+                        control={
+                            <Checkbox
+                                inputProps={{ "aria-label": "Include Disabled" }}
+                                checked={includeDisabled}
+                                onChange={includeDisabledAction}
+                            />}
+                        label={t("includeDisabled")}
+                        sx={{ marginLeft: 4 }}
+                    />
+                    : null
                 }
-                endAdornment={
-                    <ScTooltip title="startSearch">
-                        <span>
-                            <IconButton
-                                onClick={handleSearch}
-                                disabled={keyword === ""}
-                            >
-                                <CheckIcon color={keyword === "" ? "divider" : "success"} fontSize="small" />
-                            </IconButton>
-                        </span>
-                    </ScTooltip>
-                }
-                inputProps={{
-                    id: `searchInput${id}`
-                }}
-            />
+            </Stack>
             <Stack direction={"row"} alignItems="center">
                 <TableButton
                     key={id + "Add"}

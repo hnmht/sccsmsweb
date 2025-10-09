@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
     List,
     ListItem,
@@ -7,6 +7,7 @@ import {
     Collapse,
     IconButton,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { ExpandMoreIcon, ExpandLessIcon, CheckIcon } from "../../PubIcon/PubIcon";
 import { toTree } from "../../../utils/tree";
 
@@ -46,6 +47,10 @@ function PubTree({
         const handleExpandClick = () => {
             setOpen(!open);
         };
+        const { t } = useTranslation();
+        const status = item.status ? item.status : 0;
+        const disabled = status === 1;
+        const name = disabled ? `${item.name}(${t("disable")})` :item.name;
 
         return (
             item.children
@@ -59,8 +64,8 @@ function PubTree({
                             onClick={(event) => handleClickItem(item, event, 1)}
                             disabled={!isEdit}
                         >
-                            <ListItemText key={"parentitemtext" + item.id} primary={item.name}
-                                primaryTypographyProps={{ color: item.status === 0 ? "default" : "error" }} />
+                            <ListItemText key={"parentitemtext" + item.id} primary={name}
+                                primaryTypographyProps={{ color: disabled ? "#ef964c" : "defalut" }} />
                         </ListItemButton>
                         {selectDocIDs.includes(item.id) ? <CheckIcon fontSize="small" color="success" /> : null}
                     </ListItem>
@@ -74,8 +79,8 @@ function PubTree({
                         onClick={(event) => handleClickItem(item, event, 0)}
                         disabled={!isEdit}
                     >
-                        <ListItemText key={"childitemtext" + item.id} primary={item.name}
-                            primaryTypographyProps={{ color: item.status === 0 ? "default" : "error" }} />
+                        <ListItemText key={"childitemtext" + item.id} primary={name}
+                            primaryTypographyProps={{ color: disabled ? "#ef964c" : "default" }} />
                     </ListItemButton>
                     {selectDocIDs.includes(item.id) ? <CheckIcon fontSize="small" color="success" /> : null}
                 </ListItem>

@@ -30,7 +30,6 @@ const ScCheckYesOrNo = (props) => {
     }, [initValue]);
 
     const handleOnBlur = async (event) => {
-        // console.log("checkBox event:",event);
         if (!isEdit) {
             return
         }

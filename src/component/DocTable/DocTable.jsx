@@ -56,6 +56,8 @@ function DocTable({
     tableContainerHeight = 576,
     // Can ite be edited?
     isEdit = true,
+    // Display include disabled checkbox
+    dispIncludeDisabled = true,
 }) {
     const { t } = useTranslation();
     const list = useRef(null);
@@ -66,6 +68,8 @@ function DocTable({
     const [rowsPerPage, setRowsPerPage] = useState(perPage);
     const [currentColumns, setCurrentColumns] = useState(columns);
     const [orderBy, setOrderBy] = useState(getOrderBy(getSortColumns(columns)));
+    const [includeDisabled, setIncludeDisabled] = useState(false);
+
     const id = useId();
     useEffect(() => {
         setCurrentRows(rows);
@@ -191,6 +195,10 @@ function DocTable({
                 getOrderByAction={handleGetSortReuslt}
                 getSetColumnAction={handleGetSetColumnResult}
                 getKeyWordAction={handleGetKeyWord}
+
+                dispIncludeDisabled={dispIncludeDisabled}
+                includeDisabled={includeDisabled}
+                includeDisabledAction={() => setIncludeDisabled(!includeDisabled)}
             />
             <TableContainer ref={list} sx={{ height: tableContainerHeight, width: "100%", px: 1 }}>
                 <Table stickyHeader aria-label="sticky table">
@@ -232,6 +240,9 @@ function DocTable({
                                 const isItemSelected = selectedRows.findIndex((value) => value.id === row.id) >= 0;
                                 const status = row.status ? row.status : 0;
                                 const disabled = status === 1;
+                                if ( !includeDisabled && disabled) {
+                                    return null
+                                }
                                 return (
                                     <TableRow
                                         hover

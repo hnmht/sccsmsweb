@@ -298,6 +298,7 @@
     "wo":"Work Order",
     "startTimeExceedEndTime":"The start time cannot be later than the end time",
     "endTimePrecedeStartTime":"The end time cannot be earlier than the start time",
+    "includeDisabled":"Include Disabled",
 
 
     "systemName": "SeaCloud Construction Site Management System",
