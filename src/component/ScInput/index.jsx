@@ -7,6 +7,7 @@ import ScMobileInput from "./ScMobileInput/ScMobileInput"; //304 Mobile Input
 import ScEmailInput from "./ScEmailInput/ScEmailInput"; //305 Email Input
 import ScDateInput from "./ScDateInput/ScDateInput"; //306 Date Input
 import ScDateTimeInput from "./ScDateTimeInput/ScDateTimeInput"; //307 Date time Input 
+import ScDateDisplay from "./ScDateDisplay/ScDateDisplay"; // 308 Date Display
 import ScDateTimeDisplay from "./ScDateTimeDisplay/ScDateTimeDisplay"; // 309 Date Time Display
 
 import ScGenderSelect from "./ScGenderSelect/ScGendeSelectr"; //401 Gender Select Input
@@ -59,6 +60,8 @@ const ScInput = (props) => {
             return <ScDateInput {...props} />;
         case 307:
             return <ScDateTimeInput {...props} />;
+        case 308:
+            return <ScDateDisplay {...props} />;
         case 309:
             return <ScDateTimeDisplay {...props} />;
         case 401:

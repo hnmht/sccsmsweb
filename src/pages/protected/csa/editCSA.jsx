@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat, dayjs } from '../../../i18n/dayjs';
+import { DateTimeFormat, dayjs, EpochTime } from '../../../i18n/dayjs';
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 // Generate initial Construction Site Archive 
 const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newCS = {// Add
         id: 0,
         code: "",
@@ -31,7 +32,7 @@ const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
         respPerson: { id: 0, code: '', name: '' },
         status: 0,
         endFlag: 0,
-        endDate:dayjs(new Date()),
+        endDate: currentDate,
         longitude: 0,
         latitude: 0,
         udf1: { id: 0, code: '', name: '' },
@@ -46,8 +47,8 @@ const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
         udf10: { id: 0, code: '', name: '' },
         creator: person,
         modifier: { id: 0, code: "", name: "" },
-        createDate: DateTimeFormat(new Date(), "LLL"),
-        modifyDate: DateTimeFormat(new Date(), "LLL")
+        createDate: currentDate,
+        modifyDate: EpochTime
     };
     if (isNew) {
         if (oriCS) {// Copy Add
@@ -57,8 +58,8 @@ const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
                 code: "",
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
@@ -66,14 +67,11 @@ const getInitialValues = async (oriCS, isNew, isModify, CSC) => {
             newCS = {
                 ...oriCS,
                 modifier: person,
-                createDate: DateTimeFormat(oriCS.createDate, "LLL"),
-                modifyDate: DateTimeFormat(oriCS.modifyDate, "LLL")
+                modifyDate: currentDate
             }
         } else {// View
             newCS = {
                 ...oriCS,
-                createDate: DateTimeFormat(oriCS.createDate, "LLL"),
-                modifyDate: DateTimeFormat(oriCS.modifyDate, "LLL")
             }
         }
     }
@@ -382,7 +380,7 @@ const EditCSA = ({ isOpen, isNew, isModify, oriCS, options, CSC, onCancel, onOk 
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -408,7 +406,7 @@ const EditCSA = ({ isOpen, isNew, isModify, oriCS, options, CSC, onCancel, onOk 
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

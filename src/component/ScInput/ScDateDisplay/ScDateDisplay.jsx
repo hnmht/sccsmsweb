@@ -5,21 +5,21 @@ import {
     TextField,
     InputBase,
 } from "@mui/material";
-import { EpochTime,DateTimeFormat,CheckTimeZero } from "../../../i18n/dayjs";
+import { EpochTime, DateTimeFormat, CheckTimeZero } from "../../../i18n/dayjs";
 
-// 309 Seacloud Date Time Display Components
-const ScDateTimeDisplay = ({
+// 308 Seacloud Date Display component
+const ScDateDisplay = ({
     positionID = -1,
     rowIndex = -1,
     allowNull = false,
     itemShowName = "",
     itemKey,
-    initValue = EpochTime,    
-}) => { 
+    initValue = EpochTime,  
+}) => {
     const isZero = CheckTimeZero(initValue);
-    const content = isZero ? "" :DateTimeFormat(initValue,"LLL");
-    const id = `309_${itemKey}_${positionID}_${rowIndex}`;
-    const { t } = useTranslation();  
+    const content = isZero ? "" : DateTimeFormat(initValue, "L");
+    const id = `308_${itemKey}_${positionID}_${rowIndex}`;
+    const { t } = useTranslation();
 
     return (positionID !== 1
         ? <>
@@ -30,18 +30,18 @@ const ScDateTimeDisplay = ({
                 id={id}
                 name={id}
                 disabled={true}
-                value={content}           
+                value={content}
             />
         </>
         : <InputBase
             fullWidth
             type={"text"}
             id={id}
-            disabled={true}    
-            name={id}      
+            disabled={true}
+            name={id}
             value={content}
         />
     );
 };
 
-export default memo(ScDateTimeDisplay);
+export default memo(ScDateDisplay);
