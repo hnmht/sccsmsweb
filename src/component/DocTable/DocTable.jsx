@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect,useId } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import {
     TableContainer,
     Table,
@@ -28,7 +28,7 @@ const TableHead = styled(MuiTableHead)`
     border-top: 2px solid ${(props) => props.theme.palette.divider};
     border-bottom: 2px solid ${(props) => props.theme.palette.divider};
 `;
-function DocTable({ 
+function DocTable({
     columns = [],
     rows = [],
     selectRows = [],
@@ -230,12 +230,15 @@ function DocTable({
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 const isItemSelected = selectedRows.findIndex((value) => value.id === row.id) >= 0;
+                                const status = row.status ? row.status : 0;
+                                const disabled = status === 1;
                                 return (
                                     <TableRow
                                         hover
                                         selected={selectedItem && selectedItem.id === row.id}
                                         tabIndex={-1} key={row.id}
                                         onClick={(event) => handleClickItem(row, event)}
+                                        sx={{ color: "red" }}
                                     >
                                         {isMultiple
                                             ? <TableCell padding="checkbox">
@@ -254,7 +257,7 @@ function DocTable({
                                                 return undefined;
                                             }
                                             return (
-                                                <TableCell key={column.id} align={column.alignment} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} >
+                                                <TableCell key={column.id} align={column.alignment} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: disabled ? "#ef964c" : "primary" }} >
                                                     {column.display.type === 0
                                                         ? row[column.id]
                                                         : column.display.cell1(row, column)

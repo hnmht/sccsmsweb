@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
     DialogContent,
     DialogTitle,
@@ -6,7 +6,7 @@ import {
     DialogActions,
     Button,
 } from "@mui/material";
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
 
@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 // Generate initial values for the department master data
 const getInitialValues = async (oriDept, isNew, isModify) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newDept = {};
     if (isNew) { //Add or CopyAdd
         if (oriDept) { // Copy Add
@@ -32,8 +33,8 @@ const getInitialValues = async (oriDept, isNew, isModify) => {
             newDept.code = "";
             newDept.creator = person;
             newDept.modifier = { id: 0, code: "", name: "" };
-            newDept.createDate = DateTimeFormat(new Date(), "LLL");
-            newDept.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newDept.createDate = currentDate;
+            newDept.modifyDate = EpochTime;
         } else { // Add
             newDept = {
                 id: 0,
@@ -45,8 +46,8 @@ const getInitialValues = async (oriDept, isNew, isModify) => {
                 fatherid: { id: 0, code: "", name: "" },
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
@@ -55,13 +56,10 @@ const getInitialValues = async (oriDept, isNew, isModify) => {
         } else { // Edit or Detail
             if (isModify) { // Edit
                 newDept = cloneDeep(oriDept);
-                newDept.createDate = DateTimeFormat(newDept.createDate, "LLL");
                 newDept.modifier = person;
-                newDept.modifyDate = DateTimeFormat(newDept.modifyDate, "LLL");
+                newDept.modifyDate = currentDate;
             } else { // Detail
                 newDept = cloneDeep(oriDept);
-                newDept.createDate = DateTimeFormat(newDept.createDate, "LLL");
-                newDept.modifyDate = DateTimeFormat(newDept.modifyDate, "LLL");
             }
         }
     }
@@ -281,7 +279,7 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -307,7 +305,7 @@ const EditDept = ({ isOpen, isNew, isModify, oriDept, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

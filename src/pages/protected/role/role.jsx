@@ -112,8 +112,7 @@ const Role = () => {
         });
         // Refresh roles list.
         handleReqRoleList();
-    }, []);
-
+    }, []);    
     return (
         <Fragment>
             <PageTitle pageName="MenuRole" displayHelp={true} helpUrl="/helps/role" />

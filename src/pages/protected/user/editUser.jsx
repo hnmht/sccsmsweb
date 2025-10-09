@@ -10,7 +10,7 @@ import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
 import jsencrypt from "jsencrypt";
 import { useTranslation } from 'react-i18next';
-import { DateTimeFormat } from "../../../i18n/dayjs";
+import { DateTimeFormat,EpochTime } from "../../../i18n/dayjs";
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -42,8 +42,8 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
             newUser.password = "";
             newUser.confirmPassword = "";
             newUser.creator = person;           
-            newUser.createDate = DateTimeFormat(currentDate, "LLL");
-            newUser.modifyDate = DateTimeFormat(currentDate, "LLL");
+            newUser.createDate = currentDate;
+            newUser.modifyDate = EpochTime;
         } else { // Add New
             newUser = {
                 id: 0,
@@ -64,8 +64,8 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
                 confirmPassword: "",
                 roles: initRoles,
                 creator: person,
-                createDate: DateTimeFormat(currentDate, "LLL"),
-                modifyDate: DateTimeFormat(currentDate, "LLL"),
+                createDate: currentDate,
+                modifyDate: EpochTime,
             };
         }
     } else { // Modify or View
@@ -74,17 +74,14 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
         } else { // Edit
             if (isModify) {
                 newUser = cloneDeep(oriUser);
-                newUser.createDate = DateTimeFormat(newUser.createDate, "LLL");
                 newUser.modifier = person;
-                newUser.modifyDate = DateTimeFormat(newUser.modifyDate, "LLL");
+                newUser.modifyDate = currentDate;
                 newUser.password = "";
                 newUser.confirmPassword = "";
             } else {// View Detail
                 newUser = cloneDeep(oriUser);
                 newUser.password=""
                 newUser.confirmPassword = ""
-                newUser.createDate = DateTimeFormat(newUser.createDate, "LLL");
-                newUser.modifyDate = DateTimeFormat(newUser.modifyDate, "LLL");
             }
         }
     }
@@ -438,7 +435,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -464,7 +461,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

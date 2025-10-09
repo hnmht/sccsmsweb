@@ -22,6 +22,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const currentTimezone = dayjs.tz.guess();
+const EpochTime = dayjs.utc('1970-01-01 00:00:00');
 
 const DateTimeFormat = (date = new Date(), formats = "L") => {
     const lang = i18n.language || "en-US";
@@ -77,7 +78,7 @@ const IsUTCZero = (date) => {
 };
 
 const CheckTimeZero = (date) => {
-    if (dayjs(date).isValid()) {
+    if (!dayjs(date).isValid()) {
         return true;
     }
     return dayjs(date).valueOf() === 0;
@@ -94,5 +95,6 @@ export {
     DateTimeInputMask,
     ConvertToUnixSecond,
     ConvertToUnixNano,
-    CheckTimeZero
+    CheckTimeZero,
+    EpochTime
 };

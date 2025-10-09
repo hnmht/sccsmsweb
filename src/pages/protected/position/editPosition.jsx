@@ -9,21 +9,22 @@ import {
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
 
-import { reqCheckPositionName,reqAddPosition,reqEditPosition } from '../../../api/position';
+import { reqCheckPositionName, reqAddPosition, reqEditPosition } from '../../../api/position';
 import { InitDocCache } from '../../../storage/db/db';
-import { getCurrentPerson,checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
 // Generate initial position values
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriPosition } = diagStatus;
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newPosition = {};
     if (isNew) {
         if (oriPosition) {// CopyAdd
@@ -32,8 +33,8 @@ const getInitialValues = async (diagStatus) => {
             newPosition.name = "";
             newPosition.creator = person;
             newPosition.modifier = { id: 0, code: "", name: "" };
-            newPosition.createDate = DateTimeFormat(new Date(),"LLL");
-            newPosition.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newPosition.createDate = currentDate;
+            newPosition.modifyDate = EpochTime;
         } else {
             newPosition = { // Add 
                 id: 0,
@@ -42,8 +43,8 @@ const getInitialValues = async (diagStatus) => {
                 status: 0,
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
@@ -52,17 +53,13 @@ const getInitialValues = async (diagStatus) => {
         } else {
             if (isModify) {// Edit
                 newPosition = cloneDeep(oriPosition);
-                newPosition.createDate = DateTimeFormat(newPosition.createDate, "LLL");
                 newPosition.modifier = person;
-                newPosition.modifyDate = DateTimeFormat(newPosition.modifyDate, "LLL");
+                newPosition.modifyDate = currentDate;
             } else { // Detail
                 newPosition = cloneDeep(oriPosition);
-                newPosition.createDate = DateTimeFormat(newPosition.createDate, "LLL");
-                newPosition.modifyDate = DateTimeFormat(newPosition.modifyDate, "LLL");
             }
         }
     }
-
     return newPosition;
 };
 
@@ -72,7 +69,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
     const [currentPosition, setCurrentPosition] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initValue() {
@@ -122,7 +119,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
             if (addRes.status) {
                 message.success(t("addSuccessful"));
                 onOk();
-            } 
+            }
         }
         // Get the latest position front-end cache
         await InitDocCache("position");
@@ -135,7 +132,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
         if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.msg};
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
@@ -155,7 +152,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                             itemKey="name"
                             initValue={currentPosition.name}
                             pickDone={handleGetValue}
-                            placeholder="placeholderName"
+                            placeholder="namePlaceholder"
                             isBackendTest={true}
                             backendTestFunc={handleBackendTestName}
                             key="name"
@@ -170,7 +167,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                             itemKey="description"
                             initValue={currentPosition.description}
                             pickDone={handleGetValue}
-                            placeholder="placeholderDeacription"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={2}
@@ -209,7 +206,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -235,7 +232,7 @@ const EditPosition = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

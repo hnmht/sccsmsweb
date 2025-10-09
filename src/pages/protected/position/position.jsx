@@ -11,7 +11,6 @@ import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
 import { reqGetPositionList, reqDeletePosition, reqDeletePositions } from "../../../api/position";
 import { InitDocCache } from "../../../storage/db/db";
 
-
 const Position = () => {
     const [rows, setRows] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
@@ -118,7 +117,6 @@ const Position = () => {
         // Request position list
         handleReqPositionList();
     }, []);
-
 
     return (
         <Fragment>

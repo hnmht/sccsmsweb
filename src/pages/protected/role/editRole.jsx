@@ -10,7 +10,7 @@ import { message } from "mui-message";
 import { cloneDeep } from "lodash";
 import { useTranslation } from "react-i18next";
 
-import { DateTimeFormat } from "../../../i18n/dayjs";
+import { EpochTime } from "../../../i18n/dayjs";
 import { Divider } from "../../../component/ScMui/ScMui";
 import ScInput from "../../../component/ScInput";
 import { reqValidateRoleName, reqEditRole, reqAddRole } from "../../../api/role";
@@ -31,8 +31,8 @@ const getInitialValue = async (oriRole, isNew, isModify) => {
             newRole.name = "";
             newRole.creator = person;
             newRole.modifier = { id: 0, code: "", name: "" };
-            newRole.createDate = DateTimeFormat(currentDate, "LLL");
-            newRole.modifyDate = DateTimeFormat(currentDate, "LLL");
+            newRole.createDate = currentDate;
+            newRole.modifyDate = EpochTime;
             newRole.member = newRole.member === null ? [] : newRole.member;
         } else { // Add New
             newRole = {
@@ -42,8 +42,8 @@ const getInitialValue = async (oriRole, isNew, isModify) => {
                 dr: 0,
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(currentDate, "LLL"),
-                modifyDate: DateTimeFormat(currentDate, "LLL"),
+                createDate: currentDate,
+                modifyDate: EpochTime,
                 alluserflag: 0,
                 systemflag: 0,
                 member: [],
@@ -56,14 +56,11 @@ const getInitialValue = async (oriRole, isNew, isModify) => {
             if (isModify) {
                 newRole = cloneDeep(oriRole);
                 newRole.member = newRole.member ? newRole.member : [];
-                newRole.createDate = DateTimeFormat(newRole.createDate, "LLL");
                 newRole.modifier = person;
-                newRole.modifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
+                newRole.modifyDate = currentDate;
             } else { // View
                 newRole = cloneDeep(oriRole);
                 newRole.member = newRole.member ? newRole.member : [];
-                newRole.createDate = DateTimeFormat(newRole.createDate, "LLL");
-                newRole.modifyDate = DateTimeFormat(newRole.modifyDate, "LLL");
             }
         }
     }
@@ -120,17 +117,13 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
             if (editRes.status) {
                 message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error(t("modifyFailed") + editRes.msg);
-            }
+            } 
         } else {
             const addRes = await reqAddRole(thisRole);
             if (addRes.status) {
                 message.success(t("addSuccessful"));
                 onOk()
-            } else {
-                message.error(t("addFailed") + addRes.msg);
-            }
+            } 
         }
     };
     // Request the backend server to validate if the name is a duplicate.
@@ -215,7 +208,7 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -241,7 +234,7 @@ const EditRole = ({ isOpen, isNew, isModify, oriRole, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

@@ -1,6 +1,6 @@
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
-import { dayjs, DateTimeFormat, CheckTimeZero } from "../../../i18n/dayjs";
+import { DateTimeFormat, CheckTimeZero } from "../../../i18n/dayjs";
 import i18n from "../../../i18n/i18n";
 
 // Get Operator
@@ -67,22 +67,25 @@ export const CellModifier = (row, column) => {
 };
 // Modify date display content
 export const CellModifyTime = (row, column) => {
+    const date = row.modifyDate;
+    const isZero = CheckTimeZero(date);
     let content = "";
-    if (!CheckTimeZero(row.modifyDate)) {
-        content = DateTimeFormat(row.modifyDate,"LLL")
-    } 
+    if (!isZero) {
+        content = DateTimeFormat(date, "LLL")
+    }
     return content;
 };
-
 // Confirmer display conent
 export const CellConfirmer = (row, column) => {
     return row.confirmer.name;
 };
 // Confirm date display content
 export const CellConfirmTime = (row, column) => {
+    const date = row.confirmDate;
     let content = "";
-    if (!CheckTimeZero(row.confirmDate)) {
-        content = DateTimeFormat(dayjs(row.confirmDate), "LLL")
+    const isZero = CheckTimeZero(date);
+    if (!isZero) {
+        content = DateTimeFormat(date, "LLL")
     }
     return content;
 };
