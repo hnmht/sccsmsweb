@@ -63,8 +63,11 @@ function UDCList({ isEdit, selectOk }) {
             }
             sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
         >
-            {UDCs.map((udc, index) =>
-                <ListItem
+            {UDCs.map((udc, index) => {
+                const status = udc.status ? udc.status : 0;
+                const disabled = status === 1;
+                const name = disabled ? `${udc.name}(${t("disable")})` : udc.name;
+                return <ListItem
                     key={index}
                     disablePadding
                 >
@@ -75,8 +78,9 @@ function UDCList({ isEdit, selectOk }) {
                         <ListItemIcon>
                             <UDCIcon color={currentIndex === index ? "primary" : "transparent"} />
                         </ListItemIcon>
-                        <ListItemText primary={udc.name}
-                            sx={{ ".MuiListItemText-primary": { color: udc.status === 0 ? currentIndex === index ? "primary.main" : "primary" : "red" } }}
+                        <ListItemText
+                            primary={name}
+                            sx={{ ".MuiListItemText-primary": { color: udc.status === 0 ? currentIndex === index ? "primary.main" : "primary" : "warning.main" } }}
                         />
                         {udc.level === 1
                             ? <ListItemIcon>
@@ -86,7 +90,7 @@ function UDCList({ isEdit, selectOk }) {
                         }
                     </ListItemButton>
                 </ListItem>
-            )}
+            })}
         </List>
     );
 }

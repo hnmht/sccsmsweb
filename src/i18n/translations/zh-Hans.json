@@ -298,6 +298,7 @@
     "startTimeExceedEndTime": "开始时间不能晚于结束时间",
     "endTimePrecedeStartTime": "结束时间不能早于开始时间",
     "includeDisabled": "包含停用",
+    "allowDeletion": "可删除",
     
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

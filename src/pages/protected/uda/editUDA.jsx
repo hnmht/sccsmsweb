@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 import { cloneDeep } from 'lodash';
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -20,6 +20,7 @@ import { reqAddUDA, reqCheckUDACode, reqEditUDA } from '../../../api/uda';
 // Generate initial values for the UDA master data
 const getInitialValues = async (oriUDA, isNew, isModify, currentUDC) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newUda = { // Add brand new
         id: 0,
         udc: currentUDC,
@@ -30,8 +31,8 @@ const getInitialValues = async (oriUDA, isNew, isModify, currentUDC) => {
         status: 0,
         creator: person,
         modifier: { id: 0, code: "", name: "" },
-        createDate: DateTimeFormat(new Date(), "LLL"),
-        modifyDate: DateTimeFormat(new Date(), "LLL"),
+        createDate: currentDate,
+        modifyDate: EpochTime,
     };
     if (isNew) { // Copy add or Edit or View
         if (oriUDA) {// Copy Add
@@ -40,8 +41,8 @@ const getInitialValues = async (oriUDA, isNew, isModify, currentUDC) => {
             newUda.code = "";
             newUda.creator = person;
             newUda.modifier = { id: 0, code: "", name: "" };
-            newUda.createDate = DateTimeFormat(new Date(), "LLL");
-            newUda.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newUda.createDate = currentDate;
+            newUda.modifyDate = EpochTime;
         }
     } else { // Edit or View
         if (!oriUDA) { // Error
@@ -49,13 +50,10 @@ const getInitialValues = async (oriUDA, isNew, isModify, currentUDC) => {
         } else {
             if (isModify) { // Edit
                 newUda = cloneDeep(oriUDA);
-                newUda.createDate = DateTimeFormat(newUda.createDate, "LLL");
                 newUda.modifier = person;
-                newUda.modifyDate = DateTimeFormat(newUda.modifyDate, "LLL");
+                newUda.modifyDate = currentDate;
             } else {// View
                 newUda = cloneDeep(oriUDA);
-                newUda.createDate = DateTimeFormat(newUda.createDate, "LLL");
-                newUda.modifyDate = DateTimeFormat(newUda.modifyDate, "LLL");
             }
         }
     }
@@ -126,7 +124,7 @@ const EditUDA = ({ isOpen, isNew, isModify, oriUDA, UDC, onCancel, onOk }) => {
         if (checkResp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: checkResp.msg};
+            err = { isErr: true, msg: checkResp.msg };
         }
         return err;
     }
@@ -228,7 +226,7 @@ const EditUDA = ({ isOpen, isNew, isModify, oriUDA, UDC, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -254,7 +252,7 @@ const EditUDA = ({ isOpen, isNew, isModify, oriUDA, UDC, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

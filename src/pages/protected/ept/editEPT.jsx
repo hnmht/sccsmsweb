@@ -20,7 +20,7 @@ import { message } from "mui-message";
 import { voucherRow } from "./voucherConstructor";
 import { transEPTToBackend } from "../../../storage/db/db";
 import { bodyColumns } from "./voucherConstructor";
-import { DateTimeFormat } from "../../../i18n/dayjs";
+import { EpochTime } from "../../../i18n/dayjs";
 import { getCurrentPerson, generateVoucherErrors, checkVoucherErrors } from "../pub/pubFunction";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 
@@ -29,6 +29,7 @@ const zeroUDC = { id: 0, code: "", name: "", description: "", isLevel: 0 };
 // Generate EPT initial values
 const getInitialValues = async (oriEPT, isNew, isModify) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newEPT = {};
     if (isNew) { // Add a new EPT        
         if (oriEPT) { // Copy add based on the original EPT
@@ -36,9 +37,9 @@ const getInitialValues = async (oriEPT, isNew, isModify) => {
             newEPT.id = 0;
             newEPT.code = "";
             newEPT.creator = person;
-            newEPT.createDate = DateTimeFormat(new Date(), "LLL");
+            newEPT.createDate = currentDate;
             newEPT.modifier = { id: 0, code: "", name: "" };
-            newEPT.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newEPT.modifyDate = EpochTime;
             newEPT.body.map((row) => {
                 row.id = 0;
                 row.hid = 0;
@@ -54,9 +55,9 @@ const getInitialValues = async (oriEPT, isNew, isModify) => {
                 allowAddRow: 0,
                 allowDelRow: 0,
                 creator: person,
-                createDate: DateTimeFormat(new Date(), "LLL"),
+                createDate: currentDate,
                 modifier: { id: 0, code: "", name: "" },
-                modifyDate: DateTimeFormat(new Date(), "LLL"),
+                modifyDate: EpochTime,
                 dr: 0,
                 body: [
                     voucherRow
@@ -69,13 +70,10 @@ const getInitialValues = async (oriEPT, isNew, isModify) => {
         } else {
             if (isModify) { // Modify existing EPT
                 newEPT = cloneDeep(oriEPT);
-                newEPT.createDate = DateTimeFormat(newEPT.createDate, "LLL");
                 newEPT.modifier = person;
-                newEPT.modifyDate = DateTimeFormat(newEPT.modifyDate, "LLL");
+                newEPT.modifyDate = currentDate;
             } else { // View existing EPT
                 newEPT = cloneDeep(oriEPT);
-                newEPT.createDate = DateTimeFormat(newEPT.createDate, "LLL");
-                newEPT.modifyDate = DateTimeFormat(newEPT.modifyDate, "LLL");
             }
         }
     }
@@ -102,6 +100,7 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
+        console.log("itemkey:",itemKey," value:",value," positionID:",positionID);
         // Change voucherData
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
@@ -111,6 +110,7 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                     if (itemKey === "allowDelRow") {
                         newData.body.map(row => row.allowDelRow = value);
                     }
+                    console.log(itemKey,":", value);
                     newData[itemKey] = value;
                     break;
                 case 1:
@@ -237,8 +237,8 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                 newVoucherData.body.splice(index, 1);
                 newErrors.body.splice(index, 1);
             } else { // If it is an existing row, set the delete flag
-                newVoucherData.body[index].dr = 1;  
-                newErrors.body[index] = {}; 
+                newVoucherData.body[index].dr = 1;
+                newErrors.body[index] = {};
             }
         } else { // is it is in new state
             newVoucherData.body.splice(index, 1);
@@ -252,12 +252,13 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
     const handleAddEPT = async () => {
         // Transform the voucherData to the data structure required by the backend
         const thisEPT = transEPTToBackend(voucherData);
+        console.log("thisEpt:", thisEPT);
         if (isModify) {
             let editRes = await reqEditEPT(thisEPT);
             if (editRes.status) {
                 message.success(t("modifySuccessful"));
                 onOk()
-            } 
+            }
         } else {
             let addRes = await reqAddEPT(thisEPT);
             if (addRes.status) {
@@ -577,7 +578,6 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                             itemShowName="creator"
                             itemKey="creator"
                             initValue={voucherData.creator}
-                            pickDone={() => { }}
                             isBackendTest={false}
                             key="creator"
                             positionID={2}
@@ -586,7 +586,7 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -616,14 +616,12 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"
                             itemKey="modifyDate"
                             initValue={voucherData.modifyDate}
-                            pickDone={() => { }}
-                            isBackendTest={false}
                             key="modifyDate"
                             positionID={2}
                             rowIndex={-1}

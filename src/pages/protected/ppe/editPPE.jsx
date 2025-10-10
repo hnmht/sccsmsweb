@@ -9,60 +9,57 @@ import {
 import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
 import MoreInfo from "../../../component/MoreInfo/MoreInfo";
-
 import { reqAddPPE, reqEditPPE, reqCheckPPECode } from '../../../api/ppe';
 import { InitDocCache } from '../../../storage/db/db';
 import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
 
 
-//获取初始值
+// Get initial PPE
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriPPE } = diagStatus;
-
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newPPE = {};
     if (isNew) {
-        if (oriPPE) {//复制新增
+        if (oriPPE) {// Copy Add
             newPPE = cloneDeep(oriPPE);
             newPPE.id = 0;
             newPPE.code = "";
             newPPE.creator = person;
             newPPE.modifier = { id: 0, code: "", name: "" };
-            newPPE.createDate = DateTimeFormat(new Date(), "LLL");
-            newPPE.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newPPE.createDate = currentDate;
+            newPPE.modifyDate = EpochTime;
         } else {
-            newPPE = { //新增
+            newPPE = { // Add
                 id: 0,
                 code: "",
                 name: "",
                 model: "",
                 unit: "",
                 description: "",
+                status: 0,
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
-        if (!oriPPE) { //错误
+        if (!oriPPE) { // Error
             return
         } else {
-            if (isModify) {//编辑
+            if (isModify) {// Edit
                 newPPE = cloneDeep(oriPPE);
-                newPPE.createDate = DateTimeFormat(newPPE.createDate, "LLL");
                 newPPE.modifier = person;
-                newPPE.modifyDate = DateTimeFormat(newPPE.modifyDate, "LLL");
-            } else { //查看
+                newPPE.modifyDate = currentDate;
+            } else { // Detail
                 newPPE = cloneDeep(oriPPE);
-                newPPE.createDate = DateTimeFormat(newPPE.createDate, "LLL");
-                newPPE.modifyDate = DateTimeFormat(newPPE.modifyDate, "LLL");
             }
         }
     }
@@ -220,6 +217,21 @@ const EditPPE = ({ diagStatus, onCancel, onOk }) => {
                             key="description"
                         />
                     </Grid>
+                    <Grid item xs={12} sx={{ display: "flex", alignItems: "center", justifyContent: "right" }}>
+                        <ScInput
+                            dataType={402}
+                            allowNull={true}
+                            isEdit={isEdit}
+                            itemShowName="disable"
+                            itemKey="status"
+                            initValue={currentPPE.status}
+                            pickDone={handleGetValue}
+                            placeholder=""
+                            key="status"
+                            isBackendTest={false}
+                            color="warning"
+                        />
+                    </Grid>
                 </Grid>
                 <MoreInfo>
                     <Grid item xs={3}>
@@ -237,7 +249,7 @@ const EditPPE = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -263,7 +275,7 @@ const EditPPE = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

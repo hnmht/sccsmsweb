@@ -4,7 +4,7 @@ export const bodyColumns = [
     { id: "rowNumber", label: "rowNumber", alignment: "left", width: 60, maxWidth: 60, minWidth: 60, visible: true, allowNul: true, sortField: "rowNumber", sort: true, display: { type: 0, cell1: null } },
     { id: "epa", label: "epa", alignment: "left", width: 260, maxWidth: 512, minWidth: 80, visible: true, allowNul: false, sortField: "epa.name", sort: true, display: { type: 0, cell1: null } },
     { id: "riskLevel", label: "riskLevel", alignment: "left", width: 150, maxWidth: 200, minWidth: 60, visible: true, allowNul: false, sortField: "riskLevel", sort: true, display: { type: 0, cell1: null } },
-    { id: "allowDelRow", label: "allowDelRow", alignment: "left", width: 60, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "allowDelRow", sort: true, display: { type: 0, cell1: null } },
+    { id: "allowDelRow", label: "allowDeletion", alignment: "left", width: 60, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "allowDelRow", sort: true, display: { type: 0, cell1: null } },
     { id: "description", label: "description", alignment: "left", width: 260, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "description", sort: true, display: { type: 0, cell1: null } }, 
     { id: "defaultValue", label: "defaultValue", alignment: "left", width: 200, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "defaultValue", sort: true, display: { type: 0, cell1: null } },
     { id: "isCheckError", label: "isCheckError", alignment: "left", width: 100, maxWidth: 128, minWidth: 20, visible: true, allowNul: true, sortField: "isCheckError", sort: true, display: { type: 0, cell1: null } },

@@ -300,6 +300,7 @@
     "endTimePrecedeStartTime":"The end time cannot be earlier than the start time",
     "includeDisabled":"Include Disabled",
 
+    "allowDeletion":"Allow Del",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

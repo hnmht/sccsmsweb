@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriUDC } = diagStatus;
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newUDC = {};
     if (isNew) {
         if (oriUDC) {// Copy add
@@ -32,8 +33,8 @@ const getInitialValues = async (diagStatus) => {
             newUDC.name = "";
             newUDC.creator = person;
             newUDC.modifier = { id: 0, code: "", name: "" };
-            newUDC.createDate = DateTimeFormat(new Date(), "LLL");
-            newUDC.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newUDC.createDate = currentDate;
+            newUDC.modifyDate = EpochTime;
         } else {
             newUDC = { // Add
                 id: 0,
@@ -43,8 +44,8 @@ const getInitialValues = async (diagStatus) => {
                 status: 0,
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate:currentDate,
+                modifyDate:EpochTime
             };
         }
     } else {
@@ -53,13 +54,10 @@ const getInitialValues = async (diagStatus) => {
         } else {
             if (isModify) {// Modify
                 newUDC = cloneDeep(oriUDC);
-                newUDC.createDate = DateTimeFormat(newUDC.createDate, "LLL");
                 newUDC.modifier = person;
-                newUDC.modifyDate = DateTimeFormat(newUDC.modifyDate, "LLL");
+                newUDC.modifyDate = currentDate;
             } else { // View
                 newUDC = cloneDeep(oriUDC);
-                newUDC.createDate = DateTimeFormat(newUDC.createDate, "LLL");
-                newUDC.modifyDate = DateTimeFormat(newUDC.modifyDate, "LLL");
             }
         }
     }
@@ -210,7 +208,7 @@ const EditUDC = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -236,7 +234,7 @@ const EditUDC = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

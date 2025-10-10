@@ -65,7 +65,7 @@ function PubTree({
                             disabled={!isEdit}
                         >
                             <ListItemText key={"parentitemtext" + item.id} primary={name}
-                                primaryTypographyProps={{ color: disabled ? "#ef964c" : "defalut" }} />
+                                primaryTypographyProps={{ color: disabled ? "warning.main" : "defalut" }} />
                         </ListItemButton>
                         {selectDocIDs.includes(item.id) ? <CheckIcon fontSize="small" color="success" /> : null}
                     </ListItem>
@@ -80,7 +80,7 @@ function PubTree({
                         disabled={!isEdit}
                     >
                         <ListItemText key={"childitemtext" + item.id} primary={name}
-                            primaryTypographyProps={{ color: disabled ? "#ef964c" : "default" }} />
+                            primaryTypographyProps={{ color: disabled ? "warning.main" : "default" }} />
                     </ListItemButton>
                     {selectDocIDs.includes(item.id) ? <CheckIcon fontSize="small" color="success" /> : null}
                 </ListItem>

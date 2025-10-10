@@ -27,17 +27,18 @@ const ScSwitchYesOrNo = (props) => {
         updateInitvalue();
     }, [initValue]);
 
-    const handleOnBlur = async (event) => {
+    const handleOnBlur = async (event) => { 
         if (!isEdit) {
             return
         }
+        
         let newValue = boolTransInt(event.target.checked);
         let err = { isErr: false, msg: "" };
         setFieldValue(newValue);
         if (isBackendTest) {
             err = await backendTestFunc(newValue);
-        }
-        pickDone(newValue, itemKey, fieldIndex, rowIndex, err);
+        }        
+        pickDone(newValue, itemKey, positionID, rowIndex, err);
     };
 
     return (

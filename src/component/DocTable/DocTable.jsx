@@ -268,7 +268,7 @@ function DocTable({
                                                 return undefined;
                                             }
                                             return (
-                                                <TableCell key={column.id} align={column.alignment} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: disabled ? "#ef964c" : "primary" }} >
+                                                <TableCell key={column.id} align={column.alignment}  sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: disabled ? "warning.main" : "primary" }} >
                                                     {column.display.type === 0
                                                         ? row[column.id]
                                                         : column.display.cell1(row, column)

@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 import { Divider } from '../../../component/ScMui/ScMui';
 import Loader from '../../../component/Loader/Loader';
 import ScInput from '../../../component/ScInput';
@@ -23,6 +23,7 @@ import { getCurrentPerson, checkVoucherNoBodyErrors } from '../pub/pubFunction';
 const getInitialValues = async (diagStatus) => {
     const { isNew, isModify, oriRL } = diagStatus;
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newRL = {};
     if (isNew) {
         if (oriRL) {// Copy and Add
@@ -32,8 +33,8 @@ const getInitialValues = async (diagStatus) => {
             newRL.color = "blue"
             newRL.creator = person;
             newRL.modifier = { id: 0, code: "", name: "" };
-            newRL.createDate = DateTimeFormat(new Date(), "LLL");
-            newRL.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newRL.createDate = currentDate;
+            newRL.modifyDate = EpochTime;
         } else {
             newRL = { //Add
                 id: 0,
@@ -43,8 +44,8 @@ const getInitialValues = async (diagStatus) => {
                 status: 0,
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
@@ -53,13 +54,10 @@ const getInitialValues = async (diagStatus) => {
         } else {
             if (isModify) {// Modify
                 newRL = cloneDeep(oriRL);
-                newRL.createDate = DateTimeFormat(newRL.createDate, "LLL");
                 newRL.modifier = person;
-                newRL.modifyDate = DateTimeFormat(newRL.modifyDate, "LLL");
+                newRL.modifyDate = currentDate;
             } else { // View
                 newRL = cloneDeep(oriRL);
-                newRL.createDate = DateTimeFormat(newRL.createDate, "LLL");
-                newRL.modifyDate = DateTimeFormat(newRL.modifyDate, "LLL");
             }
         }
     }
@@ -221,7 +219,7 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -247,7 +245,7 @@ const EditRL = ({ diagStatus, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

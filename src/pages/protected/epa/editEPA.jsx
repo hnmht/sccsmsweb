@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 // Generate initial Execution Project 
 const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newEP = { // add
         id: 0,
         code: "",
@@ -41,8 +42,8 @@ const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
         riskLevel: { id: 0, name: "", color: "white", description: "" },
         creator: person,
         modifier: { id: 0, code: "", name: "" },
-        createDate: DateTimeFormat(new Date(), "LLL"),
-        modifyDate: DateTimeFormat(new Date(), "LLL")
+        createDate: currentDate,
+        modifyDate: EpochTime
     };
 
     if (isNew) {
@@ -53,8 +54,8 @@ const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
                 code: "",
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
@@ -63,15 +64,10 @@ const getInitialValues = async (oriEP, isNew, isModify, currentEPC) => {
                 newEP = {
                     ...oriEP,
                     modifier: person,
-                    createDate: DateTimeFormat(oriEP.createDate, "LLL"),
-                    modifyDate: DateTimeFormat(oriEP.modifyDate, "LLL")
+                    modifyDate: currentDate
                 };
             } else {// View Detail
-                newEP = {
-                    ...oriEP,
-                    createDate: DateTimeFormat(oriEP.createDate, "LLL"),
-                    modifyDate: DateTimeFormat(oriEP.modifyDate, "LLL")
-                };
+                newEP = { ...oriEP };
             }
         }
     }
@@ -398,7 +394,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -424,7 +420,7 @@ const EditEP = ({ isOpen, isNew, isModify, oriEP, EPC, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"
