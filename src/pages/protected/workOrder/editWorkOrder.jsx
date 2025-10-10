@@ -9,7 +9,7 @@ import {
     Button,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { dayjs, DateTimeFormat } from "../../../i18n/dayjs";
+import { dayjs, DateTimeFormat, EpochTime } from "../../../i18n/dayjs";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 
@@ -29,7 +29,9 @@ import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 const getInitialValue = async (oriWO, isNew, isModify) => {
     const person = await getCurrentPerson();
     const dept = await GetCacheDocById("department", person.deptID);
-    const currentDate = dayjs(new Date()).startOf("day");
+    const currentTime = dayjs(new Date());
+    const currentDate = currentTime.startOf("day");
+
     let newWO = { // Add new WorkOrder
         id: 0,
         billNumber: "",
@@ -40,11 +42,11 @@ const getInitialValue = async (oriWO, isNew, isModify) => {
         workDate: currentDate,
         body: [voucherRow],
         creator: person,
-        createDate: DateTimeFormat(currentDate, "LLL"),
+        createDate: currentTime,
         modifier: { id: 0, code: "", name: "" },
-        modifyDate: DateTimeFormat(currentDate, "LLL"),
+        modifyDate: EpochTime,
         confirmer: { id: 0, code: "", name: "" },
-        confirmDate: DateTimeFormat(currentDate, "LLL"),
+        confirmDate: EpochTime,
         dr: 0
     };
 
@@ -63,11 +65,11 @@ const getInitialValue = async (oriWO, isNew, isModify) => {
                 return row;
             });
             newWO.creator = person;
-            newWO.createDate = DateTimeFormat(currentDate, "LLL");
+            newWO.createDate = currentTime;
             newWO.modifier = { id: 0, code: "", name: "" };
-            newWO.modifyDate = DateTimeFormat(currentDate, "LLL");
+            newWO.modifyDate = EpochTime;
             newWO.confirmer = { id: 0, code: "", name: "" };
-            newWO.confirmDate = DateTimeFormat(currentDate, "LLL");
+            newWO.confirmDate = EpochTime;
         }
     } else { // Edit or View
         if (!oriWO) {
@@ -75,20 +77,13 @@ const getInitialValue = async (oriWO, isNew, isModify) => {
         } else {
             if (isModify) { // Edit                
                 newWO = cloneDeep(oriWO);
-                newWO.createDate = DateTimeFormat(newWO.createDate, "LLL");
                 newWO.modifier = person;
-                newWO.modifyDate = DateTimeFormat(newWO.modifyDate, "LLL");
-                newWO.confirmer = { id: 0, code: "", name: "" };
-                newWO.confirmDate = DateTimeFormat(newWO.confirmDate, "LLL");
+                newWO.modifyDate = currentTime;
             } else { // View
                 newWO = cloneDeep(oriWO);
-                newWO.createDate = DateTimeFormat(newWO.createDate, "LLL");
-                newWO.modifyDate = DateTimeFormat(newWO.modifyDate, "LLL");
-                newWO.confirmDate = DateTimeFormat(newWO.confirmDate, "LLL");
             }
         }
     }
-    console.log("newWo:", newWO);
     return newWO;
 };
 
@@ -543,7 +538,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -573,7 +568,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"
@@ -603,7 +598,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="confirmDate"

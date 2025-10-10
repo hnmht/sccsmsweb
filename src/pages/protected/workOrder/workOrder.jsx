@@ -103,6 +103,7 @@ const WorkOrder = () => {
         let newDiagStatus = {};
         if (res.status) {
             let woDetail = await transWoDetailToFronted(res.data);
+            console.log("woDetail:",woDetail);
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",

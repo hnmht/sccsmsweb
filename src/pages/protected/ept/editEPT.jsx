@@ -100,7 +100,6 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
-        console.log("itemkey:",itemKey," value:",value," positionID:",positionID);
         // Change voucherData
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
@@ -240,7 +239,7 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                 newVoucherData.body[index].dr = 1;
                 newErrors.body[index] = {};
             }
-        } else { // is it is in new state
+        } else { // it is in new state
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
@@ -252,7 +251,6 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
     const handleAddEPT = async () => {
         // Transform the voucherData to the data structure required by the backend
         const thisEPT = transEPTToBackend(voucherData);
-        console.log("thisEpt:", thisEPT);
         if (isModify) {
             let editRes = await reqEditEPT(thisEPT);
             if (editRes.status) {
@@ -333,7 +331,7 @@ const EditEPT = ({ isOpen, isNew, isModify, oriEPT, onCancel, onOk }) => {
                             isBackendTest={false}
                             key="description"
                             positionID={0}
-                            isMultiline={true}
+                            isMultiline={false}
                             rowNumber={1}
                             rowIndex={-1}
                         />

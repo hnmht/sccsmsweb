@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -29,6 +29,7 @@ const bodyFiles = {
 // Get Training Course initial values
 const getInitialValues = async (oriDoc, isNew, isModify) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newDoc = { // Add
         id: 0,
         code: "",
@@ -36,11 +37,12 @@ const getInitialValues = async (oriDoc, isNew, isModify) => {
         classHour: 1.0,
         isExamine: 1,
         description: "",
+        status: 0,
         files: [bodyFiles],
         creator: person,
         modifier: { id: 0, code: "", name: "" },
-        createDate: DateTimeFormat(new Date(), "LLL"),
-        modifyDate: DateTimeFormat(new Date(), "LLL")
+        createDate: currentDate,
+        modifyDate: EpochTime
     };
 
     if (isNew) {
@@ -52,8 +54,8 @@ const getInitialValues = async (oriDoc, isNew, isModify) => {
                 files: [bodyFiles],
                 creator: person,
                 modifier: { id: 0, code: "", name: "" },
-                createDate: DateTimeFormat(new Date(), "LLL"),
-                modifyDate: DateTimeFormat(new Date(), "LLL")
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
@@ -62,15 +64,10 @@ const getInitialValues = async (oriDoc, isNew, isModify) => {
                 newDoc = {
                     ...oriDoc,
                     modifier: person,
-                    createDate: DateTimeFormat(oriDoc.createDate, "LLL"),
-                    modifyDate: DateTimeFormat(oriDoc.modifyDate, "LLL")
+                    modifyDate: currentDate
                 };
             } else {// Detail
-                newDoc = {
-                    ...oriDoc,
-                    createDate: DateTimeFormat(oriDoc.createDate, "LLL"),
-                    modifyDate: DateTimeFormat(oriDoc.modifyDate, "LLL")
-                };
+                newDoc = { ...oriDoc };
             }
         }
     }
@@ -149,13 +146,13 @@ const EditTC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
             if (editRes.status) {
                 message.success(t("modifySuccessful"));
                 onOk();
-            } 
+            }
         } else {
             let addRes = await reqAddTC(thisDoc);
             if (addRes.status) {
                 message.success(t("addSuccessful"));
                 onOk();
-            } 
+            }
         }
     };
 
@@ -250,6 +247,22 @@ const EditTC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                             fileMaxSize={60}
                         />
                     </Grid>
+                    <Grid item xs={12} sx={{ display: "flex", alignItems: "center", justifyContent: "right" }}>
+                        <ScInput
+                            dataType={402}
+                            allowNull={true}
+                            isEdit={isEdit}
+                            itemShowName="disable"
+                            itemKey="status"
+                            initValue={currentDoc.status}
+                            pickDone={handleGetValue}
+                            pickErr={handleGetError}
+                            placeholder=""
+                            key="status"
+                            isBackendTest={false}
+                            color="warning"
+                        />
+                    </Grid>
                 </Grid>
                 <MoreInfo>
                     <Grid item xs={3}>
@@ -268,7 +281,7 @@ const EditTC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -296,7 +309,7 @@ const EditTC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

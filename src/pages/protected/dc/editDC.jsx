@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import { DateTimeFormat } from '../../../i18n/dayjs';
+import { EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -24,6 +24,7 @@ import { GetLocalCache } from '../../../storage/db/db';
 // Generate initialize the values of the document category form
 const getInitialValues = async (oriDoc, isNew, isModify) => {
     const person = await getCurrentPerson();
+    const currentDate = new Date();
     let newDoc = {
         id: 0,
         name: "",
@@ -32,8 +33,8 @@ const getInitialValues = async (oriDoc, isNew, isModify) => {
         status: 0,
         creator: person,
         modifier: { id: 0, code: "", name: "" },
-        createDate: DateTimeFormat(new Date(), "LLL"),
-        modifyDate: DateTimeFormat(new Date(), "LLL"),
+        createDate: currentDate,
+        modifyDate: EpochTime,
     };
     if (isNew) {// Add or copy add
         if (oriDoc) { // Copy add
@@ -42,20 +43,17 @@ const getInitialValues = async (oriDoc, isNew, isModify) => {
             newDoc.name = "";
             newDoc.creator = person;
             newDoc.modifier = { id: 0, code: "", name: "" };
-            newDoc.createDate = DateTimeFormat(new Date(), "LLL");
-            newDoc.modifyDate = DateTimeFormat(new Date(), "LLL");
+            newDoc.createDate = currentDate;
+            newDoc.modifyDate = EpochTime;
         }
     } else {
         if (oriDoc) {
             if (isModify) { // Edit
                 newDoc = cloneDeep(oriDoc);
-                newDoc.createDate = DateTimeFormat(newDoc.createDate, "LLL");
                 newDoc.modifier = person;
-                newDoc.modifyDate = DateTimeFormat(newDoc.modifyDate, "LLL");
+                newDoc.modifyDate = currentDate;
             } else { // View details
                 newDoc = cloneDeep(oriDoc);
-                newDoc.createDate = DateTimeFormat(newDoc.createDate, "LLL");
-                newDoc.modifyDate = DateTimeFormat(newDoc.modifyDate, "LLL");
             }
         }
     }
@@ -248,7 +246,7 @@ const EditDC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="createDate"
@@ -274,7 +272,7 @@ const EditDC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={301}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
                             itemShowName="modifyDate"

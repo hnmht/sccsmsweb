@@ -1,4 +1,4 @@
-import { CellCreateTime, CellCreator, CellModifyTime, CellModifier } from "../pub/pubFunction";
+import { CellCreateTime, CellCreator, CellModifyTime, CellModifier,CellStatus } from "../pub/pubFunction";
 
 const rowCopyAddDisabled = (row) => {
     return false;
@@ -78,6 +78,7 @@ export const columns = [
     { id: "classHour", label: "classHour", alignment: "center", minWidth: 100, visible: true, sortField: "classHour", sort: true, display: { type: 0, cell1: null } },
     { id: "isExamine", label: "isExamine", alignment: "center", minWidth: 30, visible: true, sortField: "isExamine", sort: true, display: { type: 1, cell1: CellIsExamine } },
     { id: "description", label: "description", alignment: "center", minWidth: 150, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "status", label: "status", alignment: "center", minWidth: 20, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
     { id: "creator", label: "creator", alignment: "center", minWidth: 30, visible: true, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createDate", label: "createDate", alignment: "center", minWidth: 30, visible: true, sortField: "createDate", sort: true, display: { type: 1, cell1: CellCreateTime } },
     { id: "modifier", label: "modifier", alignment: "center", minWidth: 30, visible: false, sortField: "modifier.name", sort: true, display: { type: 1, cell1: CellModifier } },
