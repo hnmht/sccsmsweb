@@ -8,13 +8,13 @@ import DocListPaging from "../../../../component/DocList/DocListPaging";
 import ReviewED from "./reviewED";
 import { reqGetPagingEDReviewList, reqGetEDDetail, reqConfirmED, reqCancelConfirmED } from "../../../../api/executeDoc";
 import { QueryPanel, transConditionsToString } from "../../../../component/QueryPanel";
-import { columns, generateEDConditions, edQueryFields, rowActionsDefine, transEDDetailToFronted } from "./constructor";
+import { columns, generateEOConditions, eoQueryFields, rowActionsDefine, transEODetailToFrontEnd } from "./constructor";
 
 const ExecuteDocReview = () => {
     const [edsPaging, setEdsPaging] = useState({ eds: [], count: 0, page: 0, perPage: 10 });
     const [page, setPage] = useState(0);
     const [perPage, setPerPage] = useState(10);
-    const [edConditions, setEdConditions] = useState(generateEDConditions());
+    const [edConditions, setEdConditions] = useState(generateEOConditions());
     const [diagStatus, setDiagStatus] = useState({
         isOpen: false,
         content: 0,
@@ -26,7 +26,7 @@ const ExecuteDocReview = () => {
     useEffect(() => {
         async function getEDs() {
             //将查询条件转化为String
-            let queryString = transConditionsToString(generateEDConditions());
+            let queryString = transConditionsToString(generateEOConditions());
             let edsRes = await reqGetPagingEDReviewList({ queryString: queryString, page: 0, perPage: 10 });
             let newEds = { eds: [], count: 0 };
             if (edsRes.status) {
@@ -86,43 +86,43 @@ const ExecuteDocReview = () => {
             selectedED: undefined,
         });
     };
-    //表体行详情按钮
+    //表体行detail按钮
     const handleViewAction = async (item) => {
         const detailRes = await reqGetEDDetail(item);
         let edDetail = {};
         if (detailRes.status) {
-            edDetail = await transEDDetailToFronted(detailRes.data.data);
+            edDetail = await transEODetailToFrontEnd(detailRes.data.data);
         } else {
             message.error(detailRes.data.statusMsg);
             return
         }
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示执行单编辑界面
+            content: 1, //显示执行单edit界面
             selectedED: edDetail,
             startTime: new Date()
         });
     };
-    //表体确认
+    //表体confirm
     const handleRowConfirm = async (item) => {
         const confirmRes = await reqConfirmED(item);
         if (confirmRes.status) {
-            message.success(`确认指令单${confirmRes.data.data.billnumber}成功`);
+            message.success(`confirm指令单${confirmRes.data.data.billNumber}成功`);
         } else {
-            message.error(`确认指令单${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
+            message.error(`confirm指令单${confirmRes.data.data.billNumber}失败:${confirmRes.data.statusMsg}`);
             return
         }
         //刷新
         handleRefreshData(page, perPage, edConditions);
     };
 
-    //表体取消确认
+    //表体取消confirm
     const handleRowCancelConfirm = async (item) => {
         const cancelRes = await reqCancelConfirmED(item);
         if (cancelRes.status) {
-            message.success(`取消确认指令单${cancelRes.data.data.billnumber}成功`);
+            message.success(`取消confirm指令单${cancelRes.data.data.billNumber}成功`);
         } else {
-            message.error(`取消确认指令单${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);
+            message.error(`取消confirm指令单${cancelRes.data.data.billNumber}失败:${cancelRes.data.statusMsg}`);
             return
         }
         //刷新
@@ -154,7 +154,7 @@ const ExecuteDocReview = () => {
             case 2:
                 return <QueryPanel
                     title="执行单过滤条件"
-                    queryFields={edQueryFields}
+                    queryFields={eoQueryFields}
                     initalConditions={edConditions}
                     onOk={handleEdQueryOk}
                     onCancel={handleDiagClose}

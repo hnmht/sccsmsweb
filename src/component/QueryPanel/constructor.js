@@ -20,8 +20,8 @@ export const transConditionsToString = (conditions) => {
         }
         cs = cs + con.field.value + " ";
         cs = cs + con.compare.value + " ";
-
-        switch (con.field.resultType) {
+        
+        switch (con.field.resultType) {           
             case "date":
             case "dateTime":
                 const unixTime = ConvertToUnixSecond(con.value);

@@ -1,242 +1,224 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Dialog } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { message } from "mui-message";
 
 import { Divider } from "../../../../component/ScMui/ScMui";
 import PageTitle from "../../../../component/PageTitle/PageTitle";
 import DocList from "../../../../component/DocList/DocList";
-import { QueryPanel,transConditionsToString } from "../../../../component/QueryPanel";
+import { QueryPanel, transConditionsToString } from "../../../../component/QueryPanel";
 import WORefer from "./woRefer";
-import EditExecuteDoc from "./editExecuteDoc";
-import { reqGetEDList,reqGetEDDetail,reqDeleteED,reqConfirmED,reqCancelConfirmED } from "../../../../api/executeDoc";
-import { columns, generateWOConditions, woQueryFields,generateEDConditions,edQueryFields,rowActionsDefine,transEDDetailToFronted } from "./constructor";
+import EditEO from "./editEO";
+import { reqGetEOList, reqGetEODetail, reqDeleteEO, reqConfirmEO, reqUnConfirmEO } from "../../../../api/executionOrder";
+import { columns, generateWOConditions, woQueryFields, generateEOConditions, eoQueryFields, rowActionsDefine, transEODetailToFrontEnd } from "./constructor";
 
-function ExecuteDoc() {
+// Execution Order List
+const ExecutionOrder = () => {
     const [woConditions, setWoConditions] = useState(generateWOConditions());
-    const [edConditions, setEdConditions] = useState(generateEDConditions());
-    const [eds, setEds] = useState([]);
-
+    const [eoConditions, setEoConditions] = useState(generateEOConditions());
+    const [eos, setEos] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         isOpen: false,
-        content: 0, //1 执行单（编辑或查看） 2 执行单过滤条件 3 指令单选择 4 指令单过滤条件
+        content: 0, //1  Execution Order 2 Execution Order Query Panel 3 Pending reference Worker Order 4 Work Order Query Panel
         selectedWOR: undefined,
-        selectedED: undefined,
+        selectedEO: undefined,
         isNew: false,
         isModify: false
     });
-    //组件载入时按照默认条件查询执行单列表
+    const { t } = useTranslation();
+
+    // Query the Execution Order list using default conditions when the component is loaded
     useEffect(() => {
-        async function getEDs() {
-            //将查询条件转化为String
-            let queryString = transConditionsToString(generateEDConditions());
-            let edsRes = await reqGetEDList({ queryString: queryString });
-            let newEds = [];
-            if (edsRes.status) {
-                newEds = edsRes.data.data;
-            } else {
-                message.warning(edsRes.data.statusMsg);
+        async function getEOs() {
+            let queryString = transConditionsToString(generateEOConditions());
+            let eosRes = await reqGetEOList({ queryString: queryString });
+            let newEos = [];
+            if (eosRes.status) {
+                newEos = eosRes.data.data;
             }
-            setEds(newEds);
+            setEos(newEos);
         }
-        getEDs();
+        getEOs();
     }, []);
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDiagStatus({
             isOpen: false,
             content: 0,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: false,
             isModify: false
         });
     };
 
+    // Actions after click Add by Reference button in the header
     const handleAddRefAction = () => {
         setDiagStatus({
             isOpen: true,
             content: 4,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: false,
             isModify: false
         })
     };
-    //参照指令单QueryPanel确定按钮点击
+    // Actions after click ok button in the Work Order query panel 
     const handleWoQueryOk = (cons) => {
         setWoConditions(cons);
         setDiagStatus({
             isOpen: true,
             content: 3,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: false,
             isModify: false
         });
     };
 
-    //执行单QueryPanel确定按钮点击
+    // Actions after click ok button in the Execution Order query panel
     const handleEdQueryOk = async (cons) => {
-        setEdConditions(cons);
+        setEoConditions(cons);
         setDiagStatus({
             isOpen: false,
             content: 0,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: false,
             isModify: false
         });
-        //向服务器查询数据
-        handleRefreshEDList(cons);
+        // Request Execution Order list from backend
+        handleRefreshEOList(cons);
     };
 
-    //执行单列表头点击过滤按钮
+    // Actions after click filter button in the header 
     const handleFilterAction = () => {
         setDiagStatus({
             isOpen: true,
             content: 2,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: false,
             isModify: false
         });
     };
-    //参照指令单按钮点击确定
-    const handleWoReferOk = (item) => {       
+    // Actions after click ok button in the Pedding Referenced Work Order Dialog
+    const handleWoReferOk = (item) => {
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示执行单编辑界面
+            content: 1,
             selectedWOR: item,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: true,
             isModify: false
         });
     };
-    //增加按钮
+    // Actions after click add button in the header
     const handleAddAction = () => {
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示执行单过滤界面
+            content: 1,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: true,
             isModify: false
         });
     };
-    //增加对话框点击确认
+    // Actions after click ok button in the Execution Order Edit/Add dialog
     const handleEditOk = () => {
         setDiagStatus({
             isOpen: false,
-            content: 0, //显示执行单编辑界面
+            content: 0,
             selectedWOR: undefined,
-            selectedED: undefined,
+            selectedEO: undefined,
             isNew: false,
             isModify: false
         });
-        //刷新数据
-        handleRefreshEDList();
+        // Request the Execution Order list from backend
+        handleRefreshEOList();
     };
-    //刷新数据
-    const handleRefreshEDList = async (cons = edConditions) => {
+    // Request the latest Execution Order list from backend
+    const handleRefreshEOList = async (cons = eoConditions) => {
         let queryString = transConditionsToString(cons);
-        let edsRes = await reqGetEDList({ queryString: queryString });
-        let newEds = [];
-        if (edsRes.status) {
-            newEds = edsRes.data.data;
-        } else {
-            message.warning(edsRes.data.statusMsg);
+        let eosRes = await reqGetEOList({ queryString: queryString });
+        let newEos = [];
+        if (eosRes.status) {
+            newEos = eosRes.data;
         }
-        setEds(newEds);
+        setEos(newEos);
     };
 
-    //表体行详情按钮
-    const handleViewAction = async (item) => { 
-        const detailRes = await reqGetEDDetail(item);
-        
+    // Actions after click the View button in the table row
+    const handleViewAction = async (item) => {
+        const detailRes = await reqGetEODetail(item);
         let edDetail = {};
         if (detailRes.status) {
-            edDetail = await transEDDetailToFronted(detailRes.data.data);
-            
-        } else {
-            message.error("向服务器请求数据时出错:"+detailRes.data.statusMsg);
-            return
+            edDetail = await transEODetailToFrontEnd(detailRes.data);
         }
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示执行单编辑界面
+            content: 1,
             selectedWOR: undefined,
-            selectedED: edDetail,
+            selectedEO: edDetail,
             isNew: false,
             isModify: false
-        });           
+        });
     };
 
-    //表体编辑按钮
+    // Actions after click the edit button in the table row
     const handleRowEdit = async (item) => {
-         const detailRes = await reqGetEDDetail(item);
+        const detailRes = await reqGetEODetail(item);
         let edDetail = {};
         if (detailRes.status) {
-            edDetail = await transEDDetailToFronted(detailRes.data.data);
-        } else {
-            message.error("向服务器请求数据时出错:"+detailRes.data.statusMsg);
-            return
+            edDetail = await transEODetailToFrontEnd(detailRes.data);
         }
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示执行单编辑界面
+            content: 1,
             selectedWOR: undefined,
-            selectedED: edDetail,
+            selectedEO: edDetail,
             isNew: false,
             isModify: true
-        });   
+        });
     };
 
-    //表体删除按钮
+    // Actions after click the delete button in the table row
     const handleRowDelete = async (item) => {
-        const delRes = await reqDeleteED(item);
+        const delRes = await reqDeleteEO(item);
         if (delRes.status) {
-            message.success(`删除指令单${delRes.data.data.billnumber}成功`);
-        } else {
-            message.error(`删除指令单${delRes.data.data.billnumber}失败:${delRes.data.statusMsg}`);
-            return
-        }
-        //刷新
-        handleRefreshEDList();
+            message.success(t("deleteSuccessful"));
+            // Request the latest Execution Order list from backend
+            handleRefreshEOList();
+        }         
     };
-    //表体确认
-    const handleRowConfirm = async(item) => {
-        const confirmRes = await reqConfirmED(item);
+    // Actions after click the confirm button in the table row
+    const handleRowConfirm = async (item) => {
+        const confirmRes = await reqConfirmEO(item);
         if (confirmRes.status) {
-            message.success(`确认指令单${confirmRes.data.data.billnumber}成功`);
-        } else {
-            message.error(`确认指令单${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
-            return
-        }
-        //刷新
-        handleRefreshEDList();
+            message.success(t("confirmSuccessful"));
+            // Request the latest Execution Order list from backend
+            handleRefreshEOList();
+        } 
+      
     };
-
-    //表体取消确认
-    const handleRowCancelConfirm = async(item) => {
-        const cancelRes = await reqCancelConfirmED(item);
+    // Actions after click the un-confirm button in the table row
+    const handleRowCancelConfirm = async (item) => {
+        const cancelRes = await reqUnConfirmEO(item);
         if (cancelRes.status) {
-            message.success(`取消确认指令单${cancelRes.data.data.billnumber}成功`);
-        } else {
-            message.error(`取消确认指令单${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);
-            return
-        }
-        //刷新
-        handleRefreshEDList();
+            message.success(t("unconfirmSuccessful"));
+            // Request the latest Execution Order list from backend
+            handleRefreshEOList();
+        } 
     };
 
     //对话框显示内容组件
     const DiagContent = ({ content }) => {
         switch (content) {
             case 1:
-                return <EditExecuteDoc
+                return <EditEO
                     isOpen={diagStatus.isOpen}
                     oriWOR={diagStatus.selectedWOR}
-                    oriED={diagStatus.selectedED}
+                    oriEO={diagStatus.selectedEO}
                     isNew={diagStatus.isNew}
                     isModify={diagStatus.isModify}
                     onCancel={handleDiagClose}
@@ -244,23 +226,24 @@ function ExecuteDoc() {
                 />;
             case 2:
                 return <QueryPanel
-                    title="执行单过滤条件"
-                    queryFields={edQueryFields}
-                    initalConditions={edConditions}
+                    title="eoFilterCondition"
+                    queryFields={eoQueryFields}
+                    initalConditions={eoConditions}
                     onOk={handleEdQueryOk}
                     onCancel={handleDiagClose}
-                    id="edQueryPanel" />;
+                    id="woQueryPanel" />;
             case 3:
                 return <WORefer
-                    title={"参照指令单"}
+                    title="generateRefWO"
                     conditions={woConditions}
                     cancelClickAction={handleDiagClose}
                     okClickAction={handleWoReferOk}
                     filterAction={handleAddRefAction}
+                    id="refWorkOrder"
                 />;
             case 4:
                 return <QueryPanel
-                    title="指令单过滤条件"
+                    title="woFilterCondition"
                     queryFields={woQueryFields}
                     initalConditions={woConditions}
                     onOk={handleWoQueryOk}
@@ -273,11 +256,11 @@ function ExecuteDoc() {
 
     return (
         <>
-            <PageTitle pageName="执行单" displayHelp={true} helpUrl="/helps/executeDocWeb" />
+            <PageTitle pageName={t("MenuEO")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 columns={columns}
-                rows={eds}
+                rows={eos}
                 selectColumnVisible={false}
                 headRefreshVisible={false}
                 headFilterVisible={true}
@@ -307,4 +290,4 @@ function ExecuteDoc() {
     );
 };
 
-export default ExecuteDoc;
+export default ExecutionOrder;

@@ -43,11 +43,8 @@ const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWiz
 const LpaIssueDoc = Loadable(lazy(() => import("./pages/protected/lpaIssueDoc/lpaIssueDoc"))); //发放单
 const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery"))); //发放查询
 
-// Execution Project Template
-const EPT = Loadable(lazy(() => import("./pages/protected/ept/ept")));
-//指令单
+const EPT = Loadable(lazy(() => import("./pages/protected/ept/ept"))); // Execution Project Template
 const WorkOrder = Loadable(lazy(() => import("./pages/protected/workOrder/workOrder")));  // Work Order
-//权限界面
 const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); //首页
 const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); //日程
 const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  //通讯录
@@ -63,8 +60,8 @@ const CSO = Loadable(lazy(() => import("./pages/protected/cso/cso")));
 const Registration = Loadable(lazy(() => import("./pages/protected/registration/registration")));
 const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetUp/landingPageSetup")));
 //执行单
-const ExecuteDoc = Loadable(lazy(() => import("./pages/protected/execute/executeDoc/executeDoc")));
-const ExecuteDocReview = Loadable(lazy(() => import("./pages/protected/execute/executeDocReview/executeDocReView")));
+const ExecutionOrder = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrder/executeOrder")));
+const ExecuteDocReview = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrderReview/executionOrderReView")));
 //报表
 const ExecuteDocStat = Loadable(lazy(() => import("./pages/protected/reports/executeDocStat/executeDocStat")));
 const ProblemDisposeStat = Loadable(lazy(() => import("./pages/protected/reports/problemDisposeStat/problemDisposeStat")));
@@ -137,8 +134,8 @@ const routes = [
             },
            
             {
-                path: "/private/execute/executeDoc",
-                element: <ExecuteDoc />
+                path: "/private/execute/executionOrder",
+                element: <ExecutionOrder />
             },
             {
                 path: "/private/execute/executedocreview",

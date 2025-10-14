@@ -101,7 +101,7 @@ export const CellVoucherStatus = (row, column) => {
     return VoucherStatus[row.status];
 };
 // Voucher billDate display content
-export const CellbillDate = (row, column) => {
+export const CellBillDate = (row, column) => {
     return DateTimeFormat(row.billDate, "LL");
 };
 // Department display content
@@ -113,12 +113,28 @@ export const CellPosition = (row, column) => {
     return row.position.name;
 };
 // Gender display content 
-export const CellGender = (row) => {
+export const CellGender = (row, column) => {
     const v = row.gender === 0 ? "" : row.gender === 1 ? "male" : "female";
     return i18n.t(v);
 };
 // System preset  display content
-export const CellSystemFlag = (row) => {
+export const CellSystemFlag = (row, column) => {
     const v = row.systemFlag === 0 ? "N" : "Y";
     return i18n.t(v);
 };
+
+// Construciton Site display content
+export const CellCSA = (row, column) => {
+    return row.csa.name;
+};
+
+// Execution Project Template display content
+export const CellEPT = (row,column) => {
+    return row.ept.name;
+}
+
+// Executor display content
+export const CellExecutor = (row,column) => {
+    return row.executor.name;
+}
+

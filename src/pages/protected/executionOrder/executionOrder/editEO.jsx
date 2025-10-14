@@ -10,7 +10,7 @@ import {
     TableCell
 } from "@mui/material";
 import { DeleteRowIcon } from "../../../../component/PubIcon/PubIcon";
-import dayjs from "../../../../utils/myDayjs";
+import { dayjs, EpochTime } from "../../../../i18n/dayjs";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 
@@ -20,130 +20,98 @@ import { ScVoucherBody, ScVoucherBodyRow } from "../../../../component/ScVoucher
 import Loader from "../../../../component/Loader/Loader";
 import ScInput from "../../../../component/ScInput";
 import { GetCacheDocById } from "../../../../storage/db/db";
-import { reqAddED, reqEditED } from "../../../../api/executeDoc";
-import { voucherRow, eitBodyToEdBody, bodyColumns, checkForProblem, transEDToBackend } from "./constructor";
+import { reqAddEO, reqEditEO } from "../../../../api/executionOrder";
+import { voucherRow, eptBodyToEoBody, bodyColumns, checkForProblem, transEOToBackend } from "./constructor";
+import { generateVoucherErrors, checkVoucherErrors } from "../../pub/pubFunction";
+import { useTranslation } from "react-i18next";
 
-//生成初始数据
-const getInitialValue = async (isNew, isModify, oriWOR, oriEd) => {
+// Generate initial data
+const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
     const { user } = store.getState();
     const { person, department } = user;
-    let newED = {//直接新增单据
+    const currentDate = dayjs(new Date());
+    let newEO = {// Add new
         id: 0,
-        billnumber: "",
-        billdate: dayjs(new Date()).format("YYYYMMDD"),
+        billNumber: "",
+        billDate: currentDate,
         department: department,
         description: "",
         status: 0,
-        sourcetype: "UA",
-        sourcebillnumber: "",
+        sourceType: "UA",
+        sourceBillNumber: "",
         sourcehid: 0,
-        sourcerownumber: 0,
+        sourceRowNumber: 0,
         sourcebid: 0,
-        starttime: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        endtime: dayjs(new Date()).add(1, "hour").format("YYYYMMDDHHmm"),
-        sceneitem: { id: 0, code: "", name: "", description: "" },
-        execperson: person,
-        allowaddrow: 1,
-        allowdelrow: 1,
-        eit: { id: 0, code: "", name: "", description: "", docclass: { id: 0, name: "" }, fatherid: 0 },
+        startTime: currentDate,
+        endTime: currentDate.add(1, "hour"),
+        csa: { id: 0, code: "", name: "", description: "" },
+        executor: person,
+        allowAddRow: 1,
+        allowDelRow: 1,
+        ept: { id: 0, code: "", name: "", description: "" },
         body: [],
-        createuser: person,
-        createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        modifyuser: { id: 0, code: "", name: "" },
-        modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        confirmuser: { id: 0, code: "", name: "" },
-        confirmdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+        creator: person,
+        createDate: currentDate,
+        modifier: { id: 0, code: "", name: "" },
+        modifyDate: EpochTime,
+        confirmer: { id: 0, code: "", name: "" },
+        confirmDate: EpochTime,
         dr: 0
     };
 
-    if (isNew) {//新增单据
-        if (oriWOR) {//参照指令单新增
-            // console.log("oriWOR:",oriWOR);
-            newED.department = oriWOR.department;
-            newED.description = oriWOR.hdescription;
-            newED.sourcetype = "WO";
-            newED.sourcebillnumber = oriWOR.billnumber;
-            newED.sourcehid = oriWOR.hid;
-            newED.sourcerownumber = oriWOR.rownumber;
-            newED.sourcebid = oriWOR.id;
-            newED.sourcerowts = oriWOR.ts;
-            newED.starttime = oriWOR.starttime;
-            newED.endtime = oriWOR.endtime;
-            newED.sceneitem = oriWOR.sceneitem;
-            newED.eit = await GetCacheDocById("exectivetemplate", oriWOR.eit.id);
-            newED.allowaddrow = newED.eit.allowaddrow;
-            newED.allowdelrow = newED.eit.allowdelrow;
-            newED.body = eitBodyToEdBody(newED.eit.body, newED.starttime, newED.endtime, newED.sceneitem.respperson);
+    if (isNew) {// Add New
+        if (oriWOR) {// Add by referencing the Work Order
+            newEO.department = oriWOR.department;
+            newEO.description = oriWOR.headerDescription;
+            newEO.sourceType = "WO";
+            newEO.sourceBillNumber = oriWOR.billNumber;
+            newEO.sourcehid = oriWOR.hid;
+            newEO.sourceRowNumber = oriWOR.rowNumber;
+            newEO.sourcebid = oriWOR.id;
+            newEO.sourcerowts = oriWOR.ts;
+            newEO.startTime = oriWOR.startTime;
+            newEO.endTime = oriWOR.endTime;
+            newEO.csa = oriWOR.csa;
+            newEO.ept = await GetCacheDocById("ept", oriWOR.ept.id);
+            newEO.allowAddRow = newEO.ept.allowAddRow;
+            newEO.allowDelRow = newEO.ept.allowDelRow;
+            newEO.body = eptBodyToEoBody(newEO.ept.body, newEO.startTime, newEO.endTime, newEO.csa.respperson);
         }
     } else {
-        if (!oriEd) {
+        if (!oriEO) {
             return
         } else {
-            if (isModify) { //编辑
-                newED = cloneDeep(oriEd);
-                newED.createdate = dayjs(newED.createdate).format("YYYYMMDDHHmm");
-                newED.modifyuser = person;
-                newED.modifydate = dayjs(newED.modifydate).format("YYYYMMDDHHmm");
-                newED.confirmuser = { id: 0, code: "", name: "" };
-                newED.confirmdate = dayjs(newED.confirmdate).format("YYYYMMDDHHmm");
-            } else {//查看
-                newED = cloneDeep(oriEd);
-                newED.createdate = dayjs(newED.createdate).format("YYYYMMDDHHmm");
-                newED.modifydate = dayjs(newED.modifydate).format("YYYYMMDDHHmm");
-                newED.confirmdate = dayjs(newED.confirmdate).format("YYYYMMDDHHmm");
+            if (isModify) { //edit
+                newEO = cloneDeep(oriEO);
+                newEO.modifier = person;
+                newEO.modifyDate = currentDate;
+                newEO.confirmer = { id: 0, code: "", name: "" };
+                newEO.confirmDate = EpochTime;
+            } else {// Review
+                newEO = cloneDeep(oriEO);
             }
         }
     }
-    return newED;
-};
-//生成错误信息
-const generateErrors = (rowNumber) => {
-    let voucherErrors = {
-        body: [],
-    }
-    //生成表体错误信息
-    for (let i = 0; i < rowNumber; i++) {
-        voucherErrors.body.push({});
-    }
-    return voucherErrors;
+    return newEO;
 };
 
-//检查是否存在错误信息
-const checkVoucherErrors = (voucherErrors) => {
-    let number = 0;
-    //表头错误信息
-    for (let key in voucherErrors) {
-        if (key !== "body" && voucherErrors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    //表体错误信息
-    voucherErrors.body.forEach((row) => {
-        for (let key in row) {
-            if (row[key].isErr) {
-                number = number + 1;
-            }
-        }
-    });
-    return number > 0;
-};
-
-const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk }) => {
+// Add && Edit && View Execution Order 
+const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk }) => {
     const [voucherData, setVoucherData] = useState((undefined));
     const [errors, setErrors] = useState(undefined);
     const isEdit = !(!isModify && !isNew);
-
+    const { t } = useTranslation();
 
     useEffect(() => {
-        async function initVoucher() {            
-            const newED = await getInitialValue(isNew, isModify, oriWOR, oriED);
-            setVoucherData(newED);
-            setErrors(generateErrors(newED.body.length));            
+        async function initVoucher() {
+            const newEO = await getInitialValue(isNew, isModify, oriWOR, oriEO);
+            setVoucherData(newEO);
+            setErrors(generateVoucherErrors(newEO.body.length));
         }
         if (isOpen) {
             initVoucher();
         }
-    }, [isOpen, oriWOR, isModify, oriED, isNew]);
+    }, [isOpen, oriWOR, isModify, oriEO, isNew]);
 
     //获取值后的操作
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
@@ -160,46 +128,46 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
             let newData = cloneDeep(prevState);
             switch (positionID) {
                 case 0://修改表头字段
-                    if (itemkey === "eit" && value.id !== prevState.eit.id) { //如果修改的是eit字段且于前值不同
+                    if (itemkey === "ept" && value.id !== prevState.ept.id) { //如果修改的是eit字段且于前值不同
                         isModifyEit = true;
                         newEitRowNumber = value.body.length;
-                        const handlePerson = newData.sceneitem.id === 0 ? newData.execperson : newData.sceneitem.respperson;
-                        newData.body = eitBodyToEdBody(value.body, newData.starttime, newData.endtime, handlePerson); //将执行模板表体转换到表体
-                        newData.allowaddrow = value.allowaddrow;
-                        newData.allowdelrow = value.allowdelrow;
+                        const handlePerson = newData.csa.id === 0 ? newData.executor : newData.csa.respperson;
+                        newData.body = eptBodyToEoBody(value.body, newData.startTime, newData.endTime, handlePerson); //将执行模板表体转换到表体
+                        newData.allowAddRow = value.allowAddRow;
+                        newData.allowDelRow = value.allowDelRow;
                     }
                     //如果修改的是现场档案字段
-                    if (itemkey === "sceneitem" && value.id !== prevState.sceneitem.id) {
+                    if (itemkey === "csa" && value.id !== prevState.csa.id) {
                         if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.handleperson = value.respperson;
+                                row.issueOwner = value.respperson;
                                 return row;
                             })
                         }
                     }
                     //如果修改的是开始时间字段
-                    if (itemkey === "starttime" && value !== prevState.starttime) {
-                        if (newData.endtime <= value)  { //如果结束时间小于开始时间，自动将结束时间延后一个小时
-                            newData.endtime = dayjs(value, "YYYYMMDDHHmm", true).add(1, "hours").format("YYYYMMDDHHmm");
+                    if (itemkey === "startTime" && value !== prevState.startTime) {
+                        if (newData.endTime <= value) { //如果结束时间小于开始时间，自动将结束时间延后一个小时
+                            newData.endTime = dayjs(value, "YYYYMMDDHHmm", true).add(1, "hours").format("YYYYMMDDHHmm");
                         }
 
                         if (newData.body.length > 0) { //如果表体存在行
                             newData.body.map(row => {
-                                row.handlestarttime = dayjs(value).add(24, "hour").format("YYYYMMDDHHmm");
-                                row.handleendtime = dayjs(newData.endtime).add(1, "day").format("YYYYMMDDHHmm");
+                                row.handleStartTime = dayjs(value).add(24, "hour").format("YYYYMMDDHHmm");
+                                row.handleEndTime = dayjs(newData.endTime).add(1, "day").format("YYYYMMDDHHmm");
                                 return row;
                             })
                         }
                     }
                     //如果修改的是结束时间字段
-                    if (itemkey === "endtime" && value !== prevState.endtime) {
-                        if (newData.starttime >= value) {//如果开始时间大于结束时间,自动将开始时间提前1小时
-                            newData.starttime = dayjs(value,"YYYYMMDDHHmm",true).subtract(1, "hours").format("YYYYMMDDHHmm");
+                    if (itemkey === "endTime" && value !== prevState.endTime) {
+                        if (newData.startTime >= value) {//如果开始时间大于结束时间,自动将开始时间提前1小时
+                            newData.startTime = dayjs(value, "YYYYMMDDHHmm", true).subtract(1, "hours").format("YYYYMMDDHHmm");
                         }
                         if (newData.body.length > 0) { //如果表体存在行
                             newData.body.map(row => {
-                                row.handlestarttime = dayjs(newData.starttime).add(24, "hour").format("YYYYMMDDHHmm");
-                                row.handleendtime = dayjs(value).add(1, "day").format("YYYYMMDDHHmm");
+                                row.handleStartTime = dayjs(newData.startTime).add(24, "hour").format("YYYYMMDDHHmm");
+                                row.handleEndTime = dayjs(value).add(1, "day").format("YYYYMMDDHHmm");
                                 return row;
                             })
                         }
@@ -208,67 +176,67 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                     break;
                 case 1://如果修改的是表体字段 
                     //更新的是项目值列，则自动检查是否存在问题
-                    if (itemkey === "exectivevalue") {
-                        if (newData.body[rowIndex].ischeckerror === 1) {//自动检查问题
-                            let isProblem = checkForProblem(newData.body[rowIndex].eid.resulttype.id, newData.body[rowIndex].errorvalue, value);
-                            newData.body[rowIndex].iserr = isProblem;
+                    if (itemkey === "executionValue") {
+                        if (newData.body[rowIndex].isCheckError === 1) {//自动检查问题
+                            let isProblem = checkForProblem(newData.body[rowIndex].epa.resultType.id, newData.body[rowIndex].errorValue, value);
+                            newData.body[rowIndex].isIssue = isProblem;
                             if (isProblem === 0) {
-                                newData.body[rowIndex].isrectify = 0; //是否现场处理
-                                newData.body[rowIndex].ishandle = 0; //是否后续处理                                
+                                newData.body[rowIndex].isRectify = 0; //是否现场处理
+                                newData.body[rowIndex].isHandle = 0; //是否后续处理                                
                             } else {
-                                if (newData.body[rowIndex].isrectify === 1) { //现场处理为1
-                                    newData.body[rowIndex].ishandle = 0; //是否后续处理  
+                                if (newData.body[rowIndex].isRectify === 1) { //现场处理为1
+                                    newData.body[rowIndex].isHandle = 0; //是否后续处理  
                                 } else {
-                                    newData.body[rowIndex].ishandle = 1; //是否后续处理    
+                                    newData.body[rowIndex].isHandle = 1; //是否后续处理    
                                 }
                             }
                         }
                     }
                     //如果更新的是是否存在问题
-                    if (itemkey === "iserr") {
+                    if (itemkey === "isIssue") {
                         if (value === 0) {
-                            newData.body[rowIndex].isrectify = 0;
-                            newData.body[rowIndex].ishandle = 0;
+                            newData.body[rowIndex].isRectify = 0;
+                            newData.body[rowIndex].isHandle = 0;
                         } else {
-                            if (newData.body[rowIndex].isrectify === 0) {
-                                newData.body[rowIndex].ishandle = 1;
+                            if (newData.body[rowIndex].isRectify === 0) {
+                                newData.body[rowIndex].isHandle = 1;
                             } else {
-                                newData.body[rowIndex].ishandle = 0;
+                                newData.body[rowIndex].isHandle = 0;
                             }
                         }
                     }
                     //如果更新的是是否现场整改
-                    if (itemkey === "isrectify") {
+                    if (itemkey === "isRectify") {
                         if (value === 1) {
-                            newData.body[rowIndex].ishandle = 0;
+                            newData.body[rowIndex].isHandle = 0;
                         } else {
-                            newData.body[rowIndex].ishandle = 1;
+                            newData.body[rowIndex].isHandle = 1;
                         }
                     }
                     //如果更新的是执行项目字段
-                    if (itemkey === "eid" && value.id !== prevState.body[rowIndex].eid.id) {
-                        newData.body[rowIndex].exectivevalue = value.defaultvalue;
+                    if (itemkey === "epa" && value.id !== prevState.body[rowIndex].epa.id) {
+                        newData.body[rowIndex].executionValue = value.defaultValue;
                         newData.body[rowIndex].exectivedisp = value.defaultvaluedisp;
                         newData.body[rowIndex].files = [];
-                        newData.body[rowIndex].eiddescription = value.description;
-                        newData.body[rowIndex].ischeckerror = value.ischeckerror;
-                        newData.body[rowIndex].errorvalue = value.errorvalue;
-                        newData.body[rowIndex].errorvaluedisp = value.errorvaluedisp;
-                        newData.body[rowIndex].isrequirefile = value.isrequirefile;
-                        newData.body[rowIndex].isonsitephoto = value.isonsitephoto;
-                        newData.body[rowIndex].isfromeit = 0;
-                        newData.body[rowIndex].risklevel = value.risklevel;
+                        newData.body[rowIndex].epaDescription = value.description;
+                        newData.body[rowIndex].isCheckError = value.isCheckError;
+                        newData.body[rowIndex].errorValue = value.errorValue;
+                        newData.body[rowIndex].errorValueDisp = value.errorValueDisp;
+                        newData.body[rowIndex].isRequireFile = value.isRequireFile;
+                        newData.body[rowIndex].isOnSitePhoto = value.isOnSitePhoto;
+                        newData.body[rowIndex].isFromEpt = 0;
+                        newData.body[rowIndex].riskLevel = value.riskLevel;
                     }
                     //如果更新的是开始时间字段
-                    if (itemkey ==="handlestarttime") {
-                        if (newData.body[rowIndex].handleendtime <= value) {
-                            newData.body[rowIndex].handleendtime = dayjs(value, "YYYYMMDDHHmm", true).add(1, "hours").format("YYYYMMDDHHmm");
+                    if (itemkey === "handleStartTime") {
+                        if (newData.body[rowIndex].handleEndTime <= value) {
+                            newData.body[rowIndex].handleEndTime = dayjs(value, "YYYYMMDDHHmm", true).add(1, "hours").format("YYYYMMDDHHmm");
                         }
                     }
                     //如果更新的结束时间字段
-                    if (itemkey === "handleendtime") {
-                        if (newData.body[rowIndex].handlestarttime >= value) {
-                            newData.body[rowIndex].handlestarttime = dayjs(value, "YYYYMMDDHHmm", true).subtract(1, "hours").format("YYYYMMDDHHmm");
+                    if (itemkey === "handleEndTime") {
+                        if (newData.body[rowIndex].handleStartTime >= value) {
+                            newData.body[rowIndex].handleStartTime = dayjs(value, "YYYYMMDDHHmm", true).subtract(1, "hours").format("YYYYMMDDHHmm");
                         }
                     }
                     newData.body[rowIndex][itemkey] = value;
@@ -286,7 +254,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             if (isModifyEit) { //如果修改的是eit字段且于前值不同
-                let bodyErrors = generateErrors(newEitRowNumber);
+                let bodyErrors = generateVoucherErrors(newEitRowNumber);
                 newErrors.body = bodyErrors.body;
             }
             switch (positionID) {
@@ -308,19 +276,19 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
         // console.log("更新", itemkey, ",耗时:", new Date() - startTime, "ms");
     };
     //增加单据
-    const handleAddED = async () => {
-        const thisED = transEDToBackend(voucherData);
+    const handleAddEO = async () => {
+        const thisEO = transEOToBackend(voucherData);
         if (isModify) {
-            const editRes = await reqEditED(thisED);
+            const editRes = await reqEditEO(thisEO);
             if (editRes.status) {
-                message.success("修改执行单成功,单据编号:" + editRes.data.data.billnumber);
+                message.success("修改执行单成功,单据编号:" + editRes.data.data.billNumber);
             } else {
                 message.error("修改执行单失败" + editRes.data.statusMsg);
             }
         } else {
-            const addRes = await reqAddED(thisED);
+            const addRes = await reqAddEO(thisEO);
             if (addRes.status) {
-                message.success("新增执行单成功,单据编号:" + addRes.data.data.billnumber);
+                message.success("新增执行单成功,单据编号:" + addRes.data.data.billNumber);
             } else {
                 message.error("新增执行单失败" + addRes.data.statusMsg);
             }
@@ -334,16 +302,16 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
         let newRow = cloneDeep(voucherRow);
         //自动生成行号
         if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]));    
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]));
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
         //填写处理人、处理开始时间、处理结束时间
-        const handlePerson = newVoucherData.sceneitem.id === 0 ? newVoucherData.execperson : newVoucherData.sceneitem.respperson;
-        newRow.handleperson = handlePerson;
-        newRow.handlestarttime = newVoucherData.endtime;
-        newRow.handleendtime = newVoucherData.endtime;
+        const handlePerson = newVoucherData.csa.id === 0 ? newVoucherData.executor : newVoucherData.csa.respperson;
+        newRow.issueOwner = handlePerson;
+        newRow.handleStartTime = newVoucherData.endTime;
+        newRow.handleEndTime = newVoucherData.endTime;
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
         //生成错误信息数据
@@ -354,34 +322,34 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
     //删行
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能删除最后一行!");
+            message.error("不能delete最后一行!");
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
         if (isModify) {
-            //判断是否在编辑状态下新增的行
+            //判断是否在edit状态下新增的行
             if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接删除掉
+                newVoucherData.body.splice(index, 1);//新增的行直接delete掉
                 newErrors.body.splice(index, 1);
             } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改删除标志
-                newErrors.body[index] = {}; //将删除掉的行所有错误信息归零
+                newVoucherData.body[index].dr = 1;  //原有行修改delete标志
+                newErrors.body[index] = {}; //将delete掉的行所有错误信息归零
             }
         } else {
-            //新增状态下直接删除行
+            //新增状态下直接delete行
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
         setErrors(newErrors);
         setVoucherData(newVoucherData);
     };
-   
+
     return (voucherData !== undefined
         ? <>
-            <Stack component="div" id="eidtED" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
+            <Stack component="div" id="eidtEO" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
                 <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                    <Typography variant="h3" component={"h3"}>执行单</Typography>
+                    <Typography variant="h3" component={"h3"}>{t("eo")}</Typography>
                 </Stack>
                 <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                     <Grid container id="VoucherHeader" spacing={2}>
@@ -390,12 +358,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="单据编码"
-                                itemKey="billnumber"
-                                initValue={voucherData.billnumber}
+                                itemShowName="billNumber"
+                                itemKey="billNumber"
+                                initValue={voucherData.billNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billnumber"
+                                key="billNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -405,12 +373,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={306}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="单据日期"
-                                itemKey="billdate"
-                                initValue={voucherData.billdate}
+                                itemShowName="billDate"
+                                itemKey="billDate"
+                                initValue={voucherData.billDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billdate"
+                                key="billDate"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -420,7 +388,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={520}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="部门"
+                                itemShowName="department"
                                 itemKey="department"
                                 initValue={voucherData.department}
                                 pickDone={handleGetValue}
@@ -435,12 +403,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={570}
                                 allowNull={false}
                                 isEdit={isEdit && voucherData.sourcebid === 0}
-                                itemShowName="现场"
-                                itemKey="sceneitem"
-                                initValue={voucherData.sceneitem}
+                                itemShowName="csa"
+                                itemKey="csa"
+                                initValue={voucherData.csa}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sceneitem"
+                                key="csa"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -450,12 +418,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={510}
                                 allowNull={false}
                                 isEdit={false}
-                                itemShowName="执行人"
-                                itemKey="execperson"
-                                initValue={voucherData.execperson}
+                                itemShowName="executor"
+                                itemKey="executor"
+                                initValue={voucherData.executor}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="execperson"
+                                key="executor"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -465,12 +433,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={580}
                                 allowNull={false}
                                 isEdit={isNew && isEdit && voucherData.sourcebid === 0}
-                                itemShowName="执行模板"
-                                itemKey="eit"
-                                initValue={voucherData.eit}
+                                itemShowName="ept"
+                                itemKey="ept"
+                                initValue={voucherData.ept}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="eit"
+                                key="ept"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -480,12 +448,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={307}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="开始时间"
-                                itemKey="starttime"
-                                initValue={voucherData.starttime}
+                                itemShowName="startTime"
+                                itemKey="startTime"
+                                initValue={voucherData.startTime}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="starttime"
+                                key="startTime"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -495,12 +463,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={307}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="结束时间"
-                                itemKey="endtime"
-                                initValue={voucherData.endtime}
+                                itemShowName="endTime"
+                                itemKey="endTime"
+                                initValue={voucherData.endTime}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="endtime"
+                                key="endTime"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -510,7 +478,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={405}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="状态"
+                                itemShowName="status"
                                 itemKey="status"
                                 initValue={voucherData.status}
                                 pickDone={handleGetValue}
@@ -525,12 +493,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="来源单据类型"
-                                itemKey="sourcetype"
-                                initValue={voucherData.sourcetype}
+                                itemShowName="sourceType"
+                                itemKey="sourceType"
+                                initValue={voucherData.sourceType}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sourcetype"
+                                key="sourceType"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -540,12 +508,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="来源单据号"
-                                itemKey="sourcebillnumber"
-                                initValue={voucherData.sourcebillnumber}
+                                itemShowName="sourceBillNumber"
+                                itemKey="sourceBillNumber"
+                                initValue={voucherData.sourceBillNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sourcebillnumber"
+                                key="sourceBillNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -555,12 +523,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={302}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="来源单据行号"
-                                itemKey="sourcerownumber"
-                                initValue={voucherData.sourcerownumber}
+                                itemShowName="sourceRowNumber"
+                                itemKey="sourceRowNumber"
+                                initValue={voucherData.sourceRowNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sourcerownumber"
+                                key="sourceRowNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -570,9 +538,9 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="说明"
+                                itemShowName="description"
                                 itemKey="description"
-                                placeholder={"请输入说明"}
+                                placeholder="descriptionPlaceholder"
                                 initValue={voucherData.description}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
@@ -586,26 +554,31 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={403}
                                 allowNull={false}
                                 isEdit={false}
-                                itemShowName="允许增行"
-                                itemKey="allowaddrow"
-                                initValue={voucherData.allowaddrow}
+                                itemShowName="allowAddRow"
+                                itemKey="allowAddRow"
+                                initValue={voucherData.allowAddRow}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="allowaddrow"
+                                key="allowAddRow"
                                 positionID={0}
                                 rowIndex={-1}
                             />
-                        </Grid>                  
+                        </Grid>
                     </Grid>
                 </Stack>
-                <ScVoucherBody bodyColumns={bodyColumns} addRowAction={handleAddRow} addRowVisible={isEdit && voucherData.eit.id !== 0 && voucherData.allowaddrow === 1}>
+                <ScVoucherBody
+                    bodyColumns={bodyColumns}
+                    addRowAction={handleAddRow}
+                    addRowVisible={isEdit && voucherData.ept.id !== 0 && voucherData.allowAddRow === 1}
+                    titie="detail"
+                >
                     <ScVoucherBodyRow >
                         {voucherData.body.map((row, index) => {
-                            const delButtonEnabled = (!isEdit || (row.allowdelrow === 0));
+                            const delButtonEnabled = (!isEdit || (row.allowDelRow === 0));
                             return row.dr === 0
-                                ? (<tr key={"bodyrow" + row.rownumber}>
+                                ? (<tr key={"bodyrow" + row.rowNumber}>
                                     <TableCell variant="td">
-                                        <Tooltip title="删行" key={`rowDelete${index}`}>
+                                        <Tooltip title={t("deleteRow")} key={`rowDelete${index}`}>
                                             <span>
                                                 <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleDeleteRow(index, row)} disabled={delButtonEnabled}>
                                                     <DeleteRowIcon color={!delButtonEnabled ? "error" : "transparent"} fontSize="small" />
@@ -618,12 +591,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={302}
                                             allowNull={false}
                                             isEdit={false}
-                                            itemShowName="行号"
-                                            itemKey="rownumber"
-                                            initValue={row.rownumber}
+                                            itemShowName="rowNumber"
+                                            itemKey="rowNumber"
+                                            initValue={row.rowNumber}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="rownumber"
+                                            key="rowNumber"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -632,40 +605,40 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                         <ScInput
                                             dataType={560}
                                             allowNull={false}
-                                            isEdit={isEdit && row.isfromeit === 0}
-                                            itemShowName="执行项目"
-                                            itemKey="eid"
-                                            initValue={row.eid}
+                                            isEdit={isEdit && row.isFromEpt === 0}
+                                            itemShowName="epa"
+                                            itemKey="epa"
+                                            initValue={row.epa}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="eid"
+                                            key="epa"
                                             positionID={1}
                                             rowIndex={index}
                                         />
                                     </td>
                                     <td>
                                         <ScInput
-                                            dataType={row.eid.resulttype.id}
+                                            dataType={row.epa.resultType.id}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="执行项目值"
-                                            itemKey="exectivevalue"
-                                            initValue={row.exectivevalue}
+                                            itemShowName="executionValue"
+                                            itemKey="executionValue"
+                                            initValue={row.executionValue}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="exectivevalue"
+                                            key="executionValue"
                                             positionID={1}
                                             rowIndex={index}
-                                            udc={row.eid.udc}
+                                            udc={row.epa.udc}
                                         />
                                     </td>
                                     <td>
                                         <ScInput
                                             dataType={902}
-                                            allowNull={row.isrequirefile === 0}
-                                            isOnSitePhoto={row.isonsitephoto === 1}
+                                            allowNull={row.isRequireFile === 0}
+                                            isOnSitePhoto={row.isOnSitePhoto === 1}
                                             isEdit={isEdit}
-                                            itemShowName="附件"
+                                            itemShowName="files"
                                             itemKey="files"
                                             initValue={row.files}
                                             pickDone={handleGetValue}
@@ -673,7 +646,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             key="files"
                                             positionID={1}
                                             rowIndex={index}
-                                            
+
                                         />
                                     </td>
                                     <td>
@@ -681,12 +654,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={590}
                                             allowNull={false}
                                             isEdit={false}
-                                            itemShowName="风险等级"
-                                            itemKey="risklevel"
-                                            initValue={row.risklevel}
+                                            itemShowName="riskLevel"
+                                            itemKey="riskLevel"
+                                            initValue={row.riskLevel}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="risklevel"
+                                            key="riskLevel"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -696,13 +669,13 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="填写说明"
-                                            itemKey="eiddescription"
-                                            initValue={row.eiddescription}
+                                            itemShowName="epaDescription"
+                                            itemKey="epaDescription"
+                                            initValue={row.epaDescription}
                                             pickDone={handleGetValue}
                                             placeholder=""
                                             isBackendTest={false}
-                                            key="eiddescription"
+                                            key="epaDescription"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -712,11 +685,11 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="说明"
+                                            itemShowName="description"
                                             itemKey="description"
                                             initValue={row.description}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入说明"
+                                            placeholder="descriptionPlaceholder"
                                             isBackendTest={false}
                                             key="description"
                                             positionID={1}
@@ -727,13 +700,13 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                         <ScInput
                                             dataType={403}
                                             allowNull={true}
-                                            isEdit={isEdit && row.ischeckerror === 0}
-                                            itemShowName="是否存在问题"
-                                            itemKey="iserr"
-                                            initValue={row.iserr}
+                                            isEdit={isEdit && row.isCheckError === 0}
+                                            itemShowName="isIssue"
+                                            itemKey="isIssue"
+                                            initValue={row.isIssue}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="iserr"
+                                            key="isIssue"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -742,13 +715,13 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                         <ScInput
                                             dataType={403}
                                             allowNull={true}
-                                            isEdit={isEdit && row.iserr === 1}
-                                            itemShowName="是否现场整改"
-                                            itemKey="isrectify"
-                                            initValue={row.isrectify}
+                                            isEdit={isEdit && row.isIssue === 1}
+                                            itemShowName="isRectify"
+                                            itemKey="isRectify"
+                                            initValue={row.isRectify}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="isrectify"
+                                            key="isRectify"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -758,12 +731,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={403}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="是否问题处理"
-                                            itemKey="ishandle"
-                                            initValue={row.ishandle}
+                                            itemShowName="isHandle"
+                                            itemKey="isHandle"
+                                            initValue={row.isHandle}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="ishandle"
+                                            key="isHandle"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -771,14 +744,14 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                     <td>
                                         <ScInput
                                             dataType={510}
-                                            allowNull={row.ishandle === 0}
-                                            isEdit={isEdit && row.ishandle === 1}
-                                            itemShowName="问题处理人"
-                                            itemKey="handleperson"
-                                            initValue={row.handleperson}
+                                            allowNull={row.isHandle === 0}
+                                            isEdit={isEdit && row.isHandle === 1}
+                                            itemShowName="issueOwner"
+                                            itemKey="issueOwner"
+                                            initValue={row.issueOwner}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="handleperson"
+                                            key="issueOwner"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -786,14 +759,14 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                     <td>
                                         <ScInput
                                             dataType={307}
-                                            allowNull={row.ishandle === 0}
-                                            isEdit={isEdit && row.ishandle === 1}
-                                            itemShowName="处理开始时间"
-                                            itemKey="handlestarttime"
-                                            initValue={row.handlestarttime}
+                                            allowNull={row.isHandle === 0}
+                                            isEdit={isEdit && row.isHandle === 1}
+                                            itemShowName="handleStartTime"
+                                            itemKey="handleStartTime"
+                                            initValue={row.handleStartTime}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="handlestarttime"
+                                            key="handleStartTime"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -801,14 +774,14 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                     <td>
                                         <ScInput
                                             dataType={307}
-                                            allowNull={row.ishandle === 0}
-                                            isEdit={isEdit && row.ishandle === 1}
-                                            itemShowName="处理完成时间"
-                                            itemKey="handleendtime"
-                                            initValue={row.handleendtime}
+                                            allowNull={row.isHandle === 0}
+                                            isEdit={isEdit && row.isHandle === 1}
+                                            itemShowName="handleEndTime"
+                                            itemKey="handleEndTime"
+                                            initValue={row.handleEndTime}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="handleendtime"
+                                            key="handleEndTime"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -818,12 +791,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={403}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="必传附件"
-                                            itemKey="isrequirefile"
-                                            initValue={row.isrequirefile}
+                                            itemShowName="isRequireFile"
+                                            itemKey="isRequireFile"
+                                            initValue={row.isRequireFile}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="isrequirefile"
+                                            key="isRequireFile"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -833,12 +806,12 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={403}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="必须现场拍照"
-                                            itemKey="isonsitephoto"
-                                            initValue={row.isonsitephoto}
+                                            itemShowName="isOnSitePhoto"
+                                            itemKey="isOnSitePhoto"
+                                            initValue={row.isOnSitePhoto}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="isonsitephoto"
+                                            key="isOnSitePhoto"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -848,7 +821,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                             dataType={405}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="状态"
+                                            itemShowName="status"
                                             itemKey="status"
                                             initValue={row.status}
                                             pickDone={handleGetValue}
@@ -871,57 +844,27 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建人"
-                                itemKey="createuser"
-                                initValue={voucherData.createuser}
+                                itemShowName="creator"
+                                itemKey="creator"
+                                initValue={voucherData.creator}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="createuser"
+                                key="creator"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建日期"
-                                itemKey="createdate"
-                                initValue={voucherData.createdate}
+                                itemShowName="createDate"
+                                itemKey="createDate"
+                                initValue={voucherData.createDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="createdate"
-                                positionID={2}
-                                rowIndex={-1}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={510}
-                                allowNull={true}
-                                isEdit={false}
-                                itemShowName="修改人"
-                                itemKey="modifyuser"
-                                initValue={voucherData.modifyuser}
-                                pickDone={() => { }}
-                                isBackendTest={false}
-                                key="modifyuser"
-                                positionID={2}
-                                rowIndex={-1}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={307}
-                                allowNull={true}
-                                isEdit={false}
-                                itemShowName="更新日期"
-                                itemKey="modifydate"
-                                initValue={voucherData.modifydate}
-                                pickDone={() => { }}
-                                isBackendTest={false}
-                                key="modifydate"
+                                key="createDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -931,27 +874,57 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认人"
-                                itemKey="confirmuser"
-                                initValue={voucherData.confirmuser}
+                                itemShowName="modifier"
+                                itemKey="modifier"
+                                initValue={voucherData.modifier}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmuser"
+                                key="modifier"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认日期"
-                                itemKey="confirmdate"
-                                initValue={voucherData.confirmdate}
+                                itemShowName="modifyDate"
+                                itemKey="modifyDate"
+                                initValue={voucherData.modifyDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmdate"
+                                key="modifyDate"
+                                positionID={2}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={510}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="confirmer"
+                                itemKey="confirmer"
+                                initValue={voucherData.confirmer}
+                                pickDone={() => { }}
+                                isBackendTest={false}
+                                key="confirmer"
+                                positionID={2}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={309}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="confirmDate"
+                                itemKey="confirmDate"
+                                initValue={voucherData.confirmDate}
+                                pickDone={() => { }}
+                                isBackendTest={false}
+                                key="confirmDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -961,10 +934,10 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriED, onCancel, onOk
                 <DialogActions sx={{ m: 1 }}>
                     {isEdit
                         ? <>
-                            <Button color="error" onClick={onCancel} >取消</Button>
-                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddED}>{isModify ? "保存" : "增加"}</Button>
+                            <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddEO}>{t(isModify ? "save" : "add")}</Button>
                         </>
-                        : <Button variant="contained" onClick={onCancel} >返回</Button>
+                        : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                     }
                 </DialogActions>
             </Stack>

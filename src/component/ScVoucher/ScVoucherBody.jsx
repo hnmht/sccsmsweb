@@ -93,7 +93,7 @@ const transColWidth = (headers) => {
     };
 };
 
-const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, title = "Voucher Body", actionComponent = null }) => {
+const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, title = "detail", actionComponent = null }) => {
     const [colWidth, setColWidth] = useState(transColWidth(bodyColumns));
     const bodyHeaderRef = useRef(null);
     const columns = createBodyHeaders(bodyColumns);
@@ -181,7 +181,7 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
         <ColumnWidthContext.Provider value={colWidth}>
             <Stack component="div" id="relativeContainer" sx={{ position: "relative", overflow: "hidden" }}>
                 <Stack component="div" id="bodyTitleArea" sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: 1 }} >
-                    <Typography variant="subtitle2">{title}</Typography>
+                    <Typography variant="subtitle2">{t(title)}</Typography>
                     <Stack component={"div"} id="bodyTitleAction" sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                         {actionComponent}
                     </Stack>

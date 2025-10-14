@@ -24,9 +24,9 @@ const ReviewsList = ({ reviews }) => {
                     {reviews.map(review => {
                         return (
                             <TableRow key={review.id}>
-                                <TableCell align="center">{review.createuser.name}</TableCell>
-                                <TableCell align="center">{dayjs(review.starttime).format("YY-MM-DD HH:mm:ss")}</TableCell>
-                                <TableCell align="center">{dayjs(review.endtime).format("YY-MM-DD HH:mm:ss")}</TableCell>
+                                <TableCell align="center">{review.creator.name}</TableCell>
+                                <TableCell align="center">{dayjs(review.startTime).format("YY-MM-DD HH:mm:ss")}</TableCell>
+                                <TableCell align="center">{dayjs(review.endTime).format("YY-MM-DD HH:mm:ss")}</TableCell>
                                 <TableCell align="center">{review.consumeseconds}</TableCell>
                             </TableRow>
                         );

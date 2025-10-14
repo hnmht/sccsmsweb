@@ -33,7 +33,7 @@ function DocTable({
     rows = [],
     selectRows = [],
     // Header Filter Button
-    headFilterVisible = true,
+    headFilterVisible = false,
     headFilterDisabled = false,
     filterAction = () => { },
     // Header Refresh Action
@@ -58,6 +58,7 @@ function DocTable({
     isEdit = true,
     // Display include disabled checkbox
     dispIncludeDisabled = true,
+    disabledStatus = 1,
 }) {
     const { t } = useTranslation();
     const list = useRef(null);
@@ -239,8 +240,8 @@ function DocTable({
                             .map((row, index) => {
                                 const isItemSelected = selectedRows.findIndex((value) => value.id === row.id) >= 0;
                                 const status = row.status ? row.status : 0;
-                                const disabled = status === 1;
-                                if ( !includeDisabled && disabled) {
+                                const disabled = status === disabledStatus;
+                                if (!includeDisabled && disabled) {
                                     return null
                                 }
                                 return (
@@ -268,7 +269,7 @@ function DocTable({
                                                 return undefined;
                                             }
                                             return (
-                                                <TableCell key={column.id} align={column.alignment}  sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: disabled ? "warning.main" : "primary" }} >
+                                                <TableCell key={column.id} align={column.alignment} sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: disabled ? "warning.main" : "primary" }} >
                                                     {column.display.type === 0
                                                         ? row[column.id]
                                                         : column.display.cell1(row, column)

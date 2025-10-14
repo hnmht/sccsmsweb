@@ -9,11 +9,11 @@ const CommentsList = ({ comments }) => {
                         <Grid item xs={12} key={comment.id}>
                             <Grid container spacing={2}>
                                 <Grid item>
-                                    <Avatar alt="commentuser" src={comment.createuser.avatar.fileurl}  />
+                                    <Avatar alt="commentuser" src={comment.creator.avatar.fileurl}  />
                                 </Grid>
                                 <Grid item xs>
                                     <Typography align="left" variant="subtitle2">
-                                        {comment.createuser.name}  {dayjs(comment.createdate).format("YY-MM-DD HH:mm")} 第{comment.rownumber}行 发送给 {comment.sendto.name} {comment.isread === 0 ? "(未读)" : "(已读)"} 
+                                        {comment.creator.name}  {dayjs(comment.createDate).format("YY-MM-DD HH:mm")} 第{comment.rowNumber}行 发送给 {comment.sendto.name} {comment.isread === 0 ? "(未读)" : "(已读)"} 
                                     </Typography>
                                     <Typography align="left" variant="caption" color="secondary" overflow="inherit">
                                         {comment.content}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { DialogActions, DialogContent, DialogTitle,Button } from "@mui/material";
+import { DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { Divider } from "../../../../component/ScMui/ScMui";
 import DocTable from "../../../../component/DocTable/DocTable";
@@ -7,16 +8,18 @@ import { transConditionsToString } from "../../../../component/QueryPanel";
 import { reqReferWO } from "../../../../api/workOrder";
 import { columns } from "./woConstructor";
 
-const WORefer = ({ title, conditions,cancelClickAction,okClickAction,filterAction }) => {
+const WORefer = ({ title, conditions, cancelClickAction, okClickAction, filterAction }) => {
     const [rows, setRows] = useState([]);
-    const [currentItem, setCurrentItem] = useState({id:0})
+    const [currentItem, setCurrentItem] = useState({ id: 0 });
+    const { t } = useTranslation();
+
     useEffect(() => {
         async function reqData() {
             let querystring = transConditionsToString(conditions);
             const res = await reqReferWO({ querystring: querystring });
             let newRows = [];
             if (res.status) {
-                newRows = res.data.data;
+                newRows = res.data;
             }
             setRows(newRows);
         }
@@ -27,8 +30,7 @@ const WORefer = ({ title, conditions,cancelClickAction,okClickAction,filterActio
         setCurrentItem(item);
     };
 
-    const handleDoubleClickItem = (item ) => {
-        // console.log("doubleClick");
+    const handleDoubleClickItem = (item) => {
         setCurrentItem(item);
         okClickAction(item);
     };
@@ -36,13 +38,16 @@ const WORefer = ({ title, conditions,cancelClickAction,okClickAction,filterActio
     return (
         <>
             <DialogTitle>
-                {title}
+                {t(title)}
             </DialogTitle>
             <Divider />
             <DialogContent>
                 <DocTable
                     columns={columns}
                     rows={rows}
+                    isMultiple={false}
+                    dispIncludeDisabled={false}
+                    disabledStatus={0}
                     headRefreshVisible={false}
                     headFilterVisible={true}
                     filterAction={filterAction}
@@ -52,8 +57,8 @@ const WORefer = ({ title, conditions,cancelClickAction,okClickAction,filterActio
             </DialogContent>
             <Divider />
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction}>取消</Button>
-                <Button variant="contained" disabled={currentItem.id === 0} onClick={() => handleDoubleClickItem(currentItem)}>确定</Button>
+                <Button color="error" onClick={cancelClickAction}>{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItem.id === 0} onClick={() => handleDoubleClickItem(currentItem)}>{t("ok")}</Button>
             </DialogActions>
         </>
     );

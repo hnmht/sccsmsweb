@@ -80,7 +80,7 @@ const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
         <>
             <DialogTitle>{t("chooseCSA")}</DialogTitle>
             <Grid container spacing={2} >
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     <List
                         dense
                         subheader={
@@ -102,7 +102,7 @@ const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                         sx={{ width: "100%", height: 700, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="csc"
+                            docName={t("csc")}
                             isDisplayAll={true}
                             oriDocs={cscs}
                             onDocClick={handleCSCClick}
@@ -112,7 +112,7 @@ const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                         />
                     </List>
                 </Grid>
-                <Grid item xs={10}>
+                <Grid item xs={9}>
                     <DocTable
                         columns={columns}
                         refreshAction={handleRefreshCSAs}

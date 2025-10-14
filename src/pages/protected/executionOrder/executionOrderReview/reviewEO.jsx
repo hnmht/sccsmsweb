@@ -27,9 +27,9 @@ import { reqAddEDReview, reqGetEDComments, reqGetEDReviews } from "../../../../a
 //生成初始数据
 const getInitialValue = (oriEd) => {
     let newED = cloneDeep(oriEd);
-    newED.createdate = dayjs(newED.createdate).format("YYYYMMDDHHmm");
-    newED.modifydate = dayjs(newED.modifydate).format("YYYYMMDDHHmm");
-    newED.confirmdate = dayjs(newED.confirmdate).format("YYYYMMDDHHmm");
+    newED.createDate = dayjs(newED.createDate).format("YYYYMMDDHHmm");
+    newED.modifyDate = dayjs(newED.modifyDate).format("YYYYMMDDHHmm");
+    newED.confirmDate = dayjs(newED.confirmDate).format("YYYYMMDDHHmm");
     return newED;
 };
 
@@ -89,7 +89,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
     const handleAddCommentClick = (row, index) => {
         setCommitStatus({
             isOpen: true,
-            currentRow: { hid: voucherData.id, bid: row.id, billNumber: voucherData.billnumber, rowNumber: row.rownumber },
+            currentRow: { hid: voucherData.id, bid: row.id, billNumber: voucherData.billNumber, rowNumber: row.rowNumber },
         });
     };
 
@@ -133,9 +133,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
         let reviewRecord = {
             id: 0,
             hid: voucherData.id,
-            billnumber: voucherData.billnumber,
-            starttime: dayjs(startTime).format("YYYYMMDDHHmmss"),
-            endtime: dayjs(new Date()).format("YYYYMMDDHHmmss"),
+            billNumber: voucherData.billNumber,
+            startTime: dayjs(startTime).format("YYYYMMDDHHmmss"),
+            endTime: dayjs(new Date()).format("YYYYMMDDHHmmss"),
             consumeseconds: dayjs(new Date()).diff(dayjs(startTime), "seconds")
         };
         const addRes = await reqAddEDReview(reviewRecord);
@@ -162,11 +162,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="单据编码"
-                                        itemKey="billnumber"
-                                        initValue={voucherData.billnumber}
+                                        itemKey="billNumber"
+                                        initValue={voucherData.billNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="billnumber"
+                                        key="billNumber"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -177,11 +177,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="单据日期"
-                                        itemKey="billdate"
-                                        initValue={voucherData.billdate}
+                                        itemKey="billDate"
+                                        initValue={voucherData.billDate}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="billdate"
+                                        key="billDate"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -207,11 +207,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="现场"
-                                        itemKey="sceneitem"
-                                        initValue={voucherData.sceneitem}
+                                        itemKey="csa"
+                                        initValue={voucherData.csa}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="sceneitem"
+                                        key="csa"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -222,11 +222,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="执行人"
-                                        itemKey="execperson"
-                                        initValue={voucherData.execperson}
+                                        itemKey="executor"
+                                        initValue={voucherData.executor}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="execperson"
+                                        key="executor"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -237,11 +237,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="执行模板"
-                                        itemKey="eit"
-                                        initValue={voucherData.eit}
+                                        itemKey="ept"
+                                        initValue={voucherData.ept}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="eit"
+                                        key="ept"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -252,11 +252,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="开始时间"
-                                        itemKey="starttime"
-                                        initValue={voucherData.starttime}
+                                        itemKey="startTime"
+                                        initValue={voucherData.startTime}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="starttime"
+                                        key="startTime"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -267,11 +267,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="结束时间"
-                                        itemKey="endtime"
-                                        initValue={voucherData.endtime}
+                                        itemKey="endTime"
+                                        initValue={voucherData.endTime}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="endtime"
+                                        key="endTime"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -297,11 +297,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="来源单据类型"
-                                        itemKey="sourcetype"
-                                        initValue={voucherData.sourcetype}
+                                        itemKey="sourceType"
+                                        initValue={voucherData.sourceType}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="sourcetype"
+                                        key="sourceType"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -312,11 +312,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="来源单据号"
-                                        itemKey="sourcebillnumber"
-                                        initValue={voucherData.sourcebillnumber}
+                                        itemKey="sourceBillNumber"
+                                        initValue={voucherData.sourceBillNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="sourcebillnumber"
+                                        key="sourceBillNumber"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -327,11 +327,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="来源单据行号"
-                                        itemKey="sourcerownumber"
-                                        initValue={voucherData.sourcerownumber}
+                                        itemKey="sourceRowNumber"
+                                        initValue={voucherData.sourceRowNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="sourcerownumber"
+                                        key="sourceRowNumber"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -358,11 +358,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="允许增行"
-                                        itemKey="allowaddrow"
-                                        initValue={voucherData.allowaddrow}
+                                        itemKey="allowAddRow"
+                                        initValue={voucherData.allowAddRow}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="allowaddrow"
+                                        key="allowAddRow"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -373,11 +373,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={false}
                                         isEdit={false}
                                         itemShowName="允许删行"
-                                        itemKey="allowdelrow"
-                                        initValue={voucherData.allowdelrow}
+                                        itemKey="allowDelRow"
+                                        initValue={voucherData.allowDelRow}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="allowdelrow"
+                                        key="allowDelRow"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -388,7 +388,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                             <ScVoucherBodyRow >
                                 {voucherData.body.map((row, index) => {
                                     return row.dr === 0
-                                        ? (<tr key={"bodyrow" + row.rownumber}>
+                                        ? (<tr key={"bodyrow" + row.rowNumber}>
                                             <td>
                                                 <Tooltip title="增加批注" key={`rowDelete${index}`}>
                                                     <span>
@@ -404,11 +404,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={false}
                                                     isEdit={false}
                                                     itemShowName="行号"
-                                                    itemKey="rownumber"
-                                                    initValue={row.rownumber}
+                                                    itemKey="rowNumber"
+                                                    initValue={row.rowNumber}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="rownumber"
+                                                    key="rowNumber"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -419,35 +419,35 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={false}
                                                     isEdit={false}
                                                     itemShowName="执行项目"
-                                                    itemKey="eid"
-                                                    initValue={row.eid}
+                                                    itemKey="epa"
+                                                    initValue={row.epa}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="eid"
+                                                    key="epa"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
                                             </td>
                                             <td>
                                                 <ScInput
-                                                    dataType={row.eid.resulttype.id}
+                                                    dataType={row.epa.resultType.id}
                                                     allowNull={false}
                                                     isEdit={false}
                                                     itemShowName="执行项目值"
-                                                    itemKey="exectivevalue"
-                                                    initValue={row.exectivevalue}
+                                                    itemKey="executionValue"
+                                                    initValue={row.executionValue}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="exectivevalue"
+                                                    key="executionValue"
                                                     positionID={1}
                                                     rowIndex={index}
-                                                    udc={row.eid.udc}
+                                                    udc={row.epa.udc}
                                                 />
                                             </td>
                                             <td>
                                                 <ScInput
                                                     dataType={902}
-                                                    allowNull={row.isrequirefile === 0}
+                                                    allowNull={row.isRequireFile === 0}
                                                     isEdit={false}
                                                     itemShowName="附件"
                                                     itemKey="files"
@@ -465,11 +465,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={false}
                                                     isEdit={false}
                                                     itemShowName="风险等级"
-                                                    itemKey="risklevel"
-                                                    initValue={row.risklevel}
+                                                    itemKey="riskLevel"
+                                                    initValue={row.riskLevel}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="risklevel"
+                                                    key="riskLevel"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -480,12 +480,12 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={true}
                                                     isEdit={false}
                                                     itemShowName="填写说明"
-                                                    itemKey="eiddescription"
-                                                    initValue={row.eiddescription}
+                                                    itemKey="epaDescription"
+                                                    initValue={row.epaDescription}
                                                     pickDone={handleGetValue}
                                                     placeholder=""
                                                     isBackendTest={false}
-                                                    key="eiddescription"
+                                                    key="epaDescription"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -512,11 +512,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={true}
                                                     isEdit={false}
                                                     itemShowName="是否存在问题"
-                                                    itemKey="iserr"
-                                                    initValue={row.iserr}
+                                                    itemKey="isIssue"
+                                                    initValue={row.isIssue}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="iserr"
+                                                    key="isIssue"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -527,11 +527,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={true}
                                                     isEdit={false}
                                                     itemShowName="是否现场整改"
-                                                    itemKey="isrectify"
-                                                    initValue={row.isrectify}
+                                                    itemKey="isRectify"
+                                                    initValue={row.isRectify}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="isrectify"
+                                                    key="isRectify"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -542,11 +542,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={true}
                                                     isEdit={false}
                                                     itemShowName="是否问题处理"
-                                                    itemKey="ishandle"
-                                                    initValue={row.ishandle}
+                                                    itemKey="isHandle"
+                                                    initValue={row.isHandle}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="ishandle"
+                                                    key="isHandle"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -554,14 +554,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                             <td>
                                                 <ScInput
                                                     dataType={510}
-                                                    allowNull={row.ishandle === 0}
+                                                    allowNull={row.isHandle === 0}
                                                     isEdit={false}
                                                     itemShowName="问题处理人"
-                                                    itemKey="handleperson"
-                                                    initValue={row.handleperson}
+                                                    itemKey="issueOwner"
+                                                    initValue={row.issueOwner}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="handleperson"
+                                                    key="issueOwner"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -569,14 +569,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                             <td>
                                                 <ScInput
                                                     dataType={307}
-                                                    allowNull={row.ishandle === 0}
+                                                    allowNull={row.isHandle === 0}
                                                     isEdit={false}
                                                     itemShowName="处理开始时间"
-                                                    itemKey="handlestarttime"
-                                                    initValue={row.handlestarttime}
+                                                    itemKey="handleStartTime"
+                                                    initValue={row.handleStartTime}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="handlestarttime"
+                                                    key="handleStartTime"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -584,14 +584,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                             <td>
                                                 <ScInput
                                                     dataType={307}
-                                                    allowNull={row.ishandle === 0}
+                                                    allowNull={row.isHandle === 0}
                                                     isEdit={false}
                                                     itemShowName="处理完成时间"
-                                                    itemKey="handleendtime"
-                                                    initValue={row.handleendtime}
+                                                    itemKey="handleEndTime"
+                                                    initValue={row.handleEndTime}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="handleendtime"
+                                                    key="handleEndTime"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -602,11 +602,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={true}
                                                     isEdit={false}
                                                     itemShowName="必传附件"
-                                                    itemKey="isrequirefile"
-                                                    initValue={row.isrequirefile}
+                                                    itemKey="isRequireFile"
+                                                    initValue={row.isRequireFile}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="isrequirefile"
+                                                    key="isRequireFile"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -617,11 +617,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     allowNull={true}
                                                     isEdit={false}
                                                     itemShowName="必须现场拍照"
-                                                    itemKey="isonsitephoto"
-                                                    initValue={row.isonsitephoto}
+                                                    itemKey="isOnSitePhoto"
+                                                    initValue={row.isOnSitePhoto}
                                                     pickDone={handleGetValue}
                                                     isBackendTest={false}
-                                                    key="isonsitephoto"
+                                                    key="isOnSitePhoto"
                                                     positionID={1}
                                                     rowIndex={index}
                                                 />
@@ -655,11 +655,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="创建人"
-                                        itemKey="createuser"
-                                        initValue={voucherData.createuser}
+                                        itemKey="creator"
+                                        initValue={voucherData.creator}
                                         pickDone={() => { }}
                                         isBackendTest={false}
-                                        key="createuser"
+                                        key="creator"
                                         positionID={2}
                                         rowIndex={-1}
                                     />
@@ -670,11 +670,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="创建日期"
-                                        itemKey="createdate"
-                                        initValue={voucherData.createdate}
+                                        itemKey="createDate"
+                                        initValue={voucherData.createDate}
                                         pickDone={() => { }}
                                         isBackendTest={false}
-                                        key="createdate"
+                                        key="createDate"
                                         positionID={2}
                                         rowIndex={-1}
                                     />
@@ -685,11 +685,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="修改人"
-                                        itemKey="modifyuser"
-                                        initValue={voucherData.modifyuser}
+                                        itemKey="modifier"
+                                        initValue={voucherData.modifier}
                                         pickDone={() => { }}
                                         isBackendTest={false}
-                                        key="modifyuser"
+                                        key="modifier"
                                         positionID={2}
                                         rowIndex={-1}
                                     />
@@ -700,11 +700,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         allowNull={true}
                                         isEdit={false}
                                         itemShowName="更新日期"
-                                        itemKey="modifydate"
-                                        initValue={voucherData.modifydate}
+                                        itemKey="modifyDate"
+                                        initValue={voucherData.modifyDate}
                                         pickDone={() => { }}
                                         isBackendTest={false}
-                                        key="modifydate"
+                                        key="modifyDate"
                                         positionID={2}
                                         rowIndex={-1}
                                     />
@@ -714,12 +714,12 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={510}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="确认人"
-                                        itemKey="confirmuser"
-                                        initValue={voucherData.confirmuser}
+                                        itemShowName="confirm人"
+                                        itemKey="confirmer"
+                                        initValue={voucherData.confirmer}
                                         pickDone={() => { }}
                                         isBackendTest={false}
-                                        key="confirmuser"
+                                        key="confirmer"
                                         positionID={2}
                                         rowIndex={-1}
                                     />
@@ -729,12 +729,12 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={307}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="确认日期"
-                                        itemKey="confirmdate"
-                                        initValue={voucherData.confirmdate}
+                                        itemShowName="confirm日期"
+                                        itemKey="confirmDate"
+                                        initValue={voucherData.confirmDate}
                                         pickDone={() => { }}
                                         isBackendTest={false}
-                                        key="confirmdate"
+                                        key="confirmDate"
                                         positionID={2}
                                         rowIndex={-1}
                                     />
@@ -769,7 +769,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                     bid={commitStatus.currentRow.bid}
                                     rowNumber={commitStatus.currentRow.rowNumber}
                                     billNumber={commitStatus.currentRow.billNumber}
-                                    toPerson={voucherData.createuser}
+                                    toPerson={voucherData.creator}
                                     onOk={handleCommitOk}
                                     onCancel={handleCommitClose}
                                 />

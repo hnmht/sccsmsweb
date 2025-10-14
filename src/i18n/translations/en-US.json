@@ -299,8 +299,13 @@
     "startTimeExceedEndTime":"The start time cannot be later than the end time",
     "endTimePrecedeStartTime":"The end time cannot be earlier than the start time",
     "includeDisabled":"Include Disabled",
-
     "allowDeletion":"Allow Del",
+    "woFilterCondition":"Work Order filter condition",
+    "generateRefWO":"Generate by referencing Work Order",
+    "eoFilterCondition":"Execution Order filter condition",
+    "sourceBillNumber":"Source Bill Number",
+    "sourceRowNumber":"Source Row Number",
+    "eo":"Execution Order",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

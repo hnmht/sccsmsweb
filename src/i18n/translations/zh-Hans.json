@@ -299,6 +299,12 @@
     "endTimePrecedeStartTime": "结束时间不能早于开始时间",
     "includeDisabled": "包含停用",
     "allowDeletion": "可删除",
+    "woFilterCondition": "指令单过滤条件",
+    "generateRefWO": "参照指令单",
+    "eoFilterCondition": "执行单过滤条件",
+    "sourceBillNumber": "来源单据号",
+    "sourceRowNumber": "来源行号",
+    "eo": "执行单",
     
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

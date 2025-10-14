@@ -20,7 +20,7 @@ import { DownOneIcon, UpOneIcon, ToBottomIcon, ToTopIcon } from "../PubIcon/PubI
 import { getSortColumns } from "./tools";
 import { DeepCloneJSON, ArrayElementDownOne, ArrayElementToTop, ArrayElementUpOne, ArrayElementToBottom } from "../../utils/tools";
 
-const  SetSortView = ({
+const SetSortView = ({
     sortColumns,
     sortOk,
     sortCancel,
@@ -68,7 +68,7 @@ const  SetSortView = ({
     return (
         <Card sx={{ minWidth: 384, maxHeight: 512 }}>
             <CardHeader
-                title={t("sortingSettings")}                
+                title={t("sortingSettings")}
             />
             <Divider />
             <Grid container>

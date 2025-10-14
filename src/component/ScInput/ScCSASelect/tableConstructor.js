@@ -41,7 +41,7 @@ export const columns = [
         if (item.enable === 1) {
             let col = {
                 id: item.code,
-                label: item.displayname,
+                label: item.displayName,
                 alignment: "center",
                 minWidth: 50,
                 visible: true,

@@ -10,7 +10,7 @@ import {
     CellConfirmTime,
     CellConfirmer,
     CellVoucherStatus,
-    CellbillDate,
+    CellBillDate,
     CellDept
 } from "../pub/pubFunction";
 import { CellDescription } from "../pub/pubComponent";
@@ -107,7 +107,7 @@ export const rowActionsDefine = {
 export const columns = [
     { id: "id", label: "ID", alignment: "left", minWidth: 20, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
     { id: "billNumber", label: "billNumber", alignment: "left", minWidth: 40, visible: true, sortField: "billNumber", sort: true, display: { type: 0, cell1: null } },
-    { id: "billDate", label: "billDate", alignment: "center", minWidth: 30, visible: true, sortField: "billDate", sort: true, display: { type: 1, cell1: CellbillDate } },
+    { id: "billDate", label: "billDate", alignment: "center", minWidth: 30, visible: true, sortField: "billDate", sort: true, display: { type: 1, cell1: CellBillDate } },
     { id: "description", label: "description", alignment: "center", minWidth: 256, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "department", label: "department", alignment: "center", minWidth: 50, visible: true, sortField: "department.id", sort: true, display: { type: 1, cell1: CellDept } },
     { id: "status", label: "status", alignment: "center", minWidth: 50, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellVoucherStatus } },
@@ -122,7 +122,7 @@ export const columns = [
 export const QueryFields = [
     { id: 1, value: "workorder_h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
     { id: 2, value: "workorder_h.billNumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
-    { id: 3, value: "workorder_h.deptid", label: "deptid", inputType: 520, resultType: "object", resultfield: "id" },
+    { id: 3, value: "workorder_h.deptid", label: "department", inputType: 520, resultType: "object", resultfield: "id" },
     { id: 4, value: "workorder_h.status", label: "status", inputType: 405, resultType: "int", resultfield: "" },
     { id: 5, value: "department.name", label: "deptName", inputType: 301, resultType: "string", resultfield: "" },
     { id: 6, value: "department.code", label: "deptCode", inputType: 301, resultType: "string", resultfield: "" },

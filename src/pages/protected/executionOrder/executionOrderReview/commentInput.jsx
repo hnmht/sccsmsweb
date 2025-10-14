@@ -11,8 +11,8 @@ const getInitialValue = (hid, bid, billNumber, rowNumber, toPerson) => {
         id: 0,
         hid: hid,
         bid: bid,
-        billnumber: billNumber,
-        rownumber: rowNumber,
+        billNumber: billNumber,
+        rowNumber: rowNumber,
         sendto: toPerson,
         content: ""
     }
@@ -60,8 +60,8 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             allowNull={true}
                             isEdit={false}
                             itemShowName="单据编码"
-                            itemKey="billnumber"
-                            initValue={commentData.billnumber}
+                            itemKey="billNumber"
+                            initValue={commentData.billNumber}
                             pickDone={handleGetValue}
                             isBackendTest={false}
                             key="billnumberinput"
@@ -75,11 +75,11 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             allowNull={true}
                             isEdit={false}
                             itemShowName="行号"
-                            itemKey="rownumber"
-                            initValue={commentData.rownumber}
+                            itemKey="rowNumber"
+                            initValue={commentData.rowNumber}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="rownumber"
+                            key="rowNumber"
                             positionID={2}
                             rowIndex={-1}
                         />
