@@ -1,4 +1,4 @@
-import { dayjs } from "../../../../i18n/dayjs";
+import { dayjs,DateTimeFormat } from "../../../../i18n/dayjs";
 import { 
     CellCreator,  
     CellVoucherStatus,
@@ -10,7 +10,7 @@ import {
  } from "../../pub/pubFunction";
 // Display Time content
 const CellTime = (row,column) => {
-    return dayjs(row[column.id]).format("MM-DD HH:mm");
+    return DateTimeFormat(dayjs(row[column.id]),"LLL");
 }
 // Define Work Order list columns
 export const columns = [

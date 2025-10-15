@@ -28,28 +28,32 @@ const TableHead = styled(MuiTableHead)`
     border-top: 2px solid ${(props) => props.theme.palette.divider};
     border-bottom: 2px solid ${(props) => props.theme.palette.divider};
 `;
+
+const emptyFunc = () => { };
+const emptyArray = [];
+
 function DocTable({
-    columns = [],
-    rows = [],
-    selectRows = [],
+    columns = emptyArray,
+    rows = emptyArray,
+    selectRows = emptyArray,
     // Header Filter Button
     headFilterVisible = false,
     headFilterDisabled = false,
-    filterAction = () => { },
+    filterAction = emptyFunc,
     // Header Refresh Action
     headRefreshVisible = true,
     headRefreshDisabled = false,
-    refreshAction = () => { },
+    refreshAction = emptyFunc,
     // Output file default name
     docListTitle = "document",
     // Can multiple rows be selected ?
     isMultiple = true,
     // Action after selecting an item
-    selectItem = () => { },
+    selectItem = emptyFunc,
     // Action after clicking an item
-    clickItem = () => { },
+    clickItem = emptyFunc,
     // Action after double clicking an item
-    doubleClickItem = () => { },
+    doubleClickItem = emptyFunc,
     // Rows per page
     perPage = 10,
     // Component Height

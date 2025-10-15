@@ -12,6 +12,8 @@ import EditEO from "./editEO";
 import { reqGetEOList, reqGetEODetail, reqDeleteEO, reqConfirmEO, reqUnConfirmEO } from "../../../../api/executionOrder";
 import { columns, generateWOConditions, woQueryFields, generateEOConditions, eoQueryFields, rowActionsDefine, transEODetailToFrontEnd } from "./constructor";
 
+const emptyArray = [];
+
 // Execution Order List
 const ExecutionOrder = () => {
     const [woConditions, setWoConditions] = useState(generateWOConditions());
@@ -32,9 +34,9 @@ const ExecutionOrder = () => {
         async function getEOs() {
             let queryString = transConditionsToString(generateEOConditions());
             let eosRes = await reqGetEOList({ queryString: queryString });
-            let newEos = [];
+            let newEos = emptyArray;
             if (eosRes.status) {
-                newEos = eosRes.data.data;
+                newEos = eosRes.data;
             }
             setEos(newEos);
         }
@@ -211,7 +213,7 @@ const ExecutionOrder = () => {
         } 
     };
 
-    //对话框显示内容组件
+    // Dialog display content Component
     const DiagContent = ({ content }) => {
         switch (content) {
             case 1:

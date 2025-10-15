@@ -306,6 +306,17 @@
     "sourceBillNumber":"Source Bill Number",
     "sourceRowNumber":"Source Row Number",
     "eo":"Execution Order",
+    "sourceType":"Source",
+    "di":"Direct Input",
+    "executionValue":"Execution Value",
+    "epaDescription":"EPA Desc.",
+    "isIssue":"Issue",
+    "isRectify":"Slove On-site",
+    "isHandle":"Further handling",
+    "issueOwner":"Issue Owner",
+    "handleStartTime":"Start time of handling",
+    "handleEndTime":"End time of handling",
+   
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

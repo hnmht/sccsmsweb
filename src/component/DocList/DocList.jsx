@@ -28,6 +28,7 @@ import { DateTimeFormat } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
 const Paper = styled(MuiPaper)(spacing);
 const emptyFunc = () => { };
+const emptyArray = [];
 
 const TableHead = styled(MuiTableHead)`
     ${spacing};
@@ -36,8 +37,8 @@ const TableHead = styled(MuiTableHead)`
 `;
 
 const DocList = ({
-    columns = [],
-    rows = [],
+    columns = emptyArray,
+    rows = emptyArray,
     selectColumnVisible = true,
     // Header Add Button
     headAddVisible = true,
@@ -89,11 +90,11 @@ const DocList = ({
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [orderBy, setOrderBy] = useState(getOrderBy(getSortColumns(columns)));
     const containerHeight = useContentHeight() - adjustContainerHeight;
-    const id = useId()
+    const id = useId();
 
     useEffect(() => {
         setCurrentRows(rows);
-        setSelectedRows([]);
+        setSelectedRows(emptyArray);
         let newPage = page;
         if (rows.length <= 0) {
             newPage = 0;

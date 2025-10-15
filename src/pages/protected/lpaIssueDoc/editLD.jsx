@@ -45,7 +45,7 @@ const getInitialValue = async (isNew, isModify, oriLd) => {
             enddate: dayjs(new Date()).endOf("month").format("YYYYMMDD"),
             hfiles: [headFiles],
             body: [voucherRow],
-            sourcetype: "UA",
+            sourcetype: "di",
             status: 0,
             createuser: person,
             createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),

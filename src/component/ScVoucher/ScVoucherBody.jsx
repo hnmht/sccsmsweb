@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, memo, useLayoutEffect } from "react";
-import { Stack, SpeedDial, SpeedDialIcon, SpeedDialAction, Typography } from "@mui/material";
+import { Stack, SpeedDial, SpeedDialIcon, SpeedDialAction, Typography, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AddRowIcon, ToTopIcon, ToBottomIcon } from "../PubIcon/PubIcon";
 import styled from "@emotion/styled";
@@ -143,7 +143,7 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
                 const currentWidth = e.clientX + scrollLeft - col.ref.current.offsetLeft;
                 // If the adjusted width value is between the maximum and mininum values.
                 // the adjusted value is returned 
-                if (currentWidth >= col.col.minWidth && currentWidth <= col.col.maxWidth) {                   
+                if (currentWidth >= col.col.minWidth && currentWidth <= col.col.maxWidth) {
                     return currentWidth;
                 }
             }
@@ -210,7 +210,9 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
                                 <tr>
                                     {columns.map(({ ref, col }, i) => (
                                         <th ref={ref} key={col.id}>
-                                            <span style={{ color: col.allowNul ? "primary" : "blue" }}>{t(col.label)}</span>
+                                            <Tooltip title={t(col.label)} placement="top">
+                                                <span style={{ color: col.allowNul ? "primary" : "blue" }}>{t(col.label)}</span>
+                                            </Tooltip>
                                             <div
                                                 style={{ height: tableHeight }}
                                                 onMouseDown={(event) => mouseDown(event, i)}

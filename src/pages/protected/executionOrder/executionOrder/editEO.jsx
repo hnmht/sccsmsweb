@@ -33,11 +33,11 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
     let newEO = {// Add new
         id: 0,
         billNumber: "",
-        billDate: currentDate,
+        billDate: currentDate.startOf("day"),
         department: department,
         description: "",
         status: 0,
-        sourceType: "UA",
+        sourceType: "di",
         sourceBillNumber: "",
         sourcehid: 0,
         sourceRowNumber: 0,
@@ -63,7 +63,7 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
         if (oriWOR) {// Add by referencing the Work Order
             newEO.department = oriWOR.department;
             newEO.description = oriWOR.headerDescription;
-            newEO.sourceType = "WO";
+            newEO.sourceType = "wo";
             newEO.sourceBillNumber = oriWOR.billNumber;
             newEO.sourcehid = oriWOR.hid;
             newEO.sourceRowNumber = oriWOR.rowNumber;
@@ -75,7 +75,7 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
             newEO.ept = await GetCacheDocById("ept", oriWOR.ept.id);
             newEO.allowAddRow = newEO.ept.allowAddRow;
             newEO.allowDelRow = newEO.ept.allowDelRow;
-            newEO.body = eptBodyToEoBody(newEO.ept.body, newEO.startTime, newEO.endTime, newEO.csa.respperson);
+            newEO.body = eptBodyToEoBody(newEO.ept.body, newEO.startTime, newEO.endTime, newEO.csa.respPerson);
         }
     } else {
         if (!oriEO) {
@@ -113,86 +113,89 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
         }
     }, [isOpen, oriWOR, isModify, oriEO, isNew]);
 
-    //获取值后的操作
+    // Get the passed data from the ScInput Component
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
 
-        // let startTime = new Date();
-        //用于修改errors的信息
-        let isModifyEit = false; //更新的是否是eit字段
-        let newEitRowNumber = 0; //eit字段body行数
-        //设置单据值
+        let isModifyEpt = false; // Wether to update ept field
+        let newEptRowNumber = 0; // The number of EPT body rows
+
+        // Change voucherData
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
             switch (positionID) {
-                case 0://修改表头字段
-                    if (itemkey === "ept" && value.id !== prevState.ept.id) { //如果修改的是eit字段且于前值不同
-                        isModifyEit = true;
-                        newEitRowNumber = value.body.length;
-                        const handlePerson = newData.csa.id === 0 ? newData.executor : newData.csa.respperson;
-                        newData.body = eptBodyToEoBody(value.body, newData.startTime, newData.endTime, handlePerson); //将执行模板表体转换到表体
+                case 0:// Change voucher header
+                    // If the EPT field is modified and the value is different from the previous value
+                    if (itemkey === "ept" && value.id !== prevState.ept.id) {
+                        isModifyEpt = true;
+                        newEptRowNumber = value.body.length;
+                        const handlePerson = newData.csa.id === 0 ? newData.executor : newData.csa.respPerson;
+                        newData.body = eptBodyToEoBody(value.body, newData.startTime, newData.endTime, handlePerson);
                         newData.allowAddRow = value.allowAddRow;
                         newData.allowDelRow = value.allowDelRow;
                     }
-                    //如果修改的是现场档案字段
+                    // If the CSA field is modified and the value is different from the previous value
                     if (itemkey === "csa" && value.id !== prevState.csa.id) {
                         if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.issueOwner = value.respperson;
+                                row.issueOwner = value.respPerson;
                                 return row;
                             })
                         }
                     }
-                    //如果修改的是开始时间字段
+                    // If the startTime field is modified and the value is different from the previous value
                     if (itemkey === "startTime" && value !== prevState.startTime) {
-                        if (newData.endTime <= value) { //如果结束时间小于开始时间，自动将结束时间延后一个小时
-                            newData.endTime = dayjs(value, "YYYYMMDDHHmm", true).add(1, "hours").format("YYYYMMDDHHmm");
+                        // If the endTime is less than the startTime, automatically postpone the endTime by one hour
+                        if (newData.endTime <= value) {
+                            newData.endTime = dayjs(value).add(1, "hours");
                         }
-
-                        if (newData.body.length > 0) { //如果表体存在行
+                        // If body row exist, automatically update the handleStartTime and handlerEndTime fields
+                        if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.handleStartTime = dayjs(value).add(24, "hour").format("YYYYMMDDHHmm");
-                                row.handleEndTime = dayjs(newData.endTime).add(1, "day").format("YYYYMMDDHHmm");
+                                row.handleStartTime = dayjs(value).add(24, "hour");
+                                row.handleEndTime = dayjs(newData.endTime).add(1, "day");
                                 return row;
                             })
                         }
                     }
-                    //如果修改的是结束时间字段
+                    // If the endTime field is modified and the value is different from the previous value
                     if (itemkey === "endTime" && value !== prevState.endTime) {
-                        if (newData.startTime >= value) {//如果开始时间大于结束时间,自动将开始时间提前1小时
-                            newData.startTime = dayjs(value, "YYYYMMDDHHmm", true).subtract(1, "hours").format("YYYYMMDDHHmm");
+                        // If the startTime is greater than the endTime, automatically move the startTime back by one hour
+                        if (newData.startTime >= value) {
+                            newData.startTime = dayjs(value).subtract(1, "hours");
                         }
-                        if (newData.body.length > 0) { //如果表体存在行
+                        // If body row exist, automatically update the handleStartTime and handlerEndTime fields
+                        if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.handleStartTime = dayjs(newData.startTime).add(24, "hour").format("YYYYMMDDHHmm");
-                                row.handleEndTime = dayjs(value).add(1, "day").format("YYYYMMDDHHmm");
+                                row.handleStartTime = dayjs(newData.startTime).add(24, "hour");
+                                row.handleEndTime = dayjs(value).add(1, "day");
                                 return row;
                             })
                         }
                     }
                     newData[itemkey] = value;
                     break;
-                case 1://如果修改的是表体字段 
-                    //更新的是项目值列，则自动检查是否存在问题
+                case 1:// Change body rows value
+                    // If the executionValue field is modified
                     if (itemkey === "executionValue") {
-                        if (newData.body[rowIndex].isCheckError === 1) {//自动检查问题
+                        if (newData.body[rowIndex].isCheckError === 1) {//Automatically Check Error
                             let isProblem = checkForProblem(newData.body[rowIndex].epa.resultType.id, newData.body[rowIndex].errorValue, value);
                             newData.body[rowIndex].isIssue = isProblem;
                             if (isProblem === 0) {
-                                newData.body[rowIndex].isRectify = 0; //是否现场处理
-                                newData.body[rowIndex].isHandle = 0; //是否后续处理                                
+                                newData.body[rowIndex].isRectify = 0; 
+                                newData.body[rowIndex].isHandle = 0;                             
                             } else {
-                                if (newData.body[rowIndex].isRectify === 1) { //现场处理为1
-                                    newData.body[rowIndex].isHandle = 0; //是否后续处理  
+                                if (newData.body[rowIndex].isRectify === 1) { 
+                                    newData.body[rowIndex].isHandle = 0;  
                                 } else {
-                                    newData.body[rowIndex].isHandle = 1; //是否后续处理    
+                                    newData.body[rowIndex].isHandle = 1;   
                                 }
                             }
                         }
                     }
-                    //如果更新的是是否存在问题
+                    // If the isIssue field is modified
                     if (itemkey === "isIssue") {
                         if (value === 0) {
                             newData.body[rowIndex].isRectify = 0;
@@ -205,7 +208,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                             }
                         }
                     }
-                    //如果更新的是是否现场整改
+                    // If the isRectify field is modified
                     if (itemkey === "isRectify") {
                         if (value === 1) {
                             newData.body[rowIndex].isHandle = 0;
@@ -213,7 +216,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                             newData.body[rowIndex].isHandle = 1;
                         }
                     }
-                    //如果更新的是执行项目字段
+                    // If the epa field is modified and the value is different from the previous value
                     if (itemkey === "epa" && value.id !== prevState.body[rowIndex].epa.id) {
                         newData.body[rowIndex].executionValue = value.defaultValue;
                         newData.body[rowIndex].exectivedisp = value.defaultvaluedisp;
@@ -227,16 +230,16 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                         newData.body[rowIndex].isFromEpt = 0;
                         newData.body[rowIndex].riskLevel = value.riskLevel;
                     }
-                    //如果更新的是开始时间字段
+                    // If the handlerStartTime field is modified 
                     if (itemkey === "handleStartTime") {
                         if (newData.body[rowIndex].handleEndTime <= value) {
-                            newData.body[rowIndex].handleEndTime = dayjs(value, "YYYYMMDDHHmm", true).add(1, "hours").format("YYYYMMDDHHmm");
+                            newData.body[rowIndex].handleEndTime = dayjs(value).add(1, "hours");
                         }
                     }
-                    //如果更新的结束时间字段
+                    // If the handleEndTime field is modified
                     if (itemkey === "handleEndTime") {
                         if (newData.body[rowIndex].handleStartTime >= value) {
-                            newData.body[rowIndex].handleStartTime = dayjs(value, "YYYYMMDDHHmm", true).subtract(1, "hours").format("YYYYMMDDHHmm");
+                            newData.body[rowIndex].handleStartTime = dayjs(value).subtract(1, "hours");
                         }
                     }
                     newData.body[rowIndex][itemkey] = value;
@@ -247,14 +250,14 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                 default:
                     break;
             }
-
             return newData;
         });
-        //设置错误信息
+        // Change errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
-            if (isModifyEit) { //如果修改的是eit字段且于前值不同
-                let bodyErrors = generateVoucherErrors(newEitRowNumber);
+            // If the EPT field is modified and the value is different from the previous value
+            if (isModifyEpt) {
+                let bodyErrors = generateVoucherErrors(newEptRowNumber);
                 newErrors.body = bodyErrors.body;
             }
             switch (positionID) {
@@ -272,72 +275,68 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
             }
             return newErrors;
         });
-
-        // console.log("更新", itemkey, ",耗时:", new Date() - startTime, "ms");
     };
-    //增加单据
+    // Add or Edit Execution Order 
     const handleAddEO = async () => {
         const thisEO = transEOToBackend(voucherData);
         if (isModify) {
             const editRes = await reqEditEO(thisEO);
             if (editRes.status) {
-                message.success("修改执行单成功,单据编号:" + editRes.data.data.billNumber);
-            } else {
-                message.error("修改执行单失败" + editRes.data.statusMsg);
+                message.success(t("modifySuccessful"));
+                onOk();
             }
         } else {
             const addRes = await reqAddEO(thisEO);
             if (addRes.status) {
-                message.success("新增执行单成功,单据编号:" + addRes.data.data.billNumber);
-            } else {
-                message.error("新增执行单失败" + addRes.data.statusMsg);
+                message.success(t("addSuccessful"));
+                onOk();
             }
         }
-        onOk();
+
     };
-    //增行
+    // Add row
     const handleAddRow = () => {
-        //生成表体数据
+        // Deep copy voucherData
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
+        // Automatically generate row number
+        if (newVoucherData.body.length === 1) {
             newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
             newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]));
             newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
-        //填写处理人、处理开始时间、处理结束时间
-        const handlePerson = newVoucherData.csa.id === 0 ? newVoucherData.executor : newVoucherData.csa.respperson;
+        // Automatically fill in the issueOwner, handlerStartTime, and handlerEndTime fields
+        const handlePerson = newVoucherData.csa.id === 0 ? newVoucherData.executor : newVoucherData.csa.respPerson;
         newRow.issueOwner = handlePerson;
         newRow.handleStartTime = newVoucherData.endTime;
         newRow.handleEndTime = newVoucherData.endTime;
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
-        //生成错误信息数据
+        // Generate errors
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
     };
-    //删行
+    // Delete body row
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能delete最后一行!");
+            message.error(t("cannotDeleteLastRow"));
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
         if (isModify) {
-            //判断是否在edit状态下新增的行
-            if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接delete掉
+            // Determine if the added row in an editing state
+            if (row.id === 0) { // If the id equals 0, the row was newly added, so delete it
+                newVoucherData.body.splice(index, 1);
                 newErrors.body.splice(index, 1);
-            } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改delete标志
-                newErrors.body[index] = {}; //将delete掉的行所有错误信息归零
+            } else { // If id is not equals 0, it means the row has already been saved to the server,
+                // the row's deletion flag must be modified in the backend database.
+                newVoucherData.body[index].dr = 1;  
+                newErrors.body[index] = {}; 
             }
-        } else {
-            //新增状态下直接delete行
+        } else { // In the added state, delete the row directly
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
@@ -495,7 +494,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                                 isEdit={false}
                                 itemShowName="sourceType"
                                 itemKey="sourceType"
-                                initValue={voucherData.sourceType}
+                                initValue={t(voucherData.sourceType)}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
                                 key="sourceType"
@@ -549,7 +548,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                                 rowIndex={-1}
                             />
                         </Grid>
-                        <Grid item xs={1}>
+                        <Grid item xs={2} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <ScInput
                                 dataType={403}
                                 allowNull={false}

@@ -44,6 +44,7 @@ const ScDateInput = (props) => {
         } else if (isBackendTest) {
             err = await backendTestFunc(newValue, itemKey, positionID, rowIndex);
         }
+        const value = dayjs(newValue).startOf("day");
         setErrInfo(err);
         pickDone(newValue, itemKey, positionID, rowIndex, err);
     };

@@ -98,7 +98,7 @@ export const CellStatus = (row, column) => {
 
 // Voucher status display content
 export const CellVoucherStatus = (row, column) => {
-    return VoucherStatus[row.status];
+    return i18n.t(VoucherStatus[row.status]);
 };
 // Voucher billDate display content
 export const CellBillDate = (row, column) => {
