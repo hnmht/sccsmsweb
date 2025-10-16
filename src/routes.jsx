@@ -50,18 +50,18 @@ const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar
 const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  //通讯录
 //问题处理单
 const DisposeDoc = Loadable(lazy(() => import("./pages/protected/disposeDoc/disposeDoc")));
-//系统管理
+// System Administration
 const Role = Loadable(lazy(() => import("./pages/protected/role/role")));
 const User = Loadable(lazy(() => import("./pages/protected/user/user")));
 const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permissionAssignment/permissionAssignment")));
 const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); 
-//设置
+// Settings
 const CSO = Loadable(lazy(() => import("./pages/protected/cso/cso")));
 const Registration = Loadable(lazy(() => import("./pages/protected/registration/registration")));
 const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetUp/landingPageSetup")));
-//执行单
+// Execution Order
 const ExecutionOrder = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrder/executeOrder")));
-const ExecuteDocReview = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrderReview/executionOrderReView")));
+const ExecutionOrderReview = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrderReview/executionOrderReView")));
 //报表
 const ExecuteDocStat = Loadable(lazy(() => import("./pages/protected/reports/executeDocStat/executeDocStat")));
 const ProblemDisposeStat = Loadable(lazy(() => import("./pages/protected/reports/problemDisposeStat/problemDisposeStat")));
@@ -138,8 +138,8 @@ const routes = [
                 element: <ExecutionOrder />
             },
             {
-                path: "/private/execute/executedocreview",
-                element: <ExecuteDocReview />
+                path: "/private/execute/EOReview",
+                element: <ExecutionOrderReview />
             },
             {
                 path: "/private/problem/disposeDoc",

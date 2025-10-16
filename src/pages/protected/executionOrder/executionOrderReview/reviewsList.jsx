@@ -27,7 +27,7 @@ const ReviewsList = ({ reviews }) => {
                                 <TableCell align="center">{review.creator.name}</TableCell>
                                 <TableCell align="center">{dayjs(review.startTime).format("YY-MM-DD HH:mm:ss")}</TableCell>
                                 <TableCell align="center">{dayjs(review.endTime).format("YY-MM-DD HH:mm:ss")}</TableCell>
-                                <TableCell align="center">{review.consumeseconds}</TableCell>
+                                <TableCell align="center">{review.consumeSeconds}</TableCell>
                             </TableRow>
                         );
                     })}

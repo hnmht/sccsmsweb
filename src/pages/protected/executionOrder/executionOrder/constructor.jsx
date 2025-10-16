@@ -147,21 +147,21 @@ export function generateWOConditions() {
         {
             logic: "and",
             field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
-            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs().weekday(0).startOf("day"),
             isNecessary: true
         },
         {
             logic: "and",
             field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
-            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs(new Date()).endOf("day"),
             isNecessary: true
         },
         {
             logic: "and",
             field: { id: 4, value: "b.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
-            compare: { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
         }
@@ -190,21 +190,21 @@ export function generateEOConditions() {
         {
             logic: "and",
             field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
-            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs().weekday(0).startOf("day"),
             isNecessary: true
         },
         {
             logic: "and",
             field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
-            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs(new Date()).endOf("day"),
             isNecessary: true
         },
         {
             logic: "and",
             field: { id: 6, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
-            compare: { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
         }

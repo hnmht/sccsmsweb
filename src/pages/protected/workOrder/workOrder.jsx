@@ -69,7 +69,6 @@ const WorkOrder = () => {
     // Request Work date list from backend by condifitons
     const handleRefreshList = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        console.log("queryString:", queryString);
         let wosRes = await reqGetWOList({ queryString: queryString });
         let newWos = [];
         if (wosRes.status) {
@@ -103,7 +102,6 @@ const WorkOrder = () => {
         let newDiagStatus = {};
         if (res.status) {
             let woDetail = await transWoDetailToFronted(res.data);
-            console.log("woDetail:",woDetail);
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",

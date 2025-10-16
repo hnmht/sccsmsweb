@@ -108,7 +108,7 @@ export function reqAddEOReview(data, isLoading = true) {
 // Get the Execution Order Review Record
 export function reqGetEOReviews(data, isLoading = true) {
     return request({
-        url: "/eo/billreviews",
+        url: "/eo/reviews",
         method: 'post',
         data,
         isLoading
@@ -118,7 +118,7 @@ export function reqGetEOReviews(data, isLoading = true) {
 // Get the Execution Order Comments list
 export function reqGetEOComments(data, isLoading = true) {
     return request({
-        url: "/eo/billcomments",
+        url: "/eo/comments",
         method: 'post',
         data,
         isLoading

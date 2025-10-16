@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Box, Grid, Button } from "@mui/material";
 import ScInput from "../../../../component/ScInput";
-import { reqAddEDComment } from "../../../../api/executeDoc";
+import { reqAddEOComment } from "../../../../api/executionOrder";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 
-//生成初始数据
+// Generate initial value
 const getInitialValue = (hid, bid, billNumber, rowNumber, toPerson) => {
     let newCommit = {
         id: 0,
@@ -13,37 +13,34 @@ const getInitialValue = (hid, bid, billNumber, rowNumber, toPerson) => {
         bid: bid,
         billNumber: billNumber,
         rowNumber: rowNumber,
-        sendto: toPerson,
+        sendTo: toPerson,
         content: ""
     }
     return newCommit;
 };
 
-const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCancel, onOk }) => {
+// Execution Order Comment Input Component
+const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCancel, onOk, t }) => {
     const [commentData, setCommitData] = useState(getInitialValue(hid, bid, billNumber, rowNumber, toPerson));
-    //提交按钮    
-    const handelComiit = async() => {
-        const addRes = await reqAddEDComment(commentData);
+    // Actions after Click the commit button
+    const handelCommit = async () => {
+        const addRes = await reqAddEOComment(commentData);
         if (addRes.status) {
-            message.success("增加批注成功");
-        } else {
-            message.error("增加批注失败:"+addRes.data.statusMsg);
+            message.success(t("addCommentSuccessful"));
         }
         onOk();
     };
-    //取消按钮
+    // Actions after Click  the cancel button
     const handleCancel = () => {
         onCancel();
     };
 
-    //获取值之后
+    // Get the passed data from the ScInput Component
     const handleGetValue = (value, itemkey, positionID, rowIndex, errMsg) => {
         if (!isOpen) {
             return
         }
-        //更新输入的信息
         setCommitData((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
@@ -59,7 +56,7 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="单据编码"
+                            itemShowName="billNumber"
                             itemKey="billNumber"
                             initValue={commentData.billNumber}
                             pickDone={handleGetValue}
@@ -74,7 +71,7 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="行号"
+                            itemShowName="rowNumber"
                             itemKey="rowNumber"
                             initValue={commentData.rowNumber}
                             pickDone={handleGetValue}
@@ -89,12 +86,12 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             dataType={510}
                             allowNull={false}
                             isEdit={true}
-                            itemShowName="发送给"
-                            itemKey="sendto"
-                            initValue={commentData.sendto}
+                            itemShowName="sendTo"
+                            itemKey="sendTo"
+                            initValue={commentData.sendTo}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="sendto"
+                            key="sendTo"
                             positionID={2}
                             rowIndex={-1}
                         />
@@ -104,9 +101,9 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             dataType={301}
                             allowNull={false}
                             isEdit={true}
-                            itemShowName="批注"
+                            itemShowName="content"
                             itemKey="content"
-                            placeholder="请输入批注"
+                            placeholder="contentPlaceholder"
                             initValue={commentData.content}
                             pickDone={handleGetValue}
                             isBackendTest={false}
@@ -118,8 +115,8 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                         />
                     </Grid>
                     <Grid item xs={12} sx={{ display: "flex", justifyContent: "right", paddingRight: 6, marginTop: 2 }}>
-                        <Button onClick={handleCancel} color="error">取消</Button>
-                        <Button variant="contained" onClick={handelComiit} disabled={commentData.content === ""}>提交</Button>
+                        <Button onClick={handleCancel} color="error">{t("cancel")}</Button>
+                        <Button variant="contained" onClick={handelCommit} disabled={commentData.content === ""}>{t("commit")}</Button>
                     </Grid>
                 </Grid>
             </Box>

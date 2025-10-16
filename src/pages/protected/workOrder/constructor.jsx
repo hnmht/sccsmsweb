@@ -92,14 +92,14 @@ export const rowActionsDefine = {
         visible: true,
         disabled: rowStartDisabled,
         color: "success",
-        tips: "start",
+        tips: "confirm",
         icon: "StartIcon",
     },
     rowStop: {
         visible: true,
         disabled: rowStopDisabled,
         color: "error",
-        tips: "stop",
+        tips: "unconfirm",
         icon: "CancelConfirmIcon",
     },
 };

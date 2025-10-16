@@ -11,10 +11,10 @@ import {
     Tabs,
     Tab
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { AddCommentIcon } from "../../../../component/PubIcon/PubIcon";
 import { message } from "mui-message"
 import dayjs from "../../../../utils/myDayjs";
-import { cloneDeep } from "lodash";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../../component/ScVoucher";
 import Loader from "../../../../component/Loader/Loader";
 import ScInput from "../../../../component/ScInput";
@@ -22,19 +22,9 @@ import CommentInput from "./commentInput";
 import CommentsList from "./commentsList";
 import ReviewsList from "./reviewsList";
 import { bodyColumns } from "./constructor";
-import { reqAddEDReview, reqGetEDComments, reqGetEDReviews } from "../../../../api/executeDoc";
+import { reqAddEOReview, reqGetEOComments, reqGetEOReviews } from "../../../../api/executionOrder";
 
-//生成初始数据
-const getInitialValue = (oriEd) => {
-    let newED = cloneDeep(oriEd);
-    newED.createDate = dayjs(newED.createDate).format("YYYYMMDDHHmm");
-    newED.modifyDate = dayjs(newED.modifyDate).format("YYYYMMDDHHmm");
-    newED.confirmDate = dayjs(newED.confirmDate).format("YYYYMMDDHHmm");
-    return newED;
-};
-
-const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
-    const [voucherData, setVoucherData] = useState((undefined));
+const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
     const [comments, setComments] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [tabValue, setTabValue] = useState(0);
@@ -42,117 +32,108 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
         isOpen: false,
         currentRow: undefined,
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initVoucher() {
-            const newED = await getInitialValue(oriED);
-            setVoucherData(newED);
-            //获取批注记录
+            // Request comments list
             let newComments = [];
-            const commentsRes = await reqGetEDComments({ hid: newED.id })
-            if (commentsRes.status ) {
-                if (commentsRes.data.data.comments !== null) {
-                    newComments = commentsRes.data.data.comments;
-                }                
-            } else {
-                message.error("获取批注记录失败:" + commentsRes.data.statusMsg);
+            const commentsRes = await reqGetEOComments({ hid: eoData.id })
+            if (commentsRes.status) {
+                if (commentsRes.comments !== null) {
+                    newComments = commentsRes.data.comments;
+                }
             }
             setComments(newComments);
-            //获取审阅记录
+            // Request Review Records list
             let newReviews = [];
-            const reviewRes = await reqGetEDReviews({ hid: newED.id });
+            const reviewRes = await reqGetEOReviews({ hid: eoData.id });
             if (reviewRes.status) {
-                if (reviewRes.data.data.reviews !== null) {
-                    newReviews = reviewRes.data.data.reviews;
-                }                
-            } else {
-                message.error("获取审阅记录失败:", reviewRes.data.statusMsg);
+                if (reviewRes.data.reviews !== null) {
+                    newReviews = reviewRes.data.reviews;
+                }
             }
             setReviews(newReviews);
         }
         if (isOpen) {
             initVoucher();
         }
-    }, [isOpen, oriED]);
+    }, [isOpen, eoData]);
 
-    //获取值后的操作
+    // Get the passed data from the ScInput Component
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
         return
     };
 
-    //Tab变更
+    // Actions after Tab changed
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
 
-    //点击行批注按钮
+    // Actions after click comment button in the row
     const handleAddCommentClick = (row, index) => {
         setCommitStatus({
             isOpen: true,
-            currentRow: { hid: voucherData.id, bid: row.id, billNumber: voucherData.billNumber, rowNumber: row.rowNumber },
+            currentRow: { hid: eoData.id, bid: row.id, billNumber: eoData.billNumber, rowNumber: row.rowNumber },
         });
     };
 
-    //批注组件关闭
+    // Close Comments Component
     const handleCommitClose = () => {
         setCommitStatus({
             isOpen: false,
             currentRow: undefined
         });
     };
-    //批注组件点击提交
+    // Actions after click submit button in commit Component 
     const handleCommitOk = () => {
         setCommitStatus({
             isOpen: false,
             currentRow: undefined
         });
-        //刷新批注列表
+        // Request the EO's latest comments
         handleRefreshComments();
     };
-    //刷新批注列表
+    // Request the EO's latest comments
     const handleRefreshComments = async () => {
-        //获取批注记录
         let newComments = [];
-        const commentsRes = await reqGetEDComments({ hid: voucherData.id })
+        const commentsRes = await reqGetEOComments({ hid: eoData.id })
         if (commentsRes.status) {
-            newComments = commentsRes.data.data.comments;
-        } else {
-            message.error("刷新批注列表失败:" + commentsRes.data.statusMsg);
+            newComments = commentsRes.data.comments;
         }
         setComments(newComments);
     }
 
-    //点击返回按钮
+    // Actions after click the back button in footer
     const handleBackClick = () => {
         handleAddReview();
         onBack();
     }
 
-    //提交审阅记录
+    // Submit Review record
     const handleAddReview = async () => {
+        const currentTime = dayjs(new Date());
         let reviewRecord = {
             id: 0,
-            hid: voucherData.id,
-            billNumber: voucherData.billNumber,
-            startTime: dayjs(startTime).format("YYYYMMDDHHmmss"),
-            endTime: dayjs(new Date()).format("YYYYMMDDHHmmss"),
-            consumeseconds: dayjs(new Date()).diff(dayjs(startTime), "seconds")
+            hid: eoData.id,
+            billNumber: eoData.billNumber,
+            startTime: dayjs(startTime),
+            endTime: currentTime,
+            consumeSeconds: currentTime.diff(dayjs(startTime), "seconds")
         };
-        const addRes = await reqAddEDReview(reviewRecord);
+        const addRes = await reqAddEOReview(reviewRecord);
         if (addRes.status) {
-            message.success("本次审阅" + reviewRecord.consumeseconds + "秒.");
-        } else {
-            message.error("审阅记录提交服务器失败:" + addRes.data.statusMsg);
+            message.success(t("reviewedSeconds", { count: reviewRecord.consumeSeconds }));
         }
     };
 
-    return (voucherData !== undefined
+    return (eoData !== undefined
         ? <>
             <Grid container spacing={1}>
                 <Grid item xs={9}>
-                    <Stack component="div" id="reviewED" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
+                    <Stack component="div" id="reviewEO" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
                         <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                            <Typography variant="h3" component={"h3"}>执行单</Typography>
+                            <Typography variant="h3" component={"h3"}>{t("eo")}</Typography>
                         </Stack>
                         <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                             <Grid container id="VoucherHeader" spacing={2}>
@@ -161,9 +142,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="单据编码"
+                                        itemShowName="billNumber"
                                         itemKey="billNumber"
-                                        initValue={voucherData.billNumber}
+                                        initValue={eoData.billNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="billNumber"
@@ -171,14 +152,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         rowIndex={-1}
                                     />
                                 </Grid>
-                                <Grid item xs={1}>
+                                <Grid item xs={1.5}>
                                     <ScInput
                                         dataType={306}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="单据日期"
+                                        itemShowName="billDate"
                                         itemKey="billDate"
-                                        initValue={voucherData.billDate}
+                                        initValue={eoData.billDate}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="billDate"
@@ -191,9 +172,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={520}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="部门"
+                                        itemShowName="department"
                                         itemKey="department"
-                                        initValue={voucherData.department}
+                                        initValue={eoData.department}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="department"
@@ -206,9 +187,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={570}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="现场"
+                                        itemShowName="csa"
                                         itemKey="csa"
-                                        initValue={voucherData.csa}
+                                        initValue={eoData.csa}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="csa"
@@ -221,9 +202,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={510}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="执行人"
+                                        itemShowName="executor"
                                         itemKey="executor"
-                                        initValue={voucherData.executor}
+                                        initValue={eoData.executor}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="executor"
@@ -236,12 +217,27 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={580}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="执行模板"
+                                        itemShowName="ept"
                                         itemKey="ept"
-                                        initValue={voucherData.ept}
+                                        initValue={eoData.ept}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="ept"
+                                        positionID={0}
+                                        rowIndex={-1}
+                                    />
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <ScInput
+                                        dataType={405}
+                                        allowNull={true}
+                                        isEdit={false}
+                                        itemShowName="status"
+                                        itemKey="status"
+                                        initValue={eoData.status}
+                                        pickDone={handleGetValue}
+                                        isBackendTest={false}
+                                        key="status"
                                         positionID={0}
                                         rowIndex={-1}
                                     />
@@ -251,9 +247,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={307}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="开始时间"
+                                        itemShowName="startTime"
                                         itemKey="startTime"
-                                        initValue={voucherData.startTime}
+                                        initValue={eoData.startTime}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="startTime"
@@ -266,9 +262,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={307}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="结束时间"
+                                        itemShowName="endTime"
                                         itemKey="endTime"
-                                        initValue={voucherData.endTime}
+                                        initValue={eoData.endTime}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="endTime"
@@ -276,29 +272,15 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         rowIndex={-1}
                                     />
                                 </Grid>
-                                <Grid item xs={1}>
-                                    <ScInput
-                                        dataType={405}
-                                        allowNull={true}
-                                        isEdit={false}
-                                        itemShowName="状态"
-                                        itemKey="status"
-                                        initValue={voucherData.status}
-                                        pickDone={handleGetValue}
-                                        isBackendTest={false}
-                                        key="status"
-                                        positionID={0}
-                                        rowIndex={-1}
-                                    />
-                                </Grid>
+
                                 <Grid item xs={1}>
                                     <ScInput
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="来源单据类型"
+                                        itemShowName="sourceType"
                                         itemKey="sourceType"
-                                        initValue={voucherData.sourceType}
+                                        initValue={t(eoData.sourceType)}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="sourceType"
@@ -306,14 +288,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         rowIndex={-1}
                                     />
                                 </Grid>
-                                <Grid item xs={1}>
+                                <Grid item xs={2}>
                                     <ScInput
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="来源单据号"
+                                        itemShowName="sourceBillNumber"
                                         itemKey="sourceBillNumber"
-                                        initValue={voucherData.sourceBillNumber}
+                                        initValue={eoData.sourceBillNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="sourceBillNumber"
@@ -326,9 +308,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="来源单据行号"
+                                        itemShowName="sourceRowNumber"
                                         itemKey="sourceRowNumber"
-                                        initValue={voucherData.sourceRowNumber}
+                                        initValue={eoData.sourceRowNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="sourceRowNumber"
@@ -336,15 +318,15 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         rowIndex={-1}
                                     />
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={5} >
                                     <ScInput
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="说明"
+                                        itemShowName="description"
                                         itemKey="description"
-                                        placeholder={"请输入说明"}
-                                        initValue={voucherData.description}
+                                        placeholder={"descriptionPlaceholder"}
+                                        initValue={eoData.description}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="description"
@@ -352,14 +334,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         rowIndex={-1}
                                     />
                                 </Grid>
-                                <Grid item xs={1}>
+                                <Grid item xs={2} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                     <ScInput
                                         dataType={403}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="允许增行"
+                                        itemShowName="allowAddRow"
                                         itemKey="allowAddRow"
-                                        initValue={voucherData.allowAddRow}
+                                        initValue={eoData.allowAddRow}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="allowAddRow"
@@ -367,14 +349,14 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         rowIndex={-1}
                                     />
                                 </Grid>
-                                <Grid item xs={1}>
+                                <Grid item xs={2} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                     <ScInput
                                         dataType={403}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="允许删行"
+                                        itemShowName="allowDelRow"
                                         itemKey="allowDelRow"
-                                        initValue={voucherData.allowDelRow}
+                                        initValue={eoData.allowDelRow}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
                                         key="allowDelRow"
@@ -386,11 +368,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                         </Stack>
                         <ScVoucherBody bodyColumns={bodyColumns} addRowAction={() => { }} addRowVisible={false}>
                             <ScVoucherBodyRow >
-                                {voucherData.body.map((row, index) => {
+                                {eoData.body.map((row, index) => {
                                     return row.dr === 0
                                         ? (<tr key={"bodyrow" + row.rowNumber}>
                                             <td>
-                                                <Tooltip title="增加批注" key={`rowDelete${index}`}>
+                                                <Tooltip title={t("addComments")} key={`rowDelete${index}`}>
                                                     <span>
                                                         <IconButton size="small" sx={{ width: 40, height: 40 }} disabled={commitStatus.isOpen} onClick={() => handleAddCommentClick(row, index)}>
                                                             <AddCommentIcon color={commitStatus.isOpen ? "transparent" : "primary"} fontSize="small" />
@@ -403,7 +385,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={302}
                                                     allowNull={false}
                                                     isEdit={false}
-                                                    itemShowName="行号"
+                                                    itemShowName="rowNumber"
                                                     itemKey="rowNumber"
                                                     initValue={row.rowNumber}
                                                     pickDone={handleGetValue}
@@ -418,7 +400,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={560}
                                                     allowNull={false}
                                                     isEdit={false}
-                                                    itemShowName="执行项目"
+                                                    itemShowName="epa"
                                                     itemKey="epa"
                                                     initValue={row.epa}
                                                     pickDone={handleGetValue}
@@ -433,7 +415,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={row.epa.resultType.id}
                                                     allowNull={false}
                                                     isEdit={false}
-                                                    itemShowName="执行项目值"
+                                                    itemShowName="executionValue"
                                                     itemKey="executionValue"
                                                     initValue={row.executionValue}
                                                     pickDone={handleGetValue}
@@ -449,7 +431,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={902}
                                                     allowNull={row.isRequireFile === 0}
                                                     isEdit={false}
-                                                    itemShowName="附件"
+                                                    itemShowName="files"
                                                     itemKey="files"
                                                     initValue={row.files}
                                                     pickDone={handleGetValue}
@@ -464,7 +446,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={590}
                                                     allowNull={false}
                                                     isEdit={false}
-                                                    itemShowName="风险等级"
+                                                    itemShowName="riskLevel"
                                                     itemKey="riskLevel"
                                                     initValue={row.riskLevel}
                                                     pickDone={handleGetValue}
@@ -479,7 +461,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={301}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="填写说明"
+                                                    itemShowName="epaDescription"
                                                     itemKey="epaDescription"
                                                     initValue={row.epaDescription}
                                                     pickDone={handleGetValue}
@@ -495,11 +477,11 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={301}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="说明"
+                                                    itemShowName="description"
                                                     itemKey="description"
                                                     initValue={row.description}
                                                     pickDone={handleGetValue}
-                                                    placeholder="请输入说明"
+                                                    placeholder="descriptionPlaceholder"
                                                     isBackendTest={false}
                                                     key="description"
                                                     positionID={1}
@@ -511,7 +493,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={403}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="是否存在问题"
+                                                    itemShowName="isIssue"
                                                     itemKey="isIssue"
                                                     initValue={row.isIssue}
                                                     pickDone={handleGetValue}
@@ -526,7 +508,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={403}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="是否现场整改"
+                                                    itemShowName="isRectify"
                                                     itemKey="isRectify"
                                                     initValue={row.isRectify}
                                                     pickDone={handleGetValue}
@@ -541,7 +523,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={403}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="是否问题处理"
+                                                    itemShowName="isHandle"
                                                     itemKey="isHandle"
                                                     initValue={row.isHandle}
                                                     pickDone={handleGetValue}
@@ -556,7 +538,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={510}
                                                     allowNull={row.isHandle === 0}
                                                     isEdit={false}
-                                                    itemShowName="问题处理人"
+                                                    itemShowName="issueOwner"
                                                     itemKey="issueOwner"
                                                     initValue={row.issueOwner}
                                                     pickDone={handleGetValue}
@@ -571,7 +553,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={307}
                                                     allowNull={row.isHandle === 0}
                                                     isEdit={false}
-                                                    itemShowName="处理开始时间"
+                                                    itemShowName="handleStartTime"
                                                     itemKey="handleStartTime"
                                                     initValue={row.handleStartTime}
                                                     pickDone={handleGetValue}
@@ -586,7 +568,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={307}
                                                     allowNull={row.isHandle === 0}
                                                     isEdit={false}
-                                                    itemShowName="处理完成时间"
+                                                    itemShowName="handleEndTime"
                                                     itemKey="handleEndTime"
                                                     initValue={row.handleEndTime}
                                                     pickDone={handleGetValue}
@@ -601,7 +583,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={403}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="必传附件"
+                                                    itemShowName="isRequireFile"
                                                     itemKey="isRequireFile"
                                                     initValue={row.isRequireFile}
                                                     pickDone={handleGetValue}
@@ -616,7 +598,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={403}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="必须现场拍照"
+                                                    itemShowName="isOnSitePhoto"
                                                     itemKey="isOnSitePhoto"
                                                     initValue={row.isOnSitePhoto}
                                                     pickDone={handleGetValue}
@@ -631,7 +613,7 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                                     dataType={405}
                                                     allowNull={true}
                                                     isEdit={false}
-                                                    itemShowName="状态"
+                                                    itemShowName="status"
                                                     itemKey="status"
                                                     initValue={row.status}
                                                     pickDone={handleGetValue}
@@ -654,9 +636,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={510}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="创建人"
+                                        itemShowName="creator"
                                         itemKey="creator"
-                                        initValue={voucherData.creator}
+                                        initValue={eoData.creator}
                                         pickDone={() => { }}
                                         isBackendTest={false}
                                         key="creator"
@@ -666,12 +648,12 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                 </Grid>
                                 <Grid item xs={2}>
                                     <ScInput
-                                        dataType={307}
+                                        dataType={309}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="创建日期"
+                                        itemShowName="createDate"
                                         itemKey="createDate"
-                                        initValue={voucherData.createDate}
+                                        initValue={eoData.createDate}
                                         pickDone={() => { }}
                                         isBackendTest={false}
                                         key="createDate"
@@ -684,9 +666,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={510}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="修改人"
+                                        itemShowName="modifier"
                                         itemKey="modifier"
-                                        initValue={voucherData.modifier}
+                                        initValue={eoData.modifier}
                                         pickDone={() => { }}
                                         isBackendTest={false}
                                         key="modifier"
@@ -696,12 +678,12 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                 </Grid>
                                 <Grid item xs={2}>
                                     <ScInput
-                                        dataType={307}
+                                        dataType={309}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="更新日期"
+                                        itemShowName="modifyDate"
                                         itemKey="modifyDate"
-                                        initValue={voucherData.modifyDate}
+                                        initValue={eoData.modifyDate}
                                         pickDone={() => { }}
                                         isBackendTest={false}
                                         key="modifyDate"
@@ -714,9 +696,9 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                         dataType={510}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="confirm人"
+                                        itemShowName="confirmer"
                                         itemKey="confirmer"
-                                        initValue={voucherData.confirmer}
+                                        initValue={eoData.confirmer}
                                         pickDone={() => { }}
                                         isBackendTest={false}
                                         key="confirmer"
@@ -726,12 +708,12 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                 </Grid>
                                 <Grid item xs={2}>
                                     <ScInput
-                                        dataType={307}
+                                        dataType={309}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="confirm日期"
+                                        itemShowName="confirmDate"
                                         itemKey="confirmDate"
-                                        initValue={voucherData.confirmDate}
+                                        initValue={eoData.confirmDate}
                                         pickDone={() => { }}
                                         isBackendTest={false}
                                         key="confirmDate"
@@ -741,43 +723,42 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
                                 </Grid>
                             </Grid>
                         </Stack>
-                        <DialogActions sx={{ m: 1 }}>
-                            <Button variant="contained" onClick={handleBackClick} >返回</Button>
-                        </DialogActions>
                     </Stack>
                 </Grid>
-                <Grid item xs={3}>
-                    <Box sx={{ width: "100%", height: "100%" }}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={tabValue} onChange={handleTabChange} aria-label="reviewED tab">
-                                <Tab label="批注列表" id="commitList" />
-                                <Tab label="审阅列表" id="reviewList" />
-                            </Tabs>
-                        </Box>
-                        <Box sx={{ width: "100%", height: commitStatus.isOpen ? 512 : 742, borderWidth: 1, borderColor: "divider", borderStyle: "solid", overflow: "auto" }}>
-                            {tabValue === 0
-                                ? <CommentsList comments={comments} />
-                                : <ReviewsList reviews={reviews} />
-                            }
-
-                        </Box>
-                        {commitStatus.isOpen
-                            ? <Box mt={2}>
-                                <CommentInput
-                                    isOpen={commitStatus.isOpen}
-                                    hid={commitStatus.currentRow.hid}
-                                    bid={commitStatus.currentRow.bid}
-                                    rowNumber={commitStatus.currentRow.rowNumber}
-                                    billNumber={commitStatus.currentRow.billNumber}
-                                    toPerson={voucherData.creator}
-                                    onOk={handleCommitOk}
-                                    onCancel={handleCommitClose}
-                                />
-                            </Box>
-                            : null
+                <Grid item xs={3} sx={{ display: "flex", flexDirection: "column" }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs value={tabValue} onChange={handleTabChange} aria-label="reviewEO tab">
+                            <Tab label={t("commentsList")} id="commentsList" />
+                            <Tab label={t("reviewRecords")} id="reviewList" />
+                        </Tabs>
+                    </Box>
+                    <Box sx={{ flex: 1, width: "100%", borderWidth: 1, borderColor: "divider", borderStyle: "solid", overflow: "auto", marginBottom: 2 }}>
+                        {tabValue === 0
+                            ? <CommentsList comments={comments} />
+                            : <ReviewsList reviews={reviews} />
                         }
                     </Box>
-
+                    {commitStatus.isOpen
+                        ? <Box mt={2}>
+                            <CommentInput
+                                isOpen={commitStatus.isOpen}
+                                hid={commitStatus.currentRow.hid}
+                                bid={commitStatus.currentRow.bid}
+                                rowNumber={commitStatus.currentRow.rowNumber}
+                                billNumber={commitStatus.currentRow.billNumber}
+                                toPerson={eoData.creator}
+                                onOk={handleCommitOk}
+                                onCancel={handleCommitClose}
+                                t={t}
+                            />
+                        </Box>
+                        : null
+                    }
+                </Grid>
+                <Grid item xs={9} >
+                    <DialogActions >
+                        <Button variant="contained" onClick={handleBackClick} >{t("back")}</Button>
+                    </DialogActions>
                 </Grid>
             </Grid>
         </>
@@ -785,4 +766,4 @@ const ReviewED = ({ isOpen, oriED, startTime, onBack }) => {
     );
 };
 
-export default ReviewED;
+export default ReviewEO;
