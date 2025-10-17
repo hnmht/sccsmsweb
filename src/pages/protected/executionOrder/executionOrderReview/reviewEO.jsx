@@ -9,7 +9,8 @@ import {
     IconButton,
     Box,
     Tabs,
-    Tab
+    Tab,
+    Dialog
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AddCommentIcon } from "../../../../component/PubIcon/PubIcon";
@@ -74,7 +75,7 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
     const handleAddCommentClick = (row, index) => {
         setCommitStatus({
             isOpen: true,
-            currentRow: { hid: eoData.id, bid: row.id, billNumber: eoData.billNumber, rowNumber: row.rowNumber },
+            currentRow: { hid: eoData.id, bid: row.id, billNumber: eoData.billNumber, rowNumber: row.rowNumber, sendTo: eoData.creator, content: "" },
         });
     };
 
@@ -129,9 +130,9 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
 
     return (eoData !== undefined
         ? <>
-            <Grid container spacing={1}>
-                <Grid item xs={9}>
-                    <Stack component="div" id="reviewEO" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", height: "100%", width: "100%", overflow: "auto" }}>
+                <Box sx={{ width: "80%", height: "100%" }}>
+                    <Stack component="div" id="reviewEO" sx={{ overflowX: "hidden", overflowY: "auto", p: 2 }}>
                         <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
                             <Typography variant="h3" component={"h3"}>{t("eo")}</Typography>
                         </Stack>
@@ -366,7 +367,7 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
                                 </Grid>
                             </Grid>
                         </Stack>
-                        <ScVoucherBody bodyColumns={bodyColumns} addRowAction={() => { }} addRowVisible={false}>
+                        <ScVoucherBody bodyColumns={bodyColumns} addRowAction={() => { }} addRowVisible={false} height={500}>
                             <ScVoucherBodyRow >
                                 {eoData.body.map((row, index) => {
                                     return row.dr === 0
@@ -724,9 +725,12 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
                             </Grid>
                         </Stack>
                     </Stack>
-                </Grid>
-                <Grid item xs={3} sx={{ display: "flex", flexDirection: "column" }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <DialogActions >
+                        <Button variant="contained" onClick={handleBackClick} >{t("back")}</Button>
+                    </DialogActions>
+                </Box>
+                <Box sx={{ width: "20%", height: "100%", display: "flex", flexDirection: "column" }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', height: 48 }}>
                         <Tabs value={tabValue} onChange={handleTabChange} aria-label="reviewEO tab">
                             <Tab label={t("commentsList")} id="commentsList" />
                             <Tab label={t("reviewRecords")} id="reviewList" />
@@ -734,33 +738,22 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
                     </Box>
                     <Box sx={{ flex: 1, width: "100%", borderWidth: 1, borderColor: "divider", borderStyle: "solid", overflow: "auto", marginBottom: 2 }}>
                         {tabValue === 0
-                            ? <CommentsList comments={comments} />
-                            : <ReviewsList reviews={reviews} />
+                            ? <CommentsList comments={comments} t={t} />
+                            : <ReviewsList reviews={reviews} t={t} />
                         }
                     </Box>
                     {commitStatus.isOpen
-                        ? <Box mt={2}>
-                            <CommentInput
-                                isOpen={commitStatus.isOpen}
-                                hid={commitStatus.currentRow.hid}
-                                bid={commitStatus.currentRow.bid}
-                                rowNumber={commitStatus.currentRow.rowNumber}
-                                billNumber={commitStatus.currentRow.billNumber}
-                                toPerson={eoData.creator}
-                                onOk={handleCommitOk}
-                                onCancel={handleCommitClose}
-                                t={t}
-                            />
-                        </Box>
+                        ? <CommentInput
+                            isOpen={commitStatus.isOpen}
+                            currentRow={commitStatus.currentRow}
+                            onOk={handleCommitOk}
+                            onCancel={handleCommitClose}
+                            t={t}
+                        />
                         : null
                     }
-                </Grid>
-                <Grid item xs={9} >
-                    <DialogActions >
-                        <Button variant="contained" onClick={handleBackClick} >{t("back")}</Button>
-                    </DialogActions>
-                </Grid>
-            </Grid>
+                </Box>
+            </Box>
         </>
         : <Loader />
     );

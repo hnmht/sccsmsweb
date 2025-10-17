@@ -93,7 +93,7 @@ const transColWidth = (headers) => {
     };
 };
 
-const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, title = "detail", actionComponent = null }) => {
+const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, title = "detail", actionComponent = null, height = 512 }) => {
     const [colWidth, setColWidth] = useState(transColWidth(bodyColumns));
     const bodyHeaderRef = useRef(null);
     const columns = createBodyHeaders(bodyColumns);
@@ -190,7 +190,7 @@ const ScVoucherBody = ({ bodyColumns, children, addRowVisible, addRowAction, tit
                     ref={bodyRowRef}
                     component="div"
                     id="bodyScrollContainer"
-                    sx={{ maxWidth: "100%", height: 512, borderStyle: "solid", borderWidth: 1, borderColor: "#ccc", overflowY: "auto", overflowX: "auto" }}
+                    sx={{ maxWidth: "100%", height: height, borderStyle: "solid", borderWidth: 1, borderColor: "#ccc", overflowY: "auto", overflowX: "auto" }}
                 >
                     <SpeedDial
                         ariaLabel="bodyAction"

@@ -1,27 +1,13 @@
 import { useState } from "react";
-import { Box, Grid, Button } from "@mui/material";
+import { Grid, Button, Dialog, DialogContent, DialogActions,DialogTitle } from "@mui/material";
 import ScInput from "../../../../component/ScInput";
 import { reqAddEOComment } from "../../../../api/executionOrder";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 
-// Generate initial value
-const getInitialValue = (hid, bid, billNumber, rowNumber, toPerson) => {
-    let newCommit = {
-        id: 0,
-        hid: hid,
-        bid: bid,
-        billNumber: billNumber,
-        rowNumber: rowNumber,
-        sendTo: toPerson,
-        content: ""
-    }
-    return newCommit;
-};
-
 // Execution Order Comment Input Component
-const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCancel, onOk, t }) => {
-    const [commentData, setCommitData] = useState(getInitialValue(hid, bid, billNumber, rowNumber, toPerson));
+const CommentInput = ({ isOpen, currentRow, onCancel, onOk, t }) => {
+    const [commentData, setCommitData] = useState(currentRow);
     // Actions after Click the commit button
     const handelCommit = async () => {
         const addRes = await reqAddEOComment(commentData);
@@ -46,10 +32,19 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
             return newValue;
         });
     };
-
-    return (
-        <>
-            <Box sx={{ width: "100%", height: "100%" }}>
+    return commentData === undefined
+        ? null
+        : <Dialog
+            open={isOpen}
+            fullWidth={true}
+            maxWidth="md"
+            onClose={onCancel}
+            closeAfterTransition={false}
+        >
+            <DialogTitle>
+                {t("addComments")}
+            </DialogTitle>
+            <DialogContent sx={{ width: "100%", height: "100%" }}>
                 <Grid container spacing={1}>
                     <Grid item xs={8}>
                         <ScInput
@@ -114,14 +109,13 @@ const CommentInput = ({ isOpen, hid, bid, billNumber, rowNumber, toPerson, onCan
                             rowIndex={-1}
                         />
                     </Grid>
-                    <Grid item xs={12} sx={{ display: "flex", justifyContent: "right", paddingRight: 6, marginTop: 2 }}>
-                        <Button onClick={handleCancel} color="error">{t("cancel")}</Button>
-                        <Button variant="contained" onClick={handelCommit} disabled={commentData.content === ""}>{t("commit")}</Button>
-                    </Grid>
                 </Grid>
-            </Box>
-        </>
-    );
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCancel} color="error">{t("cancel")}</Button>
+                <Button variant="contained" onClick={handelCommit} disabled={commentData?.content === ""}>{t("commit")}</Button>
+            </DialogActions>
+        </Dialog>
 };
 
 export default CommentInput;

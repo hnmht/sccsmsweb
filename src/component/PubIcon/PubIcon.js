@@ -68,6 +68,8 @@ import OperatingPostIcon from '@mui/icons-material/Diversity2'; //岗位档案
 import TrainCourseIcon from '@mui/icons-material/MenuBook'; //培训课程图标
 import GroupAddIcon from '@mui/icons-material/GroupAdd'; //批量增加人员
 import LaborProtectionIcon from '@mui/icons-material/Masks'; //劳保用品图标
+import UnreadOutlinedIcon from '@mui/icons-material/MarkunreadOutlined';
+import ReadOutlinedIcon from '@mui/icons-material/DraftsOutlined';
 
 export {
     UpIcon,
@@ -140,4 +142,6 @@ export {
     TrainCourseIcon,
     GroupAddIcon,
     LaborProtectionIcon,
+    UnreadOutlinedIcon,
+    ReadOutlinedIcon
 };

@@ -331,6 +331,9 @@
     "sendTo": "发送给",
     "content": "内容",
     "contentPlaceholder": "请输入内容",
+    "line": "第{{rowNumber}}行",
+    "sendToSomeone": "发送给 {{name}}",
+    "timeSeconds": "时间(秒)",
     
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",
