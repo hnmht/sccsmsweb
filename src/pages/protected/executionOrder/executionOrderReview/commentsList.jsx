@@ -2,6 +2,7 @@ import { Typography, Grid, Avatar, Button } from "@mui/material";
 import { UnreadOutlinedIcon, ReadOutlinedIcon } from "../../../../component/PubIcon/PubIcon";
 import { DateTimeFormat } from "../../../../i18n/dayjs";
 const emptyFunc = () => { };
+
 const CommentsList = ({ comments, t, onClickItemButton = emptyFunc }) => {
     return (
         <>
@@ -15,7 +16,7 @@ const CommentsList = ({ comments, t, onClickItemButton = emptyFunc }) => {
                                 </Grid>
                                 <Grid item xs>
                                     <Typography align="left" variant="subtitle2">
-                                        {comment.creator.name},  {DateTimeFormat(comment.createDate, "LL")},
+                                        {comment.creator.name},  {DateTimeFormat(comment.createDate, "LLL")},
                                         <Button variant="text" size="small" onClick={onClickItemButton}> {t("line", { rowNumber: comment.rowNumber })}</Button>
                                     </Typography>
                                     <Typography align="left" variant="subtitle2">

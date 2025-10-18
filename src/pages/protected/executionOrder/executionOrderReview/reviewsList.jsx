@@ -25,8 +25,8 @@ const ReviewsList = ({ reviews,t }) => {
                         return (
                             <TableRow key={review.id}>
                                 <TableCell align="center">{review.creator.name}</TableCell>
-                                <TableCell align="center">{DateTimeFormat(review.startTime,"LL")}</TableCell>
-                                <TableCell align="center">{DateTimeFormat(review.endTime,"LL")}</TableCell>
+                                <TableCell align="center">{DateTimeFormat(review.startTime,"LLL")}</TableCell>
+                                <TableCell align="center">{DateTimeFormat(review.endTime,"LLL")}</TableCell>
                                 <TableCell align="center">{review.consumeSeconds}</TableCell>
                             </TableRow>
                         );

@@ -371,7 +371,7 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
                             <ScVoucherBodyRow >
                                 {eoData.body.map((row, index) => {
                                     return row.dr === 0
-                                        ? (<tr key={"bodyrow" + row.rowNumber}>
+                                        ? (<tr key={"bodyrow" + row.rowNumber} >
                                             <td>
                                                 <Tooltip title={t("addComments")} key={`rowDelete${index}`}>
                                                     <span>
@@ -729,7 +729,7 @@ const ReviewEO = ({ isOpen, eoData, startTime, onBack }) => {
                         <Button variant="contained" onClick={handleBackClick} >{t("back")}</Button>
                     </DialogActions>
                 </Box>
-                <Box sx={{ width: "20%", height: "100%", display: "flex", flexDirection: "column" }}>
+                <Box sx={{ width: "20%", height: "866px", display: "flex", flexDirection: "column" }}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', height: 48 }}>
                         <Tabs value={tabValue} onChange={handleTabChange} aria-label="reviewEO tab">
                             <Tab label={t("commentsList")} id="commentsList" />
