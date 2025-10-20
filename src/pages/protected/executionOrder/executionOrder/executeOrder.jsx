@@ -225,6 +225,7 @@ const ExecutionOrder = () => {
                     isModify={diagStatus.isModify}
                     onCancel={handleDiagClose}
                     onOk={handleEditOk}
+                    t={t}
                 />;
             case 2:
                 return <QueryPanel
@@ -242,6 +243,7 @@ const ExecutionOrder = () => {
                     okClickAction={handleWoReferOk}
                     filterAction={handleAddRefAction}
                     id="refWorkOrder"
+                    t={t}
                 />;
             case 4:
                 return <QueryPanel

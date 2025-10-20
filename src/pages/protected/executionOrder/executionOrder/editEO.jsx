@@ -23,7 +23,6 @@ import { GetCacheDocById } from "../../../../storage/db/db";
 import { reqAddEO, reqEditEO } from "../../../../api/executionOrder";
 import { voucherRow, eptBodyToEoBody, bodyColumns, checkForProblem, transEOToBackend } from "./constructor";
 import { generateVoucherErrors, checkVoucherErrors } from "../../pub/pubFunction";
-import { useTranslation } from "react-i18next";
 
 // Generate initial data
 const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
@@ -39,9 +38,9 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
         status: 0,
         sourceType: "di",
         sourceBillNumber: "",
-        sourcehid: 0,
+        sourceHID: 0,
         sourceRowNumber: 0,
-        sourcebid: 0,
+        sourceBID: 0,
         startTime: currentDate,
         endTime: currentDate.add(1, "hour"),
         csa: { id: 0, code: "", name: "", description: "" },
@@ -65,9 +64,9 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
             newEO.description = oriWOR.headerDescription;
             newEO.sourceType = "wo";
             newEO.sourceBillNumber = oriWOR.billNumber;
-            newEO.sourcehid = oriWOR.hid;
+            newEO.sourceHID = oriWOR.hid;
             newEO.sourceRowNumber = oriWOR.rowNumber;
-            newEO.sourcebid = oriWOR.id;
+            newEO.sourceBID = oriWOR.id;
             newEO.sourcerowts = oriWOR.ts;
             newEO.startTime = oriWOR.startTime;
             newEO.endTime = oriWOR.endTime;
@@ -95,30 +94,75 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
     return newEO;
 };
 
+/* //生成错误信息
+const generateErrors = (rowNumber) => {
+    let voucherErrors = {
+        body: [],
+    }
+    //生成表体错误信息
+    for (let i = 0; i < rowNumber; i++) {
+        voucherErrors.body.push({});
+    }
+    return voucherErrors;
+};
+
+//检查是否存在错误信息
+const checkVoucherErrors = (voucherErrors) => {
+    if (voucherErrors === undefined) {
+        return true;
+    }
+    let number = 0;
+    //表头错误信息
+    for (let key in voucherErrors) {
+        if (key !== "body" && voucherErrors[key].isErr) {
+            number = number + 1;
+        }
+    }
+    //表体错误信息
+    voucherErrors.body.forEach((row) => {
+        for (let key in row) {
+            if (row[key].isErr) {
+                number = number + 1;
+            }
+        }
+    });
+    return number > 0;
+}; */
+
 // Add && Edit && View Execution Order 
-const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk }) => {
+const EditExecutionOrder = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk, t }) => {
     const [voucherData, setVoucherData] = useState((undefined));
     const [errors, setErrors] = useState(undefined);
     const isEdit = !(!isModify && !isNew);
-    const { t } = useTranslation();
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
+        let mounted = true;
         async function initVoucher() {
             const newEO = await getInitialValue(isNew, isModify, oriWOR, oriEO);
+            if (!mounted) return;
             setVoucherData(newEO);
-            setErrors(generateVoucherErrors(newEO.body.length));
+            const initErrors = generateVoucherErrors(newEO ? newEO.body.length : 0);
+            setErrors(initErrors);
+            setInitialized(true);
         }
         if (isOpen) {
+            setInitialized(false);
             initVoucher();
+        } else {
+            // reset when dialog is closed
+            setVoucherData(undefined);
+            setErrors(undefined);
+            setInitialized(false);
         }
+        return () => { mounted = false };
     }, [isOpen, oriWOR, isModify, oriEO, isNew]);
 
     // Get the passed data from the ScInput Component
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
-        if (voucherData === undefined || !isEdit || !isOpen) {
+        if (voucherData === undefined || !isEdit || !isOpen || !initialized) {
             return
         }
-
         let isModifyEpt = false; // Wether to update ept field
         let newEptRowNumber = 0; // The number of EPT body rows
 
@@ -184,13 +228,13 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                             let isProblem = checkForProblem(newData.body[rowIndex].epa.resultType.id, newData.body[rowIndex].errorValue, value);
                             newData.body[rowIndex].isIssue = isProblem;
                             if (isProblem === 0) {
-                                newData.body[rowIndex].isRectify = 0; 
-                                newData.body[rowIndex].isHandle = 0;                             
+                                newData.body[rowIndex].isRectify = 0;
+                                newData.body[rowIndex].isHandle = 0;
                             } else {
-                                if (newData.body[rowIndex].isRectify === 1) { 
-                                    newData.body[rowIndex].isHandle = 0;  
+                                if (newData.body[rowIndex].isRectify === 1) {
+                                    newData.body[rowIndex].isHandle = 0;
                                 } else {
-                                    newData.body[rowIndex].isHandle = 1;   
+                                    newData.body[rowIndex].isHandle = 1;
                                 }
                             }
                         }
@@ -257,7 +301,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
             let newErrors = cloneDeep(prevState);
             // If the EPT field is modified and the value is different from the previous value
             if (isModifyEpt) {
-                let bodyErrors = generateVoucherErrors(newEptRowNumber);
+                let bodyErrors = generateErrors(newEptRowNumber);
                 newErrors.body = bodyErrors.body;
             }
             switch (positionID) {
@@ -292,10 +336,10 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                 onOk();
             }
         }
-
     };
     // Add row
     const handleAddRow = () => {
+        if (!initialized || voucherData === undefined) return;
         // Deep copy voucherData
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
@@ -314,7 +358,8 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
         // Generate errors
-        let newErrors = cloneDeep(errors);
+        let newErrors = cloneDeep(errors) || { body: [] };
+        if (!Array.isArray(newErrors.body)) newErrors.body = [];
         newErrors.body.push({});
         setErrors(newErrors);
     };
@@ -333,8 +378,8 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                 newErrors.body.splice(index, 1);
             } else { // If id is not equals 0, it means the row has already been saved to the server,
                 // the row's deletion flag must be modified in the backend database.
-                newVoucherData.body[index].dr = 1;  
-                newErrors.body[index] = {}; 
+                newVoucherData.body[index].dr = 1;
+                newErrors.body[index] = {};
             }
         } else { // In the added state, delete the row directly
             newVoucherData.body.splice(index, 1);
@@ -344,7 +389,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
         setVoucherData(newVoucherData);
     };
 
-    return (voucherData !== undefined
+    return (voucherData !== undefined && errors !== undefined
         ? <>
             <Stack component="div" id="eidtEO" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
                 <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
@@ -401,7 +446,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                             <ScInput
                                 dataType={570}
                                 allowNull={false}
-                                isEdit={isEdit && voucherData.sourcebid === 0}
+                                isEdit={isEdit && voucherData.sourceBID === 0}
                                 itemShowName="csa"
                                 itemKey="csa"
                                 initValue={voucherData.csa}
@@ -431,7 +476,7 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
                             <ScInput
                                 dataType={580}
                                 allowNull={false}
-                                isEdit={isNew && isEdit && voucherData.sourcebid === 0}
+                                isEdit={isNew && isEdit && voucherData.sourceBID === 0}
                                 itemShowName="ept"
                                 itemKey="ept"
                                 initValue={voucherData.ept}
@@ -945,4 +990,4 @@ const EditExecuteDoc = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk
     );
 };
 
-export default EditExecuteDoc;
+export default EditExecutionOrder;
