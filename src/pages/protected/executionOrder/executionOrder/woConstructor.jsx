@@ -1,4 +1,3 @@
-import { dayjs,DateTimeFormat } from "../../../../i18n/dayjs";
 import { 
     CellCreator,  
     CellVoucherStatus,
@@ -7,11 +6,9 @@ import {
     CellExecutor,
     CellDept,
     CellBillDate,
+    CellTime
  } from "../../pub/pubFunction";
-// Display Time content
-const CellTime = (row,column) => {
-    return DateTimeFormat(dayjs(row[column.id]),"LLL");
-}
+
 // Define Work Order list columns
 export const columns = [
     { id: "id", label: "BID", alignment: "left", minWidth: 10, visible: false, sortField:"id", sort: true, display: { type: 0, cell1: null } },

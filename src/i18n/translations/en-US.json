@@ -332,11 +332,20 @@
     "sendTo": "Send To",
     "content": "Content",
     "contentPlaceholder": "Please enter the content",
-
     "line": "Line {{rowNumber}}",
     "sendToSomeone": "Send to {{name}}",
     "timeSeconds":"Time(s)",
-
+    "irfFilterCondition":"Issue Resolution Form filter condifiton",
+    "generateRefEOR":"Generate by referencing Execution Order Row",
+    "eorFilterCondition":"Execution Order Row filter condition",
+    "irf":"Issue Resolution Form",
+    "issueInformation":"Issue Information",
+    "eoDescription":"Execution Order Description",
+    "issueFiles":"Execution Order Row Attachments",
+    "issueResolutionInformation":"Issue Resolution Information",
+    "fixFiles":"Issue Resolution Attachments",
+    "otherInformation":"Other Information",
+    "executionValueDisp":"Execution Value",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

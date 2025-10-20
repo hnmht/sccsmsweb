@@ -97,7 +97,6 @@ const FilePicker = ({ isEdit, isOnSitePhoto, onOk, onCancel, initFiles, fileMaxS
                         const compressedFile = await imageCompression(selectedFiles[file.fileKey], compressOption);
                         formData.append("files", compressedFile);
                     } catch (error) {
-                        console.error("image compression error:", error);
                         formData.append("files", selectedFiles[file.fileKey]);
                     }
                 }
@@ -213,7 +212,6 @@ const FilePicker = ({ isEdit, isOnSitePhoto, onOk, onCancel, initFiles, fileMaxS
             {isLoading
                 ? <Loader />
                 : null
-
             }
             <DialogTitle
                 sx={{ height: 48, pb: 4, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", px: 4 }}>

@@ -8,174 +8,161 @@ import {
     Grid,
     Divider as MuiDivider,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import styled from "@emotion/styled";
-import dayjs from "../../../utils/myDayjs";
+import { dayjs, EpochTime } from "../../../i18n/dayjs";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 import ScInput from "../../../component/ScInput";
 import Loader from "../../../component/Loader/Loader";
 import store from "../../../store";
-
-import { reqAddDD, reqEditDD } from "../../../api/disposeDoc";
+import { checkVoucherNoBodyErrors } from "../pub/pubFunction";
+import { reqAddIRF, reqEditIRF } from "../../../api/issueResolutionForm";
 
 const Divider = styled(MuiDivider)`   
     color:${(props) => props.theme.palette.text.disabled};
 `;
-//生成初始数据
-const getInitialValue = async (isNew, isModify, oriRED, oriDD) => {
+// Gendrate initial data
+const getInitialValue = async (isNew, isModify, oriEOR, oriIRF) => {
     const { user } = store.getState();
+    const currentTime = dayjs(new Date);
+    const currentDate = currentTime.startOf("day");
     const { person, department } = user;
-    let newDD = {};
+    const emptyPerson = { id: 0, code: "", name: "" };
+    let newIRF = {};
     if (isNew) {
-        if (oriRED) {//参照执行单新增
-            newDD = {
+        if (oriEOR) {// Add by reference the Execution Order Row
+            newIRF = {
                 id: 0,
-                billnumber: "",
-                billdate: dayjs(new Date()).format("YYYYMMDD"),
-                sceneitem: oriRED.sceneitem,
-                eid: oriRED.eid,
-                exectivevalue: oriRED.exectivevalue,
-                exectivevaluedisp: oriRED.exectivevaluedisp,
-                execperson: oriRED.execperson,
+                billNumber: "",
+                billDate: currentDate,
+                csa: oriEOR.csa,
+                epa: oriEOR.epa,
+                executionValue: oriEOR.executionValue,
+                executionValueDisp: oriEOR.executionValueDisp,
+                executor: oriEOR.executor,
                 department: department,
-                disposeperson: person,
-                isfinish: 1,
-                starttime: oriRED.handlestarttime,
-                endtime: oriRED.handleendtime,
-                eddescription: oriRED.description,
+                issueOwner: person,
+                isFinish: 1,
+                startTime: oriEOR.handleStartTime,
+                endTime: oriEOR.handleendtime,
+                eoDescription: oriEOR.description,
                 description: "",
                 status: 0,
-                risklevel:oriRED.risklevel,
-                sourcetype: "ED",
-                sourcebillnumber: oriRED.billnumber,
-                sourcehid: oriRED.hid,
-                sourcerownumber: oriRED.rownumber,
-                sourcebid: oriRED.id,
-                sourcerowts: oriRED.ts,
-                problemfiles: oriRED.edfiles ? oriRED.edfiles : [],
-                disposefiles: [],
+                riskLevel: oriEOR.riskLevel,
+                sourceType: "EO",
+                sourceBillNumber: oriEOR.billNumber,
+                sourceHID: oriEOR.hid,
+                sourceRowNumber: oriEOR.rowNumber,
+                sourceBID: oriEOR.id,
+                sourceRowTs: oriEOR.ts,
+                issueFiles: oriEOR.eoFiles ? oriEOR.eoFiles : [],
+                fixFiles: [],
                 dr: 0,
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: emptyPerson,
+                createDate: currentTime,
+                modifyDate: EpochTime,
+                confirmer: emptyPerson,
+                confirmDate: EpochTime
             }
-        } else { //不允许直接新增
-            newDD = undefined;
+        } else { // Direct adding is not permitted
+            newIRF = undefined;
         }
     } else {
-        if (!oriDD) { //错误
-            newDD = undefined;
+        if (!oriIRF) { // Error
+            newIRF = undefined;
         } else {
-            if (isModify) { //编辑
-                newDD = cloneDeep(oriDD);
-                newDD.createdate = dayjs(newDD.createdate).format("YYYYMMDDHHmm");
-                newDD.modifyuser = person;
-                newDD.modifydate = dayjs(newDD.modifydate).format("YYYYMMDDHHmm");
-                newDD.confirmuser = { id: 0, code: "", name: "" };
-                newDD.confirmdate = dayjs(newDD.confirmdate).format("YYYYMMDDHHmm");
-            } else { //查看
-                newDD = cloneDeep(oriDD);
-                newDD.createdate = dayjs(newDD.createdate).format("YYYYMMDDHHmm");
-                newDD.modifydate = dayjs(newDD.modifydate).format("YYYYMMDDHHmm");
-                newDD.confirmdate = dayjs(newDD.confirmdate).format("YYYYMMDDHHmm");
+            if (isModify) { // Edit
+                newIRF = cloneDeep(oriIRF);
+                newIRF.modifier = person;
+                newIRF.modifyDate = currentTime;
+                newIRF.confirmer = emptyPerson;
+                newIRF.confirmDate = EpochTime;
+            } else { // View
+                newIRF = cloneDeep(oriIRF);
             }
         }
     }
-    return newDD;
+    return newIRF;
 };
-//检查是否存在错误信息
-const checkVoucherErrors = (voucherErrors) => {
-    let number = 0;
-    //表头错误信息
-    for (let key in voucherErrors) {
-        if (key !== "body" && voucherErrors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
-};
-const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk }) => {
+// Add && Edit && View Issue Resolution Form 
+const EditIRF = ({ isOpen, isNew, isModify, oriEOR, oriIRF, onCancel, onOk }) => {
     const [voucherData, setVoucherData] = useState((undefined));
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function initVoucher() {
-            const newDD = await getInitialValue(isNew, isModify, oriRED, oriDD);
-            setVoucherData(newDD);
+            const newIRF = await getInitialValue(isNew, isModify, oriEOR, oriIRF);
+            setVoucherData(newIRF);
         }
         if (isOpen) {
             initVoucher();
         }
-    }, [isOpen, oriRED, isModify, oriDD, isNew]);
-    //获取值操作
+    }, [isOpen, oriEOR, isModify, oriIRF, isNew]);
+    // Get the passed data from the ScInput Component
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
         if (!isOpen || !isEdit || voucherData === undefined) {
             return
         }
-        //更新errors
+        // Change Errors
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新
+        // CHange voucherData
         setVoucherData((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
             return newValue;
         });
     };
-    //增加&编辑处理单
-    const handleAddDD = async () => {
-        const thisDD = cloneDeep(voucherData);
-        delete thisDD.createdate
-        delete thisDD.modifydate
-        delete thisDD.confirmdate
+    // Add or Edit Issue Resolution Form
+    const handleAddIRF = async () => {
+        const thisIRF = cloneDeep(voucherData);
+        delete thisIRF.createDate
+        delete thisIRF.modifyDate
+        delete thisIRF.confirmDate
 
         if (isModify) {
-            let editRes = await reqEditDD(thisDD);
-            // console.log(thisDD);
+            let editRes = await reqEditIRF(thisIRF);
             if (editRes.status) {
-                message.success("修改问题处理单" + thisDD.billnumber + "成功");
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改问题处理单" + thisDD.billnumber + "失败:" + editRes.data.statusMsg);
             }
         } else {
-            let addRes = await reqAddDD(thisDD);
+            let addRes = await reqAddIRF(thisIRF);
             if (addRes.status) {
-                message.success("新增问题处理单成功,单据编号:" + addRes.data.data.billnumber);
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增问题处理单失败:" + addRes.data.statusMsg);
             }
         }
     };
 
     return (voucherData !== undefined
         ? <>
-            <Stack component="div" id="editDD" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
+            <Stack component="div" id="editIRF" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
                 <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                    <Typography variant="h3" component={"h3"}>问题处理单</Typography>
+                    <Typography variant="h3" component={"h3"}>{t("irf")}</Typography>
                 </Stack>
                 <DialogContent>
-                    <Divider textAlign="right" sx={{ mt: 0, mb: 4 }}>问题信息</Divider>
+                    <Divider textAlign="right" sx={{ mt: 0, mb: 4 }}>{t("issueInformation")}</Divider>
                     <Grid container spacing={2}>
                         <Grid item xs={2}>
                             <ScInput
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="单据编码"
-                                itemKey="billnumber"
-                                initValue={voucherData.billnumber}
+                                itemShowName="billNumber"
+                                itemKey="billNumber"
+                                initValue={voucherData.billNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billnumber"
+                                key="billNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -185,12 +172,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={306}
                                 allowNull={false}
                                 isEdit={false}
-                                itemShowName="单据日期"
-                                itemKey="billdate"
-                                initValue={voucherData.billdate}
+                                itemShowName="billDate"
+                                itemKey="billDate"
+                                initValue={voucherData.billDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billdate"
+                                key="billDate"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -200,12 +187,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="执行人"
-                                itemKey="execperson"
-                                initValue={voucherData.execperson}
+                                itemShowName="executor"
+                                itemKey="executor"
+                                initValue={voucherData.executor}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="execperson"
+                                key="executor"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -215,12 +202,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={570}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="现场"
-                                itemKey="sceneitem"
-                                initValue={voucherData.sceneitem}
+                                itemShowName="csa"
+                                itemKey="csa"
+                                initValue={voucherData.csa}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sceneitem"
+                                key="csa"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -230,12 +217,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={560}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="执行项目"
-                                itemKey="eid"
-                                initValue={voucherData.eid}
+                                itemShowName="epa"
+                                itemKey="epa"
+                                initValue={voucherData.epa}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="eid"
+                                key="epa"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -245,13 +232,13 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="执行项目值"
-                                itemKey="exectivevaluedisp"
+                                itemShowName="executionValueDisp"
+                                itemKey="executionValueDisp"
                                 placeholder={""}
-                                initValue={voucherData.exectivevaluedisp}
+                                initValue={voucherData.executionValueDisp}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="exectivevaluedisp"
+                                key="executionValueDisp"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -261,13 +248,13 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="问题说明"
-                                itemKey="eddescription"
-                                placeholder={"请输入说明"}
-                                initValue={voucherData.eddescription}
+                                itemShowName="eoDescription"
+                                itemKey="eoDescription"
+                                placeholder={""}
+                                initValue={voucherData.eoDescription}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="eddescription"
+                                key="eoDescription"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -277,13 +264,13 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={590}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="风险等级"
-                                itemKey="risklevel"
-                                placeholder={"查看风险等级"}
-                                initValue={voucherData.risklevel}
+                                itemShowName="riskLevel"
+                                itemKey="riskLevel"
+                                placeholder={""}
+                                initValue={voucherData.riskLevel}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="risklevel"
+                                key="riskLevel"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -293,12 +280,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={902}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="执行单附件"
-                                itemKey="problemfiles"
-                                initValue={voucherData.problemfiles}
+                                itemShowName="issueFiles"
+                                itemKey="issueFiles"
+                                initValue={voucherData.issueFiles}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="problemfiles"
+                                key="issueFiles"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -308,12 +295,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="来源单据类型"
-                                itemKey="sourcetype"
-                                initValue={voucherData.sourcetype}
+                                itemShowName="sourceType"
+                                itemKey="sourceType"
+                                initValue={voucherData.sourceType}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sourcetype"
+                                key="sourceType"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -323,12 +310,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="来源单据号"
-                                itemKey="sourcebillnumber"
-                                initValue={voucherData.sourcebillnumber}
+                                itemShowName="sourceBillNumber"
+                                itemKey="sourceBillNumber"
+                                initValue={voucherData.sourceBillNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sourcebillnumber"
+                                key="sourceBillNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -338,25 +325,25 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="来源单据行号"
-                                itemKey="sourcerownumber"
-                                initValue={voucherData.sourcerownumber}
+                                itemShowName="sourceRowNumber"
+                                itemKey="sourceRowNumber"
+                                initValue={voucherData.sourceRowNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="sourcerownumber"
+                                key="sourceRowNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
                         </Grid>
                     </Grid>
-                    <Divider textAlign="right" sx={{ my: 4 }}>处理信息</Divider>
+                    <Divider textAlign="right" sx={{ my: 4 }}>{t("issueResolutionInformation")}</Divider>
                     <Grid container spacing={2}>
                         <Grid item xs={2}>
                             <ScInput
                                 dataType={520}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="处理部门"
+                                itemShowName="department"
                                 itemKey="department"
                                 initValue={voucherData.department}
                                 pickDone={handleGetValue}
@@ -371,12 +358,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={510}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="处理人"
-                                itemKey="disposeperson"
-                                initValue={voucherData.disposeperson}
+                                itemShowName="issueOwner"
+                                itemKey="issueOwner"
+                                initValue={voucherData.issueOwner}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="disposeperson"
+                                key="issueOwner"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -386,12 +373,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={307}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="处理开始时间"
-                                itemKey="starttime"
-                                initValue={voucherData.starttime}
+                                itemShowName="startTime"
+                                itemKey="startTime"
+                                initValue={voucherData.startTime}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="starttime"
+                                key="startTime"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -401,12 +388,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={307}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="处理完成时间"
-                                itemKey="endtime"
-                                initValue={voucherData.endtime}
+                                itemShowName="endTime"
+                                itemKey="endTime"
+                                initValue={voucherData.endTime}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="endtime"
+                                key="endTime"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -416,12 +403,12 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={902}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="处理单附件"
-                                itemKey="disposefiles"
-                                initValue={voucherData.disposefiles}
+                                itemShowName="fixFiles"
+                                itemKey="fixFiles"
+                                initValue={voucherData.fixFiles}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="disposefiles"
+                                key="fixFiles"
                                 positionID={0}
                                 rowIndex={-1}
                                 isOnSitePhoto={false}
@@ -432,7 +419,7 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={405}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="状态"
+                                itemShowName="status"
                                 itemKey="status"
                                 initValue={voucherData.status}
                                 pickDone={handleGetValue}
@@ -447,9 +434,9 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="处理说明"
+                                itemShowName="description"
                                 itemKey="description"
-                                placeholder={"请输入说明"}
+                                placeholder={"descriptionPlaceholder"}
                                 initValue={voucherData.description}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
@@ -457,34 +444,34 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 positionID={0}
                                 rowIndex={-1}
                             />
-                        </Grid>                        
+                        </Grid>
                     </Grid>
-                    <Divider textAlign="right" sx={{ my: 4 }}>其他信息</Divider>
+                    <Divider textAlign="right" sx={{ my: 4 }}>{t("otherInformation")}</Divider>
                     <Grid container spacing={2}>
                         <Grid item xs={2}>
                             <ScInput
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建人"
-                                itemKey="createuser"
-                                initValue={voucherData.createuser}
+                                itemShowName="creator"
+                                itemKey="creator"
+                                initValue={voucherData.creator}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="createuser"
+                                key="creator"
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建时间"
-                                itemKey="createdate"
-                                initValue={voucherData.createdate}
+                                itemShowName="createDate"
+                                itemKey="createDate"
+                                initValue={voucherData.createDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="createdate"
+                                key="createDate"
                             />
                         </Grid>
                         <Grid item xs={2}>
@@ -492,27 +479,27 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认人"
-                                itemKey="confirmuser"
-                                initValue={voucherData.confirmuser}
+                                itemShowName="confirmer"
+                                itemKey="confirmer"
+                                initValue={voucherData.confirmer}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmuser"
+                                key="confirmer"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认时间"
-                                itemKey="confirmdate"
-                                initValue={voucherData.confirmdate}
+                                itemShowName="confirmDate"
+                                itemKey="confirmDate"
+                                initValue={voucherData.confirmDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmdate"
+                                key="confirmDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -522,25 +509,25 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="修改人"
-                                itemKey="modifyuser"
-                                initValue={voucherData.modifyuser}
+                                itemShowName="modifier"
+                                itemKey="modifier"
+                                initValue={voucherData.modifier}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="modifyuser"
+                                key="modifier"
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="修改时间"
-                                itemKey="modifydate"
-                                initValue={voucherData.modifydate}
+                                itemShowName="modifyDate"
+                                itemKey="modifyDate"
+                                initValue={voucherData.modifyDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="modifydate"
+                                key="modifyDate"
                             />
                         </Grid>
 
@@ -550,10 +537,10 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
                 <DialogActions sx={{ m: 1 }}>
                     {isEdit
                         ? <>
-                            <Button color="error" onClick={onCancel} >取消</Button>
-                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddDD}>{isModify ? "保存" : "增加"}</Button>
+                            <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                            <Button variant="contained" disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddIRF}>{t(isModify ? "save" : "add")}</Button>
                         </>
-                        : <Button variant="contained" onClick={onCancel} >返回</Button>
+                        : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                     }
                 </DialogActions>
             </Stack>
@@ -561,4 +548,4 @@ const EidtDisposeDoc = ({ isOpen, isNew, isModify, oriRED, oriDD, onCancel, onOk
         : <Loader />
     );
 };
-export default EidtDisposeDoc;
+export default EditIRF;

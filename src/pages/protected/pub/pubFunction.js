@@ -1,6 +1,6 @@
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
-import { DateTimeFormat, CheckTimeZero } from "../../../i18n/dayjs";
+import { DateTimeFormat, CheckTimeZero,dayjs } from "../../../i18n/dayjs";
 import i18n from "../../../i18n/i18n";
 
 // Get Operator
@@ -136,5 +136,19 @@ export const CellEPT = (row,column) => {
 // Executor display content
 export const CellExecutor = (row,column) => {
     return row.executor.name;
+};
+
+// Issue Owner display content
+export const CellIssueOwner = (row,column) => {
+    return row.issueOwner.name;
+};
+// Display Time content
+export const CellTime = (row, column) => {
+    return DateTimeFormat(dayjs(row[column.id]), "LLL");
+};
+
+// Display Exectuion Project content
+export const CellEPA = (row,column) => {
+    return row.epa.name;
 }
 

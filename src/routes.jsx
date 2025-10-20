@@ -15,10 +15,36 @@ import Page203 from "./pages/auth/Page203";
 import ProtectedPage from "./pages/protected/ProtectedPage";
 import DownloadApp from "./pages/downloadApp/downloadApp";
 
+const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); // Dashboard
+const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); // Calendar
+const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  // Address Book
+
+// Constrction Site Management
+const WorkOrder = Loadable(lazy(() => import("./pages/protected/workOrder/workOrder")));  // Work Order
+const ExecutionOrder = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrder/executeOrder"))); // Execution Order
+const ExecutionOrderReview = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrderReview/executionOrderReView"))); // Execution Order Review
+const IssueResolutionForm = Loadable(lazy(() => import("./pages/protected/issueResolutionForm/issueResolutionForm"))); // Issue Resolution Form
+const WorkOrderStat = Loadable(lazy(() => import("./pages/protected/reports/workOrderStat/workOrderStat")));
+const ExecuteDocStat = Loadable(lazy(() => import("./pages/protected/reports/executeDocStat/executeDocStat")));
+const ProblemDisposeStat = Loadable(lazy(() => import("./pages/protected/reports/problemDisposeStat/problemDisposeStat")));
+// Document
+const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); // Doucment Category
+const UploadDocument = Loadable(lazy(() => import("./pages/protected/uploadDocument/uploadDocument"))); //上传文档
+const LookupDocument = Loadable(lazy(() => import("./pages/protected/lookupDocument/lookupDocument"))); //查阅文档
+// Training
+const TC = Loadable(lazy(() => import("./pages/protected/tc/tc"))); // Training Course
+const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/trainRecord"))); //培训记录
+const GiveLessons = Loadable(lazy(() => import("./pages/protected/giveLessons/giveLessons"))); //授课查询
+const ReceiveTraining = Loadable(lazy(() => import("./pages/protected/receiveTraining/receiveTraining"))); //受训查询
+// Personal Protective Equipment
+const LpaQuota = Loadable(lazy(() => import("./pages/protected/lpaQuota/lpaQuota"))); //劳保用品定额
+const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWizard"))); //发放向导
+const LpaIssueDoc = Loadable(lazy(() => import("./pages/protected/lpaIssueDoc/lpaIssueDoc"))); //发放单
+const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery"))); //发放查询
 // Msster Data
 const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); // Department
-const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); // Construction Site Category
 const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); // Position
+const CSC = Loadable(lazy(() => import("./pages/protected/csc/csc"))); // Construction Site Category
 const CSA = Loadable(lazy(() => import("./pages/protected/csa/csa"))); // Construction Site Archive
 const UDC = Loadable(lazy(() => import("./pages/protected/udc/udc")));  // User Defined Category
 const UDA = Loadable(lazy(() => import("./pages/protected/uda/uda"))); // User Define Archive
@@ -26,30 +52,8 @@ const EPC = Loadable(lazy(() => import("./pages/protected/epc/epc")));  // Execu
 const EPA = Loadable(lazy(() => import("./pages/protected/epa/epa"))); // Execution Project
 const RiskLevel = Loadable(lazy(() => import("./pages/protected/riskLevel/riskLevel"))); // Risk Level
 const PPE = Loadable(lazy(() => import("./pages/protected/ppe/ppe"))); // Personal Protective Equipment
-
-//文档
-const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); // Doucment Category
-const UploadDocument = Loadable(lazy(() => import("./pages/protected/uploadDocument/uploadDocument"))); //上传文档
-const LookupDocument = Loadable(lazy(() => import("./pages/protected/lookupDocument/lookupDocument"))); //查阅文档
-//培训课程
-const TC = Loadable(lazy(() => import("./pages/protected/tc/tc"))); // Training Course
-const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/trainRecord"))); //培训记录
-const GiveLessons = Loadable(lazy(() => import("./pages/protected/giveLessons/giveLessons"))); //授课查询
-const ReceiveTraining = Loadable(lazy(() => import("./pages/protected/receiveTraining/receiveTraining"))); //受训查询
-
-// Personal Protective Equipment
-const LpaQuota = Loadable(lazy(() => import("./pages/protected/lpaQuota/lpaQuota"))); //劳保用品定额
-const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWizard"))); //发放向导
-const LpaIssueDoc = Loadable(lazy(() => import("./pages/protected/lpaIssueDoc/lpaIssueDoc"))); //发放单
-const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery"))); //发放查询
-
+// Template
 const EPT = Loadable(lazy(() => import("./pages/protected/ept/ept"))); // Execution Project Template
-const WorkOrder = Loadable(lazy(() => import("./pages/protected/workOrder/workOrder")));  // Work Order
-const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); //首页
-const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); //日程
-const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  //通讯录
-//问题处理单
-const DisposeDoc = Loadable(lazy(() => import("./pages/protected/disposeDoc/disposeDoc")));
 // System Administration
 const Role = Loadable(lazy(() => import("./pages/protected/role/role")));
 const User = Loadable(lazy(() => import("./pages/protected/user/user")));
@@ -57,15 +61,7 @@ const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permi
 const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); 
 // Settings
 const CSO = Loadable(lazy(() => import("./pages/protected/cso/cso")));
-const Registration = Loadable(lazy(() => import("./pages/protected/registration/registration")));
 const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetUp/landingPageSetup")));
-// Execution Order
-const ExecutionOrder = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrder/executeOrder")));
-const ExecutionOrderReview = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrderReview/executionOrderReView")));
-//报表
-const ExecuteDocStat = Loadable(lazy(() => import("./pages/protected/reports/executeDocStat/executeDocStat")));
-const ProblemDisposeStat = Loadable(lazy(() => import("./pages/protected/reports/problemDisposeStat/problemDisposeStat")));
-const WorkOrderStat = Loadable(lazy(() => import("./pages/protected/reports/workOrderStat/workOrderStat")));
 //profile
 const Profile = Loadable(lazy(() => import("./pages/protected/profile/profile")));
 const About = Loadable(lazy(() => import("./pages/protected/about/about")));
@@ -129,21 +125,21 @@ const routes = [
                 element: <AddressBook />
             },
             {
-                path: "/private/workOrder/workOrder",
+                path: "/private/csm/workOrder",
                 element: <WorkOrder />
             },
            
             {
-                path: "/private/execute/executionOrder",
+                path: "/private/csm/executionOrder",
                 element: <ExecutionOrder />
             },
             {
-                path: "/private/execute/EOReview",
+                path: "/private/csm/EOReview",
                 element: <ExecutionOrderReview />
             },
             {
-                path: "/private/problem/disposeDoc",
-                element: <DisposeDoc />
+                path: "/private/csm/issueResolutionForm",
+                element: <IssueResolutionForm />
             },
             {
                 path: "/private/document/category",
@@ -264,10 +260,6 @@ const routes = [
             {
                 path: "/private/options/constructionSiteOptions",
                 element: <CSO />
-            },
-            {
-                path: "/private/options/register",
-                element: <Registration />
             },
             {
                 path: "/private/options/landingPageSetup",

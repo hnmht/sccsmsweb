@@ -27,7 +27,7 @@
     "@mui/x-date-pickers": "5.0.20",
     "@reduxjs/toolkit": "1.8.2",
     "axios": "^0.27.2",
-    "browser-image-compression": "^2.0.0",
+    "browser-image-compression": "^2.0.2",
     "chart.js": "^4.2.1",
     "dayjs": "^1.11.7",
     "dexie": "^3.2.2",
