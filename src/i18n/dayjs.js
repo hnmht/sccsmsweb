@@ -1,38 +1,17 @@
-import dayjs from 'dayjs';
-import weekday from "dayjs/plugin/weekday";
-import quarterOfYear from "dayjs/plugin/quarterOfYear";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import localizedFormat from "dayjs/plugin/localizedFormat";
-import updateLocale from "dayjs/plugin/updateLocale";
-import localData from "dayjs/plugin/localeData";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-import "./locale/en-US";
-import "./locale/zh-Hans";
-// Add the languages you will support
-import i18n from "./i18n";
-
-dayjs.extend(localizedFormat);
-dayjs.extend(updateLocale);
-dayjs.extend(weekday);
-dayjs.extend(quarterOfYear);
-dayjs.extend(customParseFormat);
-dayjs.extend(localData);
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
+import { i18n, dayjs } from "./i18n";
 const currentTimezone = dayjs.tz.guess();
 const EpochTime = dayjs.utc('1970-01-01 00:00:00');
 
-const DateTimeFormat = (date = new Date(), formats = "L") => {
-    const lang = i18n.language || "en-US";
-    dayjs.locale(lang);
+const DateTimeFormat = (date = new Date(), formats = "L") => {  
     return dayjs(date).format(formats);
+};
+const DateTimeFormatSpec = (date = new Date(), formats = "L") => {
+    const lang = dayjs.locale();
+    var f = dayjs.Ls[lang.toLowerCase()].formats[formats];
+    return dayjs(date).format(f);
 };
 
 const UnixTimeFormat = (unixSeconds, formats = "L") => {
-    const lang = i18n.language || "en-US";
-    dayjs.locale(lang);
     return dayjs.unix(unixSeconds).format(formats);
 };
 
@@ -40,7 +19,7 @@ const DateInputMask = () => {
     const lang = i18n.language;
     var mask = dayjs.Ls[lang.toLowerCase()].inputMask.L;
     if (mask === undefined) {
-        mask = dayjs.Ls["en-us"].inputMask.L;
+        mask = dayjs.Ls["en-US"].inputMask.L;
     }
     return mask;
 };
@@ -49,7 +28,7 @@ const DateTimeInputMask = () => {
     const lang = i18n.language;
     var mask = dayjs.Ls[lang.toLowerCase()].inputMask.LLLL;
     if (mask === undefined) {
-        mask = dayjs.Ls["en-us"].inputMask.LLLL;
+        mask = dayjs.Ls["en-US"].inputMask.LLLL;
     }
     return mask;
 };
@@ -87,6 +66,7 @@ const CheckTimeZero = (date) => {
 export {
     dayjs,
     DateTimeFormat,
+    DateTimeFormatSpec,
     UnixTimeFormat,
     DateInputMask,
     DateToLocalDate,

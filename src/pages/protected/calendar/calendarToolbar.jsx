@@ -6,7 +6,7 @@ import WeekIcon from '@mui/icons-material/CalendarViewWeekOutlined';
 import ListIcon from '@mui/icons-material/FormatListNumberedOutlined';
 import RightIcon from '@mui/icons-material/ChevronRightOutlined';
 import LeftIcon from '@mui/icons-material/ChevronLeftOutlined';
-import dayjs from "../../../utils/myDayjs";
+import { dayjs } from '../../../i18n/i18n';
 import ScInput from "../../../component/ScInput";
 
 const viewOptions = [

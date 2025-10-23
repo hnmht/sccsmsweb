@@ -5,7 +5,7 @@ import { resetUser } from "../store/slice/user";
 import { requestStart, requestEnd } from "../store/slice/reqStatus";
 import { resetDynamicData } from "../store/slice/dynamicData";
 import { message } from "mui-message";
-import i18n from "../i18n/i18n";
+import { i18n } from "../i18n/i18n";
 
 const service = axios.create({
     baseURL: "/api/v1", //"http://localhost:8080/api/v1"
@@ -37,7 +37,7 @@ service.interceptors.request.use(
 
 // Response interceptor
 service.interceptors.response.use(
-    (response) => {          
+    (response) => {
         if (response.config.isLoading) {
             store.dispatch(requestEnd());
         }

@@ -20,6 +20,7 @@ import { spacing } from "@mui/system";
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
 import { fieldNames, transReviewDataToTable } from "./constructor";
 import { MultiSortByArr } from "../../../utils/tools";
+
 const Card = styled(MuiCard)(spacing);
 const Paper = styled(MuiPaper)(spacing);
 const TableWrapper = styled.div`
@@ -28,10 +29,10 @@ const TableWrapper = styled.div`
     max-width: calc(100vw - ${(props) => props.theme.spacing(12)});
 `;
 
-const Reviewed = ({ reviewData,chip }) => {
-    const [groupBy, setGroupBy] = useState("siname");
+const Reviewed = ({ reviewData, chip, t }) => {
+    const [groupBy, setGroupBy] = useState("csaName");
     const [anchorEl, setAnchorEl] = useState(null);
-    //转换数据
+    // Convert data
     const data = transReviewDataToTable(reviewData, groupBy);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -46,13 +47,13 @@ const Reviewed = ({ reviewData,chip }) => {
     return (<Card mb={6}>
         <CardHeader
             action={
-                <><Chip label={chip} color="secondary" />
+                <><Chip label={t(chip)} color="secondary" />
                     <IconButton aria-label="settings" size="large" onClick={handleClick}>
                         <MoreVertIcon />
                     </IconButton>
                 </>
             }
-            title={`审阅排名(按${fieldNames[groupBy]})`}
+            title={t("reviewRanking", { name: t(fieldNames[groupBy]) })}
         />
         <Menu
             id="eid-menu"
@@ -60,9 +61,9 @@ const Reviewed = ({ reviewData,chip }) => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
         >
-            <MenuItem onClick={() => handleClickMenuItem("createusername")}>按执行人</MenuItem>
-            <MenuItem onClick={() => handleClickMenuItem("siname")}>按现场</MenuItem>
-            <MenuItem onClick={() => handleClickMenuItem("billnumber")}>按单据号</MenuItem>
+            <MenuItem onClick={() => handleClickMenuItem("creatorName")}>{t("executor")}</MenuItem>
+            <MenuItem onClick={() => handleClickMenuItem("csaName")}>{t("csa")}</MenuItem>
+            <MenuItem onClick={() => handleClickMenuItem("billNumber")}>{t("billNumber")}</MenuItem>
         </Menu>
         <Paper>
             <TableWrapper>
@@ -71,7 +72,7 @@ const Reviewed = ({ reviewData,chip }) => {
                         <TableHead>
                             <TableRow>
                                 {data.columns.map(col =>
-                                    <TableCell align="center" key={col}>{col}</TableCell>)
+                                    <TableCell align="center" key={col}>{t(col)}</TableCell>)
                                 }
                             </TableRow>
                         </TableHead>

@@ -28,10 +28,10 @@ const TableWrapper = styled.div`
     max-width: calc(100vw - ${(props) => props.theme.spacing(12)});
 `;
 
-const BeReviewed = ({ reviewData,chip }) => {
-    const [groupBy, setGroupBy] = useState("reviewusername");
+const BeReviewed = ({ reviewData, chip, t }) => {
+    const [groupBy, setGroupBy] = useState("reviewerName");
     const [anchorEl, setAnchorEl] = useState(null);
-    //转换数据
+    // Convert Data
     const data = transReviewDataToTable(reviewData, groupBy);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -47,13 +47,13 @@ const BeReviewed = ({ reviewData,chip }) => {
         <CardHeader
             action={
                 <>
-                    <Chip label={chip} color="secondary"/>
+                    <Chip label={t(chip)} color="secondary" />
                     <IconButton aria-label="settings" size="large" onClick={handleClick}>
                         <MoreVertIcon />
                     </IconButton>
                 </>
             }
-            title={`被审阅排名(按${fieldNames[groupBy]})`}
+            title={t("beReviewedRanking", { name: t(fieldNames[groupBy]) })}
         />
         <Menu
             id="eid-menu"
@@ -61,9 +61,9 @@ const BeReviewed = ({ reviewData,chip }) => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
         >
-            <MenuItem onClick={() => handleClickMenuItem("reviewusername")}>按审阅人</MenuItem>
-            <MenuItem onClick={() => handleClickMenuItem("siname")}>按现场</MenuItem>
-            <MenuItem onClick={() => handleClickMenuItem("billnumber")}>按单据号</MenuItem>
+            <MenuItem onClick={() => handleClickMenuItem("reviewerName")}>{t("reviewer")}</MenuItem>
+            <MenuItem onClick={() => handleClickMenuItem("csaName")}>{t("csa")}</MenuItem>
+            <MenuItem onClick={() => handleClickMenuItem("billNumber")}>{t("billNumber")}</MenuItem>
         </Menu>
         <Paper>
             <TableWrapper>
@@ -72,7 +72,7 @@ const BeReviewed = ({ reviewData,chip }) => {
                         <TableHead>
                             <TableRow>
                                 {data.columns.map(col =>
-                                    <TableCell align="center" key={col}>{col}</TableCell>)
+                                    <TableCell align="center" key={col}>{t(col)}</TableCell>)
                                 }
                             </TableRow>
                         </TableHead>

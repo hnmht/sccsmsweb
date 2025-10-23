@@ -1,16 +1,3 @@
-import dayjs from 'dayjs';
-import weekday from "dayjs/plugin/weekday";
-import quarterOfYear from "dayjs/plugin/quarterOfYear";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import localizedFormat from "dayjs/plugin/localizedFormat";
-import updateLocale from "dayjs/plugin/updateLocale";
-import "dayjs/locale/zh-cn";
-import "dayjs/locale/en";
-
-dayjs.extend(localizedFormat);
-dayjs.extend(updateLocale);
-dayjs.extend(weekday);
-dayjs.extend(quarterOfYear);
-dayjs.extend(customParseFormat);
+import { dayjs } from '../i18n/i18n';
 
 export default dayjs;

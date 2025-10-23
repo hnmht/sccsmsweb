@@ -1,35 +1,34 @@
-import dayjs from "../../../utils/myDayjs";
-
+import { i18n,dayjs } from "../../../i18n/i18n";
 export const fieldNames = {
-    siname: "现场",
-    respname: "负责人",
-    eidname: "执行项目",
-    eicname: "执行项目类别",
-    sicname: "现场类别",
-    createusername: "执行人",
-    isfinish: "是否处理完成",
-    isrectify: "是否现场整改",
-    billnumber: "单据号",
-    reviewusername: "审阅人",
-    rlname: "风险等级"
+    csaName: "csa",
+    respName: "respPerson",
+    epaName: "epa",
+    epcName: "epc",
+    cscName: "csc",
+    creatorName: "executor",
+    isFinish: "isCompleted",
+    isRectify: "isRectify",
+    billNumber: "billNumber",
+    reviewerName: "reviewer",
+    rlName: "riskLevel"
 }
 
 export const initDateIntervals = () => {
+    const currentTime = dayjs(new Date());
     return [
-        { id: "today", label: "今天", startDate: dayjs(new Date()).format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYYMMDD") },
-        { id: "yesterday", label: "昨天", startDate: dayjs(new Date()).subtract(1, "day").format("YYYYMMDD"), endDate: dayjs(new Date()).subtract(1, "day").format("YYYYMMDD") },
-        { id: "thisweek", label: "本周", startDate: dayjs().weekday(0).format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYYMMDD") },
-        { id: "lastweek", label: "上周", startDate: dayjs().add(-1, 'week').startOf('week').format('YYYYMMDD'), endDate: dayjs().add(-1, 'week').endOf('week').format('YYYYMMDD') },
-        { id: "thismonth", label: "本月", startDate: dayjs().startOf('month').format('YYYYMMDD'), endDate: dayjs(new Date()).format("YYYYMMDD") },
-        { id: "lastmonth", label: "上月", startDate: dayjs().add(-1, 'month').startOf('month').format('YYYYMMDD'), endDate: dayjs().add(-1, 'month').endOf('month').format('YYYYMMDD') }
+        { id: "today", label: "today", startDate: currentTime.startOf("day"), endDate: currentTime.endOf("day") },
+        { id: "yesterday", label: "yesterday", startDate: currentTime.subtract(1, "day").startOf("day"), endDate: currentTime.subtract(1, "day").endOf("day") },
+        { id: "thisweek", label: "thisWeek", startDate: dayjs().weekday(0).startOf("day"), endDate: currentTime.endOf("day") },
+        { id: "lastweek", label: "lastWeek", startDate: dayjs().add(-1, 'week').startOf('week'), endDate: dayjs().add(-1, 'week').endOf('week') },
+        { id: "thismonth", label: "thisMonth", startDate: dayjs().startOf('month'), endDate: currentTime.endOf("day") },
+        { id: "lastmonth", label: "lastMonth", startDate: dayjs().add(-1, 'month').startOf('month'), endDate: dayjs().add(-1, 'month').endOf('month') }
     ];
 };
 
 
 export const transProblemDataToPieData = (problemdata, field) => {
     let newMap = new Map();
-
-    //按照field汇总
+    // Aggregate by field
     problemdata.forEach(item => {
         let problemNumber = 0;
         if (isNaN(newMap.get(item[field]))) {
@@ -44,13 +43,13 @@ export const transProblemDataToPieData = (problemdata, field) => {
         labels: [],
         datasets: [
             {
-                label: '问题数量',
+                label: i18n.t('count'),
                 data: [],
                 borderWidth: 1,
             },
         ],
     };
-    //map转数组
+    // Convert map to Array
     let rows = [];
     for (let [key, value] of newMap.entries()) {
         let row = {};
@@ -61,7 +60,7 @@ export const transProblemDataToPieData = (problemdata, field) => {
         pieData.datasets[0].data.push(value);
     }
     return {
-        columns: ['排名', fieldNames[field], "数量"],
+        columns: ['ranking', fieldNames[field], "count"],
         rows: rows,
         pieData: pieData
     };
@@ -69,19 +68,18 @@ export const transProblemDataToPieData = (problemdata, field) => {
 
 export const transReviewDataToTable = (reviewData, field) => {
     let newMap = new Map();
-
-    //按照field汇总
+    // Aggregate by Field 
     reviewData.forEach(item => {
-        let consumesec = 0;
+        let consumeSeconds = 0;
         if (isNaN(newMap.get(item[field]))) {
-            consumesec = 0;
+            consumeSeconds = 0;
         } else {
-            consumesec = newMap.get(item[field]);
+            consumeSeconds = newMap.get(item[field]);
         }
-        newMap.set(item[field], consumesec + item.consumesec);
+        newMap.set(item[field], consumeSeconds + item.consumeSeconds);
     })
 
-    //map转数组
+    // Convert map to Array
     let rows = [];
     for (let [key, value] of newMap.entries()) {
         let row = {};
@@ -90,36 +88,36 @@ export const transReviewDataToTable = (reviewData, field) => {
         rows.push(row);
     }
     return {
-        columns: ['排名', fieldNames[field], "耗时(秒)"],
+        columns: ['ranking', fieldNames[field], "timeSeconds"],
         rows: rows
     };
 };
 
 export const transProblemDataToPolarArea = (problemdata) => {
     let newMap = new Map();
-    //按照field汇总
+    // Aggregate by Field
     problemdata.forEach(item => {
         let problemNumber = 0;
-        if (!newMap.get(item.rlname)) {
+        if (!newMap.get(item.rlName)) {
             problemNumber = 0;
         } else {
-            problemNumber = newMap.get(item.rlname).count;
+            problemNumber = newMap.get(item.rlName).count;
         }
-        newMap.set(item.rlname, { id: item.respid, color: item.rlcolor, name: item.rlname, count: problemNumber + 1 });
+        newMap.set(item.rlName, { id: item.respid, color: item.rlcolor, name: item.rlName, count: problemNumber + 1 });
     })
 
     const data = {
         labels: [],
         datasets: [
             {
-                label: '发生数',
+                label: i18n.t('count'),
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1,
             },
         ],
     };
-    //map转数组
+    // Map to Array
     for (let [key, value] of newMap.entries()) {
         data.labels.push(key);
         data.datasets[0].data.push(value.count);
@@ -130,22 +128,22 @@ export const transProblemDataToPolarArea = (problemdata) => {
 
 export const transRiskTrendsToPolarArea = (rlData) => {
     let newMap = new Map();
-    //按照field汇总
+    // Aggregate by Field
     rlData.forEach(item => {
         let problemNumber = 0;
-        if (!newMap.get(item.risklevel.name)) {
-            problemNumber = item.totalnumber;
+        if (!newMap.get(item.riskLevel.name)) {
+            problemNumber = item.totalNumber;
         } else {
-            problemNumber = newMap.get(item.risklevel.name).count + item.totalnumber;
+            problemNumber = newMap.get(item.riskLevel.name).count + item.totalNumber;
         }
-        newMap.set(item.risklevel.name, { id: item.risklevel.id, color: item.risklevel.color, name: item.risklevel.name, count: problemNumber });
+        newMap.set(item.riskLevel.name, { id: item.riskLevel.id, color: item.riskLevel.color, name: item.riskLevel.name, count: problemNumber });
     })
 
     const data = {
         labels: [],
         datasets: [
             {
-                label: '发生数',
+                label: i18n.t('count'),
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1,
@@ -153,7 +151,7 @@ export const transRiskTrendsToPolarArea = (rlData) => {
         ],
     };
 
-    //map转数组
+    // Map to Array
     for (let [key, value] of newMap.entries()) {
         data.labels.push(key);
         data.datasets[0].data.push(value.count);
@@ -164,7 +162,7 @@ export const transRiskTrendsToPolarArea = (rlData) => {
 
 };
 
-export const transRiskTrendsToLine = (rlData,groupby) => {
+export const transRiskTrendsToLine = (rlData, groupby) => {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -172,14 +170,14 @@ export const transRiskTrendsToLine = (rlData,groupby) => {
             mode: 'index',
             intersect: false,
         },
-        stacked: false,       
+        stacked: false,
         scales: {
             y: {
                 type: 'linear',
                 display: true,
                 position: 'left',
-                showLabelBackdrop: false,                               
-            },          
+                showLabelBackdrop: false,
+            },
         },
     };
     let rlMap = new Map();
@@ -187,11 +185,11 @@ export const transRiskTrendsToLine = (rlData,groupby) => {
     let xMap = new Map();
     let xArr = [];
 
-    //获取标签数据和日期数据
+    // Get label  and date
     rlData.forEach(item => {
-        if (!rlMap.get(item.risklevel.name)) {
-            rlMap.set(item.risklevel.name, item.risklevel);
-            rlArr.push(item.risklevel)
+        if (!rlMap.get(item.riskLevel.name)) {
+            rlMap.set(item.riskLevel.name, item.riskLevel);
+            rlArr.push(item.riskLevel)
         }
         if (!xMap.get(item[groupby])) {
             xMap.set(item[groupby], 1);
@@ -207,12 +205,12 @@ export const transRiskTrendsToLine = (rlData,groupby) => {
             backgroundColor: rl.color,
             yAxisID: `y`
         };
-        //填写data.data
+        // Fill data
         xArr.forEach(x => {
             var total = 0;
             rlData.forEach(item => {
-                if (item[groupby] === x && item.risklevel.id === rl.id) {
-                    total = total + item.totalnumber;
+                if (item[groupby] === x && item.riskLevel.id === rl.id) {
+                    total = total + item.totalNumber;
                 }
             })
             data.data.push(total);

@@ -1,24 +1,23 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { spacing } from "@mui/system";
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormatSpec } from "../../../i18n/dayjs";
 import { Button as MuiButton, Menu, MenuItem, Box, Typography } from "@mui/material";
 import LoopIcon from "@mui/icons-material/Loop";
 
 const Button = styled(MuiButton)(spacing);
-
 const SmallButton = styled(Button)`
   padding: 4px;
   min-width: 0;
-
   svg {
     width: 0.9em;
     height: 0.9em;
   }
 `;
 
-function Actions({ interval, dateIntervals, setInterval,refreshAction }) {
+const Actions = ({ interval, dateIntervals, setInterval, refreshAction, t }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const dateRangeDesc = t("dateRangeDescription", { startDate: DateTimeFormatSpec(interval.startDate, "L"), endDate: DateTimeFormatSpec(interval.endDate, "L") });
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -34,12 +33,12 @@ function Actions({ interval, dateIntervals, setInterval,refreshAction }) {
     };
 
     return (
-        <Box display="flex" flexDirection="row"  justifyContent="center" alignItems="center">
+        <Box display="flex" flexDirection="row" justifyContent="center" alignItems="center">
             <SmallButton size="small" mr={2} onClick={refreshAction}>
                 <LoopIcon />
             </SmallButton>
             <Typography variant="subtitle1">
-                {dayjs(interval.startDate).format("YY-MM-DD")} 至 {dayjs(interval.endDate).format("YY-MM-DD")}
+                {dateRangeDesc}
             </Typography>
             <Button
                 variant="contained"
@@ -49,7 +48,7 @@ function Actions({ interval, dateIntervals, setInterval,refreshAction }) {
                 aria-haspopup="true"
                 onClick={handleClick}
             >
-                {interval.label}
+                {t(interval.label)}
             </Button>
             <Menu
                 id="simple-menu"
@@ -58,11 +57,11 @@ function Actions({ interval, dateIntervals, setInterval,refreshAction }) {
                 onClose={handleClose}
             >
                 {dateIntervals.map(item =>
-                    <MenuItem onClick={() => handleSelectInterval(item)} key={item.id} >{item.label}</MenuItem>
+                    <MenuItem onClick={() => handleSelectInterval(item)} key={item.id} >{t(item.label)}</MenuItem>
                 )}
             </Menu>
         </Box>
     );
-}
+};
 
 export default Actions;

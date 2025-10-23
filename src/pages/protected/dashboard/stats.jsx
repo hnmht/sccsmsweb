@@ -1,8 +1,6 @@
-import React from "react";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
 import { rgba } from "polished";
-
 import {
     Box,
     Card as MuiCard,
@@ -11,6 +9,7 @@ import {
     Typography as MuiTypography,
 } from "@mui/material";
 import { spacing } from "@mui/system";
+import { useTranslation } from "react-i18next";
 
 const illustrationCardStyle = (props) => css`
   ${props.illustration &&
@@ -84,11 +83,12 @@ const Stats = ({
     percentagecolor,
     illustration,
 }) => {
+  const {t} = useTranslation();
     return (
         <Card illustration={illustration}>
             <CardContent>
                 <Typography variant="h6" mb={6}>
-                    {title}
+                    {t(title)}
                 </Typography>
                 <Typography variant="h3" mb={6}>
                     <Box fontWeight="fontWeightRegular">{amount}</Box>
@@ -100,7 +100,7 @@ const Stats = ({
                 >
                     <span>{percentagetext}</span>
                 </Percentage>
-                {!illustration && <Chip label={chip} />}
+                {!illustration && <Chip label={t(chip)} />}
             </CardContent>            
         </Card>
     );

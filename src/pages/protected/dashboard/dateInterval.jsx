@@ -1,35 +1,33 @@
 import { useState } from "react";
 import { Card, CardHeader, Divider, CardContent, CardActions, Button, Typography } from "@mui/material";
+import { dayjs } from "../../../i18n/dayjs";
 import ScInput from "../../../component/ScInput";
-import dayjs from "../../../utils/myDayjs";
 
 const checkErr = (interval) => {
     let errMsg = { isErr: false, errMsg: "" };
-    if (interval.startdate === "" || !dayjs(interval.startdate, "YYYYMMDD", true).isValid()) {
-        errMsg = { isErr: true, errMsg: "开始日期格式错误!" }
+    if (!dayjs(interval.startDate).isValid()) {
+        errMsg = { isErr: true, errMsg: "invalidStartDate" }
         return errMsg;
     }
-    if (interval.enddate === "" || !dayjs(interval.enddate, "YYYYMMDD", true).isValid()) {
-        errMsg = { isErr: true, errMsg: "结束日期格式错误!" }
+    if (!dayjs(interval.endDate).isValid()) {
+        errMsg = { isErr: true, errMsg: "invalidEndDate" }
         return errMsg;
     }
-    if (interval.startdate > interval.enddate) {
-        errMsg = { isErr: true, errMsg: "开始日期不能大于结束日期!" }
+    if (dayjs(interval.endDate).isBefore(interval.startDate)) {
+        errMsg = { isErr: true, errMsg: "startDateLateThanEndDate" }
         return errMsg;
     }
     return errMsg;
 }
 
-const DateInterval = ({ initValue, onOk, onCancel }) => {
+const DateInterval = ({ initValue, onOk, onCancel, t }) => {
     const [interval, setInterval] = useState(initValue);
-
     const err = checkErr(interval);
 
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
         if (interval === undefined) {
             return
         }
-        //更新
         setInterval((prevState) => {
             return ({
                 ...prevState,
@@ -38,22 +36,21 @@ const DateInterval = ({ initValue, onOk, onCancel }) => {
         });
     };
 
-
     return (
         <Card>
-            <CardHeader title="起始日期" />
+            <CardHeader title={t("dateRange")} />
             <Divider />
             <CardContent>
                 <ScInput
                     dataType={306}
                     allowNull={false}
                     isEdit={true}
-                    itemShowName="开始日期"
-                    itemKey="startdate"
-                    initValue={interval.startdate}
+                    itemShowName="startDate"
+                    itemKey="startDate"
+                    initValue={interval.startDate}
                     pickDone={handleGetValue}
                     isBackendTest={false}
-                    key="startdate"
+                    key="startDate"
                     positionID={0}
                     rowIndex={-1}
                 />
@@ -61,24 +58,24 @@ const DateInterval = ({ initValue, onOk, onCancel }) => {
                     dataType={306}
                     allowNull={false}
                     isEdit={true}
-                    itemShowName="结束日期"
-                    itemKey="enddate"
-                    initValue={interval.enddate}
+                    itemShowName="endDate"
+                    itemKey="endDate"
+                    initValue={interval.endDate}
                     pickDone={handleGetValue}
                     isBackendTest={false}
-                    key="enddate"
+                    key="endDate"
                     positionID={0}
                     rowIndex={-1}
                 />
                 {err.isErr
-                    ? <Typography color="error">{err.errMsg}</Typography>
+                    ? <Typography color="error">{t(err.errMsg)}</Typography>
                     : null
                 }
             </CardContent>
             <Divider />
             <CardActions>
-                <Button variant="contained" sx={{ m: 2 }} onClick={() => onOk(interval)} disabled={err.isErr}>确定</Button>
-                <Button variant="text" sx={{ m: 2 }} onClick={onCancel}>取消</Button>
+                <Button variant="contained" sx={{ m: 2 }} onClick={() => onOk(interval)} disabled={err.isErr}>{t("ok")}</Button>
+                <Button variant="text" sx={{ m: 2 }} onClick={onCancel}>{t("cancel")}</Button>
             </CardActions>
         </Card>
     );

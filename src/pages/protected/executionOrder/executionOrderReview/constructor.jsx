@@ -3,7 +3,7 @@ import { GetCacheDocById } from "../../../../storage/db/db";
 import { GetDataTypeDefaultValue } from "../../../../storage/dataTypes";
 import store from "../../../../store";
 import { Chip } from "@mui/material";
-import i18n from "../../../../i18n/i18n";
+import { i18n } from "../../../../i18n/i18n";
 import {
     CellCreateTime,
     CellCreator,
@@ -46,7 +46,7 @@ const rowStopDisabled = (row) => {
     return !(row.status === 1 && row.confirmer.id === user.id);
 };
 // Display Review Information content
-const CellReview = (row, column) => {    
+const CellReview = (row, column) => {
     const label = i18n.t("timesAndSeconds", { times: row.reviewedNumber, seconds: row.reviewedSeconds });
     return row.reviewedNumber > 0
         ? <Chip label={label} color="success" />

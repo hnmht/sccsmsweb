@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import FunctionsIcon from '@mui/icons-material/Functions';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { message } from "mui-message";
 import {
     Card as MuiCard,
     CardContent,
@@ -27,7 +26,7 @@ import {
     Colors,
     RadialLinearScale,
 } from 'chart.js';
-import dayjs from "../../../utils/myDayjs";
+import { dayjs, DateTimeFormat, DateTimeFormatSpec } from "../../../i18n/dayjs";
 import { PolarArea, Line } from 'react-chartjs-2';
 
 import { transRiskTrendsToPolarArea, transRiskTrendsToLine } from "./constructor";
@@ -52,31 +51,33 @@ const ChartWrapper = styled.div`
   height: 412px;
 `;
 
-function RiskTrend() {
+const RiskTrend = ({ t }) => {
     const [rlData, setRlData] = useState([]);
-    const [groupBy, setGroupBy] = useState("occday");
+    const [groupBy, setGroupBy] = useState("occDay");
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [popOpen, setPopOpen] = useState(false);
-    const [interval, setInterval] = useState({ startdate: dayjs(new Date()).subtract(7, "day").format("YYYYMMDD"), enddate: dayjs(new Date()).format("YYYYMMDD") });
+    const [interval, setInterval] = useState({ startDate: dayjs(new Date()).subtract(7, "day").startOf("day"), endDate: dayjs(new Date()).endOf("day") });
 
     useEffect(() => {
         async function initData() {
-            const res = await reqGetRiskTrend({ startdate: interval.startdate, enddate: interval.enddate });
-            let newData = { startdate: "", enddate: "", risktrends: [] };
+            const res = await reqGetRiskTrend({ startDate: interval.startDate, endDate: interval.endDate });
+            let newData = { startDate: "", endDate: "", riskTrends: [] };
             if (res.status) {
-                newData = res.data.data;
-            } else {
-                message.error("请求数据错误:" + res.data.statusMsg);
+                newData = res.data;
             }
-            setRlData(newData.risktrends);
+            newData.riskTrends?.map(item => {
+                item.occDay = DateTimeFormat(item.occDay, "L");
+            })
+            setRlData(newData.riskTrends);
         }
         initData();
-    }, [interval]);
+    }, [interval, t]);
 
-    //转换数据
+    // Convert Data
     const polarData = transRiskTrendsToPolarArea(rlData);
     const lineData = transRiskTrendsToLine(rlData, groupBy);
+
     const handleClickMenu = (event) => {
         setAnchorEl(event.currentTarget);
         setMenuOpen(true);
@@ -104,7 +105,7 @@ function RiskTrend() {
     return (
         <Card mb={6}>
             <CardHeader
-                title={`风险分布(${dayjs(interval.startdate).format("YY-MM-DD")}至${dayjs(interval.enddate).format("YY-MM-DD")})`}
+                title={t("riskTrend", { startDate: DateTimeFormatSpec(interval.startDate, "L"), endDate: DateTimeFormatSpec(interval.endDate, "L") })}
                 action={
                     <>
                         <IconButton aria-label="filter" size="large" onClick={handleClickCalendar}>
@@ -117,15 +118,15 @@ function RiskTrend() {
                 }
             />
             <Menu
-                id="risklevel-groupby"
+                id="riskLevel-groupby"
                 anchorEl={anchorEl}
                 open={menuOpen}
                 onClose={handleCloseMenu}
             >
-                <MenuItem onClick={() => handleClickMenuItem("occday")}>按天</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("occweek")}>按周</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("occmonth")}>按月</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("occyear")}>按年</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("occDay")}>{t("byDay")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("occWeek")}>{t("byWeek")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("occMonth")}>{t("byMonth")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("occYear")}>{t("byYear")}</MenuItem>
             </Menu>
             <Popover
                 id="intervalPoper"
@@ -141,6 +142,7 @@ function RiskTrend() {
                     initValue={interval}
                     onOk={handleIntervalOk}
                     onCancel={handleClosePop}
+                    t={t}
                 />
             </Popover>
             <CardContent>

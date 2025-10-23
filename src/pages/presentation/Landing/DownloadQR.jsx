@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme, useMediaQuery,Container } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery, Container } from "@mui/material";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,7 @@ const displayTop = { display: "block", position: "fixed", right: 32, top: 80, zI
 const displayBottom = { display: "block", position: "fixed", right: 8, bottom: 64, zIndex: 9 };
 
 function DownloadQR() {
-    const { t,i18n } = useTranslation();
+    const { t } = useTranslation();
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up("md"));
     return (
@@ -17,7 +17,7 @@ function DownloadQR() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                width:"100%",
+                width: "100%",
             }}>
                 <QRCodeSVG
                     value={window.location.origin + "/downloadapp"}
@@ -33,8 +33,8 @@ function DownloadQR() {
                     to="/downloadapp"
                     color="secondary"
                     sx={{
-                        width:128,
-                        textAlign:"center"
+                        width: 128,
+                        textAlign: "center"
                     }}
                 >
                     {t("tipDownloadQR")}

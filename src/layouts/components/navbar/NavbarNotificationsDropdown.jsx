@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import { useTranslation } from "react-i18next";
-import dayjs from "../../../utils/myDayjs";
+import {dayjs} from "../../../i18n/dayjs";
 import {
   Avatar as MuiAvatar,
   Badge,

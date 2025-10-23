@@ -1,7 +1,7 @@
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
-import { DateTimeFormat, CheckTimeZero,dayjs } from "../../../i18n/dayjs";
-import i18n from "../../../i18n/i18n";
+import { DateTimeFormat, CheckTimeZero, dayjs } from "../../../i18n/dayjs";
+import { i18n } from "../../../i18n/i18n";
 
 // Get Operator
 export const getCurrentPerson = () => {
@@ -58,7 +58,7 @@ export const CellCreator = (row, column) => {
 };
 // Create date display content
 export const CellCreateTime = (row, column) => {
-    let date = new Date(row.createDate);
+    let date = dayjs(row.createDate);
     return DateTimeFormat(date, "LLL");
 };
 // Modifier display content
@@ -129,17 +129,17 @@ export const CellCSA = (row, column) => {
 };
 
 // Execution Project Template display content
-export const CellEPT = (row,column) => {
+export const CellEPT = (row, column) => {
     return row.ept.name;
 }
 
 // Executor display content
-export const CellExecutor = (row,column) => {
+export const CellExecutor = (row, column) => {
     return row.executor.name;
 };
 
 // Issue Owner display content
-export const CellIssueOwner = (row,column) => {
+export const CellIssueOwner = (row, column) => {
     return row.issueOwner.name;
 };
 // Display Time content
@@ -148,7 +148,7 @@ export const CellTime = (row, column) => {
 };
 
 // Display Exectuion Project content
-export const CellEPA = (row,column) => {
+export const CellEPA = (row, column) => {
     return row.epa.name;
 }
 

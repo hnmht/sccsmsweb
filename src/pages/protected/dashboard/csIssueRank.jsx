@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 import MoreVertical from '@mui/icons-material/MoreVert';
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
@@ -45,11 +45,11 @@ const options = {
     cutout: "50%",
 };
 
-function SceneProblemRank({ problemdata,chip }) {
-    const [groupBy, setGroupBy] = useState("eidname");
+const CSIssueRank = ({ problemdata, chip, t }) => {
+    const [groupBy, setGroupBy] = useState("epaName");
     const [anchorEl, setAnchorEl] = useState(null);
 
-    //转换数据
+    // Convert Data
     const data = transProblemDataToPieData(problemdata, groupBy);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -67,13 +67,13 @@ function SceneProblemRank({ problemdata,chip }) {
             <CardHeader
                 action={
                     <>
-                        <Chip label={chip} color="secondary"/>
+                        <Chip label={t(chip)} color="secondary" />
                         <IconButton aria-label="settings" size="large" onClick={handleClick}>
                             <MoreVertical />
                         </IconButton>
                     </>
                 }
-                title={`问题排名(按${fieldNames[groupBy]})`}
+                title={t("issueRanking", { name: t(fieldNames[groupBy]) })}
             />
             <Menu
                 id="eid-menu"
@@ -81,14 +81,14 @@ function SceneProblemRank({ problemdata,chip }) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={() => handleClickMenuItem("siname")}>按现场</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("sicname")}>按现场类别</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("eidname")}>按执行项目</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("eicname")}>按执行项目类别</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("respname")}>按现场负责人</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("createusername")}>按执行人</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("isfinish")}>按是否处理完成</MenuItem>
-                <MenuItem onClick={() => handleClickMenuItem("isrectify")}>是否现场整改</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("csaName")}>{t("csa")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("cscName")}>{t("csc")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("epaName")}>{t("epa")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("epcName")}>{t("epc")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("respName")}>{t("respPerson")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("creatorName")}>{t("executor")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("isFinish")}>{t("isCompleted")}</MenuItem>
+                <MenuItem onClick={() => handleClickMenuItem("isRectify")}>{t("isRectify")}</MenuItem>
             </Menu>
             <CardContent>
                 <Grid container>
@@ -104,7 +104,7 @@ function SceneProblemRank({ problemdata,chip }) {
                                     <TableHead>
                                         <TableRow>
                                             {data.columns.map(col =>
-                                                <TableCell align="center" key={col}>{col}</TableCell>)
+                                                <TableCell align="center" key={col}>{t(col)}</TableCell>)
                                             }
                                         </TableRow>
                                     </TableHead>
@@ -127,4 +127,4 @@ function SceneProblemRank({ problemdata,chip }) {
         </Card>
     );
 }
-export default SceneProblemRank;
+export default CSIssueRank;

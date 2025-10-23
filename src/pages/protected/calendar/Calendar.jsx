@@ -19,7 +19,7 @@ import { getCurrentPerson } from '../pub/pubFunction';
 import { GetCacheDocById } from '../../../storage/db/db';
 import ViewEvent from './viewEvent';
 import useContentHeight from '../../../hooks/useContentHeight';
-import dayjs  from "../../../utils/myDayjs";
+import { dayjs } from "../../../i18n/i18n";
 
 function renderEventContent(eventInfo) {
     return (
@@ -41,7 +41,7 @@ function Calendar() {
         isOpen: false,
         currentEvent: undefined,
     });
-  
+
     const contentHeight = useContentHeight();
 
 
@@ -74,7 +74,7 @@ function Calendar() {
                 if (res.data.data.resultnumber > 0) {
                     newEvents = res.data.data.events;
                 }
-            } 
+            }
         }
         setEvents(newEvents);
     }
