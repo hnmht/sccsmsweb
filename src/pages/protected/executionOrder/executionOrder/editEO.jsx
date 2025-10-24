@@ -94,41 +94,6 @@ const getInitialValue = async (isNew, isModify, oriWOR, oriEO) => {
     return newEO;
 };
 
-/* //生成错误信息
-const generateErrors = (rowNumber) => {
-    let voucherErrors = {
-        body: [],
-    }
-    //生成表体错误信息
-    for (let i = 0; i < rowNumber; i++) {
-        voucherErrors.body.push({});
-    }
-    return voucherErrors;
-};
-
-//检查是否存在错误信息
-const checkVoucherErrors = (voucherErrors) => {
-    if (voucherErrors === undefined) {
-        return true;
-    }
-    let number = 0;
-    //表头错误信息
-    for (let key in voucherErrors) {
-        if (key !== "body" && voucherErrors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    //表体错误信息
-    voucherErrors.body.forEach((row) => {
-        for (let key in row) {
-            if (row[key].isErr) {
-                number = number + 1;
-            }
-        }
-    });
-    return number > 0;
-}; */
-
 // Add && Edit && View Execution Order 
 const EditExecutionOrder = ({ isOpen, isNew, isModify, oriWOR, oriEO, onCancel, onOk, t }) => {
     const [voucherData, setVoucherData] = useState((undefined));

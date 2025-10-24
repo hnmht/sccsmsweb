@@ -29,7 +29,8 @@ const locale = {
         L: 'DD/MM/YYYY',
         LL: 'D MMMM YYYY',
         LLL: 'D MMMM YYYY HH:mm',
-        LLLL: 'dddd, D MMMM YYYY HH:mm'
+        LLLL: 'dddd, D MMMM YYYY HH:mm',
+        LLLLL: 'MM/YYYY'
     },
     ordinal: (n) => {
         const s = ['th', 'st', 'nd', 'rd']

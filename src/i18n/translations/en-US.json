@@ -381,7 +381,6 @@
     "startDateLateThanEndDate":"The start date cannot be later than end date",
     "invalidStartDate":"Invalid start date",
     "invalidEndDate":"Invalid end date",
-
     "issueRanking":"Issue Ranking (by {{name}})",
     "reviewer":"Reviewer",
     "isCompleted":"Is Completed",
@@ -389,7 +388,12 @@
     "reviewRanking":"Review Time Ranking (by {{name}})",
     "beReviewedRanking":"Ranking by Review Time (by {{name}})",
     "count":"Count",
-
+    "list":"List",
+    "handleIssue":"Handle the Issue",
+    "executeInstruction":"Execute Instruction",
+    "hDescription":"Header Description",
+    "bDescription":"Row Description",
+    "title": "Title",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

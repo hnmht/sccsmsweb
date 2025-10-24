@@ -387,6 +387,12 @@
     "reviewRanking": "审阅时间排名 (按 {{name}})",
     "beReviewedRanking": "被审阅时间排名 (按 {{name}})",
     "count": "合计",
+    "list": "列表",
+    "handleIssue": "处理问题",
+    "executeInstruction": "执行指令",
+    "hDescription": "单据头说明",
+    "bDescription": "单据行说明",
+    "title":"标题",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

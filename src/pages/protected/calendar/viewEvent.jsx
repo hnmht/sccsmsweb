@@ -10,10 +10,10 @@ import { Divider } from "../../../component/ScMui/ScMui";
 import Loader from "../../../component/Loader/Loader"
 import ScInput from "../../../component/ScInput";
 
-const viewEvent = ({ currentEvent, onCancel }) => {
+const viewEvent = ({ currentEvent, onCancel,t }) => {
     return currentEvent !== undefined
         ? <>
-            <DialogTitle>详情</DialogTitle>
+            <DialogTitle>{t("detail")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Grid container spacing={2}>
@@ -22,11 +22,11 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="来源单据"
-                            itemKey="billnumber"
-                            initValue={currentEvent.billnumber}
+                            itemShowName="billNumber"
+                            itemKey="billNumber"
+                            initValue={currentEvent.billNumber}
                             pickDone={() => { }}
-                            key="billnumber"
+                            key="billNumber"
                         />
                     </Grid>
                     <Grid item xs={1}>
@@ -34,11 +34,11 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="行号"
-                            itemKey="rownumber"
-                            initValue={currentEvent.rownumber}
+                            itemShowName="rowNumber"
+                            itemKey="rowNumber"
+                            initValue={currentEvent.rowNumber}
                             pickDone={() => { }}
-                            key="rownumber"
+                            key="rowNumber"
                         />
                     </Grid>
                     <Grid item xs={2}>
@@ -46,7 +46,7 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={405}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="状态"
+                            itemShowName="status"
                             itemKey="status"
                             initValue={currentEvent.status}
                             pickDone={() => { }}
@@ -58,7 +58,7 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="标题"
+                            itemShowName="title"
                             itemKey="title"
                             initValue={currentEvent.title}
                             pickDone={() => { }}
@@ -70,11 +70,11 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="表头说明"
-                            itemKey="hdescription"
-                            initValue={currentEvent.hdescription}
+                            itemShowName="hDescription"
+                            itemKey="hDescription"
+                            initValue={currentEvent.hDescription}
                             pickDone={() => { }}
-                            key="hdescription"
+                            key="hDescription"
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -82,11 +82,11 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="行说明"
-                            itemKey="bdescription"
-                            initValue={currentEvent.bdescription}
+                            itemShowName="bDescription"
+                            itemKey="bDescription"
+                            initValue={currentEvent.bDescription}
                             pickDone={() => { }}
-                            key="bdescription"
+                            key="bDescription"
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -94,7 +94,7 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={307}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="开始时间"
+                            itemShowName="startTime"
                             itemKey="start"
                             initValue={currentEvent.start}
                             pickDone={() => { }}
@@ -106,7 +106,7 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={307}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="完成时间"
+                            itemShowName="endTime"
                             itemKey="end"
                             initValue={currentEvent.end}
                             pickDone={() => { }}
@@ -118,11 +118,11 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={570}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="现场"
-                            itemKey="sceneitem"
-                            initValue={currentEvent.sceneitem}
+                            itemShowName="csa"
+                            itemKey="csa"
+                            initValue={currentEvent.csa}
                             pickDone={() => { }}
-                            key="sceneitem"
+                            key="csa"
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -130,26 +130,26 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={580}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="执行模板"
-                            itemKey="eit"
-                            initValue={currentEvent.eit}
+                            itemShowName="ept"
+                            itemKey="ept"
+                            initValue={currentEvent.ept}
                             pickDone={() => { }}
-                            key="eit"
+                            key="ept"
                         />
                     </Grid>
                     {
-                        currentEvent.billtype === "ED"
+                        currentEvent.billType === "EO"
                             ? <>
                                 <Grid item xs={6}>
                                     <ScInput
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="执行项目"
-                                        itemKey="eidname"
-                                        initValue={currentEvent.eidname}
+                                        itemShowName="epa"
+                                        itemKey="epaName"
+                                        initValue={currentEvent.epaName}
                                         pickDone={() => { }}
-                                        key="eidname"
+                                        key="epaName"
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
@@ -157,11 +157,11 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="执行项目值"
-                                        itemKey="eidvaluedisp"
-                                        initValue={currentEvent.eidvaluedisp}
+                                        itemShowName="executionValue"
+                                        itemKey="epaValueDisp"
+                                        initValue={currentEvent.epaValueDisp}
                                         pickDone={() => { }}
-                                        key="eidvaluedisp"
+                                        key="epaValueDisp"
                                     />
                                 </Grid>
                                 <Grid item xs={2}>
@@ -169,7 +169,7 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                                         dataType={902}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="附件"
+                                        itemShowName="files"
                                         itemKey="files"
                                         initValue={currentEvent.files}
                                         pickDone={() => { }}
@@ -185,18 +185,18 @@ const viewEvent = ({ currentEvent, onCancel }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentEvent.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentEvent.creator}
                             pickDone={() => { }}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                 </Grid>
             </DialogContent>
             <Divider />
             <DialogActions sx={{ p: 2.5 }}>
-                <Button variant='contained' onClick={onCancel}>返回</Button>
+                <Button variant='contained' onClick={onCancel}>{t("back")}</Button>
             </DialogActions>
         </>
         : <Loader />

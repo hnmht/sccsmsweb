@@ -18,7 +18,6 @@ import DownloadApp from "./pages/downloadApp/downloadApp";
 const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); // Dashboard
 const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); // Calendar
 const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  // Address Book
-
 // Constrction Site Management
 const WorkOrder = Loadable(lazy(() => import("./pages/protected/workOrder/workOrder")));  // Work Order
 const ExecutionOrder = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrder/executeOrder"))); // Execution Order

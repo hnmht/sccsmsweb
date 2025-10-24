@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Card, CardContent, Dialog } from "@mui/material";
-
+import { dayjs } from "../../../i18n/i18n";
+import { useTranslation } from 'react-i18next';
 import FullCalendar from '@fullcalendar/react';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
@@ -8,7 +9,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
-import zhcnLocale from "@fullcalendar/core/locales/zh-cn";
+// import zhcnLocale from "@fullcalendar/core/locales/zh-cn";
+import allLocales from "@fullcalendar/core/locales-all";
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import PageTitle from "../../../component/PageTitle/PageTitle";
@@ -19,9 +21,13 @@ import { getCurrentPerson } from '../pub/pubFunction';
 import { GetCacheDocById } from '../../../storage/db/db';
 import ViewEvent from './viewEvent';
 import useContentHeight from '../../../hooks/useContentHeight';
-import { dayjs } from "../../../i18n/i18n";
 
-function renderEventContent(eventInfo) {
+const localeMap = new Map([
+    ["en-US", "en"],
+    ["zh-CN", "zh-cn"]
+]);
+
+const renderEventContent = (eventInfo) => {
     return (
         <>
             <b>{eventInfo.timeText}</b>
@@ -29,66 +35,81 @@ function renderEventContent(eventInfo) {
             <i>{eventInfo.event.title}</i>
         </>
     );
-}
+};
 
-function Calendar() {
+const Calendar = () => {
     const calendarRef = useRef(null);
     const [date, setDate] = useState(new Date());
     const [currentPerson, setCurrentPerson] = useState(getCurrentPerson());
     const [events, setEvents] = useState([]);
-    const [duration, setDuration] = useState({ start: `${dayjs().weekday(0).format("YYYYMMDD")}0000`, end: `${dayjs().weekday(6).format("YYYYMMDD")}2359` });
+    const [duration, setDuration] = useState({ start: dayjs().weekday(0), end: dayjs().weekday(6) });
     const [diagStatus, setDiagStatus] = useState({
         isOpen: false,
         currentEvent: undefined,
     });
+    const { i18n, t } = useTranslation();
+    const [locale, setLocale] = useState(localeMap[i18n.language] || 'en');
+    const calendarKey = useMemo(() => locale, [locale]);
+    useEffect(() => {
+        let newLocal = "en";
+        if (localeMap.has(i18n.language)) {
+            newLocal = localeMap.get(i18n.language);
+        }
+        setLocale(newLocal);
+    }, [i18n.language]);
 
     const contentHeight = useContentHeight();
-
-
-    //选择人员
+    // Choose Person
     const handlePersonSelect = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
         setCurrentPerson(value);
         handleRequesEvents(value, duration);
     };
 
-    //更新区间
+    // Change Duration
     const handleChangeDuration = async () => {
         const calendarEl = calendarRef.current;
         let newDuration = duration;
         if (calendarEl) {
             const calendarApi = calendarEl.getApi();
             newDuration = {
-                start: dayjs(calendarApi.view.activeStart).format("YYYYMMDDHHmm"),
-                end: dayjs(calendarApi.view.activeEnd).format("YYYYMMDDHHmm")
+                start: dayjs(calendarApi.view.activeStart),
+                end: dayjs(calendarApi.view.activeEnd)
             };
         }
         setDuration(newDuration);
         handleRequesEvents(currentPerson, newDuration);
     };
-    //向服务器获取数据
+    // Request Events from backend
     const handleRequesEvents = async (person = currentPerson, dur = duration) => {
         let newEvents = [];
         if (person.id !== 0 && dur !== undefined) {
-            const res = await reqGetEvents({ userid: person.id, start: dur.start, end: dur.end });
+            const res = await reqGetEvents({ userID: person.id, start: dur.start, end: dur.end });
             if (res.status) {
-                if (res.data.data.resultnumber > 0) {
-                    newEvents = res.data.data.events;
-                }
+                newEvents = res.data.events;
+                newEvents.map((event => {
+                    if (event.billType === "WO") {
+                        event.title = t("executeInstruction") + ": " + event.csa.name + "<" + event.ept.name + ">";
+                    } else {
+                        event.title = t("handleIssue") + ": " + event.csa.name + "<" + event.epaName + ">";
+                    }
+                    return event;
+                }));
             }
         }
         setEvents(newEvents);
     }
-
+    // Actions after Calendar View Change
     const handleViewChange = (newView) => {
         const calendarEl = calendarRef.current;
         if (calendarEl) {
             const calendarApi = calendarEl.getApi();
             calendarApi.changeView(newView);
         }
-        //修改日期
+        // Change Duration
         handleChangeDuration();
     };
 
+    // Actions after click Date Prev button in Calendar view
     const handleDatePrev = () => {
         const calendarEl = calendarRef.current;
         if (calendarEl) {
@@ -96,10 +117,10 @@ function Calendar() {
             calendarApi.prev();
             setDate(calendarApi.getDate());
         }
-        //修改日期
+        // Change Duration
         handleChangeDuration();
     };
-
+    // Actions after click Date Next button in Calendar view
     const handleDateNext = () => {
         const calendarEl = calendarRef.current;
         if (calendarEl) {
@@ -107,10 +128,11 @@ function Calendar() {
             calendarApi.next();
             setDate(calendarApi.getDate());
         }
-        //修改日期
+        // Change Duration
         handleChangeDuration();
     };
 
+    // Actions after click today button in Calendar view
     const handleDateToday = () => {
         const calendarEl = calendarRef.current;
         if (calendarEl) {
@@ -118,10 +140,10 @@ function Calendar() {
             calendarApi.today();
             setDate(calendarApi.getDate());
         }
-        //修改日期
+        // Change Duration
         handleChangeDuration();
     };
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDiagStatus({
             isOpen: false,
@@ -131,24 +153,24 @@ function Calendar() {
     };
 
     const handleEventSelect = async (arg) => {
-        const eit = await GetCacheDocById("exectivetemplate", arg.event.extendedProps.eit.id);
+        const ept = await GetCacheDocById("ept", arg.event.extendedProps.ept.id);
         const eventDetail = {
             id: parseInt(arg.event.id),
             title: arg.event.title,
-            sceneitem: arg.event.extendedProps.sceneitem,
-            eit: eit,
-            start: dayjs(arg.event.start).format("YYYYMMDDHHmm"),
-            end: dayjs(arg.event.end).format("YYYYMMDDHHmm"),
+            csa: arg.event.extendedProps.csa,
+            ept: ept,
+            start: dayjs(arg.event.start),
+            end: dayjs(arg.event.end),
             status: arg.event.extendedProps.status,
-            billtype: arg.event.extendedProps.billtype,
+            billType: arg.event.extendedProps.billType,
             hid: arg.event.extendedProps.hid,
-            billnumber: arg.event.extendedProps.billnumber,
-            rownumber: arg.event.extendedProps.rownumber,
-            hdescription: arg.event.extendedProps.hdescription,
-            bdescription: arg.event.extendedProps.bdescription,
-            createuser: arg.event.extendedProps.createuser,
-            eidname: arg.event.extendedProps.eidname,
-            eidvaluedisp: arg.event.extendedProps.eidvaluedisp,
+            billNumber: arg.event.extendedProps.billNumber,
+            rowNumber: arg.event.extendedProps.rowNumber,
+            hDescription: arg.event.extendedProps.hDescription,
+            bDescription: arg.event.extendedProps.bDescription,
+            creator: arg.event.extendedProps.creator,
+            epaName: arg.event.extendedProps.epaName,
+            epaValueDisp: arg.event.extendedProps.epaValueDisp,
             files: arg.event.extendedProps.files
         };
 
@@ -160,7 +182,7 @@ function Calendar() {
 
     return (
         <>
-            <PageTitle pageName="日程" displayHelp={true} helpUrl="/helps/calendarWeb" />
+            <PageTitle pageName={t("MenuCalendar")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Card mb={6} sx={{ mt: 2, height: contentHeight, width: "100%", overflow: "auto" }}>
                 <ReactPerfectScrollbar>
@@ -176,6 +198,7 @@ function Calendar() {
                                 person={currentPerson}
                             />
                             <FullCalendar
+                                key={calendarKey}
                                 weekends
                                 editable={false}
                                 droppable={false}
@@ -183,7 +206,8 @@ function Calendar() {
                                 selectable
                                 weekNumbers
                                 ref={calendarRef}
-                                locale={zhcnLocale}
+                                locales={allLocales}
+                                locale={locale}
                                 events={events}
                                 eventDisplay="block"
                                 initialView="timeGridWeek"
@@ -207,6 +231,7 @@ function Calendar() {
                 <ViewEvent
                     currentEvent={diagStatus.currentEvent}
                     onCancel={handleDiagClose}
+                    t={t}
                 />
             </Dialog>
         </>

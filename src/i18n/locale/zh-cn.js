@@ -24,6 +24,7 @@ const locale = {
         LL: 'YYYY-M-D',
         LLL: 'YYYY-M-D HH:mm',
         LLLL: 'YYYY-M-D ddddAh:mm',
+        LLLLL: 'YYYY年MM月',
         l: 'YYYY/M/D',
         ll: 'YYYY年M月D日',
         lll: 'YYYY年M月D日 HH:mm',

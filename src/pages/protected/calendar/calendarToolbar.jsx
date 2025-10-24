@@ -1,4 +1,4 @@
-import { useState, useEffect,memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useMediaQuery, Button, ButtonGroup, Grid, Stack, Tooltip, Typography, IconButton } from '@mui/material';
 import MonthIcon from '@mui/icons-material/CalendarViewMonthOutlined';
 import DayIcon from '@mui/icons-material/CalendarViewDayOutlined';
@@ -6,35 +6,38 @@ import WeekIcon from '@mui/icons-material/CalendarViewWeekOutlined';
 import ListIcon from '@mui/icons-material/FormatListNumberedOutlined';
 import RightIcon from '@mui/icons-material/ChevronRightOutlined';
 import LeftIcon from '@mui/icons-material/ChevronLeftOutlined';
-import { dayjs } from '../../../i18n/i18n';
+import { dayjs, DateTimeFormatSpec } from '../../../i18n/dayjs';
 import ScInput from "../../../component/ScInput";
+import { useTranslation } from 'react-i18next';
 
 const viewOptions = [
     {
-        label: '月',
+        label: 'month',
         value: 'dayGridMonth',
         icon: MonthIcon
     },
     {
-        label: '周',
+        label: 'week',
         value: 'timeGridWeek',
         icon: WeekIcon
     },
     {
-        label: '日',
+        label: 'day',
         value: 'timeGridDay',
         icon: DayIcon
     },
     {
-        label: '列表',
+        label: 'list',
         value: 'listWeek',
         icon: ListIcon
     }
 ];
 
-const CalendarToolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeView,onPersonChange,person, ...others }) => {
+const CalendarToolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeView, onPersonChange, person, ...others }) => {
     const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
     const [viewFilter, setViewFilter] = useState(viewOptions);
+    const dateDisp = DateTimeFormatSpec(date, "LLLLL");
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (matchDownSM) {
@@ -50,21 +53,21 @@ const CalendarToolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, o
             <Grid item>
                 <Stack direction="row" alignItems="center" spacing={matchDownSM ? 1 : 3}>
                     <Button variant="outlined" onClick={onClickToday} size={matchDownSM ? 'small' : 'medium'}>
-                        今天
+                        {t("today")}
                     </Button>
-                    <ScInput 
+                    <ScInput
                         dataType={510}
                         allowNull={false}
                         isEdit={true}
                         itemKey="currentPerson"
                         initValue={person}
                         pickDone={onPersonChange}
-                        placeholder="请选择人员"
-                        isBackendTest={false}  
+                        placeholder="choosePersonPlaceholder"
+                        isBackendTest={false}
                         positionID={1}
                         key="currentPerson"
                     />
-                </Stack>                
+                </Stack>
             </Grid>
             <Grid item>
                 <Stack direction="row" alignItems="center" spacing={matchDownSM ? 1 : 3}>
@@ -72,7 +75,7 @@ const CalendarToolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, o
                         <LeftIcon />
                     </IconButton>
                     <Typography variant={matchDownSM ? 'h5' : 'h3'} color="textPrimary">
-                        {dayjs(date).format("YYYY年MM月")}
+                        {dateDisp}
                     </Typography>
                     <IconButton onClick={onClickNext} size={matchDownSM ? 'small' : 'large'}>
                         <RightIcon />
@@ -84,7 +87,7 @@ const CalendarToolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, o
                     {viewFilter.map((viewOption) => {
                         const Icon = viewOption.icon;
                         return (
-                            <Tooltip title={viewOption.label} key={viewOption.value}>
+                            <Tooltip title={t(viewOption.label)} key={viewOption.value}>
                                 <Button
                                     size={matchDownSM ? 'small' : 'medium'}
                                     disableElevation
