@@ -38,7 +38,7 @@ const getInitialValue = async (isNew, isModify, oriTr) => {
             billdate: dayjs(new Date()).format("YYYYMMDD"),
             department: department,
             description: "",
-            lecturer: { id: 0, code: "", name: "", avatar: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" },
+            lecturer: { id: 0, code: "", name: "", avatar: { filekey: 0, fileUrl: "" }, deptid: 0, deptcode: "", description: "" },
             traindate: dayjs(new Date()).format("YYYYMMDD"),
             tc: { id: 0, code: "", name: "", classhour: 1.0, isexamine: 1, files: [] },
             tcfiles: [],

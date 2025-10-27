@@ -1,42 +1,42 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    sios: [],
-    edrefs: [],
+    cso: [],
+    eoRefs: [],
     messages: [],
-    worefs: []
+    woRefs: []
 };
 
 export const dynamicDataSlice = createSlice({
-    name: "dynamicdata",
+    name: "dynamicData",
     initialState,
     reducers:{
-        setDynamicSIOs: (state, action) => {
-            state.sios = action.payload;
+        setDynamicCSO: (state, action) => {
+            state.cso = action.payload;
         },
         setDynamicMessages: (state, action) => {
             state.messages = action.payload;
         },
         setDynamicWORefs: (state, action) => {
-            state.worefs = action.payload;
+            state.woRefs = action.payload;
         },
         updateDynamicWORefs: (state, action) => {
-            state.worefs = action.payload;
+            state.woRefs = action.payload;
         },
-        setDynamicEDRefs: (state, action) => {
-            state.edrefs = action.payload;
+        setDynamicEORefs: (state, action) => {
+            state.eoRefs = action.payload;
         },
-        updateDynamicEDRefs: (state, action) => {
-            state.edrefs = action.payload;
+        updateDynamicEORefs: (state, action) => {
+            state.eoRefs = action.payload;
         },
         resetDynamicData: (state) => {
-            state.sios = [];
-            state.edrefs = [];
+            state.cso = [];
+            state.eoRefs = [];
             state.messages = [];
-            state.worefs = [];
+            state.woRefs = [];
         }
     }
 });
 
-export const { setDynamicEDRefs, setDynamicMessages, setDynamicSIOs, setDynamicWORefs, updateDynamicWORefs, resetDynamicData, updateDynamicEDRefs } = dynamicDataSlice.actions;
+export const { setDynamicEORefs, setDynamicMessages, setDynamicCSO, setDynamicWORefs, updateDynamicWORefs, resetDynamicData, updateDynamicEORefs } = dynamicDataSlice.actions;
 export default dynamicDataSlice.reducer;

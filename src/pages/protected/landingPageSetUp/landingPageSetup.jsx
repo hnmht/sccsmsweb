@@ -196,7 +196,7 @@ const LandingPageSetUp = () => {
                                         <ImageWrapper>
                                             <Image
                                                 alt="instroduction image review"
-                                                src={currentSetup.file.fileid === 0 ? `/static/img/screenshots/dashboard.jpg` : currentSetup.file.fileurl}
+                                                src={currentSetup.file.fileid === 0 ? `/static/img/screenshots/dashboard.jpg` : currentSetup.file.fileUrl}
                                             />
                                         </ImageWrapper>
 

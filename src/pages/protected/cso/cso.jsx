@@ -36,7 +36,7 @@ const checkError = (errors) => {
 };
 
 // Edit Construction Site Options
-function CSO() {
+const  CSO = () => {
     const [csos, setCsos] = useState([]);
     const [oriCsos, setOriCsos] = useState([]);
     const [errors, setErrors] = useState([]);

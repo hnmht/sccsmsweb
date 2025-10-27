@@ -62,7 +62,7 @@ export const GetDataTypeDefaultValue = (typeid) => {
         case 404:
             return 0;
         case 510:
-            return { id: 0, code: "", name: "", avatar: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" };
+            return { id: 0, code: "", name: "", avatar: { filekey: 0, fileUrl: "" }, deptid: 0, deptcode: "", description: "" };
         case 520:
             return { id: 0, code: "", name: "", fatherID: 0, leader: { id: 0, code: "", name: "" }, description: "", status: 0 };
         case 525:

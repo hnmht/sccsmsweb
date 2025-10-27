@@ -1,35 +1,35 @@
-import dayjs from "../../../utils/myDayjs";
+import { dayjs } from "../../../i18n/dayjs";
 
-//生成查询字段
+// Generate Message Query Fields
 export const generateMSGQueryFields = () => {
     const edQueryFields = [
-        { id: 1, value: "c.sendtime", label: "发送时间", inputType: 307, resultType: "string", resultfield: "" },
-        { id: 2, value: "c.billnumber", label: "执行单号", inputType: 301, resultType: "string", resultfield: "" },
-        { id: 3, value: "c.createuserid", label: "发送人", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 4, value: "h.si_id", label: "现场", inputType: 570, resultType: "object", resultfield: "id" },      
-        { id: 5, value: "b.eid_id", label: "执行项目", inputType: 560, resultType: "object", resultfield: "id" },
-        { id: 6, value: "c.content", label: "内容", inputType: 301, resultType: "string", resultfield: "" }     
+        { id: 1, value: "c.sendTime", label: "sendTime", inputType: 307, resultType: "date", resultfield: "" },
+        { id: 2, value: "c.billNumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
+        { id: 3, value: "c.creatorid", label: "sender", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 4, value: "h.csaid", label: "csa", inputType: 570, resultType: "object", resultfield: "id" },
+        { id: 5, value: "b.epaid", label: "epa", inputType: 560, resultType: "object", resultfield: "id" },
+        { id: 6, value: "c.content", label: "content", inputType: 301, resultType: "string", resultfield: "" }
     ];
     return edQueryFields;
 };
 
-//生成默认查询条件
-export function generateEDDefaultCons() { 
+// Generate  Messages default Conditions
+export function generateMsgDefaultCons() {
     let conditions = [
         {
             logic: "and",
-            field: { id: 1, value: "c.sendtime", label: "发送时间", inputType: 307, resultType: "string", resultfield: "" },
-            compare: { id: "greaterthanequal", label: '大于等于', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-            value: `${dayjs().weekday(0).format("YYYYMMDD")}0000`,
+            field: { id: 1, value: "c.sendTime", label: "sendTime", inputType: 307, resultType: "date", resultfield: "" },
+            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date","object", "string", "int", "number"] },
+            value: dayjs().weekday(0),
             isNecessary: true
         },
         {
             logic: "and",
-            field: { id: 1, value: "c.sendtime", label: "发送时间", inputType: 307, resultType: "string", resultfield: "" },
-            compare: { id: "lessthanequal", label: '小于等于', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-            value: dayjs(new Date()).format("YYYYMMDDHHmm"),
+            field: { id: 1, value: "c.sendTime", label: "sendTime", inputType: 307, resultType: "date", resultfield: "" },
+            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date","object", "string", "int", "number"] },
+            value: dayjs(new Date()).endOf("day"),
             isNecessary: true
-        }     
+        }
     ];
     return conditions;
 }

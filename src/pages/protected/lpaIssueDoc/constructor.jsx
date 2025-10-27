@@ -182,7 +182,7 @@ export const voucherRow = {
     id: 0,
     hid: 0,
     rownumber: 10,
-    recipient: { id: 0, code: "", name: "", avatar: { filekey: 0, fileurl: "" }, deptid: 0, deptcode: "", description: "" },
+    recipient: { id: 0, code: "", name: "", avatar: { filekey: 0, fileUrl: "" }, deptid: 0, deptcode: "", description: "" },
     opname: "",
     deptname: "",
     lpcode: "",

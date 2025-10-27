@@ -4,32 +4,32 @@ import { RefreshIcon, FilterIcon, UnreadOutlinedIcon, ReadOutlinedIcon } from '.
 
 const viewOptions = [
     {
-        label: '未读消息',
+        label: 'unreadMessages',
         value: 'unread',
         icon: UnreadOutlinedIcon
     },
     {
-        label: '已读消息',
+        label: 'readMessages',
         value: 'read',
         icon: ReadOutlinedIcon
     }
 ];
 
-const MessageToolbar = ({ viewIndex, viewChangeAction,refreshAciton,filterAction }) => {
+const MessageToolbar = ({ viewIndex, viewChangeAction, refreshAciton, filterAction, t }) => {
     const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
     return (
         <Grid alignItems="center" container justifyContent="space-between" spacing={matchDownSM ? 1 : 3} sx={{ pb: 3 }}>
             <Grid item>
                 <Stack direction="row" alignItems="center" spacing={matchDownSM ? 1 : 3}>
-                    <Typography variant='h4'>{viewOptions[viewIndex].label}</Typography>
+                    <Typography variant='h4'>{t(viewOptions[viewIndex].label)}</Typography>
                     {viewIndex === 0
                         ?
-                        <Tooltip title="刷新">
+                        <Tooltip title={t("refresh")} placement="top">
                             <IconButton onClick={refreshAciton}>
                                 <RefreshIcon color='primary' />
                             </IconButton>
                         </Tooltip>
-                        : <Tooltip title="过滤">
+                        : <Tooltip title={t("filter")} placement="top">
                             <IconButton onClick={filterAction}>
                                 <FilterIcon color='primary' />
                             </IconButton>
@@ -37,13 +37,12 @@ const MessageToolbar = ({ viewIndex, viewChangeAction,refreshAciton,filterAction
                     }
                 </Stack>
             </Grid>
-
             <Grid item>
                 <ButtonGroup variant="outlined" aria-label="outlined button group">
                     {viewOptions.map((viewOption, index) => {
                         const Icon = viewOption.icon;
                         return (
-                            <Tooltip title={viewOption.label} key={viewOption.value}>
+                            <Tooltip title={t(viewOption.label)} placement='top' key={viewOption.value}>
                                 <span>
                                     <Button
                                         size={matchDownSM ? 'small' : 'medium'}

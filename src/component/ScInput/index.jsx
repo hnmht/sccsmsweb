@@ -3,7 +3,7 @@ import ScDataTypeSelect from "./ScDataTypeSelect/ScDataTypeSelect"; //101 Date T
 import ScTextInput from "./ScTextInput/ScTextInput"; //301 Text Input
 import ScNumberInput from "./ScNumberInput/ScNumberInput"; //302 Number Input
 import ScPasswordInput from "./ScPasswordInput/ScPasswordInput"; //303 Password Input
-import ScMobileInput from "./ScMobileInput/ScMobileInput"; //304 Mobile Input
+// import ScMobileInput from "./ScMobileInput/ScMobileInput"; //304 Mobile Input
 import ScEmailInput from "./ScEmailInput/ScEmailInput"; //305 Email Input
 import ScDateInput from "./ScDateInput/ScDateInput"; //306 Date Input
 import ScDateTimeInput from "./ScDateTimeInput/ScDateTimeInput"; //307 Date time Input 
@@ -52,8 +52,8 @@ const ScInput = (props) => {
             return <ScNumberInput {...props} />;
         case 303:
             return <ScPasswordInput {...props} />;
-        case 304:
-            return <ScMobileInput {...props} />;
+        // case 304:
+        //     return <ScMobileInput {...props} />;
         case 305:
             return <ScEmailInput {...props} />;
         case 306:

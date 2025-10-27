@@ -3,7 +3,7 @@ import { Grid, Box } from "@mui/material";
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
 import MessageDisplay from "./messageDisplay";
 
-const UnReadMessage = ({ toReadAction }) => {
+const UnReadMessage = ({ toReadAction, t }) => {
     const messages = useSelector(state => state.dynamicData.messages);
     return (
         <Box sx={{ height: 620, overflow: "auto" }}>
@@ -15,7 +15,7 @@ const UnReadMessage = ({ toReadAction }) => {
                 >
                     {messages.map(msg => {
                         return (
-                            <MessageDisplay msg={msg} toReadAction={toReadAction} key={`unreadmessage${msg.id}`}/>
+                            <MessageDisplay msg={msg} toReadAction={toReadAction} t={t} key={`unreadmessage${msg.id}`} />
                         );
                     })
                     }

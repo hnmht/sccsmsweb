@@ -54,13 +54,13 @@ const PPE = Loadable(lazy(() => import("./pages/protected/ppe/ppe"))); // Person
 // Template
 const EPT = Loadable(lazy(() => import("./pages/protected/ept/ept"))); // Execution Project Template
 // System Administration
-const Role = Loadable(lazy(() => import("./pages/protected/role/role")));
-const User = Loadable(lazy(() => import("./pages/protected/user/user")));
-const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permissionAssignment/permissionAssignment")));
-const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); 
-// Settings
-const CSO = Loadable(lazy(() => import("./pages/protected/cso/cso")));
-const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetUp/landingPageSetup")));
+const Role = Loadable(lazy(() => import("./pages/protected/role/role"))); // Role
+const User = Loadable(lazy(() => import("./pages/protected/user/user"))); // User
+const PermissionAssignment = Loadable(lazy(() => import("./pages/protected/permissionAssignment/permissionAssignment"))); // Permission Assignment
+const OnlineUser = Loadable(lazy(() => import("./pages/protected/onlineUser/onlineUser"))); // Oline User
+// Settings 
+const CSO = Loadable(lazy(() => import("./pages/protected/cso/cso"))); // Construction Site Options
+const LandingPageSetUp = Loadable(lazy(() => import("./pages/protected/landingPageSetup/landingPageSetup"))); // Landing Page Setup
 //profile
 const Profile = Loadable(lazy(() => import("./pages/protected/profile/profile")));
 const About = Loadable(lazy(() => import("./pages/protected/about/about")));

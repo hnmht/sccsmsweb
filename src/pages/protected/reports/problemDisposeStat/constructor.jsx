@@ -104,7 +104,7 @@ export const columnDef = () => {
                 </span>)
             })
         },
-        { accessorKey: 'exectivevaluedisp', header: '执行值', size: 160 },
+        { accessorKey: 'executionValueDisp', header: '执行值', size: 160 },
         {
             accessorKey: "problemfiles", header: "问题附件", size: 140,
             Cell: (({ cell }) => {

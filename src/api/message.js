@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取用户未读消息
+// Get user UnRead comments
 export function reqUnReadComments(isLoading = true) {
     return request({
         url: "/msg/unread",
@@ -9,7 +9,7 @@ export function reqUnReadComments(isLoading = true) {
     });
 }
 
-//获取用户已读读消息
+// Get user read comments
 export function reqReadComments(data,isLoading = true) {
     return request({
         url: "/msg/read",
@@ -19,25 +19,25 @@ export function reqReadComments(data,isLoading = true) {
     });
 }
 
-//获取用户待执行指令单
+// Get user work order awaiting execution
 export function reqUserWORefs(isLoading = true) {
     return request({
-        url: "/msg/worefs",
+        url: "/msg/wos",
         method: 'post',
         isLoading
     });
 }
 
-//获取用户待处理问题
-export function reqUserEDRefs(isLoading = true) {
+// Get user execution order issues
+export function reqUserEORefs(isLoading = true) {
     return request({
-        url: "/msg/edrefs",
+        url: "/msg/eos",
         method: 'post',
         isLoading
     });
 }
 
-//读消息
+// Read message
 export function reqToReadMsg(data,isLoading = true) {
     return request({
         url: "/msg/toread",

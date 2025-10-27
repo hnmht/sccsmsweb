@@ -109,7 +109,7 @@ function ChangePassword({ user, onCancel }) {
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Stack spacing={2.5} alignItems="center">
-                    <Avatar alt="avatar" src={user.avatar.fileurl} sx={{ mt: 4, width: 60, height: 60 }} />
+                    <Avatar alt="avatar" src={user.avatar.fileUrl} sx={{ mt: 4, width: 60, height: 60 }} />
                     <Typography variant="h5">{user.name}</Typography>
                     <ScInput
                         dataType={303}

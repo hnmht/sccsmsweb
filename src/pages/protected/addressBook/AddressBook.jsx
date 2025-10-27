@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import { EmailIcon, PhoneIcon, RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
 import { matchSorter } from "match-sorter";
-import { MobileDisp } from "./dispComents";
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import { useEffect } from "react";
@@ -84,7 +83,7 @@ function AddressBook() {
                                                     <Card>
                                                         <CardHeader
                                                             avatar={
-                                                                <Avatar alt={person.code} src={person.avatar.fileurl} />
+                                                                <Avatar alt={person.code} src={person.avatar.fileUrl} />
                                                             }
                                                             title={person.name}
                                                             subheader={person.deptName}
@@ -98,7 +97,7 @@ function AddressBook() {
                                                                             <ListItemIcon>
                                                                                 <PhoneIcon />
                                                                             </ListItemIcon>
-                                                                            <ListItemText primary={<MobileDisp displayType="text" value={person.mobile} format="### #### ####" />} color="secondary" />
+                                                                            <ListItemText primary={person.mobile} color="secondary" />
                                                                         </ListItem>
                                                                     </List>
                                                                 </Grid>

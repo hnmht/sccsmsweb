@@ -5,10 +5,10 @@ import {
     Box,
     Dialog
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Divider } from "../../../component/ScMui/ScMui";
-import { useDispatch } from "react-redux";
 import { message } from "mui-message";
-// import { getDynamicMessages } from "../../../store/actions";
+import { getDynamicMessages } from "../../../store/pub";
 
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 import PageTitle from "../../../component/PageTitle/PageTitle";
@@ -16,83 +16,76 @@ import MessageToolBar from "./messageToolBar";
 import UnReadMessage from "./unReadMessage";
 import ReadMessage from "./readMessage";
 import { reqToReadMsg, reqReadComments } from "../../../api/message";
-import { generateMSGQueryFields, generateEDDefaultCons } from "./constructor";
-
+import { generateMSGQueryFields, generateMsgDefaultCons } from "./constructor";
 import useContentHeight from "../../../hooks/useContentHeight";
 
 const Message = () => {
     const [viewIndex, setViewIndex] = useState(0);
-    //已读消息查询相关
+    // Message
     const [readMsgs, setReadMsgs] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
-    const [conditions, setConditions] = useState(generateEDDefaultCons());
+    const [conditions, setConditions] = useState(generateMsgDefaultCons());
     const queryFields = useMemo(generateMSGQueryFields, []);
-
+    const { t } = useTranslation();
     const contentHeight = useContentHeight();
-
-    const dispatch = useDispatch();
-    //Tab变更
+    // Table
     const handleViewIndexChange = (newValue) => {
         setViewIndex(newValue);
     };
-    //刷新未读消息
-    const handleRefreshUnReadMsg = () => {
-        // dispatch(getDynamicMessages());
+    // Refresh Unread message
+    const handleRefreshUnReadMsg = async () => {
+        getDynamicMessages(true);
     };
-    //将消息标记为已读
+    // Mark message as read
     const handleToReadMessage = async (msg) => {
-
         const res = await reqToReadMsg(msg);
         if (res.status) {
-            message.success("消息成功标记为已读");
-        } else {
-            message.error("消息标记为已读失败:" + res.data.statusMsg);
+            message.success(t("markedMessagesReadSuccessful"));
         }
-        //刷新消息
+        // Refresh unread messages
         handleRefreshUnReadMsg();
     };
 
-    //QueryPanel点击确定后
+    // Actions after click ok button in the QueryPanel
     const handleQueryOk = (cons) => {
         setConditions(cons);
         setDiagOpen(false);
-        //向服务器请求数据
+        // Request read messages from backend
         handleReqReadMsgs(cons);
     };
 
-    //请求已读消息
+    // Request read messages from backend
     const handleReqReadMsgs = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
         let res = await reqReadComments({ queryString: queryString });
         let newRows = [];
-        if (res.status && res.data.data != null) {
-            newRows = res.data.data;
-        } else {
-            message.warning(res.data.statusMsg);
+        if (res.status) {
+            newRows = res.data;
         }
         setReadMsgs(newRows);
     };
 
     return (<>
-        <PageTitle pageName="消息" displayHelp={true} helpUrl="/helps/messageWeb" />
+        <PageTitle pageName={t("MenuMessage")} displayHelp={false} helpUrl="#" />
         <Divider my={2} />
         <Card sx={{ height: contentHeight }}>
-            <CardContent sx={{m:0}}>
+            <CardContent sx={{ m: 0 }}>
                 <Box sx={{ width: "100%", mb: 2, height: 60 }}>
                     <MessageToolBar
                         viewIndex={viewIndex}
                         viewChangeAction={handleViewIndexChange}
                         refreshAciton={handleRefreshUnReadMsg}
                         filterAction={() => setDiagOpen(true)}
+                        t={t}
                     />
                 </Box>
                 <Divider my={2} />
                 <Box sx={{ flex: 1 }}>
                     {viewIndex === 0
-                        ? <UnReadMessage toReadAction={handleToReadMessage} />
-                        : <ReadMessage messages={readMsgs} />
+                        ? <UnReadMessage toReadAction={handleToReadMessage} t={t} />
+                        : <ReadMessage messages={readMsgs} t={t} />
                     }
-                </Box>                
+                </Box>
             </CardContent>
         </Card>
         <Dialog
@@ -103,7 +96,7 @@ const Message = () => {
             closeAfterTransition={false}
         >
             <QueryPanel
-                title="过滤条件"
+                title={t("messagesFilterCondition")}
                 queryFields={queryFields}
                 initalConditions={conditions}
                 onOk={handleQueryOk}

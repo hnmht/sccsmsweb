@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import { useTranslation } from "react-i18next";
-import {dayjs} from "../../../i18n/dayjs";
+import {dayjs,DateTimeFormat} from "../../../i18n/dayjs";
 import {
   Avatar as MuiAvatar,
   Badge,
@@ -47,7 +47,7 @@ function Notification({ title, description, avatar }) {
   return (
     <ListItem divider component={Link} to="#">
       <ListItemAvatar>
-        <Avatar src={avatar.fileurl} />
+        <Avatar src={avatar.fileUrl} />
       </ListItemAvatar>
       <ListItemText
         primary={title}
@@ -61,16 +61,16 @@ function Notification({ title, description, avatar }) {
   );
 }
 
-function NavbarNotificationsDropdown() {
+const  NavbarNotificationsDropdown = () => {
   const ref = useRef(null);
   const { t } = useTranslation();
   const [isOpen, setOpen] = useState(false);
-  const edrefs = useSelector(state => state.dynamicData.edrefs);
-  const worefs = useSelector(state => state.dynamicData.worefs);
-  const taskNumber = edrefs.length + worefs.length;
+  const eoRefs = useSelector(state => state.dynamicData.eoRefs);
+  const woRefs = useSelector(state => state.dynamicData.woRefs);
+  const taskNumber = eoRefs.length + woRefs.length;
 
-  const filterEdr = edrefs.length > 2 ? edrefs.slice(0, 2) : edrefs;
-  const filterWor = worefs.length > 2 ? worefs.slice(0, 2) : worefs;
+  const filterEor = eoRefs.length > 2 ? eoRefs.slice(0, 2) : eoRefs;
+  const filterWor = woRefs.length > 2 ? woRefs.slice(0, 2) : woRefs;
 
   const handleOpen = () => {
     setOpen(true);
@@ -98,20 +98,20 @@ function NavbarNotificationsDropdown() {
         onClose={handleClose}
         open={isOpen}
       >
-        {worefs.length > 0
+        {woRefs.length > 0
           ? <>
             <NotificationHeader p={2}>
               <Typography variant="subtitle1" color="textPrimary">
-                {t("haveNewWO", worefs.length)}
+                {t("haveNewWO", woRefs.length)}
               </Typography>
             </NotificationHeader>
             <List disablePadding>
               {filterWor.map(wor => {
-                let description = dayjs(wor.starttime).format("YYYY-MM-DD HH:mm") + " " + wor.eit.name;
+                let description = DateTimeFormat(wor.startTime,"LLL")  + " " + wor.ept.name;
                 return <Notification
-                  title={wor.sceneitem.name}
+                  title={wor.csa.name}
                   description={description}
-                  avatar={wor.createuser.avatar}
+                  avatar={wor.creator.avatar}
                   key={wor.id}
                 />
               })}
@@ -119,19 +119,19 @@ function NavbarNotificationsDropdown() {
           </>
           : null
         }
-        {edrefs.length > 0
+        {eoRefs.length > 0
           ? <>
             <NotificationHeader p={2}>
               <Typography variant="subtitle1" color="textPrimary">
-                {t("haveNewIssue", edrefs.length)}
+                {t("haveNewIssue", eoRefs.length)}
               </Typography>
             </NotificationHeader>
             <List disablePadding>
-              {filterEdr.map(edr =>
+              {filterEor.map(edr =>
                 <Notification
-                  title={edr.sceneitem.name}
-                  description={edr.eid.name + t("valueIs") + edr.exectivevaluedisp}
-                  avatar={edr.execperson.avatar}
+                  title={edr.csa.name}
+                  description={edr.epa.name + t("valueIs") + edr.executionValueDisp}
+                  avatar={edr.executor.avatar}
                   key={edr.id}
                 />
               )}

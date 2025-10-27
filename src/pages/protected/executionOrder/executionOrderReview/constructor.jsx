@@ -153,7 +153,7 @@ export function generateEOConditions() {
             logic: "and",
             field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
             compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
-            value: dayjs(new Date()).format("YYYYMMDD"),
+            value: dayjs(new Date()),
             isNecessary: true
         }
     ];

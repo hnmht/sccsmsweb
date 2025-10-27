@@ -274,7 +274,7 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                             </Grid>
                             <Grid item xs={6}>
                                 <ScInput
-                                    dataType={304}
+                                    dataType={301}
                                     allowNull={true}
                                     isEdit={isEdit}
                                     itemShowName="mobile"

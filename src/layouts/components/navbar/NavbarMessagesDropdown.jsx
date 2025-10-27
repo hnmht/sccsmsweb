@@ -49,14 +49,16 @@ function Message({ title, description, image }) {
     <ListItem divider component={Link} to="#">
       <ListItemAvatar>
         <Avatar src={image} alt="Avatar" />
-      </ListItemAvatar>
+      </ListItemAvatar>  
       <ListItemText
         primary={title}
         primaryTypographyProps={{
           variant: "subtitle2",
           color: "textPrimary",
+          component:"span",
         }}
         secondary={description}
+        
       />
     </ListItem>
   );
@@ -95,7 +97,7 @@ function NavbarMessagesDropdown() {
         open={isOpen}
       >
         <MessageHeader p={2}>
-          <Typography variant="subtitle1" color="textPrimary">            
+          <Typography variant="subtitle1" color="textPrimary">
             {t("haveMessage", { count: messages.length })}
           </Typography>
         </MessageHeader>
@@ -103,13 +105,12 @@ function NavbarMessagesDropdown() {
           <List disablePadding>
             {partMsgs.map(msg =>
               <Message
-                title={msg.createuser.name}
+                title={msg.creator.name}
                 description={msg.content}
-                image={msg.createuser.avatar.fileurl}
+                image={msg.creator.avatar.fileUrl}
                 key={msg.id}
               />
             )}
-
           </List>
           <Box p={1} display="flex" justifyContent="center">
             <Button size="small" component={Link} to="/private/message" onClick={handleClose}>

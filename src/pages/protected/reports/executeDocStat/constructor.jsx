@@ -116,7 +116,7 @@ export const columnDef = () => {
                 </span>)
             })
         },
-        { accessorKey: 'exectivevaluedisp', header: '执行值', size: 160 },
+        { accessorKey: 'executionValueDisp', header: '执行值', size: 160 },
         { accessorKey: 'bdescription', header: '表体说明', size: 200 },
         { accessorKey: 'ischeckerror', header: '是否检查错误', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
         { accessorKey: 'isrequirefile', header: '必传附件', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },

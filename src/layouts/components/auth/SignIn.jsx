@@ -24,6 +24,7 @@ import { reqGetPublicKey } from "../../../api/security";
 import { reqLogin } from "../../../api/login";
 import { reqUserInfo } from "../../../api/user";
 import { setUserInfo, setUserToken } from "../../../store/slice/user";
+import { getDynamicData } from "../../../store/pub";
 import { initLocalDb } from "../../../storage/db/db";
 
 const TextField = styled(MuiTextField)(spacing);
@@ -81,7 +82,7 @@ const SignIn = () => {
         // Initialize the local database.
         initLocalDb();
         // Fetch dynamic data from the server and store in the local database. 
-        // getDynamicData();
+        getDynamicData();
         setLoading(false);
         // Navigate to the dashboard         
         navigate("/private/dashboard");

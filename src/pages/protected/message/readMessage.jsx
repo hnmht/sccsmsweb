@@ -2,7 +2,7 @@ import { Grid, Box } from "@mui/material";
 import ReactPerfectScrollbar from "react-perfect-scrollbar";
 import MessageDisplay from "./messageDisplay";
 
-const ReadMessage = ({ messages }) => {
+const ReadMessage = ({ messages, t }) => {
     return (
         <Box sx={{ height: 620, overflow: "auto" }}>
             <ReactPerfectScrollbar>
@@ -13,7 +13,7 @@ const ReadMessage = ({ messages }) => {
                 >
                     {messages.map(msg => {
                         return (
-                            <MessageDisplay msg={msg} toReadAction={() => { }} key={`readmessage${msg.id}`} />
+                            <MessageDisplay msg={msg} toReadAction={() => { }} t={t} key={`readmessage${msg.id}`} />
                         );
                     })}
                 </Grid>

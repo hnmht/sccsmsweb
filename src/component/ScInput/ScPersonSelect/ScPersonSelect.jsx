@@ -12,7 +12,7 @@ import { PersonIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
 import PersonPicker from "./PersonPicker";
 import { useTranslation } from "react-i18next";
 
-const zeroValue = { id: 0, code: "", name: "", avater: { filekey: 0, fileurl: "" }, deptID: 0, deptCode: "", description: "" };
+const zeroValue = { id: 0, code: "", name: "", avater: { filekey: 0, fileUrl: "" }, deptID: 0, deptCode: "", description: "" };
 //510 Person Archive selection input component
 const ScPersonSelect = ({
     positionID = -1,
