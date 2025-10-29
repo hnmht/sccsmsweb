@@ -12,7 +12,8 @@ import {
     CellExecutor,
     CellBillDate,
     CellDept,
-    CellIssueOwner
+    CellIssueOwner,
+    CellHandler
 } from "../pub/pubFunction";
 import { CellDescription,CellRiskLevel } from "../pub/pubComponent";
 
@@ -101,6 +102,7 @@ export const columns = [
     { id: "description", label: "description", alignment: "center", minWidth: 100, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "department", label: "department", alignment: "center", minWidth: 40, visible: true, sortField: "department.id", sort: true, display: { type: 1, cell1: CellDept } },
     { id: "status", label: "status", alignment: "center", minWidth: 50, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellVoucherStatus } },
+    { id: "handler", label: "handler", alignment: "center", minWidth: 30, visible: true, sortField: "handler", sort: true, display: { type: 1, cell1: CellHandler } },
     { id: "sourceBillNumber", label: "sourceBillNumber", alignment: "center", minWidth: 40, visible: true, sortField: "sourceBillNumber", sort: true, display: { type: 0, cell1: null } },
     { id: "sourceRowNumber", label: "sourceRowNumber", alignment: "center", minWidth: 40, visible: false, sortField: "sourceRowNumber", sort: true, display: { type: 0, cell1: null } },
     { id: "creator", label: "creator", alignment: "center", minWidth: 30, visible: false, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },

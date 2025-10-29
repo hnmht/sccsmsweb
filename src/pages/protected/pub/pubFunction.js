@@ -150,5 +150,10 @@ export const CellTime = (row, column) => {
 // Display Exectuion Project content
 export const CellEPA = (row, column) => {
     return row.epa.name;
-}
+};
+
+// Issue Handler display content
+export const CellHandler = (row, column) => {
+    return row.handler.name;
+};
 

@@ -405,6 +405,7 @@
     "messageTitle": "EO Number: {{billNumber}},Row Number: {{rowNumber}}, Construction Site: {{csaName}}, Execution Project: {{epaName}}, Execution Value: {{executionValue}}",
     "readMessageAt": "{{sender}}, Read at {{readTime}}",
     "markAsRead":"Mark as read",
+    "handler":"Handler",
     
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

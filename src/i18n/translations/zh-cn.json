@@ -395,7 +395,6 @@
     "title":"标题",
     "haveNewWO": "新指令",
     "haveNewIssue": "新问题",
-
     "unreadMessages": "未读消息",
     "readMessages": "已读消息",
     "messagesFilterCondition": "消息过滤条件",
@@ -405,6 +404,7 @@
     "messageTitle": "执行单号: {{billNumber}},行号: {{rowNumber}}, 现场: {{csaName}},执行项目: {{epaName}}, 执行值:{{executionValue}}",
     "readMessageAt": "{{sender}}, 阅读于{{readTime}}",
     "markAsRead":"标为已读",
+    "handler":"处理人",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

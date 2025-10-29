@@ -43,6 +43,7 @@ const getInitialValue = async (isNew, isModify, oriEOR, oriIRF) => {
                 executor: oriEOR.executor,
                 department: department,
                 issueOwner: oriEOR.issueOwner,
+                handler: person,
                 isFinish: 1,
                 startTime: oriEOR.handleStartTime,
                 endTime: oriEOR.handleendtime,
@@ -368,7 +369,21 @@ const EditIRF = ({ isOpen, isNew, isModify, oriEOR, oriIRF, onCancel, onOk }) =>
                                 rowIndex={-1}
                             />
                         </Grid>
-                     
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={510}
+                                allowNull={false}
+                                isEdit={isEdit}
+                                itemShowName="handler"
+                                itemKey="handler"
+                                initValue={voucherData.handler}
+                                pickDone={handleGetValue}
+                                isBackendTest={false}
+                                key="handler"
+                                positionID={0}
+                                rowIndex={-1}
+                            />
+                        </Grid>
                         <Grid item xs={2}>
                             <ScInput
                                 dataType={307}
