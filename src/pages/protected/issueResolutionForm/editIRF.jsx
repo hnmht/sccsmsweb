@@ -42,7 +42,7 @@ const getInitialValue = async (isNew, isModify, oriEOR, oriIRF) => {
                 executionValueDisp: oriEOR.executionValueDisp,
                 executor: oriEOR.executor,
                 department: department,
-                issueOwner: person,
+                issueOwner: oriEOR.issueOwner,
                 isFinish: 1,
                 startTime: oriEOR.handleStartTime,
                 endTime: oriEOR.handleendtime,
@@ -320,7 +320,7 @@ const EditIRF = ({ isOpen, isNew, isModify, oriEOR, oriIRF, onCancel, onOk }) =>
                                 rowIndex={-1}
                             />
                         </Grid>
-                        <Grid item xs={1}>
+                        <Grid item xs={2}>
                             <ScInput
                                 dataType={301}
                                 allowNull={true}
@@ -331,6 +331,21 @@ const EditIRF = ({ isOpen, isNew, isModify, oriEOR, oriIRF, onCancel, onOk }) =>
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
                                 key="sourceRowNumber"
+                                positionID={0}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={510}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="issueOwner"
+                                itemKey="issueOwner"
+                                initValue={voucherData.issueOwner}
+                                pickDone={handleGetValue}
+                                isBackendTest={false}
+                                key="issueOwner"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -353,21 +368,7 @@ const EditIRF = ({ isOpen, isNew, isModify, oriEOR, oriIRF, onCancel, onOk }) =>
                                 rowIndex={-1}
                             />
                         </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={510}
-                                allowNull={false}
-                                isEdit={isEdit}
-                                itemShowName="issueOwner"
-                                itemKey="issueOwner"
-                                initValue={voucherData.issueOwner}
-                                pickDone={handleGetValue}
-                                isBackendTest={false}
-                                key="issueOwner"
-                                positionID={0}
-                                rowIndex={-1}
-                            />
-                        </Grid>
+                     
                         <Grid item xs={2}>
                             <ScInput
                                 dataType={307}
