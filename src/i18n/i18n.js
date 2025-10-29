@@ -50,6 +50,7 @@ const detectorLanguage = () => {
     } else {
         // Get the browser language  
         const browserLang = navigator.language;
+       
         if (Object.keys(resources).includes(browserLang)) {
             dayjs.locale(browserLang);
             return browserLang;

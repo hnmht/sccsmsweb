@@ -48,7 +48,7 @@ const MessageDisplay = ({ msg, toReadAction, t }) => {
                                         isBackendTest={false}
                                         key="eoFiles"
                                         positionID={1}
-                                        rowIndex={-1}
+                                        rowIndex={msg.id}
                                     />
                                 </Grid>
                             </Grid>

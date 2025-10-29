@@ -48,6 +48,7 @@ service.interceptors.response.use(
         } else {
             res.status = false;
             message.error(res.msg);
+            console.log("Response return status:",response.config.url);
             if (removeTokenCodes.includes(res.resKey)) {
                 // Remove token from local storage
                 removeToken();
