@@ -11,18 +11,18 @@ export const generateEDQueryFields = () => {
         { id: 2, value: "h.billnumber", label: "执行单号", inputType: 301, resultType: "string", resultfield: "" },
         { id: 3, value: "dd.billnumber", label: "处理单号", inputType: 301, resultType: "string", resultfield: "" },
         { id: 4, value: "dd.billdate", label: "处理单日期", inputType: 306, resultType: "string", resultfield: "" },
-        { id: 5, value: "h.dept_id", label: "部门ID", inputType: 520, resultType: "object", resultfield: "id" },
-        { id: 6, value: "h.ep_id", label: "执行人", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 7, value: "h.si_id", label: "现场", inputType: 570, resultType: "object", resultfield: "id" },
-        { id: 8, value: "dd.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 5, value: "h.deptid", label: "department", inputType: 520, resultType: "object", resultfield: "id" },
+        { id: 6, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 7, value: "h.csaid", label: "csa", inputType: 570, resultType: "object", resultfield: "id" },
+        { id: 8, value: "dd.creatorid", label: "creator", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 9, value: "dd.dp_id", label: "处理人", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 10, value: "b.eid_id", label: "执行项目", inputType: 560, resultType: "object", resultfield: "id" },
         { id: 11, value: "b.iserr", label: "存在问题", inputType: 404, resultType: "int", resultfield: "" },
-        { id: 12, value: "b.isrectify", label: "现场处理", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 12, value: "b.isrectify", label: "csa处理", inputType: 404, resultType: "int", resultfield: "" },
         { id: 13, value: "b.ishandle", label: "后续处理", inputType: 404, resultType: "int", resultfield: "" },
         { id: 14, value: "b.isfinish", label: "处理完成", inputType: 404, resultType: "int", resultfield: "" },
     ];
-    const options = store.getState().dynamicData.sios;
+    const options = store.getState().dynamicData.csos;
     let startid = 0;
     edQueryFields.forEach(field => {
         if (field.id > startid) {
@@ -36,7 +36,7 @@ export const generateEDQueryFields = () => {
             let field = {
                 id: startid,
                 value: "si." + option.code,
-                label: option.displayname,
+                label: option.displayName,
                 inputType: 550,
                 resultType: "object",
                 resultfield: "id",
@@ -70,7 +70,7 @@ export function generateEDDefaultCons() {
         },
         {
             logic: "and",
-            field: { id: 6, value: "h.ep_id", label: "执行人", inputType: 510, resultType: "object", resultfield: "id" },
+            field: { id: 6, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
             compare: { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
@@ -84,16 +84,16 @@ export const columnDef = () => {
         { accessorKey: 'edbillnumber', header: '执行单号', size: 160 },
         { accessorKey: "edrownumber", header: "执行单行号", size: 100 },
         {
-            accessorKey: "edbilldate", header: "执行单日期", size: 160,
+            accessorKey: "eoBillDate", header: "执行单日期", size: 160,
             Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD")}</span>)
         },
         { accessorKey: 'edhdeptcode', header: '执行部门编码', size: 160 },
         { accessorKey: 'edhdeptname', header: '执行部门', size: 160 },
-        { accessorKey: 'sicode', header: '现场编码', size: 200 },
-        { accessorKey: 'siname', header: '现场', size: 260 },
+        { accessorKey: 'csaCode', header: 'csa编码', size: 200 },
+        { accessorKey: 'csaName', header: 'csa', size: 260 },
         { accessorKey: 'siclassid', header: '类别ID', size: 60 },
-        { accessorKey: 'epcode', header: '执行人编码', size: 160 },
-        { accessorKey: 'epname', header: '执行人', size: 160 },
+        { accessorKey: 'epcode', header: 'executor编码', size: 160 },
+        { accessorKey: 'epname', header: 'executor', size: 160 },
         { accessorKey: 'eidcode', header: '执行项目编码', size: 260 },
         { accessorKey: 'eidname', header: '执行项目', size: 360 },
         {
@@ -143,7 +143,7 @@ export const columnDef = () => {
         },
         { accessorKey: 'edbdescription', header: '执行单说明', size: 200 },
         { accessorKey: 'iserr', header: '存在问题', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'isrectify', header: '现场整改', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isrectify', header: 'csa整改', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
         { accessorKey: 'ishandle', header: '后续处理', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
         { accessorKey: 'hpcode', header: '处理人编码', size: 160 },
         { accessorKey: 'hpname', header: '计划处理人', size: 140 },
@@ -169,17 +169,17 @@ export const columnDef = () => {
 
         { accessorKey: 'dddescription', header: '处理说明', size: 200 },
         { accessorKey: 'ddstatus', header: '状态', size: 160, Cell: (({ cell }) => <span>{status[cell.getValue()]}</span>) },
-        { accessorKey: 'createusercode', header: '创建人编码', size: 160 },
-        { accessorKey: 'createusername', header: '创建人', size: 160 },
+        { accessorKey: 'createusercode', header: 'creator编码', size: 160 },
+        { accessorKey: 'createusername', header: 'creator', size: 160 },
         { accessorKey: 'confirmusercode', header: '确认人编码', size: 160 },
         { accessorKey: 'confirmusername', header: '确认人', size: 160 }
     ];
-    const options = store.getState().dynamicData.sios;
+    const options = store.getState().dynamicData.csos;
     options.forEach(option => {
         if (option.enable === 1) {
             let field = {
                 accessorKey: option.code + "name",
-                header: option.displayname,
+                header: option.displayName,
                 size: 140,
             }
             columns.push(field);
@@ -192,10 +192,10 @@ export const defaultHideCol = () => {
     return {
         edbillnumber: false,
         edrownumber: false,
-        edbilldate: false,
+        eoBillDate: false,
         edhdeptcode: false,
         edhdeptname: false,
-        sicode: false,
+        csaCode: false,
         siclassid: false,
         epcode: false,
         eidcode: false,

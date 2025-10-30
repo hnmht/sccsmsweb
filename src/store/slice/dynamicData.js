@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    cso: [],
+    csos: [],
     eoRefs: [],
     messages: [],
     woRefs: []
@@ -11,8 +11,8 @@ export const dynamicDataSlice = createSlice({
     name: "dynamicData",
     initialState,
     reducers:{
-        setDynamicCSO: (state, action) => {
-            state.cso = action.payload;
+        setDynamicCSOs: (state, action) => {
+            state.csos = action.payload;
         },
         setDynamicMessages: (state, action) => {
             state.messages = action.payload;
@@ -30,7 +30,7 @@ export const dynamicDataSlice = createSlice({
             state.eoRefs = action.payload;
         },
         resetDynamicData: (state) => {
-            state.cso = [];
+            state.csos = [];
             state.eoRefs = [];
             state.messages = [];
             state.woRefs = [];
@@ -38,5 +38,5 @@ export const dynamicDataSlice = createSlice({
     }
 });
 
-export const { setDynamicEORefs, setDynamicMessages, setDynamicCSO, setDynamicWORefs, updateDynamicWORefs, resetDynamicData, updateDynamicEORefs } = dynamicDataSlice.actions;
+export const { setDynamicEORefs, setDynamicMessages, setDynamicCSOs, setDynamicWORefs, updateDynamicWORefs, resetDynamicData, updateDynamicEORefs } = dynamicDataSlice.actions;
 export default dynamicDataSlice.reducer;

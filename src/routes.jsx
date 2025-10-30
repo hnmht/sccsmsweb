@@ -23,9 +23,9 @@ const WorkOrder = Loadable(lazy(() => import("./pages/protected/workOrder/workOr
 const ExecutionOrder = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrder/executeOrder"))); // Execution Order
 const ExecutionOrderReview = Loadable(lazy(() => import("./pages/protected/executionOrder/executionOrderReview/executionOrderReView"))); // Execution Order Review
 const IssueResolutionForm = Loadable(lazy(() => import("./pages/protected/issueResolutionForm/issueResolutionForm"))); // Issue Resolution Form
-const WorkOrderStat = Loadable(lazy(() => import("./pages/protected/reports/workOrderStat/workOrderStat")));
-const ExecuteDocStat = Loadable(lazy(() => import("./pages/protected/reports/executeDocStat/executeDocStat")));
-const ProblemDisposeStat = Loadable(lazy(() => import("./pages/protected/reports/problemDisposeStat/problemDisposeStat")));
+const WorkOrderStatus = Loadable(lazy(() => import("./pages/protected/reports/workOrderStatus/WOStatus"))); // Work Order Report
+const ExecutionOrderStatus = Loadable(lazy(() => import("./pages/protected/reports/executionOrderStatus/EOStatus"))); // Execution Order report
+const IssueResolutionFormStatus = Loadable(lazy(() => import("./pages/protected/reports/issueResolutionFormStatus/IRFStatus"))); // Issue Resolution Form Report
 // Document
 const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); // Doucment Category
 const UploadDocument = Loadable(lazy(() => import("./pages/protected/uploadDocument/uploadDocument"))); //上传文档
@@ -229,16 +229,16 @@ const routes = [
                 element: <EPT />
             },
             {
-                path: "/private/reports/workOrderStat",
-                element: <WorkOrderStat />
+                path: "/private/csm/WOStatus",
+                element: <WorkOrderStatus />
             },
             {
-                path: "/private/reports/executeDocStat",
-                element: <ExecuteDocStat />
+                path: "/private/csm/EOStatus",
+                element: <ExecutionOrderStatus />
             },
             {
-                path: "/private/reports/problemDisposeStat",
-                element: <ProblemDisposeStat />
+                path: "/private/csm/IRFStatus",
+                element: <IssueResolutionFormStatus />
             },
             {
                 path: "/private/permission/role",

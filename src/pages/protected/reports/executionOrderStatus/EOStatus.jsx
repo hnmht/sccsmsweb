@@ -1,31 +1,28 @@
-import { useMemo,useState } from "react";
-import { Dialog } from "@mui/material";
-import { Divider } from "../../../../component/ScMui/ScMui";
+import { useState, useMemo } from "react";
+import { Dialog, Divider } from "@mui/material";
 import { message } from "mui-message";
+
 import PageTitle from "../../../../component/PageTitle/PageTitle";
 import ScReport from "../../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../../component/QueryPanel";
+import { reqEOReport } from "../../../../api/report";
+import { generateEDDefaultCons, columnDef, defaultHideCol, generateEDQueryFields } from "./constructor";
 
-import { reqDDReport } from "../../../../api/report";
-import { generateEDDefaultCons,generateEDQueryFields,defaultHideCol,columnDef } from "./constructor";
-
-const ProblemDisposeStat = () => {
+const ExecuteDocStat = () => {
     const [conditions, setConditions] = useState(generateEDDefaultCons());
     const [rows, setRows] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
     const queryFields = useMemo(generateEDQueryFields, []);
     const columns = useMemo(columnDef, []);
-    const columnVisibility = useMemo(defaultHideCol, [])
-
+    const columnVisibility = useMemo(defaultHideCol,[])
+    
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        let res = await reqDDReport({ queryString: queryString });
+        let res = await reqEOReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
-            newRows = res.data.data;
-        } else {
-            message.warning(res.data.statusMsg);
-        }
+            newRows = res.data;
+        } 
         setRows(newRows);
     }
     //QueryPanel点击确认
@@ -42,7 +39,7 @@ const ProblemDisposeStat = () => {
     };
 
     return (<>
-        <PageTitle pageName="问题处理单统计" displayHelp={true} helpUrl="/helps/disposeDocStatWeb" />
+        <PageTitle pageName="执行单统计" displayHelp={true} helpUrl="/helps/executeDocStatWeb" />
         <Divider my={2} />
         <ScReport
             rows={rows}
@@ -68,4 +65,4 @@ const ProblemDisposeStat = () => {
     </>);
 };
 
-export default ProblemDisposeStat;
+export default ExecuteDocStat;

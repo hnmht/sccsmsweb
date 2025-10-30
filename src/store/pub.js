@@ -6,7 +6,7 @@ import { resetUser, setUserInfo } from "./slice/user";
 import { setAppinfo } from "./slice/appInfo";
 import { getToken } from "../storage/token";
 import { reqUnReadComments, reqUserEORefs, reqUserWORefs } from "../api/message";
-import { setDynamicMessages, setDynamicCSO, setDynamicEORefs, setDynamicWORefs } from "./slice/dynamicData";
+import { setDynamicMessages, setDynamicCSOs, setDynamicEORefs, setDynamicWORefs } from "./slice/dynamicData";
 import { reqGetCSOs } from "../api/cso";
 
 
@@ -61,7 +61,7 @@ export const getDynamicCSO = async (loading = false) => {
     if (res.status) {
         newCSO= res.data;
     }
-    store.dispatch(setDynamicCSO(newCSO));
+    store.dispatch(setDynamicCSOs(newCSO));
 };
 
 // Request Dynamic Execution Order Reference

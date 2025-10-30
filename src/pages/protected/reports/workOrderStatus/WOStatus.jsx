@@ -1,47 +1,46 @@
 import { useState, useMemo } from "react";
-import { Dialog,Divider } from "@mui/material";
-import { message } from "mui-message";
-
+import { Dialog, Divider } from "@mui/material";
 import PageTitle from "../../../../component/PageTitle/PageTitle";
 import ScReport from "../../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../../component/QueryPanel";
 import { reqWOReport } from "../../../../api/report";
 import { generateWODefaultCons, columnDef, columnVisibility, generateWOQueryFields } from "./constructor";
-
-const WorkOrderStat = () => {
+import { useTranslation } from "react-i18next";
+// Work Order Status Report
+const WorkOrderStatus = () => {
     const [woConditions, setWoConditions] = useState(generateWODefaultCons());
     const [rows, setRows] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
-    const woQueryFields = useMemo(generateWOQueryFields,[]);
-    const columns = useMemo(columnDef, []);
-   
-    const handleRequestData = async(cons = woConditions) => {
+    const woQueryFields = useMemo(generateWOQueryFields, []);
+    const { t, i18n } = useTranslation();
+    const columns = useMemo(columnDef, [i18n.language, i18n]);
+
+    // Request data from backend
+    const handleRequestData = async (cons = woConditions) => {
         let queryString = transConditionsToString(cons);
         let worsRes = await reqWOReport({ queryString: queryString });
         let newRows = [];
         if (worsRes.status) {
-            newRows = worsRes.data.data;
-        } else {
-            message.warning(worsRes.data.statusMsg);
+            newRows = worsRes.data;
         }
         setRows(newRows);
     }
-    //QueryPanel点击确认
+    // Actions after click ok button in the query panel
     const handleWoQueryOk = async (cons) => {
         setWoConditions(cons);
         setDiagOpen(false);
-        //向服务器请求数据
+        // Request data from backend
         handleRequestData(cons);
     };
 
-    //报表表头点击请求数据
-    const handleFilterAction = async() => {
+    // Actions after click the filter from backend button
+    const handleFilterAction = async () => {
         setDiagOpen(true);
     };
 
     return (<>
-        <PageTitle pageName="指令单统计" displayHelp={true} helpUrl="/helps/workOrderStatWeb" />
-        <Divider my={2}/>
+        <PageTitle pageName={t("MenuWOStatus")} displayHelp={false} helpUrl="#" />
+        <Divider my={2} />
         <ScReport
             rows={rows}
             columns={columns}
@@ -56,7 +55,7 @@ const WorkOrderStat = () => {
             closeAfterTransition={false}
         >
             <QueryPanel
-                title="过滤条件"
+                title={t("queryConditions")}
                 queryFields={woQueryFields}
                 initalConditions={woConditions}
                 onOk={handleWoQueryOk}
@@ -66,4 +65,4 @@ const WorkOrderStat = () => {
     </>);
 };
 
-export default WorkOrderStat;
+export default WorkOrderStatus;

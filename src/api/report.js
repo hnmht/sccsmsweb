@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取指令单报表
+// Get Work Order Status Report
 export function reqWOReport(data, isLoading = true) {
     return request({
         url: "/rep/wor",
@@ -11,20 +11,20 @@ export function reqWOReport(data, isLoading = true) {
 }
 
 
-//获取执行单报表
-export function reqEDReport(data, isLoading = true) {
+// Get Execution Order Status Report
+export function reqEOReport(data, isLoading = true) {
     return request({
-        url: "/rep/edr",
+        url: "/rep/eor",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//获取问题处理单报表
-export function reqDDReport(data, isLoading = true) {
+// Get Issue Resolution Form Report
+export function reqIRFReport(data, isLoading = true) {
     return request({
-        url: "/rep/ddr",
+        url: "/rep/irfr",
         method: 'post',
         data,
         isLoading
