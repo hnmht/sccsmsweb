@@ -1,4 +1,4 @@
-//excel列
+// Define Excel column
 export const excelColumns = (columns) => {
     let cols = [];
     columns.forEach((column) => {
@@ -7,7 +7,7 @@ export const excelColumns = (columns) => {
     return cols;
 };
 
-//excel行
+// Define Excel rows
 export const excelRows = (rows, columns) => {
     let excelRows = [];
     rows.forEach((row) => {
