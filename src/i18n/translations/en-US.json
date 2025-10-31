@@ -407,7 +407,6 @@
     "markAsRead":"Mark as read",
     "handler":"Handler",
     "filterFromBackend":"Filter data from the server",
-
     "csaCode":"CSA Code",
     "csaName":"CSA Name",
     "respPersonCode":"Responsible Person Code",
@@ -446,7 +445,21 @@
     "bStatus":"Row Status",
     "isFinish":"Complete",
     "irfNumber":"IRF Bill Number",
-
+    "eoRowNumber":"EO Row Number",
+    "eoHDeptName":"EO Header Department Name",
+    "eoHDeptCode":"EO Header Department Code",
+    "eorFiles":"EO Row Files",
+    "irfFiles":"IRF Files",
+    "eoBDescription":"EO Row Description",
+    "eoBStartTime":"EO Row StartTime",
+    "eoBEndTime":"EO Row EndTime",
+    "handlerName":"Handler Name",
+    "irfStartTime":"IRF Start Time",
+    "irfEndTime":"IRF End Time",
+    "irfDescription":"IRF Description",
+    "irfStatus":"IRF Status",
+    "irfBillDate":"IRF Bill Date",
+    
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

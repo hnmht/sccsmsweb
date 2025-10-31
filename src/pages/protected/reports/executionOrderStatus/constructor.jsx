@@ -7,7 +7,7 @@ const yesOrNo = ["", "Y"];
 // Generate Execution Order Report query condition fields
 export const generateEOQueryFields = () => {
     const edQueryFields = [
-        { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
+        { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
         { id: 2, value: "h.billNumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
         { id: 3, value: "h.deptid", label: "department", inputType: 520, resultType: "object", resultfield: "id" },
         { id: 4, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
