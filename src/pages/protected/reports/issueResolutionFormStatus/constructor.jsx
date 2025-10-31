@@ -7,20 +7,20 @@ const yesOrNo = ["", "是"];
 //生成执行单查询字段
 export const generateEDQueryFields = () => {
     const edQueryFields = [
-        { id: 1, value: "h.billdate", label: "执行单日期", inputType: 306, resultType: "string", resultfield: "" },
-        { id: 2, value: "h.billnumber", label: "执行单号", inputType: 301, resultType: "string", resultfield: "" },
-        { id: 3, value: "dd.billnumber", label: "处理单号", inputType: 301, resultType: "string", resultfield: "" },
-        { id: 4, value: "dd.billdate", label: "处理单日期", inputType: 306, resultType: "string", resultfield: "" },
+        { id: 1, value: "h.billDate", label: "执行单日期", inputType: 306, resultType: "string", resultfield: "" },
+        { id: 2, value: "h.billNumber", label: "执行单号", inputType: 301, resultType: "string", resultfield: "" },
+        { id: 3, value: "dd.billNumber", label: "处理单号", inputType: 301, resultType: "string", resultfield: "" },
+        { id: 4, value: "dd.billDate", label: "处理单日期", inputType: 306, resultType: "string", resultfield: "" },
         { id: 5, value: "h.deptid", label: "department", inputType: 520, resultType: "object", resultfield: "id" },
         { id: 6, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 7, value: "h.csaid", label: "csa", inputType: 570, resultType: "object", resultfield: "id" },
         { id: 8, value: "dd.creatorid", label: "creator", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 9, value: "dd.dp_id", label: "处理人", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 10, value: "b.eid_id", label: "执行项目", inputType: 560, resultType: "object", resultfield: "id" },
-        { id: 11, value: "b.iserr", label: "存在问题", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 10, value: "b.epaid", label: "执行项目", inputType: 560, resultType: "object", resultfield: "id" },
+        { id: 11, value: "b.isissue", label: "存在问题", inputType: 404, resultType: "int", resultfield: "" },
         { id: 12, value: "b.isrectify", label: "csa处理", inputType: 404, resultType: "int", resultfield: "" },
-        { id: 13, value: "b.ishandle", label: "后续处理", inputType: 404, resultType: "int", resultfield: "" },
-        { id: 14, value: "b.isfinish", label: "处理完成", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 13, value: "b.ishandle", label: "isHandle", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 14, value: "b.isfinish", label: "isFinish", inputType: 404, resultType: "int", resultfield: "" },
     ];
     const options = store.getState().dynamicData.csos;
     let startid = 0;
@@ -50,20 +50,20 @@ export const generateEDQueryFields = () => {
 };
 
 //指令单生成默认查询条件
-export function generateEDDefaultCons() {
+export function generateIRFQueryFields() {
     const { user } = store.getState();
     const currentPerson = user.person;
     let conditions = [
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "执行单日期", inputType: 306, resultType: "string", resultfield: "" },
+            field: { id: 1, value: "h.billDate", label: "执行单日期", inputType: 306, resultType: "string", resultfield: "" },
             compare: { id: "greaterthanequal", label: '大于等于', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
             value: dayjs().weekday(0).format("YYYYMMDD"),
             isNecessary: true
         },
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "执行单日期", inputType: 306, resultType: "string", resultfield: "" },
+            field: { id: 1, value: "h.billDate", label: "执行单日期", inputType: 306, resultType: "string", resultfield: "" },
             compare: { id: "lessthanequal", label: '小于等于', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
             value: dayjs(new Date()).format("YYYYMMDD"),
             isNecessary: true
@@ -91,13 +91,13 @@ export const columnDef = () => {
         { accessorKey: 'edhdeptname', header: '执行部门', size: 160 },
         { accessorKey: 'csaCode', header: 'csa编码', size: 200 },
         { accessorKey: 'csaName', header: 'csa', size: 260 },
-        { accessorKey: 'siclassid', header: '类别ID', size: 60 },
-        { accessorKey: 'epcode', header: 'executor编码', size: 160 },
-        { accessorKey: 'epname', header: 'executor', size: 160 },
-        { accessorKey: 'eidcode', header: '执行项目编码', size: 260 },
-        { accessorKey: 'eidname', header: '执行项目', size: 360 },
+        { accessorKey: 'csaID', header: '类别ID', size: 60 },
+        { accessorKey: 'executorCode', header: 'executor编码', size: 160 },
+        { accessorKey: 'executorName', header: 'executor', size: 160 },
+        { accessorKey: 'epaCode', header: '执行项目编码', size: 260 },
+        { accessorKey: 'epaName', header: '执行项目', size: 360 },
         {
-            accessorKey: 'rlname', header: '风险等级', size: 140,
+            accessorKey: 'rlName', header: '风险等级', size: 140,
             Cell: (({ cell }) => {
                 return (<span style={{ maxHeight: 32, minWidth: 80, display: "flex", alignItems: "center", justifyContent: "center", margin: 0, padding: 0, borderRadius: 4, backgroundColor: cell.row.original.rlcolor }}>
                     {cell.getValue()}
@@ -142,11 +142,11 @@ export const columnDef = () => {
             )
         },
         { accessorKey: 'edbdescription', header: '执行单说明', size: 200 },
-        { accessorKey: 'iserr', header: '存在问题', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isIssue', header: '存在问题', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
         { accessorKey: 'isrectify', header: 'csa整改', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'ishandle', header: '后续处理', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'hpcode', header: '处理人编码', size: 160 },
-        { accessorKey: 'hpname', header: '计划处理人', size: 140 },
+        { accessorKey: 'ishandle', header: 'isHandle', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'issueOwnerCode', header: '处理人编码', size: 160 },
+        { accessorKey: 'issueOwnerName', header: '计划处理人', size: 140 },
         {
             accessorKey: 'edbstarttime', header: '计划开始时间', size: 160,
             Cell: (({ cell }) => <span>{cell.getValue() !== "" ? dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm") : ""}</span>)
@@ -157,7 +157,7 @@ export const columnDef = () => {
         },
         { accessorKey: 'ddbillnumber', header: '处理单号', size: 160 },
         { accessorKey: 'dpname', header: '实际处理人', size: 140 },
-        { accessorKey: 'isfinish', header: '处理完成', size: 160, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isfinish', header: 'isFinish', size: 160, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
         {
             accessorKey: 'ddstarttime', header: '实际开始时间', size: 160,
             Cell: (({ cell }) => <span>{cell.getValue() !== "" ? dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm") : ""}</span>)
@@ -169,10 +169,10 @@ export const columnDef = () => {
 
         { accessorKey: 'dddescription', header: '处理说明', size: 200 },
         { accessorKey: 'ddstatus', header: '状态', size: 160, Cell: (({ cell }) => <span>{status[cell.getValue()]}</span>) },
-        { accessorKey: 'createusercode', header: 'creator编码', size: 160 },
-        { accessorKey: 'createusername', header: 'creator', size: 160 },
-        { accessorKey: 'confirmusercode', header: '确认人编码', size: 160 },
-        { accessorKey: 'confirmusername', header: '确认人', size: 160 }
+        { accessorKey: 'creatorCode', header: 'creator编码', size: 160 },
+        { accessorKey: 'creatorName', header: 'creator', size: 160 },
+        { accessorKey: 'confirmerCode', header: '确认人编码', size: 160 },
+        { accessorKey: 'confirmerName', header: '确认人', size: 160 }
     ];
     const options = store.getState().dynamicData.csos;
     options.forEach(option => {
@@ -196,16 +196,16 @@ export const defaultHideCol = () => {
         edhdeptcode: false,
         edhdeptname: false,
         csaCode: false,
-        siclassid: false,
-        epcode: false,
-        eidcode: false,
-        hpcode: false,
-        createusercode: false,
-        createusername: false,
-        confirmusercode: false,
-        confirmusername: false,
-        epname: false,
-        iserr: false,
+        csaID: false,
+        executorCode: false,
+        epaCode: false,
+        issueOwnerCode: false,
+        creatorCode: false,
+        creatorName: false,
+        confirmerCode: false,
+        confirmerName: false,
+        executorName: false,
+        isIssue: false,
         edbdescription: false,
     }
 };

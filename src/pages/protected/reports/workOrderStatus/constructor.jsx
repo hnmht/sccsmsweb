@@ -6,8 +6,8 @@ import { VoucherStatus } from "../../../../storage/dataTypes";
 // Generate Work Order Report query condifiton fields
 export const generateWOQueryFields = () => {
     const woQueryFields = [
-        { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
-        { id: 2, value: "h.billnumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
+        { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+        { id: 2, value: "h.billNumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
         { id: 3, value: "h.deptid", label: "department", inputType: 520, resultType: "object", resultfield: "id" },
         { id: 4, value: "b.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 5, value: "b.csaid", label: "csa", inputType: 570, resultType: "object", resultfield: "id" },
@@ -47,14 +47,14 @@ export function generateWODefaultCons() {
     let conditions = [
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+            field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
             compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs(new Date()).weekday(0),
             isNecessary: true
         },
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+            field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
             compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs(new Date()),
             isNecessary: true

@@ -7,10 +7,10 @@ import ScReport from "../../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../../component/QueryPanel";
 
 import { reqIRFReport } from "../../../../api/report";
-import { generateEDDefaultCons,generateEDQueryFields,defaultHideCol,columnDef } from "./constructor";
+import { generateIRFQueryFields,generateEDQueryFields,defaultHideCol,columnDef } from "./constructor";
 
 const ProblemDisposeStat = () => {
-    const [conditions, setConditions] = useState(generateEDDefaultCons());
+    const [conditions, setConditions] = useState(generateIRFQueryFields());
     const [rows, setRows] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
     const queryFields = useMemo(generateEDQueryFields, []);

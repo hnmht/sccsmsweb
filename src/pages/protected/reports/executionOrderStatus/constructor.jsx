@@ -1,23 +1,24 @@
-import dayjs from "../../../../utils/myDayjs";
+import { DateTimeFormat,dayjs,CheckTimeZero } from "../../../../i18n/dayjs";
 import store from "../../../../store";
+import { i18n } from "../../../../i18n/i18n";
+import { VoucherStatus } from "../../../../storage/dataTypes";
 
-const status = ["自由", "确认", "执行", "完成", ""];
-const yesOrNo = ["", "是"];
-//生成执行单查询字段
-export const generateEDQueryFields = () => {
+const yesOrNo = ["", "Y"];
+// Generate Execution Order Report query condition fields
+export const generateEOQueryFields = () => {
     const edQueryFields = [
-        { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
-        { id: 2, value: "h.billnumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
+        { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
+        { id: 2, value: "h.billNumber", label: "billNumber", inputType: 301, resultType: "string", resultfield: "" },
         { id: 3, value: "h.deptid", label: "department", inputType: 520, resultType: "object", resultfield: "id" },
         { id: 4, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 5, value: "h.csaid", label: "csa", inputType: 570, resultType: "object", resultfield: "id" },
         { id: 6, value: "b.creatorid", label: "creator", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 7, value: "h.eptid", label: "ept", inputType: 580, resultType: "object", resultfield: "id" },
-        { id: 8, value: "b.eid_id", label: "执行项目", inputType: 560, resultType: "object", resultfield: "id" },
-        { id: 9, value: "b.iserr", label: "存在问题", inputType: 404, resultType: "int", resultfield: "" },
-        { id: 10, value: "b.isrectify", label: "csa处理", inputType: 404, resultType: "int", resultfield: "" },
-        { id: 11, value: "b.ishandle", label: "后续处理", inputType: 404, resultType: "int", resultfield: "" },
-        { id: 12, value: "b.isfinish", label: "处理完成", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 8, value: "b.epaid", label: "epa", inputType: 560, resultType: "object", resultfield: "id" },
+        { id: 9, value: "b.isissue", label: "isIssue", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 10, value: "b.isrectify", label: "isRectify", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 11, value: "b.ishandle", label: "isHandle", inputType: 404, resultType: "int", resultfield: "" },
+        { id: 12, value: "b.isfinish", label: "isFinish", inputType: 404, resultType: "int", resultfield: "" },
     ];
     const options = store.getState().dynamicData.csos;
     let startid = 0;
@@ -32,7 +33,7 @@ export const generateEDQueryFields = () => {
             startid++
             let field = {
                 id: startid,
-                value: "si." + option.code,
+                value: "csa." + option.code,
                 label: option.displayName,
                 inputType: 550,
                 resultType: "object",
@@ -46,104 +47,115 @@ export const generateEDQueryFields = () => {
     return edQueryFields;
 };
 
-//指令单生成默认查询条件
-export function generateEDDefaultCons() {
+// Generate EO default query conditions
+export function generateEODefaultCons() {
     const { user } = store.getState();
     const currentPerson = user.person;
     let conditions = [
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
-            compare: { id: "greaterthanequal", label: '大于等于', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-            value: dayjs().weekday(0).format("YYYYMMDD"),
+            field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date","object", "string", "int", "number"] },
+            value: dayjs().weekday(0),
             isNecessary: true
         },
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
-            compare: { id: "lessthanequal", label: '小于等于', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-            value: dayjs(new Date()).format("YYYYMMDD"),
+            field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
+            value: dayjs(new Date()),
             isNecessary: true
         },
         {
             logic: "and",
             field: { id: 4, value: "h.executorid", label: "executor", inputType: 510, resultType: "object", resultfield: "id" },
-            compare: { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            compare: { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
         }
     ];
     return conditions;
 }
-//报表列定义
+// Define the report columns
 export const columnDef = () => {
     let columns = [
-        { accessorKey: 'billnumber', header: 'billNumber', size: 160 },
+        { accessorKey: 'billNumber', header: 'billNumber', size: 160 },
         {
-            accessorKey: "billdate", header: "billDate", size: 140,
-            Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD")}</span>)
+            accessorKey: "billDate", header: "billDate", size: 140,
+            Cell: (({ cell }) => <span>{DateTimeFormat(cell.getValue(),"L")}</span>)
         },
-        { accessorKey: 'hdeptcode', header: '部门编码', size: 160 },
-        { accessorKey: 'hdeptname', header: '部门', size: 160 },
-        { accessorKey: 'hdescription', header: '单据说明', size: 160 },
-        { accessorKey: 'hstatus', header: '单据状态', size: 160, Cell: (({ cell }) => <span>{status[cell.getValue()]}</span>) },
-        { accessorKey: 'sourcetype', header: '来源类型', size: 160 },
-        { accessorKey: 'sourcebillnumber', header: '来源单据号', size: 160 },
-        { accessorKey: 'sourcerownumber', header: '来源行号', size: 140 },
+        { accessorKey: 'hDeptCode', header: 'deptCode', size: 160 },
+        { accessorKey: 'hDeptName', header: 'deptName', size: 160 },
+        { accessorKey: 'hDescription', header: 'hDescription', size: 160 },
+        { accessorKey: 'hStatus', header: 'hStatus', size: 160, Cell: (({ cell }) => <span>{i18n.t(VoucherStatus[cell.getValue()])}</span>) },
+        { accessorKey: 'sourceType', header: 'sourceType', size: 160 },
+        { accessorKey: 'sourceBillNumber', header: 'sourceBillNumber', size: 160 },
+        { accessorKey: 'sourceRowNumber', header: 'sourceRowNumber', size: 140 },
         {
-            accessorKey: 'hstarttime', header: '开始时间', size: 160,
-            Cell: (({ cell }) => <span>{cell.getValue() !== "" ? dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm") : ""}</span>)
+            accessorKey: 'hStartTime', header: 'startTime', size: 160,
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL") }</span>)
         },
         {
-            accessorKey: 'hendtime', header: '结束时间', size: 160,
-            Cell: (({ cell }) => <span>{cell.getValue() !== "" ? dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm") : ""}</span>)
+            accessorKey: 'hEndTime', header: 'endTime', size: 160,
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL")}</span>)
         },
-        { accessorKey: 'csaCode', header: 'csa编码', size: 200 },
-        { accessorKey: 'csaName', header: 'csa', size: 260 },
-        { accessorKey: 'siclassid', header: '类别ID', size: 60 },
-        { accessorKey: 'epcode', header: 'executor编码', size: 160 },
-        { accessorKey: 'epname', header: 'executor', size: 160 },
-        { accessorKey: 'eptCode', header: '模板编码', size: 160 },
+        { accessorKey: 'csaCode', header: 'csaCode', size: 200 },
+        { accessorKey: 'csaName', header: 'csaName', size: 260 },
+        { accessorKey: 'csaID', header: 'csaID', size: 60 },
+        { accessorKey: 'executorCode', header: 'executorCode', size: 160 },
+        { accessorKey: 'executorName', header: 'executorName', size: 160 },
+        { accessorKey: 'eptCode', header: 'eptCode', size: 160 },
         { accessorKey: 'eptName', header: 'ept', size: 200 },
-        { accessorKey: "rownumber", header: "行号", size: 100 },
-        { accessorKey: 'eidcode', header: '执行项目编码', size: 260 },
-        { accessorKey: 'eidname', header: '执行项目名称', size: 320 },
+        { accessorKey: "rowNumber", header: "rowNumber", size: 100 },
+        { accessorKey: 'epaCode', header: 'epaCode', size: 260 },
+        { accessorKey: 'epaName', header: 'epaName', size: 320 },
         {
-            accessorKey: 'rlname', header: '风险等级', size: 140,
+            accessorKey: 'rlName', header: 'rlName', size: 140,
             Cell: (({ cell }) => {
-                return (<span style={{ maxHeight: 32, minWidth: 80, display: "flex", alignItems: "center", justifyContent: "center", margin: 0, padding: 0, borderRadius: 4, backgroundColor: cell.row.original.rlcolor }}>
+                return (<span style={{ maxHeight: 32, minWidth: 100, display: "flex", alignItems: "center", justifyContent: "center", margin: 0, padding: 0, borderRadius: 4, backgroundColor: cell.row.original.rlColor }}>
                     {cell.getValue()}
                 </span>)
             })
         },
-        { accessorKey: 'executionValueDisp', header: '执行值', size: 160 },
-        { accessorKey: 'bdescription', header: '表体说明', size: 200 },
-        { accessorKey: 'ischeckerror', header: '是否检查错误', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'isrequirefile', header: '必传附件', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'isonsitephoto', header: 'csa拍照', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'iserr', header: '存在问题', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'isrectify', header: 'csa整改', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'ishandle', header: '后续处理', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'hpcode', header: '处理人编码', size: 160 },
-        { accessorKey: 'hpname', header: '处理人', size: 140 },
+        { accessorKey: 'executionValueDisp', header: 'executionValueDisp', size: 160 },
+        { accessorKey: 'bDescription', header: 'bDescription', size: 200 },
+        { accessorKey: 'isCheckError', header: 'isCheckError', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isRequireFile', header: 'isRequireFile', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isOnSitePhoto', header: 'isOnSitePhoto', size: 100, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isIssue', header: 'isIssue', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isRectify', header: 'isRectify', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'isHandle', header: 'isHandle', size: 140, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'issueOwnerCode', header: 'issueOwnerCode', size: 160 },
+        { accessorKey: 'issueOwnerName', header: 'issueOwnerName', size: 140 },
         {
-            accessorKey: 'handlestarttime', header: '处理开始时间', size: 160,
-            Cell: (({ cell }) => <span>{cell.getValue() !== "" ? dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm") : ""}</span>)
+            accessorKey: 'handleStartTime', header: 'handleStartTime', size: 160,
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL")}</span>)
         },
         {
-            accessorKey: 'handleendtime', header: '处理结束时间', size: 160,
-            Cell: (({ cell }) => <span>{cell.getValue() !== "" ? dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm") : ""}</span>)
+            accessorKey: 'handleEndTime', header: 'handleEndTime', size: 160,
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL")}</span>)
         },
-        { accessorKey: 'bstatus', header: '行状态', size: 160, Cell: (({ cell }) => <span>{status[cell.getValue()]}</span>) },
-        { accessorKey: 'isfinish', header: '处理完成', size: 160, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
-        { accessorKey: 'ddnumber', header: '处理单号', size: 160 },
-        { accessorKey: 'createdate', header: '创建日期', size: 160 },
-        { accessorKey: 'createusercode', header: 'creator编码', size: 160 },
-        { accessorKey: 'createusername', header: 'creator', size: 160 },
-        { accessorKey: 'confirmdate', header: '确认日期', size: 160 },
-        { accessorKey: 'confirmusercode', header: '确认人编码', size: 160 },
-        { accessorKey: 'confirmusername', header: '确认人', size: 160 }
+        { accessorKey: 'bStatus', header: 'bStatus', size: 160, Cell: (({ cell }) => <span>{i18n.t(VoucherStatus[cell.getValue()])}</span>) },
+        { accessorKey: 'isFinish', header: 'isFinish', size: 160, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
+        { accessorKey: 'irfNumber', header: 'irfNumber', size: 160 },
+        { accessorKey: 'createDate', header: 'createDate', size: 160,
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
+         },
+        { accessorKey: 'creatorCode', header: 'creatorCode', size: 160 },
+        { accessorKey: 'creatorName', header: 'creatorName', size: 160 },
+        {
+            accessorKey: 'confirmDate', header: 'confirmDate', size: 160,
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>) },
+        { accessorKey: 'confirmerCode', header: 'confirmerCode', size: 160 },
+        { accessorKey: 'confirmerName', header: 'confirmerName', size: 160 }
     ];
+
+    // Translate header
+    columns.map(column => {
+        column.header = i18n.t(column.header);
+        return column;
+    });
+    // Add CSA option columns
     const options = store.getState().dynamicData.csos;
     options.forEach(option => {
         if (option.enable === 1) {
@@ -157,33 +169,33 @@ export const columnDef = () => {
     });
     return columns;
 }
-//报表默认隐藏列
+// Report default hidden columns
 export const defaultHideCol = () => {
     return {
-        hdeptcode: false,
-        hstarttime: false,
-        hendtime: false,
-        hdeptname: false,
-        hdescription: false,
-        hstatus: false,
-        sourcetype: false,
+        hDeptCode: false,
+        hStartTime: false,
+        hEndTime: false,
+        hDeptName: false,
+        hDescription: false,
+        hStatus: false,
+        sourceType: false,
         csaCode: false,
-        siclassid: false,
-        epcode: false,
+        csaID: false,
+        executorCode: false,
         eptCode: false,
         eptName: false,
-        eidcode: false,
-        bdescription: false,
-        ischeckerror: false,
-        isrequirefile: false,
-        isonsitephoto: false,
-        hpcode: false,
-        createdate: false,
-        createusercode: false,
-        confirmdate: false,
+        epaCode: false,
+        bDescription: false,
+        isCheckError: false,
+        isRequireFile: false,
+        isOnSitePhoto: false,
+        issueOwnerCode: false,
+        createDate: false,
+        creatorCode: false,
+        confirmDate: false,
         eoCreatorCode: false,
-        confirmusercode: false,
-        sourcebillnumber: false,
-        sourcerownumber: false,
+        confirmerCode: false,
+        sourceBillNumber: false,
+        sourceRowNumber: false,
     }
 };

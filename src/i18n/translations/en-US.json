@@ -436,6 +436,16 @@
     "eoCreatorCode":"EO Creator Code",
     "eoBillDate":"EO Bill Date",
     "eoHStatus":"EO Header Status",
+    "hStatus":"Header Status",
+    "csaID":"CSA ID",
+    "epaCode":"EPA Code",
+    "epaName":"EPA Name",
+    "rlName":"Risk Level Name",
+    "issueOwnerCode":"Issue Owner Code",
+    "issueOwnerName":"Issue Owner Name",
+    "bStatus":"Row Status",
+    "isFinish":"Complete",
+    "irfNumber":"IRF Bill Number",
 
 
     "systemName": "SeaCloud Construction Site Management System",

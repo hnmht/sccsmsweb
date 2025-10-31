@@ -1,45 +1,46 @@
 import { useState, useMemo } from "react";
 import { Dialog, Divider } from "@mui/material";
-import { message } from "mui-message";
-
+import { useTranslation } from "react-i18next";
 import PageTitle from "../../../../component/PageTitle/PageTitle";
 import ScReport from "../../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../../component/QueryPanel";
 import { reqEOReport } from "../../../../api/report";
-import { generateEDDefaultCons, columnDef, defaultHideCol, generateEDQueryFields } from "./constructor";
+import { generateEODefaultCons, columnDef, defaultHideCol, generateEOQueryFields } from "./constructor";
 
-const ExecuteDocStat = () => {
-    const [conditions, setConditions] = useState(generateEDDefaultCons());
+// Execution Order status Report
+const EOStatus = () => {
+    const [conditions, setConditions] = useState(generateEODefaultCons());
     const [rows, setRows] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
-    const queryFields = useMemo(generateEDQueryFields, []);
-    const columns = useMemo(columnDef, []);
-    const columnVisibility = useMemo(defaultHideCol,[])
-    
+    const queryFields = useMemo(generateEOQueryFields, []);
+    const { t, i18n } = useTranslation();
+    const columns = useMemo(columnDef, [i18n.language]);
+    const columnVisibility = useMemo(defaultHideCol, [])
+
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
         let res = await reqEOReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
             newRows = res.data;
-        } 
+        }
         setRows(newRows);
     }
-    //QueryPanel点击确认
+    // Actions after click ok button in the query panel
     const handleQueryOk = async (cons) => {
         setConditions(cons);
         setDiagOpen(false);
-        //向服务器请求数据
+        // Request data from backend
         handleRequestData(cons);
     };
 
-    //报表表头点击请求数据
+    // Actions after click fiter button in the header
     const handleFilterAction = async () => {
         setDiagOpen(true);
     };
 
     return (<>
-        <PageTitle pageName="执行单统计" displayHelp={true} helpUrl="/helps/executeDocStatWeb" />
+        <PageTitle pageName={t("MenuEOStatus")} displayHelp={false} helpUrl="#" />
         <Divider my={2} />
         <ScReport
             rows={rows}
@@ -55,7 +56,7 @@ const ExecuteDocStat = () => {
             closeAfterTransition={false}
         >
             <QueryPanel
-                title="过滤条件"
+                title={t("queryConditions")}
                 queryFields={queryFields}
                 initalConditions={conditions}
                 onOk={handleQueryOk}
@@ -65,4 +66,4 @@ const ExecuteDocStat = () => {
     </>);
 };
 
-export default ExecuteDocStat;
+export default EOStatus;
