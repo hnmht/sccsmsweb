@@ -109,7 +109,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
-        let startTime = new Date();
+        // let startTime = new Date();
         // Change voucherData
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
@@ -147,7 +147,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
             }
             return newErrors;
         });
-        console.log("更新", itemKey, ",耗时:", new Date() - startTime, "ms");
+        // console.log("更新", itemKey, ",耗时:", new Date() - startTime, "ms");
     };
     // Add Row
     const handleAddRow = () => {

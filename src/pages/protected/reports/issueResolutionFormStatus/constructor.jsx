@@ -36,7 +36,7 @@ export const generateIRFQueryFields = () => {
             startid++
             let field = {
                 id: startid,
-                value: "si." + option.code,
+                value: "csa." + option.code,
                 label: option.displayName,
                 inputType: 550,
                 resultType: "object",
