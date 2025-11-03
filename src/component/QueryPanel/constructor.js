@@ -20,32 +20,34 @@ export const transConditionsToString = (conditions) => {
         }
         cs = cs + con.field.value + " ";
         cs = cs + con.compare.value + " ";
-        
-        switch (con.field.resultType) {           
-            case "date":
-            case "dateTime":
-                const unixTime = ConvertToUnixSecond(con.value);
-                cs = cs + "to_timestamp(" + unixTime + ") ";
-                break;
-            case "number":
-                cs = cs + con.value + " ";
-                break;
-            case "int":
-                cs = cs + con.value + " ";
-                break;
-            case "string":
-                if (con.compare.addCharacter) {
-                    cs = cs + "'" + con.compare.addStart + con.value + con.compare.addEnd + "' ";
-                } else {
-                    cs = cs + "'" + con.value + "' ";
-                }
-                break;
-            case "object":
-                cs = cs + con.value.id + " ";
-                break;
-            default:
-                break
-        }
+        const compare = con.compare.id;
+        if (compare !== "null" && compare !== "notnull") {
+            switch (con.field.resultType) {
+                case "date":
+                case "dateTime":
+                    const unixTime = ConvertToUnixSecond(con.value);
+                    cs = cs + "to_timestamp(" + unixTime + ") ";
+                    break;
+                case "number":
+                    cs = cs + con.value + " ";
+                    break;
+                case "int":
+                    cs = cs + con.value + " ";
+                    break;
+                case "string":
+                    if (con.compare.addCharacter) {
+                        cs = cs + "'" + con.compare.addStart + con.value + con.compare.addEnd + "' ";
+                    } else {
+                        cs = cs + "'" + con.value + "' ";
+                    }
+                    break;
+                case "object":
+                    cs = cs + con.value.id + " ";
+                    break;
+                default:
+                    break
+            }
+        }        
         queryString = queryString + cs;
     });
     return queryString;

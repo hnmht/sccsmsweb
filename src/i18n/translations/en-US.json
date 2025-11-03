@@ -467,6 +467,11 @@
     "viewDocument":"View Document",
     "editionPlaceholder":"Please enter the version",
     "authorPlaceholder":"Please enter the author",
+    "docName":"Document Name",
+    "dcName":"DC Name",
+    "uploadDate":"Upload Date",
+    "creatorID":"Creator ID",
+    "dcID":"Document Category ID",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

@@ -29,7 +29,7 @@ const IssueResolutionFormStatus = Loadable(lazy(() => import("./pages/protected/
 // Document
 const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); // Doucment Category
 const DocumentUpload = Loadable(lazy(() => import("./pages/protected/documentUpload/documentUpload"))); // Upload Document 
-const DocumentLookup = Loadable(lazy(() => import("./pages/protected/documentLookup/documentLookup"))); // Document Report
+const DocumentFind = Loadable(lazy(() => import("./pages/protected/documentFind/documentFind"))); // Document Report
 // Training
 const TC = Loadable(lazy(() => import("./pages/protected/tc/tc"))); // Training Course
 const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/trainRecord"))); //培训记录
@@ -149,8 +149,8 @@ const routes = [
                 element: <DocumentUpload />
             },
             {
-                path: "/private/document/lookup",
-                element: <DocumentLookup />
+                path: "/private/document/find",
+                element: <DocumentFind />
             },
             {
                 path: "/private/training/course",

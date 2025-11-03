@@ -466,6 +466,11 @@
     "viewDocument": "查看文档",
     "editionPlaceholder": "请输入版本",
     "authorPlaceholder": "请输入作者",
+    "docName": "文档名称",
+    "dcName": "文档类别名",
+    "uploadDate": "上传日期",
+    "creatorID": "制单人ID",
+    "dcID": "文档类别ID",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

@@ -1,48 +1,49 @@
 import { useMemo, useState } from "react";
 import { Dialog } from "@mui/material";
 import { Divider } from "../../../component/ScMui/ScMui";
-import { message } from "mui-message";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import ScReport from "../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 
 import { reqGetDocReport } from "../../../api/document";
 import { generateDocReportDefaultCons, generateDocReportFields, defaultHideCol, columnDef } from "./constructor";
+import { useTranslation } from "react-i18next";
 
-const LookupDocument = () => {
+// Find Document Report
+const FindDocument = () => {
     const [conditions, setConditions] = useState(generateDocReportDefaultCons());
     const [rows, setRows] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
+    const { t, i18n } = useTranslation();
     const queryFields = useMemo(generateDocReportFields, []);
-    const columns = useMemo(columnDef, []);
-    const columnVisibility = useMemo(defaultHideCol, [])
+    const columns = useMemo(columnDef, [i18n.language]);
+    const columnVisibility = useMemo(defaultHideCol, []);
 
+    // Request Document Report from backend
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
         let res = await reqGetDocReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
-            newRows = res.data.data;
-        } else {
-            message.warning(res.data.statusMsg);
+            newRows = res.data;
         }
         setRows(newRows);
     }
-    //QueryPanel点击确认
+    // Actions after click ok button in the Query Panel
     const handleQueryOk = async (cons) => {
         setConditions(cons);
         setDiagOpen(false);
-        //向服务器请求数据
+        // Request Document Report from backend
         handleRequestData(cons);
     };
 
-    //报表表头点击请求数据
+    // Actions after click fiter button in the header
     const handleFilterAction = async () => {
         setDiagOpen(true);
     };
 
     return (<>
-        <PageTitle pageName="查阅文档" displayHelp={true} helpUrl="/helps/lookupDocument" />
+        <PageTitle pageName={t("MenuDocumentFind")} displayHelp={false} helpUrl="#" />
         <Divider my={2} />
         <ScReport
             rows={rows}
@@ -58,7 +59,7 @@ const LookupDocument = () => {
             closeAfterTransition={false}
         >
             <QueryPanel
-                title="过滤条件"
+                title={t("queryConditions")}
                 queryFields={queryFields}
                 initalConditions={conditions}
                 onOk={handleQueryOk}
@@ -68,4 +69,4 @@ const LookupDocument = () => {
     </>);
 };
 
-export default LookupDocument;
+export default FindDocument;
