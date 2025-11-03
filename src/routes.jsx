@@ -28,8 +28,8 @@ const ExecutionOrderStatus = Loadable(lazy(() => import("./pages/protected/repor
 const IssueResolutionFormStatus = Loadable(lazy(() => import("./pages/protected/reports/issueResolutionFormStatus/IRFStatus"))); // Issue Resolution Form Report
 // Document
 const DC = Loadable(lazy(() => import("./pages/protected/dc/dc"))); // Doucment Category
-const UploadDocument = Loadable(lazy(() => import("./pages/protected/uploadDocument/uploadDocument"))); //上传文档
-const LookupDocument = Loadable(lazy(() => import("./pages/protected/lookupDocument/lookupDocument"))); //查阅文档
+const DocumentUpload = Loadable(lazy(() => import("./pages/protected/documentUpload/documentUpload"))); // Upload Document 
+const DocumentLookup = Loadable(lazy(() => import("./pages/protected/documentLookup/documentLookup"))); // Document Report
 // Training
 const TC = Loadable(lazy(() => import("./pages/protected/tc/tc"))); // Training Course
 const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/trainRecord"))); //培训记录
@@ -146,11 +146,11 @@ const routes = [
             },
             {
                 path: "/private/document/upload",
-                element: <UploadDocument />
+                element: <DocumentUpload />
             },
             {
                 path: "/private/document/lookup",
-                element: <LookupDocument />
+                element: <DocumentLookup />
             },
             {
                 path: "/private/training/course",

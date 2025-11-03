@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
     DialogContent,
     DialogTitle,
@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat, dayjs, EpochTime } from '../../../i18n/dayjs';
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -16,79 +16,68 @@ import Loader from '../../../component/Loader/Loader';
 import MoreInfo from '../../../component/MoreInfo/MoreInfo';
 
 import { reqAddDoc, reqEditDoc } from '../../../api/document';
-import { getCurrentPerson } from '../pub';
-//默认行附件
+import { getCurrentPerson } from '../pub/pubFunction';
+import { checkVoucherNoBodyErrors } from '../pub/pubFunction';
+// Default Attachments
 const bodyFiles = {
     id: 0,
-    billbid: 0,
-    billhid: 0,
+    billBID: 0,
+    billHID: 0,
     file: { fileid: 0, filehash: "" },
     dr: 0,
 };
-//初始值
+// Generate initial data
 const getInitialValues = async (oriDoc, isNew, isModify, currentDC) => {
     const person = await getCurrentPerson();
-    let newDoc = { //新增
+    const currentDate = dayjs(new Date());
+    let newDoc = { // Add
         id: 0,
         dc: currentDC,
         name: "",
         edition: "",
         author: "",
-        releasedate: dayjs(new Date()).format("YYYYMMDD"),
+        releaseDate: currentDate,
         description: "",
         files: [bodyFiles],
-        createuser: person,
-        modifyuser: { id: 0, code: "", name: "" },
-        createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+        creator: person,
+        modifier: { id: 0, code: "", name: "" },
+        createDate: currentDate,
+        modifyDate: EpochTime
     };
 
     if (isNew) {
-        if (oriDoc) {//复制新增
+        if (oriDoc) {// copy Add
             newDoc = {
                 ...oriDoc,
                 id: 0,
                 name: "",
                 edition: "",
                 files: [bodyFiles],
-                createuser: person,
-                modifyuser: { id: 0, code: "", name: "" },
-                createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-                modifydate: dayjs(new Date()).format("YYYYMMDDHHmm")
+                creator: person,
+                modifier: { id: 0, code: "", name: "" },
+                createDate: currentDate,
+                modifyDate: EpochTime
             };
         }
     } else {
         if (oriDoc) {
-            if (isModify) { //编辑
+            if (isModify) { // Edit
                 newDoc = {
                     ...oriDoc,
-                    modifyuser: person,
-                    createdate: dayjs(oriDoc.createdate).format("YYYYMMDDHHmm"),
-                    modifydate: dayjs(oriDoc.modifydate).format("YYYYMMDDHHmm")
+                    modifier: person,
+                    modifyDate: currentDate
                 };
-            } else {//查看
+            } else {// View
                 newDoc = {
-                    ...oriDoc,
-                    createdate: dayjs(oriDoc.createdate).format("YYYYMMDDHHmm"),
-                    modifydate: dayjs(oriDoc.modifydate).format("YYYYMMDDHHmm")
+                    ...oriDoc
                 };
             }
         }
     }
     return newDoc;
 };
-//检查错误
-const isError = (errors) => {
-    let number = 0;
-    for (let key in errors) {
-        if (errors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    return number > 0;
-};
-
-const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) => {
+// Add && Edit && View Document
+const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk, t }) => {
     const [currentDoc, setCurrentDoc] = useState(undefined);
     const [errors, setErrors] = useState({});
     const isEdit = !(!isModify && !isNew);
@@ -103,20 +92,19 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
         }
     }, [isOpen, oriDoc, isNew, isModify, DC]);
 
-    //scinput组件获取内容后传入
+    // Get the passed data from the ScInput Component
     const handleGetValue = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
         if (currentDoc === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新输入的信息
+        // Change currentDoc
         setCurrentDoc((prevState) => {
-            //深拷贝方法
             let newValue = cloneDeep(prevState);
             newValue[itemkey] = value;
 
             return newValue;
         });
-        //更新errors       
+        // Change errors       
         setErrors((prevState) => {
             return ({
                 ...prevState,
@@ -125,12 +113,12 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
         });
     }, [currentDoc, isOpen, isEdit]);
 
-    //scInput组件错误信息传入
+    // Get the Passed error data from the ScInput Component
     const handleGetError = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
         if (currentDoc === undefined || !isOpen || !isEdit) {
             return
         }
-        //更新errors       
+        // change errors       
         setErrors((prevState) => {
             return ({
                 ...prevState,
@@ -139,33 +127,29 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
         });
     }, [currentDoc, isOpen, isEdit]);
 
-    //增加执行项目档案
+    // Add or Edit Document
     const handleAddDoc = async () => {
         // console.log("转换前:",currentDoc);
         let thisDoc = cloneDeep(currentDoc);
-        delete thisDoc.createdate;
-        delete thisDoc.modifydate;
+        delete thisDoc.createDate;
+        delete thisDoc.modifyDate;
         if (isModify) {
             let editRes = await reqEditDoc(thisDoc);
             if (editRes.status) {
-                message.success("修改档案'" + thisDoc.name + "'成功");
+                message.success(t("modifySuccessful"));
                 onOk();
-            } else {
-                message.error("修改档案'" + thisDoc.name + "'失败:" + editRes.data.statusMsg);
             }
         } else {
             let addRes = await reqAddDoc(thisDoc);
             if (addRes.status) {
-                message.success("新增档案‘" + thisDoc.name + "’成功");
+                message.success(t("addSuccessful"));
                 onOk();
-            } else {
-                message.error("新增档案‘" + thisDoc.name + "’失败:" + addRes.data.statusMsg);
             }
         }
     };
     return currentDoc
         ? <>
-            <DialogTitle>{isNew ? "增加文档" : isModify ? "修改文档" : "文档详情"}</DialogTitle>
+            <DialogTitle>{t(isNew ? "addDocument" : isModify ? "modifyDocument" : "viewDocument")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ width: "100%", height: "100%" }}>
                 <Grid container spacing={3}>
@@ -174,12 +158,12 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={301}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="档案名称"
+                            itemShowName="name"
                             itemKey="name"
                             initValue={currentDoc.name}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入档案名称"
+                            placeholder="namePlaceholder"
                             isBackendTest={false}
                             key="name"
                             positionID={0}
@@ -190,12 +174,12 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="版本"
+                            itemShowName="edition"
                             itemKey="edition"
                             initValue={currentDoc.edition}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入版本"
+                            placeholder="editionPlaceholder"
                             isBackendTest={false}
                             key="edition"
                             positionID={0}
@@ -206,12 +190,12 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="作者"
+                            itemShowName="author"
                             itemKey="author"
                             initValue={currentDoc.author}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入作者"
+                            placeholder="authorPlaceholder"
                             isBackendTest={false}
                             key="author"
                             positionID={0}
@@ -222,7 +206,7 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={600}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="档案类别"
+                            itemShowName="dc"
                             itemKey="dc"
                             initValue={currentDoc.dc}
                             pickDone={handleGetValue}
@@ -238,14 +222,14 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={306}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="生效日期"
-                            itemKey="releasedate"
-                            initValue={currentDoc.releasedate}
+                            itemShowName="releaseDate"
+                            itemKey="releaseDate"
+                            initValue={currentDoc.releaseDate}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入生效日期"
+                            placeholder="chooseDate"
                             isBackendTest={false}
-                            key="releasedate"
+                            key="releaseDate"
                             positionID={0}
                         />
                     </Grid>
@@ -254,12 +238,12 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="档案说明"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={currentDoc.description}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入档案说明"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             isMultiline={true}
                             rowNumber={4}
@@ -272,13 +256,13 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={902}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="文件"
+                            itemShowName="files"
                             itemKey="files"
                             initValue={currentDoc.files}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
-                            placeholder="请输入档案说明"
-                            isBackendTest={false}                           
+                            placeholder="selectFiles"
+                            isBackendTest={false}
                             key="files"
                             positionID={0}
                             chooseType={"*"}
@@ -292,27 +276,27 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={currentDoc.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={currentDoc.creator}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建时间"
-                            itemKey="createdate"
-                            initValue={currentDoc.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={currentDoc.createDate}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="createdate"
+                            key="createDate"
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -320,27 +304,27 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={currentDoc.modifyuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={currentDoc.modifier}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="modifyuser"
+                            key="modifier"
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <ScInput
-                            dataType={307}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="修改时间"
-                            itemKey="modifydate"
-                            initValue={currentDoc.modifydate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={currentDoc.modifyDate}
                             pickDone={handleGetValue}
                             pickErr={handleGetError}
                             isBackendTest={false}
-                            key="modifydate"
+                            key="modifyDate"
                         />
                     </Grid>
                 </MoreInfo>
@@ -349,10 +333,10 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk }) =
             <DialogActions sx={{ p: 2.5 }}>
                 {isEdit
                     ? <>
-                        <Button color='error' onClick={onCancel}>取消</Button>
-                        <Button variant='contained' disabled={isError(errors)} onClick={handleAddDoc}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                        <Button variant='contained' disabled={checkVoucherNoBodyErrors(errors)} onClick={handleAddDoc}>{t(isModify ? "save" : "add")}</Button>
                     </>
-                    : <Button variant='contained' onClick={onCancel}>返回</Button>
+                    : <Button variant='contained' onClick={onCancel}>{t("back")}</Button>
                 }
             </DialogActions>
         </>

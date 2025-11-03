@@ -157,3 +157,8 @@ export const CellHandler = (row, column) => {
     return row.handler.name;
 };
 
+// Document Category display content
+export const CellDC = (row,column) => {
+    return row.dc.name;
+};
+

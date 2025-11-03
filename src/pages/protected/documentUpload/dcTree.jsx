@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-
+import { useState, useEffect } from "react";
 import { List, ListSubheader, Tooltip, IconButton } from "@mui/material";
 import { RefreshIcon } from "../../../component/PubIcon/PubIcon";
 import PubTree from "../../../component/ScInput/ScPub/PubTree";
 import { InitDocCache, GetLocalCache } from "../../../storage/db/db";
 import useContentHeight from "../../../hooks/useContentHeight";
 
-const DcTree = ({ selectOk }) => {
+// Document Category Tree View
+const DcTree = ({ selectOk,t }) => {
     const [dcs, setDcs] = useState([]);
     const [currentDoc, setCurrentDoc] = useState(undefined);
 
     const contentHeight = useContentHeight();
     useEffect(() => {
         async function initDcs() {
-            await InitDocCache("documentclass");
-            const newDcs = await GetLocalCache("documentclass");
+            await InitDocCache("dc");
+            const newDcs = await GetLocalCache("dc");
             setDcs(newDcs);
         }
         initDcs();
     }, []);
-    //将当前选择档案转换为档案id数组
+    // Convert the current selcted DCs into a ID array
     const transferDocIDs = (doc) => {
         let selectedDocIDs = [];
         if (doc !== undefined) {
@@ -27,18 +27,18 @@ const DcTree = ({ selectOk }) => {
         }
         return selectedDocIDs;
     }
-    //获取执行项目类别
+    // Get Document Category from front end cache
     const handleGetLocalDCs = async () => {
-        const newDcs = await GetLocalCache("documentclass");
+        const newDcs = await GetLocalCache("dc");
         setDcs(newDcs);
     };
-    //更新执行项目类别
+    // Request the latest Document Category list from backend
     const handleRefresh = async () => {
-        await InitDocCache("documentclass");
+        await InitDocCache("dc");
         handleGetLocalDCs();
     };
 
-    //选择项目
+    // Actions after choose Document Category
     const handleOnDocClick = (item, type) => {
         setCurrentDoc(item);
         selectOk(item);
@@ -56,8 +56,8 @@ const DcTree = ({ selectOk }) => {
                         display: "flex", flexDirection: "row", justifyContent: "space-between"
                     }}
                 >
-                    选择类别
-                    <Tooltip title="刷新" placement="top">
+                    {t("chooseCategory")}
+                    <Tooltip title={t("refresh")} placement="top">
                         <IconButton onClick={handleRefresh}>
                             <RefreshIcon color="primary" />
                         </IconButton>
@@ -67,7 +67,7 @@ const DcTree = ({ selectOk }) => {
             sx={{ width: "100%", height: contentHeight, overflow: "auto", p: 0, borderStyle: "solid", borderWidth: 0, borderColor: "divider", bgcolor: "background.paper" }}
         >
             <PubTree
-                docName="类别"
+                docName="category"
                 isDisplayAll={false}
                 oriDocs={dcs}
                 onDocClick={handleOnDocClick}

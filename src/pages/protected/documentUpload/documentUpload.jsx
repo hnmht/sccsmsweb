@@ -4,6 +4,7 @@ import {
     Dialog,
 } from "@mui/material";
 import { message } from "mui-message";
+import { useTranslation } from "react-i18next";
 
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import { Divider } from "../../../component/ScMui/ScMui";
@@ -12,9 +13,10 @@ import DcTree from "./dcTree";
 import EditDocument from "./editDocument";
 
 import { columns, rowActionsDefine, delMultipleDisabled } from "./constructor";
-import { reqGetDocPage,reqDeleteDoc,reqDeleteDocs } from "../../../api/document";
+import { reqGetDocPage, reqDeleteDoc, reqDeleteDocs } from "../../../api/document";
 
-const UploadDocument = () => {
+// Upload Document
+const DocumentUpload = () => {
     const [dc, setDc] = useState(undefined);
     const [docsPaging, setDocsPaging] = useState({ docs: [], count: 0, page: 0, perPage: 10 });
     const [page, setPage] = useState(0);
@@ -26,34 +28,32 @@ const UploadDocument = () => {
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
-        //更新数据
+        // Refresh Document list
         const handleRefreshData = async (page1 = page, perPage1 = perPage, dc1 = dc) => {
             if (dc1 === undefined) {
                 return
             }
-            let docRes = await reqGetDocPage({ dc: dc1, page: page1, perpage: perPage1 });
-            let newDocs = { docs: [], count: 0, page: 0, perpage: perPage1 };
-
+            let docRes = await reqGetDocPage({ dc: dc1, page: page1, perPage: perPage1 });
+            let newDocs = { docs: [], count: 0, page: 0, perPage: perPage1 };
             if (docRes.status) {
-                newDocs = docRes.data.data;
-            } else {
-                message.warning(docRes.data.statusMsg);
+                newDocs = docRes.data;
             }
             setPage(newDocs.page);
-            setPerPage(newDocs.perpage);
+            setPerPage(newDocs.perPage);
             setDocsPaging(newDocs);
         };
-       handleRefreshData();
+        handleRefreshData();
     }, [dc, page, perPage, refresh]);
-    
-    //获取当前dc
+
+    // Get current Document Category
     const handleGetCurrentDc = async (item) => {
         setDc(item);
     };
 
-    //列表表头增加
+    // Actions after click add button in the header
     const handleAddDocument = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -63,7 +63,7 @@ const UploadDocument = () => {
         });
     };
 
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -73,7 +73,7 @@ const UploadDocument = () => {
         });
         setRefresh(!refresh);
     };
-    //对话点击确定按钮
+    // Actions after click ok button in the Add Document Dialog
     const handelAddDocumentOk = () => {
         setDiagStatus({
             currentDoc: undefined,
@@ -81,10 +81,10 @@ const UploadDocument = () => {
             isNew: false,
             isModify: false
         });
-        //刷新数据
+        // Refresh Document list
         setRefresh(!refresh);
     };
-    //表体点击详情按钮
+    // Actions after click detail button in the body row
     const handleRowDetail = (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -93,7 +93,7 @@ const UploadDocument = () => {
             isModify: false
         });
     };
-    //表体点击编辑按钮
+    // Actions after click edit button in the body row
     const handleRowEdit = async (doc) => {
         setDiagStatus({
             currentDoc: doc,
@@ -102,48 +102,45 @@ const UploadDocument = () => {
             isModify: true
         });
     };
-    //表体行点击删除按钮
-    const handleRowDelete = async (doc) => {        
-        //向服务器请求删除
+    // Actions after click delete button in the body row
+    const handleRowDelete = async (doc) => {
+        // Request the backend server to delete the document
         const delRes = await reqDeleteDoc(doc);
         if (delRes.status) {
-            message.success("删除文档" + doc.name + "成功");
-        } else {
-            message.error("删除文档" + doc.name + "失败:" + delRes.data.statusMsg);        }
-        //刷新列表
+            message.success(t("deleteSuccessful"));
+        }
+        // Refresh the document list
         setRefresh(!refresh);
     };
-    //表头点击批量删除
-    const handleDelMultipleAction = async (docs) => {      
+    // Actions after click batch delete button in the header
+    const handleDelMultipleAction = async (docs) => {
         const delRes = await reqDeleteDocs(docs);
         if (delRes.status) {
-            message.success("批量删除成功");
-        } else {
-            message.error("批量删除失败:"+delRes.data.statusMsg);
+            message.success(t("batchDeleteSuccessful"));
         }
-        //刷新列表
+        // Refresh the Document list
         setRefresh(!refresh);
     };
 
-    //每页行数变化
+    // Actions after the number of rows per page changes
     const hangdlePerPageChange = (event) => {
         const newPerPage = parseInt(event.target.value, 10);
-        setPerPage(newPerPage);       
+        setPerPage(newPerPage);
     };
-    //页数变化
+    // Actions after the number of page changes
     const handleChangePage = (newPage) => {
         setPage(newPage);
     };
 
-
     return (
         <>
-            <PageTitle pageName="上传文档" displayHelp={true} helpUrl="/helps/uploaddocument" />
+            <PageTitle pageName={t("MenuDocumentUpload")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Grid container spacing={2}>
                 <Grid item xs={2} >
                     <DcTree
                         selectOk={handleGetCurrentDc}
+                        t={t}
                     />
                 </Grid>
                 <Grid item xs={10}>
@@ -160,7 +157,8 @@ const UploadDocument = () => {
                         refreshAction={() => setRefresh(!refresh)}
                         addAction={handleAddDocument}
                         delMultipleAction={handleDelMultipleAction}
-                        delMultipleDisabled={delMultipleDisabled}                        
+                        headDelMultipleVisible={true}
+                        delMultipleDisabled={delMultipleDisabled}
                         rowActionsDefine={rowActionsDefine}
                         rowViewDetail={handleRowDetail}
                         rowEdit={handleRowEdit}
@@ -183,10 +181,11 @@ const UploadDocument = () => {
                     DC={dc}
                     onCancel={handleDiagClose}
                     onOk={handelAddDocumentOk}
+                    t={t}
                 />
             </Dialog>
         </>
     );
 };
 
-export default UploadDocument;
+export default DocumentUpload;

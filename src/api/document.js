@@ -1,7 +1,7 @@
 import request from "../utils/request";
 
-//获取文档列表
-export function reqGetDocList(data,isLoading = true) {
+// Get Document list pagination
+export function reqGetDocPage(data, isLoading = true) {
     return request({
         url: "/doc/list",
         method: 'post',
@@ -10,18 +10,7 @@ export function reqGetDocList(data,isLoading = true) {
     });
 }
 
-
-//获取文档分页列表
-export function reqGetDocPage(data, isLoading = true) {
-    return request({
-        url: "/doc/page",
-        method: 'post',
-        data,
-        isLoading
-    });
-}
-
-//获取文档查询报表
+// Get Document Report
 export function reqGetDocReport(data, isLoading = true) {
     return request({
         url: "/doc/rep",
@@ -31,7 +20,7 @@ export function reqGetDocReport(data, isLoading = true) {
     });
 }
 
-//增加文档
+// Add Document 
 export function reqAddDoc(data, isLoading = true) {
     return request({
         url: "/doc/add",
@@ -41,7 +30,7 @@ export function reqAddDoc(data, isLoading = true) {
     });
 }
 
-//编辑文档
+// Edit Document
 export function reqEditDoc(data, isLoading = true) {
     return request({
         url: "/doc/edit",
@@ -50,19 +39,19 @@ export function reqEditDoc(data, isLoading = true) {
         isLoading
     });
 }
-//删除文档
+// Delete Document
 export function reqDeleteDoc(data, isLoading = true) {
     return request({
-        url: "/doc/delete",
+        url: "/doc/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//批量删除文档
+// Batch Delete Document
 export function reqDeleteDocs(data, isLoading = true) {
     return request({
-        url: "/doc/deletes",
+        url: "/doc/dels",
         method: 'post',
         data,
         isLoading
