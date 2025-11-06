@@ -4,11 +4,11 @@ import store from "../../../store";
 export const generateReportFields = () => {
     const queryFields = [
         { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
-        { id: 2, value: "h.dept_id", label: "发放部门", inputType: 520, resultType: "object", resultfield: "id" },
-        { id: 3, value: "b.student_id", label: "学生", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 4, value: "h.tc_id", label: "课程", inputType: 620, resultType: "object", resultfield: "id" },
-        { id: 5, value: "h.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 6, value: "h.lecturer_id", label: "讲师", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 2, value: "h.deptid", label: "发放部门", inputType: 520, resultType: "object", resultfield: "id" },
+        { id: 3, value: "b.studentid", label: "学生", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 4, value: "h.tcid", label: "课程", inputType: 620, resultType: "object", resultfield: "id" },
+        { id: 5, value: "h.creatorid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 6, value: "h.lecturerid", label: "讲师", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 7, value: "h.description", label: "说明", inputType: 301, resultType: "string", resultfield: "" },
     ];
     return queryFields;
@@ -34,7 +34,7 @@ export function generateReportDefaultCons() {
         },
         {
             logic: "and",
-            field: { id: 5, value: "h.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+            field: { id: 5, value: "h.creatorid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
             compare: { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
@@ -65,7 +65,7 @@ export const defaultHideCol = () => {
         studentid:false,
         studentcode:false,
         bstatus:false,
-        createuserid:false,
+        creatorid:false,
         createusercode: false,
         createusername:false,
     };

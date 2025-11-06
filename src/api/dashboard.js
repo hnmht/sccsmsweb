@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取首页数据
+// Get Dashboard data
 export function reqGetDashboardData(data,isLoading = true) {
     return request({
         url: "/da/data",
@@ -11,7 +11,7 @@ export function reqGetDashboardData(data,isLoading = true) {
 }
 
 
-//获取风险趋势
+// Get Risk Trend data
 export function reqGetRiskTrend(data, isLoading = false) {
     return request({
         url: "/da/risktrend",

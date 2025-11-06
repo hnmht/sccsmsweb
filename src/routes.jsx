@@ -32,9 +32,9 @@ const DocumentUpload = Loadable(lazy(() => import("./pages/protected/documentUpl
 const DocumentFind = Loadable(lazy(() => import("./pages/protected/documentFind/documentFind"))); // Document Report
 // Training
 const TC = Loadable(lazy(() => import("./pages/protected/tc/tc"))); // Training Course
-const TrainRecord = Loadable(lazy(() => import("./pages/protected/trainRecord/trainRecord"))); //培训记录
-const GiveLessons = Loadable(lazy(() => import("./pages/protected/giveLessons/giveLessons"))); //授课查询
-const ReceiveTraining = Loadable(lazy(() => import("./pages/protected/receiveTraining/receiveTraining"))); //受训查询
+const TrainingRecord = Loadable(lazy(() => import("./pages/protected/trainingRecord/trainingRecord"))); // Training Record
+const TaughtLessons = Loadable(lazy(() => import("./pages/protected/taughtLessons/taughtLessons"))); // Taught Lessons Report
+const ReceivedTraining = Loadable(lazy(() => import("./pages/protected/receivedTraining/receivedTraining"))); // Recvied Training Report
 // Personal Protective Equipment
 const LpaQuota = Loadable(lazy(() => import("./pages/protected/lpaQuota/lpaQuota"))); //劳保用品定额
 const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWizard"))); //发放向导
@@ -158,15 +158,15 @@ const routes = [
             },
             {
                 path: "/private/training/record",
-                element: <TrainRecord />
+                element: <TrainingRecord />
             },
             {
-                path: "/private/training/givelessons",
-                element: <GiveLessons />
+                path: "/private/training/teachingStatistics",
+                element: <TaughtLessons />
             },
             {
-                path: "/private/training/receivetraining",
-                element: <ReceiveTraining />
+                path: "/private/training/participationStatistics",
+                element: <ReceivedTraining />
             },
             {
                 path: "/private/ppe/quota",

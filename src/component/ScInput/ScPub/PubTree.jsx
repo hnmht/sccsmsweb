@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { ExpandMoreIcon, ExpandLessIcon, CheckIcon } from "../../PubIcon/PubIcon";
 import { toTree } from "../../../utils/tree";
 
-function PubTree({
+const PubTree = ({
     docName = "archiveTree",
     isDisplayAll = false,
     oriDocs = [],
@@ -19,7 +19,7 @@ function PubTree({
     selectDocIDs = [],
     onDocDoubleClick = () => { },
     isEdit = true
-}) {
+}) => {
     const [openAll, setOpenAll] = useState(true);
     const docTree = toTree(oriDocs, 0);
 
@@ -50,7 +50,7 @@ function PubTree({
         const { t } = useTranslation();
         const status = item.status ? item.status : 0;
         const disabled = status === 1;
-        const name = disabled ? `${item.name}(${t("disable")})` :item.name;
+        const name = disabled ? `${item.name}(${t("disable")})` : item.name;
 
         return (
             item.children

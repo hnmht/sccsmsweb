@@ -133,7 +133,14 @@ function DocTable({
         }
         let newSelectedRows = [];
         if (selectedRows.length === 0) {
-            newSelectedRows = currentRows;
+            if (includeDisabled) {
+                newSelectedRows = currentRows;
+            } else {
+                newSelectedRows = currentRows.filter(item => {
+                    const status = item.status ? item.status :0;
+                    return status === 0;
+                });
+            }            
         }
         setSelectedRows(newSelectedRows);
         selectItem(newSelectedRows)

@@ -14,7 +14,7 @@ import useContentHeight from "../../../hooks/useContentHeight";
 import dayjs from "../../../utils/myDayjs";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { ConvertFloatFormat, DateFormat } from "../../../utils/tools";
-import { reqGetGiveLessonsReport } from "../../../api/trainRecord";
+import { reqGetTaughtLessonsReport } from "../../../api/trainRecord";
 import { generateReportDefaultCons, generateReportFields, defaultHideCol } from "./constructor";
 import { excelRows, excelColumns } from "../../../component/ScReport/excelExport";
 
@@ -106,7 +106,7 @@ const GiveLessons = () => {
                 { accessorKey: 'qualifiednumber', header: '合格数量', size: 128 },
                 { accessorKey: 'disqualificationnumber', header: '不合格数量', size: 172 },
                 { accessorKey: 'status', header: '状态', size: 128, Cell: (({ cell }) => <span>{VoucherStatus[cell.getValue()]}</span>) },
-                { accessorKey: 'createuserid', header: '创建人ID', size: 100 },
+                { accessorKey: 'creatorid', header: '创建人ID', size: 100 },
                 { accessorKey: 'createusercode', header: '创建人编码', size: 128 },
                 { accessorKey: 'createusername', header: '创建人姓名', size: 128 },
             ];
@@ -139,7 +139,7 @@ const GiveLessons = () => {
     //请求数据
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        let res = await reqGetGiveLessonsReport({ queryString: queryString });
+        let res = await reqGetTaughtLessonsReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
             newRows = res.data.data;
@@ -270,7 +270,7 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import ScReport from "../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 
-import {reqGetGiveLessonsReport} from "../../../api/trainRecord";
+import {reqGetTaughtLessonsReport} from "../../../api/trainRecord";
 import { generateReportDefaultCons, generateReportFields, defaultHideCol, columnDef } from "./constructor";
 
 const GiveLessons = () => {
@@ -283,7 +283,7 @@ const GiveLessons = () => {
 
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        let res = await reqGetGiveLessonsReport({ queryString: queryString });
+        let res = await reqGetTaughtLessonsReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
             newRows = res.data.data;

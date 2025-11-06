@@ -9,6 +9,7 @@ import {
     Dialog,
 } from "@mui/material";
 import { TrainCourseIcon, ClearIcon, ErrorIcon } from "../../PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
 import TcPicker from "./TCPicker";
 
 const zeroValue = { id: 0, name: "", classHour: 1, isExamine: 0, description: "" };

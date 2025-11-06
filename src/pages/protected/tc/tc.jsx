@@ -119,7 +119,7 @@ const TC = () => {
     };
     return (
         <Fragment>
-            <PageTitle pageName={t("MenuTC")} displayHelp={false} helpUrl="#" />
+            <PageTitle pageName="MenuTC" displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 rows={rows}

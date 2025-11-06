@@ -14,7 +14,7 @@ import useContentHeight from "../../../hooks/useContentHeight";
 import dayjs from "../../../utils/myDayjs";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { ConvertFloatFormat, DateFormat } from "../../../utils/tools";
-import { reqGetReciveTrainingReport } from "../../../api/trainRecord";
+import { reqGetRecivedTrainingReport } from "../../../api/trainRecord";
 import { generateReportDefaultCons, generateReportFields, defaultHideCol } from "./constructor";
 import { excelRows, excelColumns } from "../../../component/ScReport/excelExport";
 const examineres = ["不合格", "合格"];
@@ -99,7 +99,7 @@ const ReceiveTraining = () => {
                 { accessorKey: 'signstarttime', header: '签到时间', size: 192, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm")}</span>) },
                 { accessorKey: 'signendtime', header: '签退时间', size: 192, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm")}</span>) },
                 { accessorKey: 'bstatus', header: '表体状态', size: 128, Cell: (({ cell }) => <span>{VoucherStatus[cell.getValue()]}</span>) },
-                { accessorKey: 'createuserid', header: '创建人ID', size: 100 },
+                { accessorKey: 'creatorid', header: '创建人ID', size: 100 },
                 { accessorKey: 'createusercode', header: '创建人编码', size: 128 },
                 { accessorKey: 'createusername', header: '创建人姓名', size: 128 },
             ]
@@ -130,7 +130,7 @@ const ReceiveTraining = () => {
     //请求数据
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        let res = await reqGetReciveTrainingReport({ queryString: queryString });
+        let res = await reqGetRecivedTrainingReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
             newRows = res.data.data;

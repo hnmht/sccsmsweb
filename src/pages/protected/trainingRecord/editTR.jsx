@@ -13,7 +13,7 @@ import {
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 import { DeleteRowIcon } from "../../../component/PubIcon/PubIcon";
-import dayjs from "../../../utils/myDayjs";
+import { dayjs, EpochTime } from "../../../i18n/dayjs";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 import Loader from "../../../component/Loader/Loader";
 import ScInput from "../../../component/ScInput";
@@ -22,210 +22,173 @@ import SelectMultiplePerson from "./selectMultiplePerson/selectultiplePerson";
 import store from "../../../store";
 import { MultiSortByArr } from "../../../utils/tools";
 
-import { reqAddTR,reqEditTR } from "../../../api/trainRecord";
+import { reqAddTR, reqEditTR } from "../../../api/trainingRecord";
 import { voucherRow, bodyColumns, headFiles } from "./constructor";
+import { generateVoucherErrors, checkVoucherErrors } from "../pub/pubFunction";
 
-//生成初始数据
+// Generate initial data
 const getInitialValue = async (isNew, isModify, oriTr) => {
     const { user } = store.getState();
     const { person, department } = user;
+    const currentTime = dayjs(new Date());
+    const currentDate = currentTime.startOf("day");
     let newTr = {};
-
-    if (isNew) {//直接新增单据
+    if (isNew) {// Add new
         newTr = {
             id: 0,
-            billnumber: "",
-            billdate: dayjs(new Date()).format("YYYYMMDD"),
+            billNumber: "",
+            billDate: currentDate,
             department: department,
             description: "",
-            lecturer: { id: 0, code: "", name: "", avatar: { filekey: 0, fileUrl: "" }, deptid: 0, deptcode: "", description: "" },
-            traindate: dayjs(new Date()).format("YYYYMMDD"),
-            tc: { id: 0, code: "", name: "", classhour: 1.0, isexamine: 1, files: [] },
-            tcfiles: [],
-            starttime: dayjs(new Date()).format("YYYYMMDDHHmm"),
-            endtime: dayjs(new Date()).add(1, "hour").format("YYYYMMDDHHmm"),
-            classhour: 1.0,
-            isexamine: 1,
-            hfiles: [headFiles],
+            lecturer: { id: 0, code: "", name: "", avatar: { fileKey: 0, fileUrl: "" }, deptID: 0, deptCode: "", description: "" },
+            trainingDate: currentDate,
+            tc: { id: 0, code: "", name: "", classHour: 1.0, isExam: 1, files: [] },
+            tcFiles: [],
+            startTime: currentTime,
+            endTime: currentTime.add(1, "hour"),
+            classHour: 1.0,
+            isExam: 1,
+            hFiles: [headFiles],
             body: [voucherRow],
             status: 0,
-            createuser: person,
-            createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-            modifyuser: { id: 0, code: "", name: "" },
-            modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-            confirmuser: { id: 0, code: "", name: "" },
-            confirmdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+            creator: person,
+            createDate: currentTime,
+            modifier: { id: 0, code: "", name: "" },
+            modifyDate: EpochTime,
+            confirmer: { id: 0, code: "", name: "" },
+            confirmDate: EpochTime,
             dr: 0
         };
     } else {
         if (!oriTr) {
             return
         } else {
-            if (isModify) { //编辑
+            if (isModify) { // Edit
                 newTr = cloneDeep(oriTr);
-                newTr.tcfiles = newTr.tc.files;
-                newTr.createdate = dayjs(newTr.createdate).format("YYYYMMDDHHmm");
-                newTr.modifyuser = person;
-                newTr.modifydate = dayjs(newTr.modifydate).format("YYYYMMDDHHmm");
-                newTr.confirmuser = { id: 0, code: "", name: "" };
-                newTr.confirmdate = dayjs(newTr.confirmdate).format("YYYYMMDDHHmm");
+                newTr.tcFiles = newTr.tc.files;
+                newTr.modifier = person;
+                newTr.modifyDate = currentTime;
             } else {//查看
                 newTr = cloneDeep(oriTr);
-                newTr.tcfiles = newTr.tc.files;
-                newTr.createdate = dayjs(newTr.createdate).format("YYYYMMDDHHmm");
-                newTr.modifydate = dayjs(newTr.modifydate).format("YYYYMMDDHHmm");
-                newTr.confirmdate = dayjs(newTr.confirmdate).format("YYYYMMDDHHmm");
+                newTr.tcFiles = newTr.tc.files;
             }
         }
     }
     return newTr;
 };
-//生成错误信息
-const generateErrors = (rowNumber) => {
-    let voucherErrors = {
-        body: [],
-    }
-    //生成表体错误信息
-    for (let i = 0; i < rowNumber; i++) {
-        voucherErrors.body.push({});
-    }
-    return voucherErrors;
-};
 
-//检查是否存在错误信息
-const checkVoucherErrors = (voucherErrors) => {
-    let number = 0;
-    //表头错误信息
-    for (let key in voucherErrors) {
-        if (key !== "body" && voucherErrors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    //表体错误信息
-    voucherErrors.body.forEach((row) => {
-        for (let key in row) {
-            if (row[key].isErr) {
-                number = number + 1;
-            }
-        }
-    });
-    return number > 0;
-};
-
-const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => {
+// Add && Edit && View Training Record
+const EditTrainingRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk, t }) => {
     const [voucherData, setVoucherData] = useState((undefined));
     const [errors, setErrors] = useState(undefined);
     const isEdit = !(!isModify && !isNew);
-
 
     useEffect(() => {
         async function initVoucher() {
             const newTr = await getInitialValue(isNew, isModify, oriTr);
             setVoucherData(newTr);
-            setErrors(generateErrors(newTr.body.length));
+            setErrors(generateVoucherErrors(newTr.body.length));
         }
         if (isOpen) {
             initVoucher();
         }
     }, [isOpen, isModify, oriTr, isNew]);
 
-    //获取值后的操作
-    const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
+    // Get the passed data from the ScInput Component
+    const handleGetValue = async (value, itemKey, positionID, rowIndex, errMsg) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
         // let startTime = new Date();
-
-        //设置单据值
+        // Change voucher data
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
             switch (positionID) {
-                case 0://修改表头字段 
-                    //如果修改的是课程字段
-                    if (itemkey === "tc" && value.id !== prevState.tc.id) {
-                        //修改课时
-                        newData.classhour = value.classhour;
-                        //修改表头开始时间
-                        newData.starttime = dayjs(new Date()).format("YYYYMMDDHHmm");
-                        //修改表头结束时间
-                        newData.endtime = dayjs(new Date()).add(value.classhour, "hour").format("YYYYMMDDHHmm");
-                        //修改表头是否考核
-                        newData.isexamine = value.isexamine;
-                        //修改表头课程附件
-                        newData.tcfiles = value.files;
-                        //修改表体
+                case 0://  Change the Voucher header
+                    // If the field is "tc"
+                    if (itemKey === "tc" && value.id !== prevState.tc.id) {
+                        const currentTime = dayjs(new Date());
+                        // Change the classHour field
+                        newData.classHour = value.classHour;
+                        // Chenge the startTime field
+                        newData.startTime = currentTime;
+                        // Change the endTime field
+                        newData.endTime = currentTime.add(value.classHour, "hour");
+                        // Change the isExam field
+                        newData.isExam = value.isExam;
+                        // Change the tcFiles field
+                        newData.tcFiles = value.files;
+                        // Change startTime && endTime && isExam && classHour Fields in the body
                         if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.starttime = newData.starttime;
-                                row.endtime = newData.endtime;
-                                row.isexamine = newData.isexamine;
-                                row.classhour = newData.classhour;
+                                row.startTime = newData.startTime;
+                                row.endTime = newData.endTime;
+                                row.isExam = newData.isExam;
+                                row.classHour = newData.classHour;
                                 return row;
                             })
                         };
                     };
 
-                    //如果修改的是开始时间字段
-                    if (itemkey === "starttime" && value !== prevState.starttime) {
-                        if (newData.body.length > 0) { //如果表体存在行
+                    // If the field is "startTime"
+                    if (itemKey === "startTime" && value !== prevState.startTime) {
+                        if (newData.body.length > 0) { // If the number of body row is not zero
                             newData.body.map(row => {
-                                row.starttime = value;
+                                row.startTime = value;
                                 return row;
                             })
                         }
                     };
-                    //如果修改的是结束时间字段
-                    if (itemkey === "endtime" && value !== prevState.endtime) {
-                        if (newData.body.length > 0) { //如果表体存在行
+                    // If the field is "endTime"
+                    if (itemKey === "endTime" && value !== prevState.endTime) {
+                        if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.endtime = value;
+                                row.endTime = value;
                                 return row;
                             })
                         }
                     };
-                    //如果修改的是课时
-                    if (itemkey === "classhour" && value !== prevState.classhour) {
-                        if (newData.body.length > 0) { //如果表体存在行
+                    // If the field is "classHour"
+                    if (itemKey === "classHour" && value !== prevState.classHour) {
+                        if (newData.body.length > 0) {
                             newData.body.map(row => {
-                                row.classhour = value;
+                                row.classHour = value;
                                 return row;
                             })
                         }
                     }
-                    newData[itemkey] = value;
+                    newData[itemKey] = value;
                     break;
-                case 1:
-                    //如果修改的是学员字段
-                    if (itemkey === "student" && value.id !== prevState.body[rowIndex].student.id) {
-                        //获取岗位名称                     
-                        newData.body[rowIndex].opname = value.opname;
-                        //获取部门名称
-                        newData.body[rowIndex].deptname = value.deptname;
+                case 1: // Change the voucher row
+                    // If the field is "student"
+                    if (itemKey === "student" && value.id !== prevState.body[rowIndex].student.id) {
+                        // Update the PositionName                     
+                        newData.body[rowIndex].positionName = value.positionName;
+                        // Update the deptName
+                        newData.body[rowIndex].deptName = value.deptName;
                     }
-
-                    newData.body[rowIndex][itemkey] = value;
+                    newData.body[rowIndex][itemKey] = value;
                     break;
-                case 2:
-                    newData[itemkey] = value;
+                case 2: // Change the voucher footer
+                    newData[itemKey] = value;
                     break;
                 default:
                     break;
             }
-
             return newData;
         });
-        //设置错误信息
+        // Change errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
                 case 0:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 case 1:
-                    newErrors.body[rowIndex][itemkey] = errMsg;
+                    newErrors.body[rowIndex][itemKey] = errMsg;
                     break;
                 case 2:
-                    newErrors[itemkey] = errMsg;
+                    newErrors[itemKey] = errMsg;
                     break;
                 default:
                     break;
@@ -233,109 +196,110 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
             return newErrors;
         });
 
-        // console.log("更新", itemkey, ",耗时:", new Date() - startTime, "ms");
+        // console.log("更新", itemKey, ",耗时:", new Date() - startTime, "ms");
     };
-    //增加&修改单据
+    // Add && Modify Training Record
     const handleAddTR = async () => {
         const thisTR = cloneDeep(voucherData);
-        delete thisTR.createdate;
-        delete thisTR.modifydate;
-        delete thisTR.confirmdate;
-  
+        delete thisTR.createDate;
+        delete thisTR.modifyDate;
+        delete thisTR.confirmDate;
+
         if (isModify) {
             const editRes = await reqEditTR(thisTR);
             if (editRes.status) {
-                message.success("修改培训记录成功,单据编号:" + editRes.data.data.billnumber);
-            } else {
-                message.error("修改培训记录失败" + editRes.data.statusMsg);
+                message.success(t("modifySuccessful"));
+                onOk();
             }
         } else {
             const addRes = await reqAddTR(thisTR);
             if (addRes.status) {
-                message.success("新增培训记录成功,单据编号:" + addRes.data.data.billnumber);
-            } else {
-                message.error("新增培训记录失败" + addRes.data.statusMsg);
+                message.success(t("addSuccessful"));
             }
+            onOk();
         }
-        onOk();
+
     };
-    //增行
+    // Add Row
     const handleAddRow = () => {
-        //生成表体数据
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+        // Automatically generate row number
+        if (newVoucherData.body.length === 1) {
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]));
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]));
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
-        //填写处理人、处理开始时间、处理结束时间
-        newRow.starttime = newVoucherData.starttime;
-        newRow.endtime = newVoucherData.endtime;
-        newRow.classhour = newVoucherData.classhour;
+        // Automatically fill startTime, endTime, classHour
+        newRow.startTime = newVoucherData.startTime;
+        newRow.endTime = newVoucherData.endTime;
+        newRow.classHour = newVoucherData.classHour;
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
-        //生成错误信息数据
+        // Generate errors
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
     };
-    //删行
+    // Delete Row
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能删除最后一行!");
+            message.error(t("cannotDeleteLastRow"));
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
         if (isModify) {
-            //判断是否在编辑状态下新增的行
-            if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接删除掉
+            // Determine if the added row in an editing state 
+            if (row.id === 0) { // If the id queals 0, the row was newly added, so delete it
+                newVoucherData.body.splice(index, 1);// 
                 newErrors.body.splice(index, 1);
-            } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改删除标志
-                newErrors.body[index] = {}; //将删除掉的行所有错误信息归零
+            } else { // If id is not equals 0, it means the row has already been saved to the server.
+                newVoucherData.body[index].dr = 1;
+                newErrors.body[index] = {};
             }
-        } else {
-            //新增状态下直接删除行
+        } else { // in the added state, delete the row directly
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
         setErrors(newErrors);
         setVoucherData(newVoucherData);
     };
-    //批量增人
+    // Bulk add student
     const handleAddMultiplePersonOk = (items) => {
+        if (items.length === 0) {
+            message.error(t("bulkAddStudentSelected", { count: 0 }));
+            return
+        }
         // let startTime = new Date();
         const newVoucherData = cloneDeep(voucherData);
         const newErrors = cloneDeep(errors);
         let rowNumber = 0;
-        //查找最新行号
-        newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]));
-        rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber;
+        // Find the maximum row number
+        newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]));
+        rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber;
         let validNumber = 0;
         items.forEach(person => {
+            // Check if the person's information already exists in the voucher body
             let pNumber = 0;
             newVoucherData.body.forEach(row => {
                 if (row.student.id === person.id) {
                     pNumber++
                 }
             });
-            //如果人员不存在
+            // If the person's information does not in the voucher body
             if (pNumber === 0) {
                 validNumber++
                 let newRow = cloneDeep(voucherRow);
                 rowNumber = rowNumber + 10;
-                newRow.rownumber = rowNumber; //行号
+                newRow.rowNumber = rowNumber;
                 newRow.student = person;
-                newRow.opname = person.opname;
-                newRow.deptname = person.deptname;
-                newRow.starttime = newVoucherData.starttime;
-                newRow.endtime = newVoucherData.endtime;
-                newRow.classhour = newVoucherData.classhour;
+                newRow.positionName = person.positionName;
+                newRow.deptName = person.deptName;
+                newRow.startTime = newVoucherData.startTime;
+                newRow.endTime = newVoucherData.endTime;
+                newRow.classHour = newVoucherData.classHour;
 
                 newVoucherData.body.push(newRow);
                 newErrors.body.push({});
@@ -343,10 +307,10 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
         });
         setVoucherData(newVoucherData);
         setErrors(newErrors);
-        message.info(`共选中${items.length}人,本次批量增加${validNumber}人!`)
+        message.info(t("bulkAddStudentSelected", { count: items.length }) + t("bulkAddStudentAdded", { count: validNumber }));
 
     };
-    //检查学员是否重复
+    // Check for duplicate students
     const handleCheckPersonRepeat = (value, index) => {
         let err = { isErr: false, msg: "" };
         let number = 0;
@@ -356,18 +320,18 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
             }
         });
         if (number > 0) {
-            err = { isErr: true, msg: "学员不能重复!" };
+            err = { isErr: true, msg: "studentCannotDuplicate" };
             return err;
         }
         return err;
 
     };
-
+    
     return (voucherData !== undefined
         ? <>
             <Stack component="div" id="eidtED" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
                 <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                    <Typography variant="h3" component={"h3"}>培训记录</Typography>
+                    <Typography variant="h3" component={"h3"}>{t("tr")}</Typography>
                 </Stack>
                 <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                     <Grid container id="VoucherHeader" spacing={2}>
@@ -376,12 +340,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="单据编码"
-                                itemKey="billnumber"
-                                initValue={voucherData.billnumber}
+                                itemShowName="billNumber"
+                                itemKey="billNumber"
+                                initValue={voucherData.billNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billnumber"
+                                key="billNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -391,12 +355,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={306}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="单据日期"
-                                itemKey="billdate"
-                                initValue={voucherData.billdate}
+                                itemShowName="billDate"
+                                itemKey="billDate"
+                                initValue={voucherData.billDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billdate"
+                                key="billDate"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -406,7 +370,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={520}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="部门"
+                                itemShowName="department"
                                 itemKey="department"
                                 initValue={voucherData.department}
                                 pickDone={handleGetValue}
@@ -421,7 +385,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={510}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="主讲人"
+                                itemShowName="lecturer"
                                 itemKey="lecturer"
                                 initValue={voucherData.lecturer}
                                 pickDone={handleGetValue}
@@ -436,7 +400,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={620}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="课程"
+                                itemShowName="tc"
                                 itemKey="tc"
                                 initValue={voucherData.tc}
                                 pickDone={handleGetValue}
@@ -451,12 +415,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={302}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="课时"
-                                itemKey="classhour"
-                                initValue={voucherData.classhour}
+                                itemShowName="classHour"
+                                itemKey="classHour"
+                                initValue={voucherData.classHour}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="classhour"
+                                key="classHour"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -466,12 +430,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={902}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="课程附件"
-                                itemKey="tcfiles"
-                                initValue={voucherData.tcfiles}
+                                itemShowName="tcFiles"
+                                itemKey="tcFiles"
+                                initValue={voucherData.tcFiles}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="tcfiles"
+                                key="tcFiles"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -481,12 +445,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={307}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="开始时间"
-                                itemKey="starttime"
-                                initValue={voucherData.starttime}
+                                itemShowName="startTime"
+                                itemKey="startTime"
+                                initValue={voucherData.startTime}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="starttime"
+                                key="startTime"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -496,12 +460,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={307}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="结束时间"
-                                itemKey="endtime"
-                                initValue={voucherData.endtime}
+                                itemShowName="endTime"
+                                itemKey="endTime"
+                                initValue={voucherData.endTime}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="endtime"
+                                key="endTime"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -511,12 +475,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={403}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="是否考核"
-                                itemKey="isexamine"
-                                initValue={voucherData.isexamine}
+                                itemShowName="isExam"
+                                itemKey="isExam"
+                                initValue={voucherData.isExam}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="isexamine"
+                                key="isExam"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -526,12 +490,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={902}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="培训文件"
-                                itemKey="hfiles"
-                                initValue={voucherData.hfiles}
+                                itemShowName="hFiles"
+                                itemKey="hFiles"
+                                initValue={voucherData.hFiles}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="hfiles"
+                                key="hFiles"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -541,7 +505,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={405}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="状态"
+                                itemShowName="status"
                                 itemKey="status"
                                 initValue={voucherData.status}
                                 pickDone={handleGetValue}
@@ -556,9 +520,9 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="说明"
+                                itemShowName="description"
                                 itemKey="description"
-                                placeholder={"请输入说明"}
+                                placeholder={"descriptionPlaceholder"}
                                 initValue={voucherData.description}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
@@ -573,20 +537,20 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                     bodyColumns={bodyColumns}
                     addRowAction={handleAddRow}
                     addRowVisible={isEdit}
-                    title="表体内容"
+                    title="detail"
                     actionComponent={<SelectMultiplePerson
                         isEdit={isEdit}
-                        title="批量选择人员"
+                        title="bulkSelectPersonnel"
                         onOk={handleAddMultiplePersonOk}
                     />}
                 >
                     <ScVoucherBodyRow >
                         {voucherData.body.map((row, index) => {
-                            const delButtonEnabled = (!isEdit || (row.allowdelrow === 0));
+                            const delButtonEnabled = !isEdit;
                             return row.dr === 0
-                                ? (<tr key={"bodyrow" + row.rownumber}>
+                                ? (<tr key={"bodyrow" + row.rowNumber}>
                                     <TableCell variant="td">
-                                        <Tooltip title="删行" key={`rowDelete${index}`}>
+                                        <Tooltip title={t("deleteRow")} key={`rowDelete${index}`}>
                                             <span>
                                                 <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleDeleteRow(index, row)} disabled={delButtonEnabled}>
                                                     <DeleteRowIcon color={!delButtonEnabled ? "error" : "transparent"} fontSize="small" />
@@ -599,12 +563,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={302}
                                             allowNull={false}
                                             isEdit={false}
-                                            itemShowName="行号"
-                                            itemKey="rownumber"
-                                            initValue={row.rownumber}
+                                            itemShowName="rowNumber"
+                                            itemKey="rowNumber"
+                                            initValue={row.rowNumber}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="rownumber"
+                                            key="rowNumber"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -614,7 +578,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={510}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="学员"
+                                            itemShowName="student"
                                             itemKey="student"
                                             initValue={row.student}
                                             pickDone={handleGetValue}
@@ -630,12 +594,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="岗位"
-                                            itemKey="opname"
-                                            initValue={row.opname}
+                                            itemShowName="positionName"
+                                            itemKey="positionName"
+                                            initValue={row.positionName}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="opname"
+                                            key="positionName"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -645,12 +609,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="部门"
-                                            itemKey="deptname"
-                                            initValue={row.deptname}
+                                            itemShowName="deptName"
+                                            itemKey="deptName"
+                                            initValue={row.deptName}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="deptname"
+                                            key="deptName"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -660,12 +624,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={307}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="签到时间"
-                                            itemKey="starttime"
-                                            initValue={row.starttime}
+                                            itemShowName="startTime"
+                                            itemKey="startTime"
+                                            initValue={row.startTime}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="starttime"
+                                            key="startTime"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -675,12 +639,12 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={307}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="签退时间"
-                                            itemKey="endtime"
-                                            initValue={row.endtime}
+                                            itemShowName="endTime"
+                                            itemKey="endTime"
+                                            initValue={row.endTime}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="endtime"
+                                            key="endTime"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -690,13 +654,13 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={302}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="课时"
-                                            itemKey="classhour"
-                                            initValue={row.classhour}
+                                            itemShowName="classHour"
+                                            itemKey="classHour"
+                                            initValue={row.classHour}
                                             pickDone={handleGetValue}
                                             placeholder=""
                                             isBackendTest={false}
-                                            key="classhour"
+                                            key="classHour"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -705,13 +669,13 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                         <ScInput
                                             dataType={404}
                                             allowNull={false}
-                                            isEdit={isEdit && voucherData.isexamine === 1}
-                                            itemShowName="考核是否合格"
-                                            itemKey="examineres"
-                                            initValue={row.examineres}
+                                            isEdit={isEdit && voucherData.isExam === 1}
+                                            itemShowName="examRes"
+                                            itemKey="examRes"
+                                            initValue={row.examRes}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="examineres"
+                                            key="examRes"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -720,13 +684,13 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                         <ScInput
                                             dataType={302}
                                             allowNull={true}
-                                            isEdit={isEdit && voucherData.isexamine === 1}
-                                            itemShowName="考核分数"
-                                            itemKey="examinescore"
-                                            initValue={row.examinescore}
+                                            isEdit={isEdit && voucherData.isExam === 1}
+                                            itemShowName="examScore"
+                                            itemKey="examScore"
+                                            initValue={row.examScore}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="examinescore"
+                                            key="examScore"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -737,7 +701,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             allowNull={true}
                                             isOnSitePhoto={false}
                                             isEdit={isEdit}
-                                            itemShowName="附件"
+                                            itemShowName="files"
                                             itemKey="files"
                                             initValue={row.files}
                                             pickDone={handleGetValue}
@@ -752,7 +716,7 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={405}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="状态"
+                                            itemShowName="status"
                                             itemKey="status"
                                             initValue={row.status}
                                             pickDone={handleGetValue}
@@ -767,11 +731,11 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="说明"
+                                            itemShowName="description"
                                             itemKey="description"
                                             initValue={row.description}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入说明"
+                                            placeholder="descriptionPlaceholder"
                                             isBackendTest={false}
                                             key="description"
                                             positionID={1}
@@ -792,57 +756,27 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建人"
-                                itemKey="createuser"
-                                initValue={voucherData.createuser}
+                                itemShowName="creator"
+                                itemKey="creator"
+                                initValue={voucherData.creator}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="createuser"
+                                key="creator"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建日期"
-                                itemKey="createdate"
-                                initValue={voucherData.createdate}
+                                itemShowName="createDate"
+                                itemKey="createDate"
+                                initValue={voucherData.createDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="createdate"
-                                positionID={2}
-                                rowIndex={-1}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={510}
-                                allowNull={true}
-                                isEdit={false}
-                                itemShowName="修改人"
-                                itemKey="modifyuser"
-                                initValue={voucherData.modifyuser}
-                                pickDone={() => { }}
-                                isBackendTest={false}
-                                key="modifyuser"
-                                positionID={2}
-                                rowIndex={-1}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={307}
-                                allowNull={true}
-                                isEdit={false}
-                                itemShowName="更新日期"
-                                itemKey="modifydate"
-                                initValue={voucherData.modifydate}
-                                pickDone={() => { }}
-                                isBackendTest={false}
-                                key="modifydate"
+                                key="createDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -852,27 +786,57 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认人"
-                                itemKey="confirmuser"
-                                initValue={voucherData.confirmuser}
+                                itemShowName="modifier"
+                                itemKey="modifier"
+                                initValue={voucherData.modifier}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmuser"
+                                key="modifier"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认日期"
-                                itemKey="confirmdate"
-                                initValue={voucherData.confirmdate}
+                                itemShowName="modifyDate"
+                                itemKey="modifyDate"
+                                initValue={voucherData.modifyDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmdate"
+                                key="modifyDate"
+                                positionID={2}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={510}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="confirmer"
+                                itemKey="confirmer"
+                                initValue={voucherData.confirmer}
+                                pickDone={() => { }}
+                                isBackendTest={false}
+                                key="confirmer"
+                                positionID={2}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={309}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="confirmDate"
+                                itemKey="confirmDate"
+                                initValue={voucherData.confirmDate}
+                                pickDone={() => { }}
+                                isBackendTest={false}
+                                key="confirmDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -882,10 +846,10 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
                 <DialogActions sx={{ m: 1 }}>
                     {isEdit
                         ? <>
-                            <Button color="error" onClick={onCancel} >取消</Button>
-                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddTR}>{isModify ? "保存" : "增加"}</Button>
+                            <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddTR}>{t(isModify ? "save" : "add")}</Button>
                         </>
-                        : <Button variant="contained" onClick={onCancel} >返回</Button>
+                        : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                     }
                 </DialogActions>
             </Stack>
@@ -894,4 +858,4 @@ const EditTrainRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk }) => 
     );
 };
 
-export default EditTrainRecord;
+export default EditTrainingRecord;

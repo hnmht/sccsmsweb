@@ -7,10 +7,10 @@ import { ConvertFloatFormat } from "../../../utils/tools";
 export const generateReportFields = () => {
     const queryFields = [
         { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
-        { id: 2, value: "h.dept_id", label: "发放部门", inputType: 520, resultType: "object", resultfield: "id" },
-        { id: 3, value: "h.lecturer_id", label: "讲师", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 4, value: "h.tc_id", label: "课程", inputType: 620, resultType: "object", resultfield: "id" },
-        { id: 5, value: "h.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 2, value: "h.deptid", label: "发放部门", inputType: 520, resultType: "object", resultfield: "id" },
+        { id: 3, value: "h.lecturerid", label: "讲师", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 4, value: "h.tcid", label: "课程", inputType: 620, resultType: "object", resultfield: "id" },
+        { id: 5, value: "h.creatorid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
         { id: 6, value: "h.description", label: "说明", inputType: 301, resultType: "string", resultfield: "" },
     ];
     return queryFields;
@@ -36,7 +36,7 @@ export function generateReportDefaultCons() {
         },
         {
             logic: "and",
-            field: { id: 5, value: "h.createuserid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
+            field: { id: 5, value: "h.creatorid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
             compare: { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
@@ -74,7 +74,7 @@ export const columnDef = () => {
         { accessorKey: 'qualifiednumber', header: '合格数量', size: 128 },
         { accessorKey: 'disqualificationnumber', header: '不合格数量', size: 172 },
         { accessorKey: 'status', header: '状态', size: 128, Cell: (({ cell }) => <span>{VoucherStatus[cell.getValue()]}</span>) },
-        { accessorKey: 'createuserid', header: '创建人ID', size: 100 },
+        { accessorKey: 'creatorid', header: '创建人ID', size: 100 },
         { accessorKey: 'createusercode', header: '创建人编码', size: 128 },
         { accessorKey: 'createusername', header: '创建人姓名', size: 128 },
     ];
@@ -92,7 +92,7 @@ export const defaultHideCol = () => {
         tcid: false,
         tccode: false,
         isexamine: false,
-        createuserid: false,
+        creatorid: false,
         createusercode: false,
     };
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Dialog } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { message } from "mui-message";
 
 import { Divider } from "../../../component/ScMui/ScMui";
@@ -8,37 +9,35 @@ import DocList from "../../../component/DocList/DocList";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 
 import EditTrainRecord from "./editTR";
-import { reqGetTRList, reqGetTRDetail, reqDeleteTR, reqConfirmTR, reqCancelConfirmTR } from "../../../api/trainRecord";
-
+import { reqGetTRList, reqGetTRDetail, reqDeleteTR, reqConfirmTR, reqUnConfirmTR } from "../../../api/trainingRecord";
 import { columns, generateTRConditions, trQueryFields, rowActionsDefine } from "./constructor";
 
-const TrainRecord = () => {
+// Training Record List
+const TrainingRecord = () => {
+    const { t } = useTranslation();
     const [trConditions, setTrConditions] = useState(generateTRConditions());
     const [trs, setTrs] = useState([]);
     const [diagStatus, setDiagStatus] = useState({
         isOpen: false,
-        content: 0, //1 培训记录（编辑或查看） 2 过滤条件
+        content: 0, //1 Training Record 2 Queny Panel
         selectedTR: undefined,
         isNew: false,
         isModify: false
     });
-    //组件载入时按照默认条件查询培训记录列表
+    // Reusest the list using default conditions when the component loads
     useEffect(() => {
         async function getTRs() {
-            //将查询条件转化为String
             let queryString = transConditionsToString(generateTRConditions());
             let trsRes = await reqGetTRList({ queryString: queryString });
             let newTrs = [];
             if (trsRes.status) {
-                newTrs = trsRes.data.data;
-            } else {
-                message.warning(trsRes.data.statusMsg);
+                newTrs = trsRes.data;
             }
             setTrs(newTrs);
         }
         getTRs();
     }, []);
-    //对话框关闭
+    // Close Dialog
     const handleDiagClose = () => {
         setDiagStatus({
             isOpen: false,
@@ -49,7 +48,7 @@ const TrainRecord = () => {
         });
     };
 
-    //培训记录QueryPanel确定按钮点击
+    // Actions after click ok button in the Query Panel
     const handleEdQueryOk = async (cons) => {
         setTrConditions(cons);
         setDiagStatus({
@@ -59,11 +58,11 @@ const TrainRecord = () => {
             isNew: false,
             isModify: false
         });
-        //向服务器查询数据
+        // Request Training Record list from backend
         handleRefreshTRList(cons);
     };
 
-    //培训记录列表头点击过滤按钮
+    // Actions after click the filter button in the header
     const handleFilterAction = () => {
         setDiagStatus({
             isOpen: true,
@@ -74,7 +73,7 @@ const TrainRecord = () => {
         });
     };
 
-    //增加按钮
+    // Actions after click add button in the header
     const handleAddAction = () => {
         setDiagStatus({
             isOpen: true,
@@ -84,7 +83,7 @@ const TrainRecord = () => {
             isModify: false
         });
     };
-    //增加对话框点击确认
+    // Actions after click the ok button in the dialog
     const handleEditOk = () => {
         setDiagStatus({
             isOpen: false,
@@ -93,37 +92,32 @@ const TrainRecord = () => {
             isNew: false,
             isModify: false
         });
-        //刷新数据
+        // Request Training Record list from backend
         handleRefreshTRList();
     };
-    //刷新数据
+    // Request Training Record list from backend
     const handleRefreshTRList = async (cons = trConditions) => {
         let queryString = transConditionsToString(cons);
         let trsRes = await reqGetTRList({ queryString: queryString });
         let newTrs = [];
         if (trsRes.status) {
-            newTrs = trsRes.data.data;
-        } else {
-            message.warning(trsRes.data.statusMsg);
+            newTrs = trsRes.data;
         }
         setTrs(newTrs);
     };
 
-    //表体行详情按钮
+    // Actions after click view button in the row
     const handleViewAction = async (item) => {
         const detailRes = await reqGetTRDetail(item);
-
         let trDetail = {};
         if (detailRes.status) {
-            trDetail = detailRes.data.data;
-
+            trDetail = detailRes.data;
         } else {
-            message.error("向服务器请求数据时出错:" + detailRes.data.statusMsg);
             return
         }
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示培训记录编辑界面
+            content: 1,
             selectedWOR: undefined,
             selectedTR: trDetail,
             isNew: false,
@@ -131,64 +125,60 @@ const TrainRecord = () => {
         });
     };
 
-    //表体编辑按钮
+    // Actions after click Edit button in the row
     const handleRowEdit = async (item) => {
         const detailRes = await reqGetTRDetail(item);
         let trDetail = {};
         if (detailRes.status) {
-            trDetail = detailRes.data.data;
+            trDetail = detailRes.data;
         } else {
-            message.error("向服务器请求数据时出错:" + detailRes.data.statusMsg);
             return
         }
         setDiagStatus({
             isOpen: true,
-            content: 1, //显示培训记录编辑界面
+            content: 1,
             selectedTR: trDetail,
             isNew: false,
             isModify: true
         });
     };
 
-    //表体删除按钮
+    // Actions after click delete button in the row
     const handleRowDelete = async (item) => {
         const delRes = await reqDeleteTR(item);
         if (delRes.status) {
-            message.success(`删除培训记录${delRes.data.data.billnumber}成功`);
+            message.success(t("deleteSuccessful"));
         } else {
-            message.error(`删除培训记录${delRes.data.data.billnumber}失败:${delRes.data.statusMsg}`);
             return
         }
-        //刷新
+        // Refresh list
         handleRefreshTRList();
     };
-    //表体确认
+    // Actions after click the Confirm button in the row
     const handleRowConfirm = async (item) => {
         const confirmRes = await reqConfirmTR(item);
         if (confirmRes.status) {
-            message.success(`确认培训记录${confirmRes.data.data.billnumber}成功`);
+            message.success(t("confirmSuccessful"));
         } else {
-            message.error(`确认培训记录${confirmRes.data.data.billnumber}失败:${confirmRes.data.statusMsg}`);
             return
         }
-        //刷新
+        // Refresh list
         handleRefreshTRList();
     };
 
-    //表体取消确认
+    // Actions after click the UnConfirm button in the row
     const handleRowCancelConfirm = async (item) => {
-        const cancelRes = await reqCancelConfirmTR(item);
+        const cancelRes = await reqUnConfirmTR(item);
         if (cancelRes.status) {
-            message.success(`取消确认培训记录${cancelRes.data.data.billnumber}成功`);
+            message.success(t("unconfirmSuccessful"));
         } else {
-            message.error(`取消确认培训记录${cancelRes.data.data.billnumber}失败:${cancelRes.data.statusMsg}`);
             return
         }
-        //刷新
+        // Refresh list
         handleRefreshTRList();
     };
 
-    //对话框显示内容组件
+    // Dialog Display content Component
     const DiagContent = ({ content }) => {
         switch (content) {
             case 1:
@@ -199,10 +189,11 @@ const TrainRecord = () => {
                     isModify={diagStatus.isModify}
                     onCancel={handleDiagClose}
                     onOk={handleEditOk}
+                    t={t}
                 />;
             case 2:
                 return <QueryPanel
-                    title="培训记录过滤条件"
+                    title="trFilterCondition"
                     queryFields={trQueryFields}
                     initalConditions={trConditions}
                     onOk={handleEdQueryOk}
@@ -216,7 +207,7 @@ const TrainRecord = () => {
 
     return (
         <>
-            <PageTitle pageName="培训记录" displayHelp={true} helpUrl="/helps/trainRecordWeb" />
+            <PageTitle pageName="MenuTR" displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 columns={columns}
@@ -249,4 +240,4 @@ const TrainRecord = () => {
     );
 };
 
-export default TrainRecord;
+export default TrainingRecord;

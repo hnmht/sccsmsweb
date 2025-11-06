@@ -209,7 +209,7 @@ const WorkOrder = () => {
 
     return (
         <>
-            <PageTitle pageName={t("MenuWO")} displayHelp={false} helpUrl="#" />
+            <PageTitle pageName="MenuWO" displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 columns={columns}

@@ -162,3 +162,7 @@ export const CellDC = (row,column) => {
     return row.dc.name;
 };
 
+// Training Category display content
+export const CellTC = (row,column) => {
+    return row.tc.name;
+};

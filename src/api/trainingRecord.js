@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//增加培训记录单
+// Add Training Record
 export function reqAddTR(data, isLoading = true) {
     return request({
         url: "/tr/add",
@@ -9,7 +9,7 @@ export function reqAddTR(data, isLoading = true) {
         isLoading
     });
 }
-//修改
+// Edit Training Record
 export function reqEditTR(data, isLoading = true) {
     return request({
         url: "/tr/edit",
@@ -18,16 +18,16 @@ export function reqEditTR(data, isLoading = true) {
         isLoading
     });
 }
-//删除
+// Delete Training Record
 export function reqDeleteTR(data, isLoading = true) {
     return request({
-        url: "/tr/delete",
+        url: "/tr/del",
         method: 'post',
         data,
         isLoading
     });
 }
-//确认
+// Confirm Training Record
 export function reqConfirmTR(data, isLoading = true) {
     return request({
         url: "/tr/confirm",
@@ -36,16 +36,16 @@ export function reqConfirmTR(data, isLoading = true) {
         isLoading
     });
 }
-//取消确认
-export function reqCancelConfirmTR(data, isLoading = true) {
+// UnConfirm Training Record
+export function reqUnConfirmTR(data, isLoading = true) {
     return request({
-        url: "/tr/cancelconfirm",
+        url: "/tr/unconfirm",
         method: 'post',
         data,
         isLoading
     });
 }
-//获取列表
+// Get Training Record List
 export function reqGetTRList(data, isLoading = true) {
     return request({
         url: "/tr/list",
@@ -55,18 +55,7 @@ export function reqGetTRList(data, isLoading = true) {
     });
 }
 
-
-//获取分页列表
-export function reqGetPagingTRList(data, isLoading = true) {
-    return request({
-        url: "/tr/listpage",
-        method: 'post',
-        data,
-        isLoading
-    });
-}
-
-//获取详情
+// Get Record Training Record Detail
 export function reqGetTRDetail(data, isLoading = true) {
     return request({
         url: "/tr/detail",
@@ -76,18 +65,18 @@ export function reqGetTRDetail(data, isLoading = true) {
     });
 }
 
-//获取授课报表
-export function reqGetGiveLessonsReport(data, isLoading = true) {
+// Get Taught Lessons Report
+export function reqGetTaughtLessonsReport(data, isLoading = true) {
     return request({
-        url: "/tr/glrep",
+        url: "/tr/tlrep",
         method: 'post',
         data,
         isLoading
     });
 }
 
-//获取授课报表
-export function reqGetReciveTrainingReport(data, isLoading = true) {
+// Get Recived Training Report
+export function reqGetRecivedTrainingReport(data, isLoading = true) {
     return request({
         url: "/tr/rtrep",
         method: 'post',

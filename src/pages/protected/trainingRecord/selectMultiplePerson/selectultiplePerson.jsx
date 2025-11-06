@@ -6,27 +6,28 @@ import {
 } from "@mui/material";
 import { GroupAddIcon } from "../../../../component/PubIcon/PubIcon";
 import PersonPicker from "./PersonPicker";
+import { useTranslation } from "react-i18next";
 
 const SelectMultiplePerson = (props) => {
-    const { isEdit, title = "选择人员", onOk } = props;
+    const { isEdit, title = "bulkSelectPersonnel", onOk } = props;
     const [dialogOpen, setDialogOpen] = useState(false);
+    const {t} = useTranslation();
 
-    //关闭选择dialog
+    // Close Dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
     };
 
-    //点击确定按钮
+    // Actions afer click the ok button
     const handleOkClick = (items) => {
-        //关闭对话框
         setDialogOpen(false);
-        //传送数据
+        // Transfer data
         onOk(items);
     };
 
     return (
         <>
-            <Tooltip title={title} placement="top" >
+            <Tooltip title={t(title)} placement="top" >
                 <span>
                     <IconButton onClick={() => setDialogOpen(!dialogOpen)} disabled={!isEdit} size="small">
                         <GroupAddIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
@@ -43,6 +44,7 @@ const SelectMultiplePerson = (props) => {
                 <PersonPicker
                     cancelClickAction={handleDiagClose}
                     okClickAction={handleOkClick}
+                    t={t}
                 />
             </Dialog>
         </>

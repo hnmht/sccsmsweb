@@ -19,7 +19,7 @@ import { columns } from "./tableConstructor";
 const personName = "person";
 const deptName = "department";
 
-const PersonPicker = ({ cancelClickAction, okClickAction }) => {
+const PersonPicker = ({ cancelClickAction, okClickAction, t }) => {
     const [persons, setPersons] = useState([]);
     const [depts, setDepts] = useState([]);
     const [selectedDeptIds, setSelectedDeptIds] = useState([]);
@@ -33,9 +33,9 @@ const PersonPicker = ({ cancelClickAction, okClickAction }) => {
         getLocalDepts();
     }, []);
 
-    //选中部门
+    // Actions after clicking Department
     const handleDeptClick = async (item, type) => {
-        //type 0 末级; 1父级; 3 全部;
+        //type meanings: 0 Leaf; 1 Parent; 3 All
         let deptIds = [];
         if (type === 0) {
             deptIds.push(item.id);
@@ -52,37 +52,36 @@ const PersonPicker = ({ cancelClickAction, okClickAction }) => {
             })
             deptIds.push(0);
         }
-        //获取本地人员档案
-        const localPersons = await GetCacheAnyOf(personName, "deptid", deptIds);
+        // Get Persons data from front end cache
+        const localPersons = await GetCacheAnyOf(personName, "deptID", deptIds);
         setPersons(localPersons);
         setSelectedDeptIds(deptIds);
     };
-    //刷新部门
+    // Refresh department tree
     const handleRefreshDepts = async () => {
-        //向服务器请求最新部门缓存
+        // Request the latest department list from backend
         await InitDocCache(deptName);
-        //获取本地缓存
+        // Get department list from front end cache
         const newDepts = await GetLocalCache(deptName);
-        //更新
         setDepts(newDepts);
     };
-    //刷新人员
+    // Refresh person list 
     const handleRefreshPersons = async () => {
-        //向服务器请求最新人员缓存
+        // Request the latest person list from backend
         await InitDocCache(personName);
-        //获取本地缓存
-        const newPersons = await GetCacheAnyOf(personName, "deptid", selectedDeptIds);
-        //更新
+        // Get Persons list from front end cache
+        const newPersons = await GetCacheAnyOf(personName, "deptID", selectedDeptIds);
+        // refresh
         setPersons(newPersons);
     };
-    //选择项目后的处理
+    // Actions after choose items
     const handleSelectItems = (items) => {
         setCurrentItems(items);
     };
 
     return (
         <>
-            <DialogTitle>选择人员{currentItems.length > 0 ? `(已选中${currentItems.length}人)` :""}</DialogTitle>
+            <DialogTitle>{`${t("choosePerson")}(${t("selectMultiplePeople", { count: currentItems.length })})`}</DialogTitle>
             <Grid container spacing={2} >
                 <Grid item xs={2}>
                     <List
@@ -95,8 +94,8 @@ const PersonPicker = ({ cancelClickAction, okClickAction }) => {
                                     display: "flex", flexDirection: "row", justifyContent: "space-between"
                                 }}
                             >
-                                选择部门
-                                <Tooltip title="刷新" placement="top">
+                                {t("chooseDept")}
+                                <Tooltip title={t("refresh")} placement="top">
                                     <IconButton onClick={handleRefreshDepts}>
                                         <RefreshIcon color="primary" />
                                     </IconButton>
@@ -106,7 +105,7 @@ const PersonPicker = ({ cancelClickAction, okClickAction }) => {
                         sx={{ width: "100%", height: 700, overflow: "auto", p: 0, ml: 1, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="部门"
+                            docName={t("department")}
                             isDisplayAll={true}
                             oriDocs={depts}
                             onDocClick={handleDeptClick}
@@ -121,7 +120,7 @@ const PersonPicker = ({ cancelClickAction, okClickAction }) => {
                         columns={columns}
                         refreshAction={handleRefreshPersons}
                         rows={persons}
-                        docListTitle="选择人员"
+                        docListTitle="choosePerson"
                         isMultiple={true}
                         selectItem={handleSelectItems}
                         tableContainerHeight={596}
@@ -129,8 +128,8 @@ const PersonPicker = ({ cancelClickAction, okClickAction }) => {
                 </Grid>
             </Grid>
             <DialogActions sx={{ m: 1 }}>
-                <Button color="error" onClick={cancelClickAction} >取消</Button>
-                <Button variant="contained" disabled={currentItems.length === 0} onClick={() => okClickAction(currentItems)}>确定</Button>
+                <Button color="error" onClick={cancelClickAction} >{t("cancel")}</Button>
+                <Button variant="contained" disabled={currentItems.length === 0} onClick={() => okClickAction(currentItems)}>{t("ok")}</Button>
             </DialogActions>
         </>
     );
