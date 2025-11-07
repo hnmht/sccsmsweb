@@ -3,7 +3,7 @@ import dayjs from "../../../utils/myDayjs";
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { ConvertFloatFormat } from "../../../utils/tools";
-// Generate Training Record Report condition fields
+// Generate Taught Lessons Report condition fields
 export const generateReportFields = () => {
     const queryFields = [
         { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
@@ -16,7 +16,7 @@ export const generateReportFields = () => {
     return queryFields;
 };
 
-// Generate Training Record Report default condition
+// Generate Taught Lessons Report default condition
 export function generateReportDefaultCons() {
     const { user } = store.getState();
     const currentPerson = user.person;
@@ -45,7 +45,7 @@ export function generateReportDefaultCons() {
     ];
     return conditions;
 };
-// Define Training Record Report columns
+// Define Taught Lessons Report columns
 export const columnDef = (rows, displayFooter, t) => {
     // Define the aggregate columns
     const totalRowDefine = [
@@ -108,7 +108,7 @@ export const columnDef = (rows, displayFooter, t) => {
 
     return columns;
 }
-//报表默认隐藏列
+// Report default hidden columns
 export const defaultHideCol = () => {
     return {
         hid: false,
