@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { Tooltip, IconButton, Paper, Stack } from "@mui/material";
+import { Tooltip, IconButton, Paper, Stack,FormControlLabel,Checkbox} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { FilterAltIcon, FilterAltOffIcon, FilterIcon, DownloadIcon } from "../PubIcon/PubIcon";
 import MaterialReactTable from "material-react-table";
@@ -22,10 +22,12 @@ const ScReport = ({
     rows = emptyArr,
     exportFileName = "report",
     headFilterVisible = true,
-    headFilterDisabled = true, 
+    headFilterDisabled = true,
     filterAction = emptyFunc,
     defaultHideColumn = {},
     enableStickyFooter = false,
+    displayTotalCheck = false,
+    showTotalRowChangeAction = emptyFunc,
 }) => {
     const list = useRef(null);
     const contentHeight = useContentHeight();
@@ -91,6 +93,14 @@ const ScReport = ({
                                 <DownloadIcon color="secondary" />
                             </IconButton>
                         </Tooltip>
+                        {displayTotalCheck                            
+                            ? <FormControlLabel
+                                control={<Checkbox checked={enableStickyFooter} onChange={showTotalRowChangeAction} id="displayfootercheck" />}
+                                label={t("showTotalRow")}
+                                sx={{ marginLeft: 2 }}
+                            />
+                            : null
+                        }
                     </Stack>
                 )}
                 icons={{

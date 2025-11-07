@@ -3,96 +3,124 @@ import dayjs from "../../../utils/myDayjs";
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { ConvertFloatFormat } from "../../../utils/tools";
-//生成查询字段
+// Generate Training Record Report condition fields
 export const generateReportFields = () => {
     const queryFields = [
-        { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
-        { id: 2, value: "h.deptid", label: "发放部门", inputType: 520, resultType: "object", resultfield: "id" },
-        { id: 3, value: "h.lecturerid", label: "讲师", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 4, value: "h.tcid", label: "课程", inputType: 620, resultType: "object", resultfield: "id" },
-        { id: 5, value: "h.creatorid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
-        { id: 6, value: "h.description", label: "说明", inputType: 301, resultType: "string", resultfield: "" },
+        { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "string", resultfield: "" },
+        { id: 2, value: "h.deptid", label: "deptID", inputType: 520, resultType: "object", resultfield: "id" },
+        { id: 3, value: "h.lecturerid", label: "lecturer", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 4, value: "h.tcid", label: "tc", inputType: 620, resultType: "object", resultfield: "id" },
+        { id: 5, value: "h.creatorid", label: "creator", inputType: 510, resultType: "object", resultfield: "id" },
+        { id: 6, value: "h.description", label: "description", inputType: 301, resultType: "string", resultfield: "" },
     ];
     return queryFields;
 };
-//生成默认查询条件
+
+// Generate Training Record Report default condition
 export function generateReportDefaultCons() {
     const { user } = store.getState();
     const currentPerson = user.person;
     let conditions = [
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
-            compare: { id: "greaterthanequal", label: '大于等于', value: '>=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-            value: dayjs().weekday(0).format("YYYYMMDD"),
+            field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
+            value: dayjs().weekday(0),
             isNecessary: true
         },
         {
             logic: "and",
-            field: { id: 1, value: "h.billdate", label: "单据日期", inputType: 306, resultType: "string", resultfield: "" },
-            compare: { id: "lessthanequal", label: '小于等于', value: '<=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
-            value: dayjs(new Date()).format("YYYYMMDD"),
+            field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
+            compare: { id: "lessthanequal", label: 'lessThanEqual', value: '<=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
+            value: dayjs(new Date()).endOf("day"),
             isNecessary: true
         },
         {
             logic: "and",
-            field: { id: 5, value: "h.creatorid", label: "创建人", inputType: 510, resultType: "object", resultfield: "id" },
-            compare: { id: "equal", label: '等于', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number"] },
+            field: { id: 5, value: "h.creatorID", label: "creator", inputType: 510, resultType: "object", resultfield: "id" },
+            compare: { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: currentPerson,
             isNecessary: false
         }
     ];
     return conditions;
 };
-
-
-//报表列定义
-export const columnDef = () => {
+// Define Training Record Report columns
+export const columnDef = (rows, displayFooter, t) => {
+    // Define the aggregate columns
+    const totalRowDefine = [
+        { id: "classHour", aggregate: "sum" },
+        { id: "studentNumber", aggregate: "sum" },
+        { id: "disqualificationNumber", aggregate: "sum" },
+        { id: "qualifiedNumber", aggregate: "sum" }
+    ];
+    // Define columns
     let columns = [
-        { accessorKey: 'hid', header: '主表ID', size: 24 },
-        { accessorKey: "billnumber", header: "单据号", size: 160 },
-        { accessorKey: 'billdate', header: '单据日期', size: 128, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD")}</span>) },
-        { accessorKey: 'deptid', header: '部门ID', size: 32 },
-        { accessorKey: 'deptcode', header: '部门编码', size: 64 },
-        { accessorKey: 'deptname', header: '部门名称', size: 192 },
-        { accessorKey: 'description', header: '备注', size: 192 },
-        { accessorKey: 'lecturerid', header: '讲师ID', size: 24 },
-        { accessorKey: 'lecturercode', header: '讲师编码', size: 128 },
-        { accessorKey: 'lecturername', header: '讲师名称', size: 192 },
-        { accessorKey: 'traindate', header: '培训日期', size: 32 },
-        { accessorKey: 'tcid', header: '课程ID', size: 32 },
-        { accessorKey: 'tccode', header: '课程编码', size: 128 },
-        { accessorKey: 'tcname', header: '课程名称', size: 192 },
-        { accessorKey: 'starttime', header: '开始时间', size: 192, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm")}</span>) },
-        { accessorKey: 'endtime', header: '结束时间', size: 192, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm")}</span>) },
+        { accessorKey: 'hid', header: 'hid', size: 64 },
+        { accessorKey: "billNumber", header: "billNumber", size: 160 },
+        { accessorKey: 'billDate', header: 'billDate', size: 128, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD")}</span>) },
+        { accessorKey: 'deptID', header: 'deptID', size: 32 },
+        { accessorKey: 'deptCode', header: 'deptCode', size: 64 },
+        { accessorKey: 'deptName', header: 'deptName', size: 192 },
+        { accessorKey: 'description', header: 'description', size: 192 },
+        { accessorKey: 'lecturerID', header: 'lecturerID', size: 24 },
+        { accessorKey: 'lecturerCode', header: 'lecturerCode', size: 128 },
+        { accessorKey: 'lecturerName', header: 'lecturerName', size: 192 },
+        { accessorKey: 'trainingDate', header: 'trainingDate', size: 32 },
+        { accessorKey: 'tcID', header: 'tcID', size: 32 },
+        { accessorKey: 'tcCode', header: 'tcCode', size: 128 },
+        { accessorKey: 'tcName', header: 'tcName', size: 192 },
+        { accessorKey: 'startTime', header: 'startTime', size: 192, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm")}</span>) },
+        { accessorKey: 'endTime', header: 'endTime', size: 192, Cell: (({ cell }) => <span>{dayjs(cell.getValue()).format("YYYY-MM-DD HH:mm")}</span>) },
         {
-            accessorKey: 'classhour', header: '课时', size: 128,
+            accessorKey: 'classHour', header: 'classHour', size: 128,
             Cell: (({ cell }) => <span style={{ textAlign: "right", paddingRight: 4, width: "80px" }}>{ConvertFloatFormat(cell.getValue())}</span>),
         },
-        { accessorKey: 'isexamine', header: '是否考核', size: 96 },
-        { accessorKey: 'studentnumber', header: '学生数量', size: 128 },
-        { accessorKey: 'qualifiednumber', header: '合格数量', size: 128 },
-        { accessorKey: 'disqualificationnumber', header: '不合格数量', size: 172 },
-        { accessorKey: 'status', header: '状态', size: 128, Cell: (({ cell }) => <span>{VoucherStatus[cell.getValue()]}</span>) },
-        { accessorKey: 'creatorid', header: '创建人ID', size: 100 },
-        { accessorKey: 'createusercode', header: '创建人编码', size: 128 },
-        { accessorKey: 'createusername', header: '创建人姓名', size: 128 },
+        { accessorKey: 'isExam', header: 'isExam', size: 96 },
+        { accessorKey: 'studentNumber', header: 'studentNumber', size: 128 },
+        { accessorKey: 'qualifiedNumber', header: 'qualifiedNumber', size: 128 },
+        { accessorKey: 'disqualificationNumber', header: 'disqualificationNumber', size: 172 },
+        { accessorKey: 'status', header: 'status', size: 128, Cell: (({ cell }) => <span>{VoucherStatus[cell.getValue()]}</span>) },
+        { accessorKey: 'creatorID', header: 'creatorID', size: 100 },
+        { accessorKey: 'creatorCode', header: 'creatorCode', size: 128 },
+        { accessorKey: 'creatorName', header: 'creatorName', size: 128 },
     ];
+
+    //Translate header
+    columns.map(column => {
+        column.header = t(column.header);
+        return column;
+    });
+
+    // Calculate the total
+    if (displayFooter) {
+        totalRowDefine.forEach((item) => {
+            // Find Index
+            const index = columns.findIndex(column => column.accessorKey === item.id);
+            // Calculate the total
+            let total = 0;
+            rows.forEach((row) => {
+                total = total + row[item.id];
+            });
+            columns[index].Footer = () => <span>{t(item.aggregate)}: {total}</span>;
+        });
+    }
+
     return columns;
 }
 //报表默认隐藏列
 export const defaultHideCol = () => {
     return {
         hid: false,
-        deptid: false,
-        deptcode: false,
-        traindate: false,
-        lecturerid: false,
-        lecturercode: false,
-        tcid: false,
-        tccode: false,
-        isexamine: false,
-        creatorid: false,
-        createusercode: false,
+        deptID: false,
+        deptCode: false,
+        trainingDate: false,
+        lecturerID: false,
+        lecturerCode: false,
+        tcID: false,
+        tcCode: false,
+        isExam: false,
+        creatorID: false,
+        creatorCode: false,
     };
 };
