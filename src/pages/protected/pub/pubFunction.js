@@ -166,3 +166,8 @@ export const CellDC = (row,column) => {
 export const CellTC = (row,column) => {
     return row.tc.name;
 };
+
+// Period Display content
+export const CellPeriod = (row,column) => {
+    return i18n.t(row.period);
+};

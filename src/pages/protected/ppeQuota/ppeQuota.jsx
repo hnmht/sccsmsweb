@@ -1,138 +1,134 @@
 import { useState, useEffect } from "react";
 import { Dialog } from "@mui/material";
 import { message } from "mui-message";
-
+import { useTranslation } from "react-i18next";
 import { Divider } from "../../../component/ScMui/ScMui";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
-import EditWorkOrder from "./editLpaQuota";
+import EditPPEQuota from "./editPPEQuota";
 
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 import { columns, rowActionsDefine, generateConditions, QueryFields } from "./constructor";
-import { reqGetLQList, reqGetLQDetail, reqDeleteLQ, reqConfirmLQ, reqCancelConfirmLQ } from "../../../api/lpaQuota";
+import { reqGetPPEQuotaList, reqGetPPEQuotaDetail, reqDeletePPEQuota, reqConfirmPPEQuota, reqUnconfirmPPEQuota } from "../../../api/ppeQuota";
 import { PeriodDisplay } from "../../../storage/dataTypes";
 
-const LpaQuota = () => {
+// Personal Protective Equipment (Position) Quota
+const PPEQuota = () => {
     const [rows, setRows] = useState([]);
     const [conditions, setConditions] = useState(generateConditions());
     const [diagStatus, setDiagStatus] = useState({
         isOpen: false,
         content: "edit",
-        currentLQ: undefined,
+        currentPPEQuota: undefined,
         isNew: false,
         isModify: false
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
-        async function getLQs() {
-            //将查询条件转化为String
+        async function getPPEQuotas() {
             let queryString = transConditionsToString(generateConditions());
-            let lqsRes = await reqGetLQList({ queryString: queryString });
+            let lqsRes = await reqGetPPEQuotaList({ queryString: queryString });
             let newLqs = [];
             if (lqsRes.status) {
-                newLqs = lqsRes.data.data;
-            } else {
-                message.warning(lqsRes.data.statusMsg);
+                newLqs = lqsRes.data;
             }
             setRows(newLqs);
         }
-        getLQs();
+        getPPEQuotas();
     }, []);
-    //查询条件对话框关闭
+    // Close dialog
     const handelDiagClose = () => {
         setDiagStatus({
             isOpen: false,
             content: "edit",
-            currentLQ: undefined,
+            currentPPEQuota: undefined,
             isNew: false,
             isModify: false
         })
     };
-    //对话框点击确认
+    // Actions after click the ok button in the dialog
     const handleDiagOk = (cons) => {
         let newDiagStatus = {
             isOpen: false,
             content: "edit",
-            currentLQ: undefined,
+            currentPPEQuota: undefined,
             isNew: false,
             isModify: false
         };
         let newConditions = conditions;
-        if (diagStatus.content !== "edit") {//如果显示的内容是查询条件
+        if (diagStatus.content !== "edit") {
             newConditions = cons;
         }
         setDiagStatus(newDiagStatus);
         setConditions(newConditions);
-        //刷新数据
+        // Request PPE Quota list from backend
         handleRefreshList(newConditions);
     };
-    //刷新数据
+    // Request PPE Quota list from backend
     const handleRefreshList = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        let lqsRes = await reqGetLQList({ queryString: queryString });
+        let lqsRes = await reqGetPPEQuotaList({ queryString: queryString });
         let newLqs = [];
         if (lqsRes.status) {
-            newLqs = lqsRes.data.data;
-        } else {
-            message.warning(lqsRes.data.statusMsg);
+            newLqs = lqsRes.data;
         }
         setRows(newLqs);
     };
-    //过滤按钮点击
+    // Actions after click the filter button in the header
     const handleFilterAction = () => {
         setDiagStatus({
             isOpen: true,
             content: "conditions",
-            currentLQ: undefined,
+            currentPPEQuota: undefined,
             isNew: false,
             isModify: false
         });
     };
-    //增加按钮点击
+    // Actions after click the add button in the header
     const handleAddAction = () => {
         setDiagStatus({
             isOpen: true,
             content: "edit",
-            currentLQ: undefined,
+            currentPPEQuota: undefined,
             isNew: true,
             isModify: false
         });
     };
-    //行详情按钮点击
+    // Actions after click the view button in the body row
     const handleViewAction = async (item) => {
-        let res = await reqGetLQDetail(item);
+        let res = await reqGetPPEQuotaDetail(item);
         let newDiagStatus = {};
         if (res.status) {
-            let lqDetail = res.data.data;
+            let pqDetail = res.data;
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",
-                currentLQ: lqDetail,
+                currentPPEQuota: pqDetail,
                 isNew: false,
                 isModify: false,
             };
         } else {
-            message.warning(res.data.statusMsg);
             newDiagStatus = {
                 isOpen: false,
                 content: "edit",
-                currentLQ: undefined,
+                currentPPEQuota: undefined,
                 isNew: false,
                 isModify: false,
             };
         }
         setDiagStatus(newDiagStatus);
     };
-    //行编辑按钮点击
+    // Actions after click the Edit button in the body row
     const handleEditAction = async (item) => {
-        let res = await reqGetLQDetail(item);
+        let res = await reqGetPPEQuotaDetail(item);
         let newDiagStatus = {};
         if (res.status) {
-            let lqDetail = res.data.data;
+            let pqDetail = res.data;
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",
-                currentLQ: lqDetail,
+                currentPPEQuota: pqDetail,
                 isNew: false,
                 isModify: true,
             };
@@ -141,82 +137,70 @@ const LpaQuota = () => {
             newDiagStatus = {
                 isOpen: false,
                 content: "edit",
-                currentLQ: undefined,
+                currentPPEQuota: undefined,
                 isNew: false,
                 isModify: false,
             };
         }
         setDiagStatus(newDiagStatus);
     };
-    //行复制新增按钮点击
+    // Actions after the copyAdd button in the body row
     const handleRowCopyAdd = async (item) => {
-        let res = await reqGetLQDetail(item);
+        let res = await reqGetPPEQuotaDetail(item);
         let newDiagStatus = {};
         if (res.status) {
-            let lqDetail = res.data.data;
+            let pqDetail = res.data;
             newDiagStatus = {
                 isOpen: true,
                 content: "edit",
-                currentLQ: lqDetail,
+                currentPPEQuota: pqDetail,
                 isNew: true,
                 isModify: false,
             };
         } else {
-            message.warning(res.data.statusMsg);
             newDiagStatus = {
                 isOpen: false,
                 content: "edit",
-                currentLQ: undefined,
+                currentPPEQuota: undefined,
                 isNew: false,
                 isModify: false,
             };
         }
         setDiagStatus(newDiagStatus);
     };
-    //行删除按钮点击
+    // Actions after click delete button in the body row
     const handleRowDelete = async (item) => {
-        let periodDis = PeriodDisplay.get(item.period); 
-        let res = await reqDeleteLQ(item);
+        let res = await reqDeletePPEQuota(item);
         if (res.status) {
-            message.success("删除" + item.op.name + periodDis + "定额成功");
-        } else {
-            message.error("删除" + item.op.name + periodDis + "定额失败:" + res.data.statusMsg);
-            return
-        }
-        //刷新数据
-        handleRefreshList();
+            message.success(t("deleteSuccessful"));
+            // Request the latest PPE Quota list from backend
+            handleRefreshList();
+        }        
     };
-    //行确认按钮点击
+    // Actions after click confirm button in the body row
     const handleConfirmRow = async (item) => {
-        let periodDis = PeriodDisplay.get(item.period); 
-        let res = await reqConfirmLQ(item);
+        let res = await reqConfirmPPEQuota(item);
         if (res.status) {
-            message.success("确认" + item.op.name + periodDis + "定额成功");
-        } else {
-            message.error("确认" + item.op.name + periodDis + "定额失败:" + res.data.statusMsg);
-            return
-        }
-        //刷新数据
-        handleRefreshList();
+            message.success(t("confirmSuccessful"));
+            // Request the latest PPE Quota list from backend
+            handleRefreshList();
+        }       
     };
-    //行取消确认按钮点击
+    // Actions after click unconfirm button in the body row
     const handleCancelConfirmRow = async (item) => {
-        let periodDis = PeriodDisplay.get(item.period); 
-        let res = await reqCancelConfirmLQ(item);
+        let periodDis = PeriodDisplay.get(item.period);
+        let res = await reqUnconfirmPPEQuota(item);
         if (res.status) {
-            message.success("取消确认" + item.op.name + periodDis + "定额成功");
-        } else {
-            message.error("取消确认" + item.op.name + periodDis + "定额失败:" + res.data.statusMsg);
-            return
-        }
-        //刷新数据
-        handleRefreshList();
+            message.success(t("unconfirmSuccessful"));
+            // Request the latest PPE Quota list from backend
+            handleRefreshList();
+        } 
     };
 
 
     return (
         <>
-            <PageTitle pageName="岗位定额" displayHelp={true} helpUrl="/helps/lpaQuota" />
+            <PageTitle pageName={t("MenuPQ")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <DocList
                 columns={columns}
@@ -246,16 +230,17 @@ const LpaQuota = () => {
                 closeAfterTransition={false}
             >
                 {diagStatus.content === "edit"
-                    ? <EditWorkOrder
+                    ? <EditPPEQuota
                         isOpen={diagStatus.isOpen}
                         isNew={diagStatus.isNew}
                         isModify={diagStatus.isModify}
-                        oriLQ={diagStatus.currentLQ}
+                        oriPPEQuota={diagStatus.currentPPEQuota}
                         onCancel={handelDiagClose}
                         onOk={handleDiagOk}
+                        t={t}
                     />
                     : <QueryPanel
-                        title="过滤条件"
+                        title="ppeQutaFilterConditions"
                         queryFields={QueryFields}
                         initalConditions={conditions}
                         onOk={handleDiagOk}
@@ -266,4 +251,4 @@ const LpaQuota = () => {
         </>
     );
 }
-export default LpaQuota;
+export default PPEQuota;

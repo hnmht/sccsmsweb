@@ -36,7 +36,7 @@ const TrainingRecord = Loadable(lazy(() => import("./pages/protected/trainingRec
 const TaughtLessons = Loadable(lazy(() => import("./pages/protected/taughtLessons/taughtLessons"))); // Taught Lessons Report
 const ReceivedTraining = Loadable(lazy(() => import("./pages/protected/receivedTraining/receivedTraining"))); // Recvied Training Report
 // Personal Protective Equipment
-const LpaQuota = Loadable(lazy(() => import("./pages/protected/lpaQuota/lpaQuota"))); //劳保用品定额
+const PPEQuota = Loadable(lazy(() => import("./pages/protected/ppeQuota/ppeQuota"))); // Personal Protective Equipment (Position) Quota
 const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWizard"))); //发放向导
 const LpaIssueDoc = Loadable(lazy(() => import("./pages/protected/lpaIssueDoc/lpaIssueDoc"))); //发放单
 const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery"))); //发放查询
@@ -170,7 +170,7 @@ const routes = [
             },
             {
                 path: "/private/ppe/quota",
-                element: <LpaQuota />
+                element: <PPEQuota />
             },
             {
                 path: "/private/ppe/issuedvoucher",

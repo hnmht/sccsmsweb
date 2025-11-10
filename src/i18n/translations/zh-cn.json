@@ -517,6 +517,11 @@
     "signStartTime": "签到时间",
     "signEndTime": "签退时间",
     "bClassHour": "实际课时",
+    "ppeQutaFilterConditions": "劳保用品定额过滤条件",
+    "period": "周期",
+    "ppe": "劳保用品",
+    "quantity": "数量",
+    "PPEPositionQuota": "劳保用品岗位定额",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

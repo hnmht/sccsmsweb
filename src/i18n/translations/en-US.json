@@ -518,6 +518,11 @@
     "signStartTime":"Check-in Time",
     "signEndTime":"Check-out Time",
     "bClassHour":"Actual Class Hours",
+    "ppeQutaFilterConditions":"PPE Quota Filter Conditions",
+    "period":"Period",
+    "ppe":"Personal Protective Equipment" ,
+    "quantity":"Quantity",
+    "PPEPositionQuota":"PPE Quotas per Position ",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

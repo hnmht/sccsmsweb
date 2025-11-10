@@ -24,7 +24,7 @@ import WizardOPsEdit from "./wizardOPsEdit";
 import WizardRecipientsEdit from "./wizardRecipientsEdit";
 import WizardGenerate from "./wizardGenerate";
 import WizardReset from "./wizardReset";
-import { reqGetPeriodOps } from "../../../api/lpaQuota";
+import { reqGetPeriodOps } from "../../../api/ppeQuota";
 import { reqWizardAddLD } from "../../../api/lpaIssueDoc";
 import { cloneDeep } from "lodash";
 

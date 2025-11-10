@@ -8,7 +8,7 @@ import {
     Tooltip,
     Button,
 } from "@mui/material";
-import dayjs from "../../../utils/myDayjs";
+import { DateTimeFormat, dayjs, EpochTime } from "../../../i18n/dayjs";
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 
@@ -17,103 +17,96 @@ import ScInput from "../../../component/ScInput";
 import Loader from "../../../component/Loader/Loader";
 import { MultiSortByArr } from "../../../utils/tools";
 import { voucherRow, bodyColumns } from "./constructor";
-import { reqAddLQ, reqEditLQ, reqCheckOPQuota } from "../../../api/lpaQuota";
+import { reqAddPPEQuota, reqEditPPEQuota, reqCheckPositionQuota } from "../../../api/ppeQuota";
 
-import { getCurrentPerson, generateVoucherErrors, checkVoucherErrors } from "../pub";
+import { getCurrentPerson, generateVoucherErrors, checkVoucherErrors } from "../pub/pubFunction";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
-import { PeriodDisplay } from "../../../storage/dataTypes";
 
-//生成初始数据
-const getInitialValue = async (oriLQ, isNew, isModify) => {
+// Generate Initial PPE Quota Data
+const getInitialValue = async (oriPPEQuota, isNew, isModify) => {
     const person = await getCurrentPerson();
-    let newLQ = { //新增单据
+    const currentTime = dayjs(new Date());
+    const currentDate = currentTime.startOf("day");
+    let newPPEQuota = { // Add 
         id: 0,
-        billdate: dayjs(new Date()).format("YYYYMMDD"),
-        op: { id: 0, name: "", description: "" },
+        billDate: currentDate,
+        position: { id: 0, name: "", description: "" },
         period: "month",
         description: "",
         status: 0,
         body: [voucherRow],
-        createuser: person,
-        createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        modifyuser: { id: 0, code: "", name: "" },
-        modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-        confirmuser: { id: 0, code: "", name: "" },
-        confirmdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+        creator: person,
+        createDate: currentTime,
+        modifier: { id: 0, code: "", name: "" },
+        modifyDate: EpochTime,
+        confirmer: { id: 0, code: "", name: "" },
+        confirmDate: EpochTime,
         dr: 0
     };
 
-    if (isNew) { //是否新增单据
-        if (oriLQ) {//复制新增            
-            newLQ = cloneDeep(oriLQ);
-            newLQ.id = 0;
-            newLQ.billdate = dayjs(new Date()).format("YYYYMMDD");
-            newLQ.status = 0;
-            newLQ.body.map((row) => {
+    if (isNew) {
+        if (oriPPEQuota) {// Copy Add            
+            newPPEQuota = cloneDeep(oriPPEQuota);
+            newPPEQuota.id = 0;
+            newPPEQuota.billDate = currentDate;
+            newPPEQuota.status = 0;
+            newPPEQuota.body.map((row) => {
                 row.id = 0;
                 row.hid = 0;
                 row.status = 0;
                 return row;
             });
-            newLQ.createuser = person;
-            newLQ.createdate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newLQ.modifyuser = { id: 0, code: "", name: "" };
-            newLQ.modifydate = dayjs(new Date()).format("YYYYMMDDHHmm");
-            newLQ.confirmuser = { id: 0, code: "", name: "" };
-            newLQ.confirmdate = dayjs(new Date()).format("YYYYMMDDHHmm");
+            newPPEQuota.creator = person;
+            newPPEQuota.createDate = currentTime;
+            newPPEQuota.modifier = { id: 0, code: "", name: "" };
+            newPPEQuota.modifyDate = EpochTime;
+            newPPEQuota.confirmer = { id: 0, code: "", name: "" };
+            newPPEQuota.confirmDate = EpochTime;
         }
-    } else { //编辑或者查看
-        if (!oriLQ) {
+    } else { // Edit Or View
+        if (!oriPPEQuota) {
             return
         } else {
-            if (isModify) { //编辑                
-                newLQ = cloneDeep(oriLQ);
-                newLQ.createdate = dayjs(newLQ.createdate).format("YYYYMMDDHHmm");
-                newLQ.modifyuser = person;
-                newLQ.modifydate = dayjs(newLQ.modifydate).format("YYYYMMDDHHmm");
-                newLQ.confirmuser = { id: 0, code: "", name: "" };
-                newLQ.confirmdate = dayjs(newLQ.confirmdate).format("YYYYMMDDHHmm");
-            } else { //查看
-                newLQ = cloneDeep(oriLQ);
-                newLQ.createdate = dayjs(newLQ.createdate).format("YYYYMMDDHHmm");
-                newLQ.modifydate = dayjs(newLQ.modifydate).format("YYYYMMDDHHmm");
-                newLQ.confirmdate = dayjs(newLQ.confirmdate).format("YYYYMMDDHHmm");
+            if (isModify) { // Edit                
+                newPPEQuota = cloneDeep(oriPPEQuota);
+                newPPEQuota.modifier = person;
+                newPPEQuota.modifyDate = currentTime;
+            } else { // View
+                newPPEQuota = cloneDeep(oriPPEQuota);
             }
         }
     }
-
-    return newLQ;
+    return newPPEQuota;
 };
-
-const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
+// Add,Edit,View Personal Protective Equipment Quotas per Position
+const EditPPEQuota = ({ isOpen, isNew, isModify, oriPPEQuota, onCancel, onOk, t }) => {
     const [voucherData, setVoucherData] = useState((undefined));
-    const [errors, setErrors] = useState(() => generateVoucherErrors(oriLQ ? oriLQ.body.length : 1));
+    const [errors, setErrors] = useState(() => generateVoucherErrors(oriPPEQuota ? oriPPEQuota.body.length : 1));
     const isEdit = !(!isModify && !isNew);
 
     useEffect(() => {
         async function initVoucher() {
-            const newEIT = await getInitialValue(oriLQ, isNew, isModify);
-            setVoucherData(newEIT);
+            const newPq = await getInitialValue(oriPPEQuota, isNew, isModify);
+            setVoucherData(newPq);
         }
         if (isOpen) {
             initVoucher();
         }
-    }, [isOpen, oriLQ, isModify, isNew]);
+    }, [isOpen, oriPPEQuota, isModify, isNew]);
 
-    //获取值以后的操作
+    // Get the passed data from the ScInput Component
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
-        // let startTime = new Date();
-        //设置单据值
+        // Change voucher data
         setVoucherData((prevState) => {
             let newData = cloneDeep(prevState);
             switch (positionID) {
-                case 0://修改表头字段
+                case 0:
                     newData[itemkey] = value;
                     break;
-                case 1://如果修改的是表体字段                                       
+                case 1:
                     newData.body[rowIndex][itemkey] = value;
                     break;
                 case 2:
@@ -125,7 +118,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
             return newData;
         });
 
-        //设置错误信息
+        // Change the errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
@@ -143,135 +136,109 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
             }
             return newErrors;
         });
-        // console.log("更新", itemkey, ",耗时:", new Date() - startTime, "ms");
     };
-    //增行
+    // Add Row
     const handleAddRow = () => {
-        //生成表体数据
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+        // Automaticaly generate row number
+        if (newVoucherData.body.length === 1) {
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]))
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
-        }
-        //自动填写开始时间和结束时间
-        if (newVoucherData.workdate !== "") {
-            newRow.starttime = newVoucherData.workdate + "0800";
-            newRow.endtime = newVoucherData.workdate + "1800";
-        } else {
-            newRow.starttime = dayjs(new Date()).format("YYYYMMDD") + "0800";
-            newRow.endtime = dayjs(new Date()).format("YYYYMMDD") + "1800";
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]))
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
-
-        //生成错误信息数据
+        // Generate errors
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
     };
-    //复制增行
+    // Copy current row content and add a new row
     const handleCopyAddRow = (index) => {
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherData.body[index]);
-        //生成错误信息数据
+        // Generate errors value
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
-        //自动生成行号
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+        // Automatically generate row number 
+        if (newVoucherData.body.length === 1) {
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]))
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]))
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
         }
-        //修改复制行的id和hid
+        // Change id and hid fields
         newRow.id = 0;
-        newRow.hid = 0;
-
-        if (newVoucherData.workdate !== "") {
-
-            newRow.starttime = newVoucherData.workdate + "0800";
-            newRow.endtime = newVoucherData.workdate + "1800";
-        } else {
-            newRow.starttime = dayjs(new Date()).format("YYYYMMDD") + "0800";
-            newRow.endtime = dayjs(new Date()).format("YYYYMMDD") + "1800";
-        }
+        newRow.hid = newVoucherData.id;
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
     };
-    //删行
+    // Delete row
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能删除最后一行!");
+            message.error(t("cannotDeleteLastRow"));
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
-        if (isModify) {
-            //判断是否在编辑状态下新增的行
-            if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接删除掉
+        if (isModify) { // Define if the added row in an editing state            
+            if (row.id === 0) {// If the id equal 0, the row was newly added, so delete it
+                newVoucherData.body.splice(index, 1);
                 newErrors.body.splice(index, 1);
-            } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改删除标志
-                newErrors.body[index] = {}; //将删除掉的行所有错误信息归零
+            } else { // if id is not euqals 0, it means the row has already been saved to the saved
+                newVoucherData.body[index].dr = 1;
+                newErrors.body[index] = {};
             }
-        } else {
-            //新增状态下直接删除行
+        } else {// in the added state, delete the row directly
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
         setErrors(newErrors);
         setVoucherData(newVoucherData);
     };
-    //增加&编辑岗位定额
-    const handleAddWO = async () => {
-        //转换数据到后端格式
-        const thisLQ = cloneDeep(voucherData);
-        delete thisLQ.createdate;
-        delete thisLQ.modifydate;
-        delete thisLQ.confirmdate;
-        const periodDis = PeriodDisplay.get(thisLQ.period);
+    // Add && Edit PPE Position Quota 
+    const handleAddPQ = async () => {
+        const thisPPEQuota = cloneDeep(voucherData);
+        delete thisPPEQuota.createDate;
+        delete thisPPEQuota.modifyDate;
+        delete thisPPEQuota.confirmDate;
         if (isModify) {
-            let editRes = await reqEditLQ(thisLQ);
+            let editRes = await reqEditPPEQuota(thisPPEQuota);
             if (editRes.status) {
-                message.success("修改" + thisLQ.op.name + periodDis +"岗位定额成功!");
-            } else {
-                message.error("修改" + thisLQ.op.name + + periodDis + "岗位定额失败:" + editRes.data.statusMsg);
+                message.success(t("modifySuccessful"));
+                onOk();
             }
         } else {
-            let addRes = await reqAddLQ(thisLQ);
+            let addRes = await reqAddPPEQuota(thisPPEQuota);
             if (addRes.status) {
-                message.success("新增" + thisLQ.op.name + + periodDis + "岗位定额成功.");
-            } else {
-                message.error("新增" + thisLQ.op.name + + periodDis + "岗位定额失败:" + addRes.data.statusMsg);
+                message.success(t("addSuccessful"));
+                onOk();
             }
         }
-        onOk();
+
     };
-    //检查是否存在同周期同岗位的定额
+    // Check if a PPE  Quota for the same position
     const handleCheckSameOP = async (value) => {
         let err = { isErr: false, msg: "" };
-        let resp = await reqCheckOPQuota({ id: voucherData.id, op: value, "period": voucherData.period }, false);
+        let resp = await reqCheckPositionQuota({ id: voucherData.id, position: value, "period": voucherData.period }, false);
         if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
-    //检查是否存在同周期同岗位的定额
+    // Check if a PPE Quota for the same period
     const handleCheckSamePeriod = async (value) => {
         let err = { isErr: false, msg: "" };
-        let resp = await reqCheckOPQuota({ id: voucherData.id, op: voucherData.op, "period": value }, false);
+        let resp = await reqCheckPositionQuota({ id: voucherData.id, position: voucherData.position, "period": value }, false);
         if (resp.status) {
             err = { isErr: false, msg: "" };
         } else {
-            err = { isErr: true, msg: resp.data.statusMsg };
+            err = { isErr: true, msg: resp.msg };
         }
         return err;
     };
@@ -279,7 +246,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
     return voucherData !== undefined
         ? <Stack component="div" id="eidtEIT" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
             <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                <Typography variant="h3" component={"h3"}>岗位定额</Typography>
+                <Typography variant="h3" component={"h3"}>{t("PPEPositionQuota")}</Typography>
             </Stack>
             <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                 <Grid container id="VoucherHeader" spacing={2}>
@@ -288,12 +255,12 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={306}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="日期"
-                            itemKey="billdate"
-                            initValue={voucherData.billdate}
+                            itemShowName="billDate"
+                            itemKey="billDate"
+                            initValue={voucherData.billDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="billdate"
+                            key="billDate"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -303,7 +270,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={407}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="周期"
+                            itemShowName="period"
                             itemKey="period"
                             initValue={voucherData.period}
                             pickDone={handleGetValue}
@@ -319,13 +286,13 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={610}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="岗位"
-                            itemKey="op"
-                            initValue={voucherData.op}
+                            itemShowName="position"
+                            itemKey="position"
+                            initValue={voucherData.position}
                             pickDone={handleGetValue}
                             isBackendTest={true}
                             backendTestFunc={handleCheckSameOP}
-                            key="op"
+                            key="position"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -335,7 +302,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={405}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="状态"
+                            itemShowName="status"
                             itemKey="status"
                             initValue={voucherData.status}
                             pickDone={handleGetValue}
@@ -351,11 +318,11 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={isEdit}
-                            itemShowName="备注"
+                            itemShowName="description"
                             itemKey="description"
                             initValue={voucherData.description}
                             pickDone={handleGetValue}
-                            placeholder="请输入备注"
+                            placeholder="descriptionPlaceholder"
                             isBackendTest={false}
                             key="description"
                             positionID={0}
@@ -368,16 +335,16 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                 <ScVoucherBodyRow>
                     {voucherData.body.map((row, index) => {
                         return row.dr === 0
-                            ? (<tr key={"bodyrow" + row.rownumber}>
+                            ? (<tr key={"bodyrow" + row.rowNumber}>
                                 <td>
-                                    <Tooltip title="复制增行" key={`rowCopyAdd${index}`}>
+                                    <Tooltip title={t("copyAddRow")} key={`rowCopyAdd${index}`}>
                                         <span>
                                             <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleCopyAddRow(index)} disabled={!isEdit}>
                                                 <CopyAddRowIcon color={isEdit ? "success" : "transparent"} fontSize="small" />
                                             </IconButton>
                                         </span>
                                     </Tooltip>
-                                    <Tooltip title="删行" key={`rowDelete${index}`}>
+                                    <Tooltip title={t("deleteRow")} key={`rowDelete${index}`}>
                                         <span>
                                             <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleDeleteRow(index, row)} disabled={!isEdit}>
                                                 <DeleteRowIcon color={isEdit ? "error" : "transparent"} fontSize="small" />
@@ -390,12 +357,12 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                                         dataType={302}
                                         allowNull={false}
                                         isEdit={false}
-                                        itemShowName="行号"
-                                        itemKey="rownumber"
-                                        initValue={row.rownumber}
+                                        itemShowName="rowNumber"
+                                        itemKey="rowNumber"
+                                        initValue={row.rowNumber}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="rownumber"
+                                        key="rowNumber"
                                         positionID={1}
                                         rowIndex={index}
                                     />
@@ -405,12 +372,12 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                                         dataType={630}
                                         allowNull={false}
                                         isEdit={isEdit}
-                                        itemShowName="劳保用品"
-                                        itemKey="lp"
-                                        initValue={row.lp}
+                                        itemShowName="ppe"
+                                        itemKey="ppe"
+                                        initValue={row.ppe}
                                         pickDone={handleGetValue}
                                         isBackendTest={false}
-                                        key="lp"
+                                        key="ppe"
                                         positionID={1}
                                         rowIndex={index}
                                     />
@@ -420,7 +387,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                                         dataType={302}
                                         allowNull={false}
                                         isEdit={isEdit}
-                                        itemShowName="数量"
+                                        itemShowName="quantity"
                                         itemKey="quantity"
                                         initValue={row.quantity}
                                         pickDone={handleGetValue}
@@ -435,11 +402,11 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                                         dataType={301}
                                         allowNull={true}
                                         isEdit={isEdit}
-                                        itemShowName="说明"
+                                        itemShowName="description"
                                         itemKey="description"
                                         initValue={row.description}
                                         pickDone={handleGetValue}
-                                        placeholder="请输入说明"
+                                        placeholder="descriptionPlaceholder"
                                         isBackendTest={false}
                                         key="description"
                                         positionID={1}
@@ -451,7 +418,7 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                                         dataType={405}
                                         allowNull={true}
                                         isEdit={false}
-                                        itemShowName="状态"
+                                        itemShowName="status"
                                         itemKey="status"
                                         initValue={row.status}
                                         pickDone={handleGetValue}
@@ -474,57 +441,27 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建人"
-                            itemKey="createuser"
-                            initValue={voucherData.createuser}
+                            itemShowName="creator"
+                            itemKey="creator"
+                            initValue={voucherData.creator}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="createuser"
+                            key="creator"
                             positionID={2}
                             rowIndex={-1}
                         />
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={307}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="创建日期"
-                            itemKey="createdate"
-                            initValue={voucherData.createdate}
+                            itemShowName="createDate"
+                            itemKey="createDate"
+                            initValue={voucherData.createDate}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="createdate"
-                            positionID={2}
-                            rowIndex={-1}
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <ScInput
-                            dataType={510}
-                            allowNull={true}
-                            isEdit={false}
-                            itemShowName="修改人"
-                            itemKey="modifyuser"
-                            initValue={voucherData.modifyuser}
-                            pickDone={() => { }}
-                            isBackendTest={false}
-                            key="modifyuser"
-                            positionID={2}
-                            rowIndex={-1}
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <ScInput
-                            dataType={307}
-                            allowNull={true}
-                            isEdit={false}
-                            itemShowName="更新日期"
-                            itemKey="modifydate"
-                            initValue={voucherData.modifydate}
-                            pickDone={() => { }}
-                            isBackendTest={false}
-                            key="modifydate"
+                            key="createDate"
                             positionID={2}
                             rowIndex={-1}
                         />
@@ -534,27 +471,57 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
                             dataType={510}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="确认人"
-                            itemKey="confirmuser"
-                            initValue={voucherData.confirmuser}
+                            itemShowName="modifier"
+                            itemKey="modifier"
+                            initValue={voucherData.modifier}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="confirmuser"
+                            key="modifier"
                             positionID={2}
                             rowIndex={-1}
                         />
                     </Grid>
                     <Grid item xs={2}>
                         <ScInput
-                            dataType={307}
+                            dataType={309}
                             allowNull={true}
                             isEdit={false}
-                            itemShowName="确认日期"
-                            itemKey="confirmdate"
-                            initValue={voucherData.confirmdate}
+                            itemShowName="modifyDate"
+                            itemKey="modifyDate"
+                            initValue={voucherData.modifyDate}
                             pickDone={() => { }}
                             isBackendTest={false}
-                            key="confirmdate"
+                            key="modifyDate"
+                            positionID={2}
+                            rowIndex={-1}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <ScInput
+                            dataType={510}
+                            allowNull={true}
+                            isEdit={false}
+                            itemShowName="confirmer"
+                            itemKey="confirmer"
+                            initValue={voucherData.confirmer}
+                            pickDone={() => { }}
+                            isBackendTest={false}
+                            key="confirmer"
+                            positionID={2}
+                            rowIndex={-1}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <ScInput
+                            dataType={309}
+                            allowNull={true}
+                            isEdit={false}
+                            itemShowName="confirmDate"
+                            itemKey="confirmDate"
+                            initValue={voucherData.confirmDate}
+                            pickDone={() => { }}
+                            isBackendTest={false}
+                            key="confirmDate"
                             positionID={2}
                             rowIndex={-1}
                         />
@@ -564,14 +531,14 @@ const EditLpaQuota = ({ isOpen, isNew, isModify, oriLQ, onCancel, onOk }) => {
             <DialogActions sx={{ m: 1 }}>
                 {isEdit
                     ? <>
-                        <Button color="error" onClick={onCancel} >取消</Button>
-                        <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddWO}>{isModify ? "保存" : "增加"}</Button>
+                        <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                        <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddPQ}>{t(isModify ? "save" : "add")}</Button>
                     </>
-                    : <Button variant="contained" onClick={onCancel} >返回</Button>
+                    : <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                 }
             </DialogActions>
         </Stack>
         : <Loader />
 };
 
-export default EditLpaQuota;
+export default EditPPEQuota;

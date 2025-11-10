@@ -8,7 +8,7 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import DocList from "../../../component/DocList/DocList";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 
-import EditTrainRecord from "./editTR";
+import EditTrainingRecord from "./editTR";
 import { reqGetTRList, reqGetTRDetail, reqDeleteTR, reqConfirmTR, reqUnConfirmTR } from "../../../api/trainingRecord";
 import { columns, generateTRConditions, trQueryFields, rowActionsDefine } from "./constructor";
 
@@ -182,7 +182,7 @@ const TrainingRecord = () => {
     const DiagContent = ({ content }) => {
         switch (content) {
             case 1:
-                return <EditTrainRecord
+                return <EditTrainingRecord
                     isOpen={diagStatus.isOpen}
                     oriTr={diagStatus.selectedTR}
                     isNew={diagStatus.isNew}
