@@ -25,7 +25,7 @@ import WizardRecipientsEdit from "./wizardRecipientsEdit";
 import WizardGenerate from "./wizardGenerate";
 import WizardReset from "./wizardReset";
 import { reqGetPeriodOps } from "../../../api/ppeQuota";
-import { reqWizardAddLD } from "../../../api/lpaIssueDoc";
+import { reqWizardAddLD } from "../../../api/ppeIssuanceForm";
 import { cloneDeep } from "lodash";
 
 const Paper = styled(MuiPaper)(spacing);

@@ -13,7 +13,7 @@ import {
 import { cloneDeep } from "lodash";
 import { message } from "mui-message";
 import { DeleteRowIcon, PrintIcon } from "../../../component/PubIcon/PubIcon";
-import dayjs from "../../../utils/myDayjs";
+import { dayjs, EpochTime } from "../../../i18n/dayjs";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../component/ScVoucher";
 import Loader from "../../../component/Loader/Loader";
 import ScInput from "../../../component/ScInput";
@@ -22,159 +22,123 @@ import store from "../../../store";
 import { MultiSortByArr } from "../../../utils/tools";
 import { PeriodStartandEnd } from "../../../storage/dataTypes";
 import { useReactToPrint } from "react-to-print";
-import { LDPrintRegFormA4 ,LDPrintDeliveryA4} from "./printTemp/printA4";
-
-import { reqAddLD, reqEditLD } from "../../../api/lpaIssueDoc";
+import { PPEIFPrintRegFormA4, PPEIFPrintDeliveryA4 } from "./printTemp/printA4";
+import { reqAddPPEIF, reqEditPPEIF } from "../../../api/ppeIssuanceForm";
 import { voucherRow, bodyColumns, headFiles } from "./constructor";
+import { generateVoucherErrors, checkVoucherErrors } from "../pub/pubFunction";
 
-//生成初始数据
-const getInitialValue = async (isNew, isModify, oriLd) => {
+// Generate initial data
+const getInitialValue = async (isNew, isModify, oriPPEIF) => {
     const { user } = store.getState();
     const { person, department } = user;
-    let newLd = {};
+    const currentTime = dayjs(new Date());
+    const currentDate = currentTime.startOf("day");
+    let newPPEIF = {};
 
-    if (isNew) {//直接新增单据
-        newLd = {
+    if (isNew) {// Add New
+        newPPEIF = {
             id: 0,
-            billnumber: "",
-            billdate: dayjs(new Date()).format("YYYYMMDD"),
+            billNumber: "",
+            billDate: currentDate,
             department: department,
             description: "",
             period: "month",
-            startdate: dayjs(new Date()).startOf("month").format("YYYYMMDD"),
-            enddate: dayjs(new Date()).endOf("month").format("YYYYMMDD"),
-            hfiles: [headFiles],
+            startDate: currentDate.startOf("month"),
+            endDate: currentDate.endOf("month"),
+            hFiles: [headFiles],
             body: [voucherRow],
-            sourcetype: "di",
+            sourceType: "DA",
             status: 0,
-            createuser: person,
-            createdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-            modifyuser: { id: 0, code: "", name: "" },
-            modifydate: dayjs(new Date()).format("YYYYMMDDHHmm"),
-            confirmuser: { id: 0, code: "", name: "" },
-            confirmdate: dayjs(new Date()).format("YYYYMMDDHHmm"),
+            creator: person,
+            createDate: currentTime,
+            modifier: { id: 0, code: "", name: "" },
+            modifyDate: EpochTime,
+            confirmer: { id: 0, code: "", name: "" },
+            confirmDate: EpochTime,
             dr: 0
         };
     } else {
-        if (!oriLd) {
+        if (!oriPPEIF) {
             return
         } else {
-            if (isModify) { //编辑
-                newLd = cloneDeep(oriLd);
-                newLd.createdate = dayjs(newLd.createdate).format("YYYYMMDDHHmm");
-                newLd.modifyuser = person;
-                newLd.modifydate = dayjs(newLd.modifydate).format("YYYYMMDDHHmm");
-                newLd.confirmuser = { id: 0, code: "", name: "" };
-                newLd.confirmdate = dayjs(newLd.confirmdate).format("YYYYMMDDHHmm");
-            } else {//查看
-                newLd = cloneDeep(oriLd);
-                newLd.createdate = dayjs(newLd.createdate).format("YYYYMMDDHHmm");
-                newLd.modifydate = dayjs(newLd.modifydate).format("YYYYMMDDHHmm");
-                newLd.confirmdate = dayjs(newLd.confirmdate).format("YYYYMMDDHHmm");
+            if (isModify) { // Edit
+                newPPEIF = cloneDeep(oriPPEIF);
+                newPPEIF.modifier = person;
+                newPPEIF.modifyDate = currentTime;
+            } else {// View
+                newPPEIF = cloneDeep(oriPPEIF);
             }
         }
     }
-    return newLd;
-};
-//生成错误信息
-const generateErrors = (rowNumber) => {
-    let voucherErrors = {
-        body: [],
-    }
-    //生成表体错误信息
-    for (let i = 0; i < rowNumber; i++) {
-        voucherErrors.body.push({});
-    }
-    return voucherErrors;
+    return newPPEIF;
 };
 
-//检查是否存在错误信息
-const checkVoucherErrors = (voucherErrors) => {
-    let number = 0;
-    //表头错误信息
-    for (let key in voucherErrors) {
-        if (key !== "body" && voucherErrors[key].isErr) {
-            number = number + 1;
-        }
-    }
-    //表体错误信息
-    voucherErrors.body.forEach((row) => {
-        for (let key in row) {
-            if (row[key].isErr) {
-                number = number + 1;
-            }
-        }
-    });
-    return number > 0;
-};
-
-const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => {
+// Add && Edit && View PPE Issuance Form
+const EditPPEIF = ({ isOpen, isNew, isModify, oriPPEIF, onCancel, onOk, t }) => {
     const [voucherData, setVoucherData] = useState((undefined));
     const [errors, setErrors] = useState(undefined);
     const isEdit = !(!isModify && !isNew);
-
     let printAreaRef = useRef();
     let printAreaRefb = useRef();
+
     useEffect(() => {
         async function initVoucher() {
-            const newLd = await getInitialValue(isNew, isModify, oriLd);
-            setVoucherData(newLd);
-            setErrors(generateErrors(newLd.body.length));
+            const newPPEIF = await getInitialValue(isNew, isModify, oriPPEIF);
+            setVoucherData(newPPEIF);
+            setErrors(generateVoucherErrors(newPPEIF.body.length));
         }
         if (isOpen) {
             initVoucher();
         }
-    }, [isOpen, isModify, oriLd, isNew]);
+    }, [isOpen, isModify, oriPPEIF, isNew]);
 
-    //获取值后的操作
+    // Get the passed data from the ScInput Component
     const handleGetValue = async (value, itemkey, positionID, rowIndex, errMsg) => {
         if (voucherData === undefined || !isEdit || !isOpen) {
             return
         }
-
-        //设置单据值
+        // Change the voucher data
         setVoucherData((prevState) => {
             const newData = cloneDeep(prevState);
             switch (positionID) {
-                case 0://修改表头字段 
-                    //如果修改的是周期字段
+                case 0:// Change the Voucher header 
+                    // If the field is "period"
                     if (itemkey === "period" && value !== prevState.period) {
                         const p = PeriodStartandEnd(value);
-                        newData.startdate = p.startDate;
-                        newData.enddate = p.endDate;
+                        newData.startDate = p.startDate;
+                        newData.endDate = p.endDate;
                     };
                     newData[itemkey] = value;
                     break;
-                case 1:
-                    //如果修改的是领用人字段
+                case 1: // Change the voucher body
+                    // If the field is "recipient"
                     if (itemkey === "recipient" && value.id !== prevState.body[rowIndex].recipient.id) {
-                        //获取岗位名称                     
-                        newData.body[rowIndex].opname = value.opname;
-                        //获取部门名称
-                        newData.body[rowIndex].deptname = value.deptname;
+                        // Get Position Name                     
+                        newData.body[rowIndex].positionName = value.positionName;
+                        // get Department Name
+                        newData.body[rowIndex].deptName = value.deptName;
                     }
 
-                    //如果修改的是劳保用品字段
-                    if (itemkey === "lp" && value.id !== prevState.body[rowIndex].lp.id) {
-                        //获取劳保用品编码                    
-                        newData.body[rowIndex].lpcode = value.code;
-                        //获取劳保用品规格型号
-                        newData.body[rowIndex].lpmodel = value.model;
-                        //获取劳保用品计量单位
-                        newData.body[rowIndex].lpunit = value.unit;
+                    // If the field is "PPE"
+                    if (itemkey === "ppe" && value.id !== prevState.body[rowIndex].ppe.id) {
+                        // Get PPE code                    
+                        newData.body[rowIndex].ppeCode = value.code;
+                        // Get PPE model
+                        newData.body[rowIndex].ppeModel = value.model;
+                        // Get PPE　ｕｎｉｔ
+                        newData.body[rowIndex].ppeUnit = value.unit;
                     }
                     newData.body[rowIndex][itemkey] = value;
                     break;
-                case 2:
+                case 2: //Change the voucher footer
                     newData[itemkey] = value;
                     break;
                 default:
                     break;
             }
-
             return newData;
         });
-        //设置错误信息
+        // Change the errors data
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
@@ -194,72 +158,62 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
         });
 
     };
-    //增加&修改单据
-    const handleAddLD = async () => {
-        const thisLD = cloneDeep(voucherData);
-        delete thisLD.createdate;
-        delete thisLD.modifydate;
-        delete thisLD.confirmdate;
+    // Add Or Edit PPE Issuance Form
+    const handleAddPPEIF = async () => {
+        const thisPPEIF = cloneDeep(voucherData);
+        delete thisPPEIF.createDate;
+        delete thisPPEIF.modifyDate;
+        delete thisPPEIF.confirmDate;
 
         if (isModify) {
-            const editRes = await reqEditLD(thisLD);
+            const editRes = await reqEditPPEIF(thisPPEIF);
             if (editRes.status) {
-                message.success("修改劳保用品发放单成功,单据编号:" + editRes.data.data.billnumber);
-            } else {
-                message.error("修改劳保用品发放单失败" + editRes.data.statusMsg);
+                message.success(t("modifySuccessful"));
+                onOk();
             }
         } else {
-            const addRes = await reqAddLD(thisLD);
+            const addRes = await reqAddPPEIF(thisPPEIF);
             if (addRes.status) {
-                message.success("新增劳保用品发放单成功,单据编号:" + addRes.data.data.billnumber);
-            } else {
-                message.error("新增劳保用品发放单失败" + addRes.data.statusMsg);
-            }
+                message.success(t("addSuccessful"));
+                onOk();
+            } 
         }
-        onOk();
     };
-    //增行
+    // Add body row
     const handleAddRow = () => {
-        //生成表体数据
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
-        //自动生成行号
+        // Automaticaly generate row number
         if (newVoucherData.body.length === 1) { //如果表体只有一行
-            newRow.rownumber = newVoucherData.body[0].rownumber + 10;
+            newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
-            newVoucherData.body.sort(MultiSortByArr([{ field: "rownumber", order: "asc" }]));
-            newRow.rownumber = newVoucherData.body[newVoucherData.body.length - 1].rownumber + 10;
-        }
-        //填写处理人、处理开始时间、处理结束时间
-        newRow.starttime = newVoucherData.starttime;
-        newRow.endtime = newVoucherData.endtime;
-        newRow.classhour = newVoucherData.classhour;
+            newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]));
+            newRow.rowNumber = newVoucherData.body[newVoucherData.body.length - 1].rowNumber + 10;
+        }       
         newVoucherData.body.push(newRow);
         setVoucherData(newVoucherData);
-        //生成错误信息数据
+        // Generate errors
         let newErrors = cloneDeep(errors);
         newErrors.body.push({});
         setErrors(newErrors);
     };
-    //删行
+    // Delete row
     const handleDeleteRow = (index, row) => {
         if (voucherData.body.length === 1) {
-            message.error("不能删除最后一行!");
+            message.error(t("cannotDeleteLastRow"));
             return
         }
         const newVoucherData = cloneDeep(voucherData);
         let newErrors = cloneDeep(errors);
-        if (isModify) {
-            //判断是否在编辑状态下新增的行
-            if (row.id === 0) {
-                newVoucherData.body.splice(index, 1);//新增的行直接删除掉
+        if (isModify) { // Define if the added row in an editing state
+            if (row.id === 0) { // If the id equal 0, the row was newly added, so delete it
+                newVoucherData.body.splice(index, 1);
                 newErrors.body.splice(index, 1);
-            } else {
-                newVoucherData.body[index].dr = 1;  //原有行修改删除标志
-                newErrors.body[index] = {}; //将删除掉的行所有错误信息归零
+            } else { // if the id not euqals 0, ite means the row has already been saved 
+                newVoucherData.body[index].dr = 1;  
+                newErrors.body[index] = {}; 
             }
-        } else {
-            //新增状态下直接删除行
+        } else { // In the added state, delete the row directly
             newVoucherData.body.splice(index, 1);
             newErrors.body.splice(index, 1);
         }
@@ -280,7 +234,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
         ? <>
             <Stack component="div" id="eidtED" sx={{ overflowX: "hidden", overflowY: "hidden", p: 2 }}>
                 <Stack component={"div"} id="voucherTitle" sx={{ display: "flex", justifyContent: "center", alignItems: "center", paddingBottom: 2 }}>
-                    <Typography variant="h3" component={"h3"}>劳保用品发放单</Typography>
+                    <Typography variant="h3" component={"h3"}>{t("ppeIssuanceForm")}</Typography>
                 </Stack>
                 <Stack component="div" id="voucherHead" sx={{ p: 2 }}>
                     <Grid container id="VoucherHeader" spacing={2}>
@@ -289,12 +243,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="单据编码"
-                                itemKey="billnumber"
-                                initValue={voucherData.billnumber}
+                                itemShowName="billNumber"
+                                itemKey="billNumber"
+                                initValue={voucherData.billNumber}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billnumber"
+                                key="billNumber"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -304,12 +258,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={306}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="单据日期"
-                                itemKey="billdate"
-                                initValue={voucherData.billdate}
+                                itemShowName="billDate"
+                                itemKey="billDate"
+                                initValue={voucherData.billDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="billdate"
+                                key="billDate"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -319,7 +273,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={520}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="发放部门"
+                                itemShowName="department"
                                 itemKey="department"
                                 initValue={voucherData.department}
                                 pickDone={handleGetValue}
@@ -334,7 +288,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={407}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="周期"
+                                itemShowName="period"
                                 itemKey="period"
                                 initValue={voucherData.period}
                                 pickDone={handleGetValue}
@@ -349,12 +303,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={306}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="起始日期"
-                                itemKey="startdate"
-                                initValue={voucherData.startdate}
+                                itemShowName="startDate"
+                                itemKey="startDate"
+                                initValue={voucherData.startDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="startdate"
+                                key="startDate"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -364,12 +318,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={306}
                                 allowNull={false}
                                 isEdit={isEdit}
-                                itemShowName="截至日期"
-                                itemKey="enddate"
-                                initValue={voucherData.enddate}
+                                itemShowName="endDate"
+                                itemKey="endDate"
+                                initValue={voucherData.endDate}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="enddate"
+                                key="endDate"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -379,12 +333,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={902}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="发放单附件"
-                                itemKey="hfiles"
-                                initValue={voucherData.hfiles}
+                                itemShowName="hFiles"
+                                itemKey="hFiles"
+                                initValue={voucherData.hFiles}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
-                                key="hfiles"
+                                key="hFiles"
                                 positionID={0}
                                 rowIndex={-1}
                             />
@@ -394,7 +348,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={405}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="状态"
+                                itemShowName="status"
                                 itemKey="status"
                                 initValue={voucherData.status}
                                 pickDone={handleGetValue}
@@ -409,9 +363,9 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={301}
                                 allowNull={true}
                                 isEdit={isEdit}
-                                itemShowName="说明"
+                                itemShowName="description"
                                 itemKey="description"
-                                placeholder={"请输入说明"}
+                                placeholder={"descriptionPlaceholder"}
                                 initValue={voucherData.description}
                                 pickDone={handleGetValue}
                                 isBackendTest={false}
@@ -426,15 +380,15 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                     bodyColumns={bodyColumns}
                     addRowAction={handleAddRow}
                     addRowVisible={isEdit}
-                    title="表体内容"
+                    title="detail"
                 >
                     <ScVoucherBodyRow >
                         {voucherData.body.map((row, index) => {
                             const delButtonEnabled = (!isEdit || (row.allowdelrow === 0));
                             return row.dr === 0
-                                ? (<tr key={"bodyrow" + row.rownumber}>
+                                ? (<tr key={"bodyrow" + row.rowNumber}>
                                     <TableCell variant="td">
-                                        <Tooltip title="删行" key={`rowDelete${index}`}>
+                                        <Tooltip title={t("deleteRow")} key={`rowDelete${index}`}>
                                             <span>
                                                 <IconButton size="small" sx={{ width: 40, height: 40 }} onClick={() => handleDeleteRow(index, row)} disabled={delButtonEnabled}>
                                                     <DeleteRowIcon color={!delButtonEnabled ? "error" : "transparent"} fontSize="small" />
@@ -447,12 +401,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={302}
                                             allowNull={false}
                                             isEdit={false}
-                                            itemShowName="行号"
-                                            itemKey="rownumber"
-                                            initValue={row.rownumber}
+                                            itemShowName="rowNumber"
+                                            itemKey="rowNumber"
+                                            initValue={row.rowNumber}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="rownumber"
+                                            key="rowNumber"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -462,7 +416,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={510}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="领用人"
+                                            itemShowName="recipient"
                                             itemKey="recipient"
                                             initValue={row.recipient}
                                             pickDone={handleGetValue}
@@ -477,12 +431,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="岗位"
-                                            itemKey="opname"
-                                            initValue={row.opname}
+                                            itemShowName="positionName"
+                                            itemKey="positionName"
+                                            initValue={row.positionName}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="opname"
+                                            key="positionName"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -492,12 +446,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="部门"
-                                            itemKey="deptname"
-                                            initValue={row.deptname}
+                                            itemShowName="deptName"
+                                            itemKey="deptName"
+                                            initValue={row.deptName}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="deptname"
+                                            key="deptName"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -507,12 +461,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="劳保用品编码"
-                                            itemKey="lpcode"
-                                            initValue={row.lpcode}
+                                            itemShowName="ppeCode"
+                                            itemKey="ppeCode"
+                                            initValue={row.ppeCode}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="lpcode"
+                                            key="ppeCode"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -522,12 +476,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={630}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="劳保用品"
-                                            itemKey="lp"
-                                            initValue={row.lp}
+                                            itemShowName="ppeName"
+                                            itemKey="ppe"
+                                            initValue={row.ppe}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="lp"
+                                            key="ppe"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -537,12 +491,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="规格型号"
-                                            itemKey="lpmodel"
-                                            initValue={row.lpmodel}
+                                            itemShowName="ppeModel"
+                                            itemKey="ppeModel"
+                                            initValue={row.ppeModel}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="lpmodel"
+                                            key="ppeModel"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -552,12 +506,12 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="计量单位"
-                                            itemKey="lpunit"
-                                            initValue={row.lpunit}
+                                            itemShowName="ppeUnit"
+                                            itemKey="ppeUnit"
+                                            initValue={row.ppeUnit}
                                             pickDone={handleGetValue}
                                             isBackendTest={false}
-                                            key="lpunit"
+                                            key="ppeUnit"
                                             positionID={1}
                                             rowIndex={index}
                                         />
@@ -567,7 +521,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={302}
                                             allowNull={false}
                                             isEdit={isEdit}
-                                            itemShowName="数量"
+                                            itemShowName="quantity"
                                             itemKey="quantity"
                                             initValue={row.quantity}
                                             pickDone={handleGetValue}
@@ -583,7 +537,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             allowNull={true}
                                             isOnSitePhoto={false}
                                             isEdit={isEdit}
-                                            itemShowName="附件"
+                                            itemShowName="files"
                                             itemKey="files"
                                             initValue={row.files}
                                             pickDone={handleGetValue}
@@ -598,7 +552,7 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={405}
                                             allowNull={true}
                                             isEdit={false}
-                                            itemShowName="状态"
+                                            itemShowName="status"
                                             itemKey="status"
                                             initValue={row.status}
                                             pickDone={handleGetValue}
@@ -613,18 +567,17 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                             dataType={301}
                                             allowNull={true}
                                             isEdit={isEdit}
-                                            itemShowName="说明"
+                                            itemShowName="description"
                                             itemKey="description"
                                             initValue={row.description}
                                             pickDone={handleGetValue}
-                                            placeholder="请输入说明"
+                                            placeholder="descriptionPlaceholder"
                                             isBackendTest={false}
                                             key="description"
                                             positionID={1}
                                             rowIndex={index}
                                         />
                                     </td>
-
                                 </tr>
                                 )
                                 : null
@@ -638,57 +591,27 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建人"
-                                itemKey="createuser"
-                                initValue={voucherData.createuser}
+                                itemShowName="creator"
+                                itemKey="creator"
+                                initValue={voucherData.creator}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="createuser"
+                                key="creator"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="创建日期"
-                                itemKey="createdate"
-                                initValue={voucherData.createdate}
+                                itemShowName="createDate"
+                                itemKey="createDate"
+                                initValue={voucherData.createDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="createdate"
-                                positionID={2}
-                                rowIndex={-1}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={510}
-                                allowNull={true}
-                                isEdit={false}
-                                itemShowName="修改人"
-                                itemKey="modifyuser"
-                                initValue={voucherData.modifyuser}
-                                pickDone={() => { }}
-                                isBackendTest={false}
-                                key="modifyuser"
-                                positionID={2}
-                                rowIndex={-1}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <ScInput
-                                dataType={307}
-                                allowNull={true}
-                                isEdit={false}
-                                itemShowName="更新日期"
-                                itemKey="modifydate"
-                                initValue={voucherData.modifydate}
-                                pickDone={() => { }}
-                                isBackendTest={false}
-                                key="modifydate"
+                                key="createDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -698,27 +621,57 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                                 dataType={510}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认人"
-                                itemKey="confirmuser"
-                                initValue={voucherData.confirmuser}
+                                itemShowName="modifier"
+                                itemKey="modifier"
+                                initValue={voucherData.modifier}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmuser"
+                                key="modifier"
                                 positionID={2}
                                 rowIndex={-1}
                             />
                         </Grid>
                         <Grid item xs={2}>
                             <ScInput
-                                dataType={307}
+                                dataType={309}
                                 allowNull={true}
                                 isEdit={false}
-                                itemShowName="确认日期"
-                                itemKey="confirmdate"
-                                initValue={voucherData.confirmdate}
+                                itemShowName="modifyDate"
+                                itemKey="modifyDate"
+                                initValue={voucherData.modifyDate}
                                 pickDone={() => { }}
                                 isBackendTest={false}
-                                key="confirmdate"
+                                key="modifyDate"
+                                positionID={2}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={510}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="confirmer"
+                                itemKey="confirmer"
+                                initValue={voucherData.confirmer}
+                                pickDone={() => { }}
+                                isBackendTest={false}
+                                key="confirmer"
+                                positionID={2}
+                                rowIndex={-1}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <ScInput
+                                dataType={309}
+                                allowNull={true}
+                                isEdit={false}
+                                itemShowName="confirmDate"
+                                itemKey="confirmDate"
+                                initValue={voucherData.confirmDate}
+                                pickDone={() => { }}
+                                isBackendTest={false}
+                                key="confirmDate"
                                 positionID={2}
                                 rowIndex={-1}
                             />
@@ -728,17 +681,17 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
                 <DialogActions sx={{ m: 1 }}>
                     {isEdit
                         ? <>
-                            <Button color="error" onClick={onCancel} >取消</Button>
-                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddLD}>{isModify ? "保存" : "增加"}</Button>
+                            <Button color="error" onClick={onCancel} >{t("cancel")}</Button>
+                            <Button variant="contained" disabled={checkVoucherErrors(errors)} onClick={handleAddPPEIF}>{t(isModify ? "save" : "add")}</Button>
                         </>
-                        :<>
+                        : <>
                             <div style={{ display: "none" }}>
-                                <LDPrintRegFormA4 voucherData={voucherData} ref={printAreaRef} />
-                                <LDPrintDeliveryA4 voucherData={voucherData} ref={printAreaRefb}/>
+                                <PPEIFPrintRegFormA4 voucherData={voucherData} ref={printAreaRef} t={t} />
+                                <PPEIFPrintDeliveryA4 voucherData={voucherData} ref={printAreaRefb} t={t} />
                             </div>
-                            <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrintDeliveryClick}>打印出库单</Button>
-                            <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrintClick}>打印签字表</Button>
-                            <Button variant="contained" onClick={onCancel} >返回</Button>
+                            <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrintDeliveryClick}>{t("printDeliveryNote")}</Button>
+                            <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrintClick}>{t("printSinatureForm")}</Button>
+                            <Button variant="contained" onClick={onCancel} >{t("back")}</Button>
                         </>
                     }
                 </DialogActions>
@@ -748,4 +701,4 @@ const EditLpaIssueDoc = ({ isOpen, isNew, isModify, oriLd, onCancel, onOk }) => 
     );
 };
 
-export default EditLpaIssueDoc;
+export default EditPPEIF;

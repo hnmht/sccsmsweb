@@ -6,7 +6,7 @@ import PageTitle from "../../../component/PageTitle/PageTitle";
 import ScReport from "../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 
-import { reqGetLDReport } from "../../../api/lpaIssueDoc";
+import { reqGetLDReport } from "../../../api/ppeIssuanceForm";
 import { generateReportDefaultCons,generateReportFields, defaultHideCol, columnDef } from "./constructor";
 
 const LpaQuery = () => {

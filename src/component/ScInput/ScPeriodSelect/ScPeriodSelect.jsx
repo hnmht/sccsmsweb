@@ -14,11 +14,11 @@ import { ErrorIcon } from "../../PubIcon/PubIcon";
 const zeroValue = "month";
 //407 Seacloud Period Select component
 const ScPeriodSelect = (props) => {
-    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue=zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
+    const { positionID, rowIndex, allowNull, isEdit, itemShowName, itemKey, initValue = zeroValue, pickDone, isBackendTest, backendTestFunc } = props;
     const [fieldValue, setFieldValue] = useState(initValue);
     const [errInfo, setErrInfo] = useState({ isErr: false, msg: "" });
     const id = `407_${itemKey}_${positionID}_${rowIndex}`;
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         function updateInitvalue() {
@@ -57,7 +57,7 @@ const ScPeriodSelect = (props) => {
     return (
         <>
             {positionID !== 1
-                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{itemShowName}</InputLabel>
+                ? <InputLabel htmlFor={id} sx={{ color: allowNull ? "primary" : "blue" }}>{t(itemShowName)}</InputLabel>
                 : null
             }
             <FormControl id={id} fullWidth sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", alignContent: "space-between" }}>

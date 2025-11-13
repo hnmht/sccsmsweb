@@ -100,46 +100,46 @@ export const PeriodDisplay = new Map([
     ["year", "年"],
 ]);
 
-//周期开始日和截止日
+// Get Period's StartDate and EndDate
 export const PeriodStartandEnd = (period) => {
-    //获取当前日期
-    const thisDay = dayjs(new Date()).date();
-    const thisMonth = dayjs(new Date()).month();
+    const currentTime = dayjs(new Date());
+    const thisDay = currentTime.date();
+    const thisMonth = currentTime.month();
     switch (period) {
-        case "month"://月
-            return { startDate: dayjs(new Date()).startOf("month").format("YYYYMMDD"), endDate: dayjs(new Date()).endOf("month").format("YYYYMMDD") };
-        case "day"://日
-            return { startDate: dayjs(new Date()).format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYYMMDD") };
-        case "week"://周
-            return { startDate: dayjs(new Date()).startOf("week").format("YYYYMMDD"), endDate: dayjs(new Date()).endOf("week").format("YYYYMMDD") };
-        case "meadow"://旬           
+        case "month":
+            return { startDate: currentTime.startOf("month"), endDate: currentTime.endOf("month") };
+        case "day":
+            return { startDate: currentTime.startOf("day"), endDate: currentTime.endOf("day") };
+        case "week":
+            return { startDate: currentTime.startOf("week"), endDate: currentTime.endOf("week") };
+        case "tenDayPeriod":
             if (thisDay <= 10) {
-                return { startDate: dayjs(new Date()).startOf("month").format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYYMM") + "10" };
+                return { startDate: currentTime.startOf("month"), endDate: currentTime.startOf("month").add(9, "day") };
             } else {
                 if (thisDay <= 20) {
-                    return { startDate: dayjs(new Date()).format("YYYYMM") + "11", endDate: dayjs(new Date()).format("YYYYMM") + "20" };
+                    return { startDate: currentTime.startOf("month").add(10, "day"), endDate: currentTime.startOf("month").add(19, "day") };                
                 } else {
-                    return { startDate: dayjs(new Date()).format("YYYYMM") + "21", endDate: dayjs(new Date()).endOf("month").format("YYYYMMDD") };
+                    return { startDate: currentTime.startOf("month").add(20, "day"), endDate: currentTime.endOf("month") };
                 }
             }
-        case "halfmoon": //半月
+        case "halfMonth":
             if (thisDay <= 15) {
-                return { startDate: dayjs(new Date()).startOf("month").format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYYMM") + "15" };
+                return { startDate: currentTime.startOf("month"), endDate: currentTime.startOf("month").add(14, "day") };
             } else {
-                return { startDate: dayjs(new Date()).format("YYYYMM") + "16", endDate: dayjs(new Date()).endOf("month").format("YYYYMMDD") };
+                return { startDate: currentTime.startOf("month").add(15, "day"), endDate: currentTime.endOf("month") };
             }
-        case "quarter": //季度
-            return { startDate: dayjs(new Date()).startOf("quarter").format("YYYYMMDD"), endDate: dayjs(new Date()).endOf("quarter").format("YYYYMMDD") };
-        case "halfayear": //半年
+        case "quarter":
+            return { startDate: currentTime.startOf("quarter"), endDate: currentTime.endOf("quarter") };
+        case "halfAYear":
             if (thisMonth <= 5) {
-                return { startDate: dayjs(new Date()).startOf("year").format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYY") + "0630" };
+                return { startDate: currentTime.startOf("year"), endDate: currentTime.startOf("year").add(5, "month").endOf("month") };
             } else {
-                return { startDate: dayjs(new Date()).format("YYYY") + "0701", endDate: dayjs(new Date()).endOf("year").format("YYYYMMDD") };
+                return { startDate: currentTime.startOf("year").add(6, "month"), endDate: currentTime.endOf("year") };
             }
         case "year":
-            return { startDate: dayjs(new Date()).startOf("year").format("YYYYMMDD"), endDate: dayjs(new Date()).endOf("year").format("YYYYMMDD") };
+            return { startDate: currentTime.startOf("year"), endDate: currentTime.endOf("year") };
         default:
-            return { startDate: dayjs(new Date()).format("YYYYMMDD"), endDate: dayjs(new Date()).format("YYYYMMDD") };
+            return { startDate: currentTime.startOf("day"), endDate: currentTime.endOf("day") };
     };
 };
 

@@ -37,9 +37,9 @@ const TaughtLessons = Loadable(lazy(() => import("./pages/protected/taughtLesson
 const ReceivedTraining = Loadable(lazy(() => import("./pages/protected/receivedTraining/receivedTraining"))); // Recvied Training Report
 // Personal Protective Equipment
 const PPEQuota = Loadable(lazy(() => import("./pages/protected/ppeQuota/ppeQuota"))); // Personal Protective Equipment (Position) Quota
-const LpaWizard = Loadable(lazy(() => import("./pages/protected/lpaWizard/lpaWizard"))); //发放向导
-const LpaIssueDoc = Loadable(lazy(() => import("./pages/protected/lpaIssueDoc/lpaIssueDoc"))); //发放单
-const LpaQuery = Loadable(lazy(() => import("./pages/protected/lpaQuery/lpaQuery"))); //发放查询
+const PPEIssuanceWizard = Loadable(lazy(() => import("./pages/protected/ppeWizard/ppeWizard"))); // PPE Issuance Wizard
+const PPEIssuanceForm = Loadable(lazy(() => import("./pages/protected/ppeIssuanceForm/ppeIssuanceForm"))); // PPE Issuance Form 
+const PPEReport = Loadable(lazy(() => import("./pages/protected/ppeReport/ppeReport"))); // PPE Issuance Report
 // Msster Data
 const Department = Loadable(lazy(() => import("./pages/protected/department/department"))); // Department
 const Position = Loadable(lazy(() => import("./pages/protected/position/position"))); // Position
@@ -173,16 +173,16 @@ const routes = [
                 element: <PPEQuota />
             },
             {
-                path: "/private/ppe/issuedvoucher",
-                element: <LpaIssueDoc />
+                path: "/private/ppe/ppeIssuanceForm",
+                element: <PPEIssuanceForm />
             },
             {
                 path: "/private/ppe/issuedquery",
-                element: <LpaQuery />
+                element: <PPEReport />
             },
             {
                 path: "/private/ppe/wizard",
-                element: <LpaWizard />
+                element: <PPEIssuanceWizard />
             },
             {
                 path: "/private/masterData/department",
