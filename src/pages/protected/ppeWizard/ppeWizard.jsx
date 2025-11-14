@@ -8,94 +8,92 @@ import {
 } from "@mui/material";
 import { spacing } from "@mui/system";
 import styled from "@emotion/styled";
-import { message } from "mui-message";
-
+import { useTranslation } from "react-i18next";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import { Divider } from "../../../component/ScMui/ScMui";
 
 import store from "../../../store";
 import useContentHeight from "../../../hooks/useContentHeight";
-import dayjs from "../../../utils/myDayjs";
+import { dayjs } from "../../../i18n/dayjs";
 import { MultiSortByArr } from "../../../utils/tools";
 
 import { steps } from "./constructor";
 import WizardParamsEdit from "./wizardParamsEdit";
-import WizardOPsEdit from "./wizardOPsEdit";
+import WizardPositionsEdit from "./wizardPositionsEdit";
 import WizardRecipientsEdit from "./wizardRecipientsEdit";
 import WizardGenerate from "./wizardGenerate";
 import WizardReset from "./wizardReset";
-import { reqGetPeriodOps } from "../../../api/ppeQuota";
-import { reqWizardAddLD } from "../../../api/ppeIssuanceForm";
+import { reqGetPeriodPositions } from "../../../api/ppeQuota";
+import { reqWizardAddPPEIF } from "../../../api/ppeIssuanceForm";
 import { cloneDeep } from "lodash";
 
 const Paper = styled(MuiPaper)(spacing);
-//初始化向导参数
-const getInitValue = () => {
+// Generate Wizard Options
+const generateWizardOptions = () => {
     const { user } = store.getState();
     const { person, department } = user;
+    const currentTime = dayjs(new Date());
     let params = {
-        billdate: dayjs(new Date()).format("YYYYMMDD"),
+        billDate: currentTime.startOf("day"),
         department: department,
         description: "",
         period: "month",
-        startdate: dayjs(new Date()).startOf("month").format("YYYYMMDD"),
-        enddate: dayjs(new Date()).endOf("month").format("YYYYMMDD"),
-        createuser: person,
-        generationtype: 0,
+        startDate: currentTime.startOf("month"),
+        endDate: currentTime.endOf("month"),
+        creator: person,
+        generationType: 0,
     }
     return params;
 };
 
-// 劳保用品发放向导
-const LpaWizard = () => {
+// Wizard from Issuing PPE
+const PPEWizard = () => {
     const height = useContentHeight();
     const [activeStep, setActiveStep] = useState(0);
     const [params, setParams] = useState(undefined);
-    const [ops, setOps] = useState([]);
+    const [positions, setPositions] = useState([]);
     const [selectedOps, setSelectedOps] = useState([]);
     const [recipients, setRecipients] = useState([]);
     const [voucherNumbers, setVoucherNumbers] = useState([]);
     const [tips, setTips] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const initParams = () => {
-            setParams(getInitValue());
+            setParams(generateWizardOptions());
         };
         initParams();
     }, []);
 
-    //编辑参数页点击下一步
+    // Actions after click the nextStep button in the "Define Parameters" step
     const handleParamsNext = useCallback(async (value) => {
-        //从服务器请求符合条件的岗位列表
-        const opsRes = await reqGetPeriodOps({ period: value.period });
-        let newOPs = [];
-        if (opsRes.status) {
-            newOPs = opsRes.data.data.ops;
-        } else {
-            message.warning("获取岗位列表错误:" + opsRes.data.statusMsg);
-            return
+        // Request Positions from backend by period
+        const positionsRes = await reqGetPeriodPositions({ period: value.period });
+        let newPositions = [];
+        if (positionsRes.status) {
+            newPositions = positionsRes.data.positions;
         }
-        setOps(newOPs);
+        setPositions(newPositions);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setParams(value);
     }, []);
 
-    //编辑岗位页点击下一步
-    const handleOpsNext = useCallback((value) => {
+    // Actions after click the nextStep button in the "Select Positions" step
+    const handlerPositonsNext = useCallback((value) => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setSelectedOps(value);
     }, []);
 
-    //编辑人员页面点击下一步
+    // Actions after click the nextStep button in the "Select Recipients" step
     const handleRecipientsNext = useCallback((value) => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setRecipients(value);
     }, []);
-    //生成发放单按钮点击下一步
+    // Actions after click the nextStep button in the "Generate Voucher" step
     const handleGenerate = async (value) => {
         let newRs = cloneDeep(recipients);
-        newRs.sort(MultiSortByArr([{ field: "deptid", order: "asc" }, { field: "op_id", order: "asc" }])); 
-        const wizardRes = await reqWizardAddLD({
+        newRs.sort(MultiSortByArr([{ field: "deptID", order: "asc" }, { field: "positionID", order: "asc" }]));
+        const wizardRes = await reqWizardAddPPEIF({
             params: params,
             recipients: newRs
         });
@@ -103,54 +101,56 @@ const LpaWizard = () => {
         let resTips = "";
 
         if (wizardRes.status) {
-            resTips = "劳保用品发放向导生成发放单成功!";
-            vNumbers = wizardRes.data.data.vouchernumbers;
+            resTips = "generatePPEIFSuccessful";
+            vNumbers = wizardRes.data.vouchernumbers;
         } else {
-            resTips = "劳保用品发放向导生成发放单失败!" + wizardRes.data.statusMsg;
+            resTips = "generatePPEIFFailed";
         }
-
         setTips(resTips);
         setVoucherNumbers(vNumbers);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
     };
 
-    //上一步
+    // Actions after click the previousStep button
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-    //重新生成
+    // Actions after click the GenerateMore button
     const handleReset = () => {
-        setParams(getInitValue);
-        setOps([]);
+        setParams(generateWizardOptions);
+        setPositions([]);
         setSelectedOps([]);
         setRecipients([]);
         setActiveStep(0);
     };
 
-    //对话框显示内容组件
+    // Display content in Step
     const StepContent = ({ step }) => {
         switch (step) {
             case 0:
                 return <WizardParamsEdit
                     initParams={params}
                     nextAction={handleParamsNext}
+                    t={t}
                 />
             case 1:
-                return <WizardOPsEdit
-                    allOps={ops}
+                return <WizardPositionsEdit
+                    allOps={positions}
                     initOps={selectedOps}
-                    nextAction={handleOpsNext}
+                    nextAction={handlerPositonsNext}
                     backAction={handleBack}
+                    t={t}
                     height={height - 40}
                 />;
             case 2:
                 return <WizardRecipientsEdit
                     initRecipients={recipients}
-                    ops={selectedOps}
+                    positions={selectedOps}
                     activeStep={step}
                     nextAction={handleRecipientsNext}
                     backAction={handleBack}
+                    t={t}
                     height={height - 40}
                 />;
             case 3:
@@ -160,6 +160,7 @@ const LpaWizard = () => {
                     activeStep={step}
                     nextAction={handleGenerate}
                     backAction={handleBack}
+                    t={t}
                     height={height - 40}
                 />;
             case 4:
@@ -169,6 +170,7 @@ const LpaWizard = () => {
                     voucherNumbers={voucherNumbers}
                     resetAction={handleReset}
                     backAction={handleBack}
+                    t={t}
                     height={height - 40}
                 />;
             default:
@@ -178,7 +180,7 @@ const LpaWizard = () => {
 
     return (
         <>
-            <PageTitle pageName="劳保用品发放向导" displayHelp={true} helpUrl="/helps/lpaWizard" />
+            <PageTitle pageName={t("MenuPPEWizard")} displayHelp={false} helpUrl="#" />
             <Divider my={2} />
             <Paper sx={{ width: '100%', minHeight: height, overflow: 'auto', display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <Box sx={{ width: "90%", height: 32, mt: 4 }}>
@@ -188,7 +190,7 @@ const LpaWizard = () => {
                             const labelProps = {};
                             return (
                                 <Step key={label} {...stepProps}>
-                                    <StepLabel {...labelProps}>{label}</StepLabel>
+                                    <StepLabel {...labelProps}>{t(label)}</StepLabel>
                                 </Step>
                             );
                         })}
@@ -197,31 +199,9 @@ const LpaWizard = () => {
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: height - 40, width: "100%" }}>
                     <StepContent step={activeStep} />
                 </Box>
-                {/* <Box sx={{ width: "100%" }}>
-                    {activeStep === steps.length
-                        ? (<Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                            <Box sx={{ flex: '1 1 auto' }} />
-                            <Button variant="contained" onClick={handleReset}>重置</Button>
-                        </Box>)
-                        : (<Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                            <Button
-                                variant="contained"
-                                disabled={activeStep === 0}
-                                onClick={handleBack}
-                                sx={{ mr: 1 }}
-                            >
-                                上一步
-                            </Button>
-                            <Box sx={{ flex: '1 1 auto' }} />
-                            <Button variant="contained" onClick={handleNext}>
-                                {activeStep === steps.length - 1 ? '完成' : '下一步'}
-                            </Button>
-                        </Box>)
-                    }
-                </Box> */}
             </Paper>
         </>
     );
 };
 
-export default LpaWizard;
+export default PPEWizard;

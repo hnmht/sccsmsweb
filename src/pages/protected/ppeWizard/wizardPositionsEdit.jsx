@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import { notObj, intersectionObj, unionObj } from "./constructor";
 
-const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
+//  Wizard step for Edit Positons
+const WizardPositionsEdit = ({ allOps, initOps, backAction, nextAction, t, height }) => {
     const [checked, setChecked] = useState([]);
     const [selectedOps, setSelectedOps] = useState(initOps);
     const waitOps = notObj(allOps, selectedOps);
@@ -31,19 +32,20 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
         setChecked(newChecked);
     };
 
-    //向右选择按钮
+    // Actions after click right button 
     const handleCheckedRight = () => {
         setSelectedOps(selectedOps.concat(leftChecked));
         setChecked(notObj(checked, leftChecked));
     };
 
-    //向左取消选择按钮
+    // Actions after click left button
     const handleCheckedLeft = () => {
         setSelectedOps(notObj(selectedOps, rightChecked));
         setChecked(notObj(checked, rightChecked));
     };
     const numberOfChecked = (items) => intersectionObj(checked, items).length;
-    //全选
+
+    // Actions after Select all Items
     const handleToggleAll = (items) => () => {
         if (numberOfChecked(items) === items.length) {
             setChecked(notObj(checked, items));
@@ -51,8 +53,8 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
             setChecked(unionObj(checked, items));
         }
     };
-    //岗位列表
-    const customList = (title, items) => (
+    // Position List
+    const positionList = (title, items) => (
         <Card sx={{ display: "flex", flexDirection: "column", width: "100%", height: height - 64 }}>
             <CardHeader
                 sx={{ paddingTop: 2, paddingBottom: 2 }}
@@ -67,8 +69,8 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
                         }}
                     />
                 }
-                title={title}
-                subheader={`${numberOfChecked(items)}/${items.length} 已选择`}
+                title={t(title)}
+                subheader={`${numberOfChecked(items)}/${items.length} ${t("selected")}`}
             />
             <Divider />
             <List
@@ -106,7 +108,7 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
     return (
         <>
             <Box sx={{ width: "90%", display: "flex", flexDirection: "row", flex: 1, marginTop: 4, height: height }} >
-                <Box sx={{ width: "40%", height: "100%" }}>{customList("待选岗位", waitOps)}</Box>
+                <Box sx={{ width: "40%", height: "100%" }}>{positionList("unSelectedPositions", waitOps)}</Box>
                 <Box sx={{ width: "20%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                     <Button
                         sx={{ my: 2 }}
@@ -130,7 +132,7 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
                         &lt;
                     </Button>
                 </Box>
-                <Box sx={{ width: "40%", height: "100%" }}>{customList("已选岗位", selectedOps)}</Box>
+                <Box sx={{ width: "40%", height: "100%" }}>{positionList("selectedPositions", selectedOps)}</Box>
             </Box>
             <Box sx={{ width: "100%", height: 48, paddingBottom: 2, paddingRight: 2, paddingLeft: 2 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -139,11 +141,11 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
                         onClick={backAction}
                         sx={{ mr: 1 }}
                     >
-                        上一步
+                        {t("previousStep")}
                     </Button>
                     <Box sx={{ flex: '1 1 auto' }} />
                     <Button variant="contained" onClick={() => nextAction(selectedOps)} disabled={selectedOps.length === 0}>
-                        下一步
+                        {t("nextStep")}
                     </Button>
                 </Box>
             </Box>
@@ -151,4 +153,4 @@ const WizardOPsEdit = ({ allOps, initOps, backAction, nextAction, height }) => {
     );
 };
 
-export default memo(WizardOPsEdit);
+export default memo(WizardPositionsEdit);

@@ -75,7 +75,7 @@ export function reqGetPPEQuotaDetail(data, isLoading = true) {
 }
 
 // Get the list of all position that have PPE Quotas within the same period
-export function reqGetPeriodOps(data, isLoading = true) {
+export function reqGetPeriodPositions(data, isLoading = true) {
     return request({
         url: "/ppeq/positions",
         method: 'post',

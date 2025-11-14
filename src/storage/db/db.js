@@ -356,7 +356,7 @@ export const GetCSACacheByCategoryId = async (categoryID) => {
     return await db["csa"].where("csc.id").equals(categoryID).toArray();
 };
 // Get Person list based on Postion ID
-export const GetPersonsWithOps = async (positionID) => {
+export const GetPersonsWithPositions = async (positionID) => {
     let persons = await db["person"].where("positionID").anyOf(positionID).and(person => person.status === 0).toArray();
     const decryptPersons = await decryptDataArr(persons);
     return decryptPersons;

@@ -9,8 +9,10 @@ import { cloneDeep } from "lodash";
 import { PeriodStartandEnd } from "../../../storage/dataTypes";
 import ScInput from "../../../component/ScInput";
 import GenerationType from "./generationType";
-import { checkVoucherNoBodyErrors } from "../pub";
-const WizardParamsEdit = ({ initParams, nextAction }) => {
+import { checkVoucherNoBodyErrors } from "../pub/pubFunction";
+
+// Edit Wizard Parameters
+const WizardParamsEdit = ({ initParams, nextAction, t }) => {
     const [dataParams, setDataParams] = useState(undefined);
     const [errors, setErrors] = useState({});
 
@@ -18,18 +20,18 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
         setDataParams(initParams);
     }, [initParams]);
 
-    //获取值后的操作
+    // Get the Passed data from the ScInput components
     const handleGetValue = useCallback((value, itemkey, positionID, rowIndex, errMsg) => {
-        //设置单据值
+        // Change dataParams
         setDataParams((prevState) => {
             const newData = cloneDeep(prevState);
             switch (positionID) {
-                case 0://修改表头字段 
-                    //如果修改的是周期字段
+                case 0:
+                    // If the "period" field is modified, then Change "startDate" and "endDate" fields
                     if (itemkey === "period" && value !== prevState.period) {
                         const p = PeriodStartandEnd(value);
-                        newData.startdate = p.startDate;
-                        newData.enddate = p.endDate;
+                        newData.startDate = p.startDate;
+                        newData.endDate = p.endDate;
                     };
                     newData[itemkey] = value;
                     break;
@@ -44,10 +46,7 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
             }
             return newData;
         });
-
-
-
-        //设置错误信息
+        // Change errors
         setErrors((prevState) => {
             let newErrors = cloneDeep(prevState);
             switch (positionID) {
@@ -75,13 +74,13 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                         <ScInput
                             dataType={306}
                             allowNull={false}
-                            true={true}
-                            itemShowName="单据日期"
-                            itemKey="billdate"
-                            initValue={dataParams.billdate}
+                            isEdit={true}
+                            itemShowName="billDate"
+                            itemKey="billDate"
+                            initValue={dataParams.billDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="billdate"
+                            key="billDate"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -90,8 +89,8 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                         <ScInput
                             dataType={520}
                             allowNull={false}
-                            true={true}
-                            itemShowName="发放部门"
+                            isEdit={true}
+                            itemShowName="department"
                             itemKey="department"
                             initValue={dataParams.department}
                             pickDone={handleGetValue}
@@ -105,8 +104,8 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                         <ScInput
                             dataType={407}
                             allowNull={false}
-                            true={true}
-                            itemShowName="周期"
+                            isEdit={true}
+                            itemShowName="period"
                             itemKey="period"
                             initValue={dataParams.period}
                             pickDone={handleGetValue}
@@ -120,13 +119,13 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                         <ScInput
                             dataType={306}
                             allowNull={false}
-                            true={true}
-                            itemShowName="起始日期"
-                            itemKey="startdate"
-                            initValue={dataParams.startdate}
+                            isEdit={true}
+                            itemShowName="startDate"
+                            itemKey="startDate"
+                            initValue={dataParams.startDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="startdate"
+                            key="startDate"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -136,12 +135,12 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                             dataType={306}
                             allowNull={false}
                             isEdit={true}
-                            itemShowName="截至日期"
-                            itemKey="enddate"
-                            initValue={dataParams.enddate}
+                            itemShowName="endDate"
+                            itemKey="endDate"
+                            initValue={dataParams.endDate}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="enddate"
+                            key="endDate"
                             positionID={0}
                             rowIndex={-1}
                         />
@@ -151,9 +150,9 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                             dataType={301}
                             allowNull={true}
                             isEdit={true}
-                            itemShowName="说明"
+                            itemShowName="description"
                             itemKey="description"
-                            placeholder={"请输入说明"}
+                            placeholder={"descriptionPlaceholder"}
                             initValue={dataParams.description}
                             pickDone={handleGetValue}
                             isBackendTest={false}
@@ -166,29 +165,28 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                         <GenerationType
                             allowNull={true}
                             isEdit={true}
-                            itemShowName="说明"
-                            itemKey="generationtype"
-                            placeholder={"请选择发放单生成方式"}
-                            initValue={dataParams.generationtype}
+                            itemShowName="generationType"
+                            itemKey="generationType"
+                            placeholder={"chooseType"}
+                            initValue={dataParams.generationType}
                             pickDone={handleGetValue}
                             isBackendTest={false}
-                            key="generationtype"
+                            key="generationType"
                             positionID={0}
                             rowIndex={-1}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="h5">注意:</Typography>
+                        <Typography variant="h5">{t("description")}:</Typography>
                         <Typography variant="h6" color={"warning"} pt={2}>
-                            1、“定义参数”步骤中的"周期"项目,决定了“选择岗位”步骤中所能选择的岗位,系统会将已经建立了“岗位定额”且岗位定额"周期"项目和本界面"周期"相同的岗位列示出来供选择,不符合条件的岗位不会包含在列表中.
+                            {t("ppeWizardDescription1")}
                         </Typography>
                         <Typography variant="h6" pt={2}>
-                            2、“选择岗位”步骤中所选择的岗位,决定了“选择人员”步骤中所能选择的人员,系统将列出所有状态为“在用”且“岗位”栏目符合条件的人员,如果在“用户管理”功能中没有设置岗位,则人员不会出现在待选界面中.
+                            {t("ppeWizardDescription2")}
                         </Typography>
                         <Typography variant="h6" color={"warning"} pt={2}>
-                            3、本向导生成的单据可以在“劳保-发放单”功能中进行查看(打印)、编辑、删除、确认、取消确认.
+                            {t("ppeWizardDescription3")}
                         </Typography>
-
                     </Grid>
                 </Grid>
             </Box>
@@ -196,7 +194,7 @@ const WizardParamsEdit = ({ initParams, nextAction }) => {
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto' }} />
                     <Button variant="contained" onClick={() => nextAction(dataParams)} disabled={checkVoucherNoBodyErrors(errors)}>
-                        下一步
+                        {t("nextStep")}
                     </Button>
                 </Box>
             </Box>

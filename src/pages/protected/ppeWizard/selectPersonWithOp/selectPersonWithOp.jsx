@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+/* import { useState, memo } from "react";
 import {
     IconButton,
     Dialog,
@@ -6,12 +6,12 @@ import {
 } from "@mui/material";
 import { GroupAddIcon } from "../../../../component/PubIcon/PubIcon";
 import PersonPicker from "./PersonPicker";
-import { transOpsToOpIds } from "./tableConstructor";
+import { convertPositionsToIDs } from "./tableConstructor";
 
 const SelectPersonWithOp = (props) => {
-    const { ops = [],  title = "选择人员", onOk } = props;
+    const { positions = [],  title = "选择人员", onOk } = props;
     const [dialogOpen, setDialogOpen] = useState(false);
-    const opIds = transOpsToOpIds(ops);
+    const opIds = convertPositionsToIDs(positions);
 
     //关闭选择dialog
     const handleDiagClose = () => {
@@ -52,5 +52,5 @@ const SelectPersonWithOp = (props) => {
     );
 };
 
-export default memo(SelectPersonWithOp);
+export default memo(SelectPersonWithOp); */
 

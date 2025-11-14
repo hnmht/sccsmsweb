@@ -5,29 +5,26 @@ import {
     Dialog
 } from "@mui/material";
 import { message } from "mui-message";
-
 import { cloneDeep } from "lodash";
-
 import DocList from "../../../component/DocList/DocList";
 import PersonPicker from "./selectPersonWithOp/PersonPicker";
-import { columns, transOpsToOpIds } from "./selectPersonWithOp/tableConstructor";
+import { columns, convertPositionsToIDs } from "./selectPersonWithOp/tableConstructor";
 import { rowActionsDefine } from "./constructor";
 
-
-const WizardRecipientsEdit = ({ initRecipients, ops, backAction, nextAction, height }) => {
+// Wizard step for Recipients edit
+const WizardRecipientsEdit = ({ initRecipients, positions, backAction, nextAction, t, height }) => {
     const [recipients, setRecipients] = useState(initRecipients);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const opIds = transOpsToOpIds(ops);
-    //关闭选择dialog
+    const opIds = convertPositionsToIDs(positions);
+    // Close Dialog
     const handleDiagClose = () => {
         setDialogOpen(false);
     };
-
-    //点击确定按钮
+    // Actions after click the ok button in the Person picker
     const handleOkClick = (items) => {
-        //关闭对话框
+        // Close dialog
         setDialogOpen(false);
-        //传送数据
+        // Translate
         handleSelectPersons(items);
     };
     const handleSelectPersons = (items) => {
@@ -45,19 +42,18 @@ const WizardRecipientsEdit = ({ initRecipients, ops, backAction, nextAction, hei
                 newRs.push(person);
             }
         });
-
         setRecipients(newRs);
-        message.info(`共选中${items.length}人,本次批量增加${validNumber}人!`)
+        message.info(t("selectMultiplePeople", { count: items.length }) + ", " + t("bulkAddStudentAdded", { count: validNumber }))
     };
 
-    //表头点击增加按钮
+    // Actions after click the add button in the header
     const handleAddAction = () => {
         setDialogOpen(true);
     };
 
     const handleDeletePerson = (item) => {
         const newRs = cloneDeep(recipients);
-        const idx = newRs.findIndex((person) => person.id === item.id); 
+        const idx = newRs.findIndex((person) => person.id === item.id);
         newRs.splice(idx, 1);
         setRecipients(newRs);
     };
@@ -73,10 +69,11 @@ const WizardRecipientsEdit = ({ initRecipients, ops, backAction, nextAction, hei
                     headFilterVisible={false}
                     headRefAddVisible={false}
                     headDelMultipleVisible={false}
-                    adjustContainerHeight={96}
+                    adjustContainerHeight={210}
                     rowActionsDefine={rowActionsDefine}
                     addAction={handleAddAction}
                     rowDelete={handleDeletePerson}
+                   
                 />
                 <Dialog
                     open={dialogOpen}
@@ -99,11 +96,11 @@ const WizardRecipientsEdit = ({ initRecipients, ops, backAction, nextAction, hei
                         onClick={backAction}
                         sx={{ mr: 1 }}
                     >
-                        上一步
+                        {t("previousStep")}
                     </Button>
                     <Box sx={{ flex: '1 1 auto' }} />
                     <Button variant="contained" onClick={() => nextAction(recipients)} disabled={recipients.length === 0}>
-                        下一步
+                        {t("nextStep")}
                     </Button>
                 </Box>
             </Box>
