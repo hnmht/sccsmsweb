@@ -1,48 +1,50 @@
 import { useMemo, useState } from "react";
 import { Dialog } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 import { Divider } from "../../../component/ScMui/ScMui";
-import { message } from "mui-message";
 import PageTitle from "../../../component/PageTitle/PageTitle";
 import ScReport from "../../../component/ScReport/ScReport";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 
-import { reqGetLDReport } from "../../../api/ppeIssuanceForm";
-import { generateReportDefaultCons,generateReportFields, defaultHideCol, columnDef } from "./constructor";
+import { reqGetPPEIFReport } from "../../../api/ppeIssuanceForm";
+import { generateReportDefaultCons, generateReportFields, defaultHideCol, columnDef } from "./constructor";
 
-const LpaQuery = () => {
+// Personal Protective Equipment Insuance Form Report
+const PPEReport = () => {
     const [conditions, setConditions] = useState(generateReportDefaultCons());
     const [rows, setRows] = useState([]);
     const [diagOpen, setDiagOpen] = useState(false);
     const queryFields = useMemo(generateReportFields, []);
-    const columns = useMemo(columnDef, []);
+    const { t, i18n } = useTranslation();
+
+    const columns = useMemo(columnDef, [i18n.language]);
     const columnVisibility = useMemo(defaultHideCol, [])
 
     const handleRequestData = async (cons = conditions) => {
         let queryString = transConditionsToString(cons);
-        let res = await reqGetLDReport({ queryString: queryString });
+        let res = await reqGetPPEIFReport({ queryString: queryString });
         let newRows = [];
         if (res.status) {
-            newRows = res.data.data;
-        } else {
-            message.warning(res.data.statusMsg);
+            newRows = res.data;
         }
         setRows(newRows);
     }
-    //QueryPanel点击确认
+    // Actions after click ok button in the Query Panel
     const handleQueryOk = async (cons) => {
         setConditions(cons);
         setDiagOpen(false);
-        //向服务器请求数据
+        // Request Data from backend
         handleRequestData(cons);
     };
 
-    //报表表头点击请求数据
+    // Actions after click Filter button in the header
     const handleFilterAction = async () => {
         setDiagOpen(true);
     };
 
     return (<>
-        <PageTitle pageName="劳保用品发放查询" displayHelp={true} helpUrl="/helps/lpaIsueQuery" />
+        <PageTitle pageName={t("MenuPPES")} displayHelp={false} helpUrl="#" />
         <Divider my={2} />
         <ScReport
             rows={rows}
@@ -59,7 +61,7 @@ const LpaQuery = () => {
             closeAfterTransition={false}
         >
             <QueryPanel
-                title="过滤条件"
+                title="queryConditions"
                 queryFields={queryFields}
                 initalConditions={conditions}
                 onOk={handleQueryOk}
@@ -69,4 +71,4 @@ const LpaQuery = () => {
     </>);
 };
 
-export default LpaQuery;
+export default PPEReport;

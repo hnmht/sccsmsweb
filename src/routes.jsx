@@ -177,7 +177,7 @@ const routes = [
                 element: <PPEIssuanceForm />
             },
             {
-                path: "/private/ppe/issuedquery",
+                path: "/private/ppe/ppeStatistics",
                 element: <PPEReport />
             },
             {

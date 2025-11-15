@@ -141,7 +141,7 @@ const PPEWizard = () => {
                     nextAction={handlerPositonsNext}
                     backAction={handleBack}
                     t={t}
-                    height={height - 40}
+                    height={height - 48}
                 />;
             case 2:
                 return <WizardRecipientsEdit
@@ -151,7 +151,7 @@ const PPEWizard = () => {
                     nextAction={handleRecipientsNext}
                     backAction={handleBack}
                     t={t}
-                    height={height - 40}
+                    height={height - 48}
                 />;
             case 3:
                 return <WizardGenerate
@@ -161,7 +161,7 @@ const PPEWizard = () => {
                     nextAction={handleGenerate}
                     backAction={handleBack}
                     t={t}
-                    height={height - 40}
+                    height={height - 48}
                 />;
             case 4:
                 return <WizardReset
@@ -171,7 +171,7 @@ const PPEWizard = () => {
                     resetAction={handleReset}
                     backAction={handleBack}
                     t={t}
-                    height={height - 40}
+                    height={height - 48}
                 />;
             default:
                 return null;
@@ -196,7 +196,7 @@ const PPEWizard = () => {
                         })}
                     </Stepper>
                 </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: height - 40, width: "100%" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: height - 48, width: "100%" }}>
                     <StepContent step={activeStep} />
                 </Box>
             </Paper>
