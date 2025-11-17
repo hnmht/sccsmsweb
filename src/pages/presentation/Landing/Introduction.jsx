@@ -1,8 +1,36 @@
+import { useState,useEffect } from "react";
 import { Box, Container, Typography, Stack } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { reqLandingPageInfo } from "../../../api/landingPage";
 
-function Introduction() {
+const zeroInfo = {
+  sysNameDisp: "systemName",
+  introText: "An open-source construction site management system that helps managers effectively implement on-site management measures.",
+  file: {
+    "id": 0,
+    "fileUrl": `/static/img/screenshots/dashboard.jpg`,
+  }
+};
+
+// Software Introduction
+const Introduction = () => {
+  const [info, setInfo] = useState(zeroInfo);
+  useEffect(() => {
+    async function initialData() {
+      let infoRes = await reqLandingPageInfo();
+      console.log("info:", infoRes);
+      let info = {};
+      if (infoRes.status) {
+        info = infoRes.data;
+      } else {
+        info = zeroInfo;
+      }
+     
+      setInfo(info);
+    }
+    initialData();
+  }, []);
   const theme = useTheme();
   const { t } = useTranslation();
   return (
@@ -45,7 +73,7 @@ function Introduction() {
               fontSize: 'clamp(1.5rem, 10vw, 2rem)',
             }}
           >
-            {t("systemName")}
+            {t(info.sysNameDisp)}
           </Typography>
           <Typography
             sx={{
@@ -54,7 +82,7 @@ function Introduction() {
               width: { sm: '100%', md: '80%' },
             }}
           >
-            {t("introductionContent")}
+            {info.introText}
           </Typography>
         </Stack>
         <Stack
@@ -64,7 +92,7 @@ function Introduction() {
           }}
         >
           <img
-            src="/static/img/screenshots/dashboard.jpg"
+            src={info.file.fileUrl}
             alt="controduce"
             style={{
               alignSelf: "center",

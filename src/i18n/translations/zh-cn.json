@@ -566,6 +566,11 @@
     "issuingDeptID": "发放部门ID",
     "issuingDeptCode": "发放部门编码",
     "issuingDeptName": "发放部门名称",
+    "imageNotRequire": "图片规格必须为 {{ requireSpec }}. 当前上传图片宽度为{{ currentWidth}}px, 高度为{{ currentHeight}}px, 不符合要求.",
+    "sysNameDisp": "系统名称",
+    "introText": "系统介绍文本",
+    "overviewImage": "系统介绍图片",
+    "imagePreview": "图片预览",
 
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

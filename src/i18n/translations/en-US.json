@@ -567,6 +567,12 @@
     "issuingDeptID":"Issuing Department ID",
     "issuingDeptCode":"Issuing Depratment Code",
     "issuingDeptName":"Issuing Department Name",
+    "imageNotRequire":"The uploaded image specifications must be {{ requireSpec }}. The current image file's width is {{ currentWidth}}px, and its height is {{ currentHeight}}px, which does not meet the requirements.",
+    "sysNameDisp":"System Name",
+    "introText":"System Introduction Text",
+    "overviewImage":"System Overview Image",
+    "imagePreview":"Image Preview",
+
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

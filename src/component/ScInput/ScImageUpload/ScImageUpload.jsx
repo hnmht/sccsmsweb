@@ -60,7 +60,7 @@ const ScImpageUpload = (props) => {
         if (isBackendTest) {
             err = backendTestFunc(fileInfo)
             if (err.isErr) {
-                message.error(err.msg);
+                message.error(t(err.msg));
                 setIsLoading(false);
                 return
             }
@@ -88,7 +88,7 @@ const ScImpageUpload = (props) => {
         if (getFilesHashRes.data.id === 0) {
             // To compress the image           
             formData.append("files", file);
-            formData.append("filekey", 0);
+            formData.append("fileKey", 0);
             formData.append("hash", fileInfo.fileHash);
             formData.append("fileName", file.name);
             formData.append("fileType", fileInfo.fileType);
@@ -99,7 +99,7 @@ const ScImpageUpload = (props) => {
             formData.append("longitude", fileInfo.longitude); 
             formData.append("source", "browser");
             // Upload the file to server
-            const uploadRes = await reqUploadFiles(formData);
+            const uploadRes = await reqUploadFiles(formData,false);
             if (!uploadRes.status) {
                 setIsLoading(false);
                 return
@@ -146,8 +146,7 @@ const ScImpageUpload = (props) => {
                     type="text"
                     id={id}
                     disabled
-                    name={id}
-                    placeholder={placeholder}
+                    placeholder={t(placeholder)}
                     value={image.originFileName}
                     error={errInfo.isErr}
                     InputProps={{
@@ -161,23 +160,22 @@ const ScImpageUpload = (props) => {
                                     ? <IconButton onClick={handleClear} size="small"><ClearIcon /></IconButton>
                                     : null
                                 }
-                                <Stack>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: "none" }}
-                                        id={id}
-                                        multiple={false}
-                                        type="file"
-                                        onChange={handleFileSelect}
-                                    />
-                                    <Tooltip title={t("chooseAnImage")} sx={{ margin: 0, padding: 0 }}>
+                                <Stack> 
+                                    <Tooltip title={t("chooseAnImage")} sx={{ margin: 0, padding: 0 }}>                                      
                                         <IconButton
                                             color="primary"
                                             component="label"
-                                            size="small"
-                                            htmlFor={id}
+                                            size="small"                                           
                                             disabled={!isEdit}
                                         >
+                                            <input
+                                                accept="image/*"
+                                                style={{ display: "none" }}  
+                                                id={id}                                             
+                                                multiple={false}
+                                                type="file"
+                                                onChange={handleFileSelect}
+                                            />
                                             <UploadIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>

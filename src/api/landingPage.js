@@ -1,6 +1,6 @@
 import request from "../utils/request";
 
-//获取首页信息
+// Get Landing Page info
 export function reqLandingPageInfo(isLoading = true) {
     return request({
         url: "/land/get",
@@ -9,10 +9,10 @@ export function reqLandingPageInfo(isLoading = true) {
     });
 }
 
-//修改首页信息
+// Modify Landing Page info
 export function reqModifyLandingPageInfo(data, isLoading = true) {
     return request({
-        url: "/land/modify",
+        url: "/land/edit",
         method: "post",
         data,
         isLoading

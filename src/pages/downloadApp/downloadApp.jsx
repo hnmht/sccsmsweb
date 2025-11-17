@@ -25,7 +25,6 @@ function DownloadApp() {
                 下载APP
             </Typography>
             {isWeChat
-
                 ? <>
                     <Typography variant="h4" gutterBottom align="left">
                         微信内置浏览器无法直接下载App,请按照如下步骤操作:
