@@ -3,7 +3,7 @@ import forge from "node-forge";
 import { table, pickFields } from "./schema";
 
 let cryptoKey;
-const isHttps = !(window.location.protocol === 'https:');
+const isHttps = window.location.protocol === 'https:';
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 const tagLength = 16;
