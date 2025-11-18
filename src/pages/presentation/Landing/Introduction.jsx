@@ -19,7 +19,6 @@ const Introduction = () => {
   useEffect(() => {
     async function initialData() {
       let infoRes = await reqLandingPageInfo();
-      console.log("info:", infoRes);
       let info = {};
       if (infoRes.status) {
         info = infoRes.data;
