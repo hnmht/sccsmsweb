@@ -9,7 +9,7 @@ import {
     Button
 } from "@mui/material";
 import { message } from "mui-message";
-import jsencrypt from "jsencrypt";
+import { encryptPassword } from "../../../utils/encrypt";
 import { cloneDeep } from "lodash";
 import { Divider } from "../../../component/ScMui/ScMui";
 import ScInput from "../../../component/ScInput";
@@ -26,7 +26,8 @@ const checkError = (errors) => {
     return number > 0;
 };
 
-function ChangePassword({ user, onCancel }) {
+// Change Password Component
+const ChangePassword = ({ user, onCancel }) => {
     const [params, setParams] = useState({
         id: user.id,
         code: user.code,
@@ -36,44 +37,27 @@ function ChangePassword({ user, onCancel }) {
         confirmnewpwd: ""
     });
     const [errors, setErrors] = useState({});
-    const [publicKey, setPublicKey] = useState("");
-    // Get PublicKey
-    useEffect(() => {
-        async function getKey() {            
-            const res = await reqGetPublicKey(false);
-            let pk = "";
-            if (res.status) {
-                pk = res.data.data;
-            } else {
-                message.error("获取公玥失败:" + res.data.statusMsg);
-            }
-            setPublicKey(pk);
-        }
-        getKey();
-    }, []);
 
     const handleChangePassword = async () => {
-        if (publicKey === "") {
-            message.error("密修改密码失败：获取公玥失败,无法对密码进行加密");
-            return
+        const resPubKey = await reqGetPublicKey(false);
+        let publicKey = "";
+        if (resPubKey.status) {
+            publicKey = resPubKey.data;
+        } else {
+            message.error("获取公玥失败:" + resPubKey.msg);
+            return;
         }
-        if (params.newpwd !== params.confirmnewpwd) {
-            message.error("新密码不一致,请检查");
-            return
-        }
-        let thisParams = cloneDeep(params);
-        let encryptor = new jsencrypt();
-        encryptor.setPublicKey(publicKey); //设置公玥
-
-        thisParams.password = encryptor.encrypt(thisParams.password);
-        thisParams.newpwd = encryptor.encrypt(thisParams.newpwd);
-        thisParams.confirmnewpwd = encryptor.encrypt(thisParams.confirmnewpwd);
+        let thisParams = cloneDeep(params);        
+        thisParams.password = encryptPassword(publicKey, thisParams.password);
+        thisParams.newpwd = encryptPassword(publicKey, thisParams.newpwd);
+        thisParams.confirmnewpwd = encryptPassword(publicKey, thisParams.confirmnewpwd);
+  
         const res = await reqChangePwd(thisParams);
         if (res.status) {
             message.success("密码修改成功");
             onCancel();
         } else {
-            message.error("修改密码失败:" + res.data.statusMsg);
+            message.error("修改密码失败:" + res.msg);
         }
         return
     };

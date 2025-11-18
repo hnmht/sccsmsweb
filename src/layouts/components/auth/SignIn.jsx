@@ -16,9 +16,6 @@ import { useTranslation } from 'react-i18next';
 
 import { AccountIcon, PasswordIcon, VisibilityIcon, VisibilityOffIcon } from "../../../component/PubIcon/PubIcon";
 import LoginIcon from '@mui/icons-material/Login';
-
-import jsencrypt from "jsencrypt";
-
 import store from "../../../store";
 import { reqGetPublicKey } from "../../../api/security";
 import { reqLogin } from "../../../api/login";
@@ -26,6 +23,7 @@ import { reqUserInfo } from "../../../api/user";
 import { setUserInfo, setUserToken } from "../../../store/slice/user";
 import { getDynamicData } from "../../../store/pub";
 import { initLocalDb } from "../../../storage/db/db";
+import { encryptPassword } from "../../../utils/encrypt";
 
 const TextField = styled(MuiTextField)(spacing);
 const Button = styled(LoadingButton)(spacing);
@@ -34,14 +32,11 @@ const Box = styled(MuiBox)(spacing);
 const SignIn = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-
     const [userCode, setUserCode] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-
     const canLogin = userCode && userCode !== "" && password && password !== "";
-
     const handleLogin = async (event) => {
         setLoading(true);
         event.preventDefault();
@@ -50,14 +45,10 @@ const SignIn = () => {
         if (!keyRes.status) {
             setLoading(false);
             return
-        }
-        
+        }        
         const publicKey = keyRes.data;
-        // Create an encryption object instance user jsencrypt
-        let encryptor = new jsencrypt();
-        encryptor.setPublicKey(publicKey);
-        let rsaPassword = encryptor.encrypt(password);
-
+        // Encrypt the password using the RSA public key.
+        let rsaPassword = encryptPassword(publicKey, password);      
         // Request user token from the server        
         let loginRes = await reqLogin({ userCode: userCode.trim(), password: rsaPassword });
         if (!loginRes.status) {
@@ -67,16 +58,13 @@ const SignIn = () => {
         const token = loginRes.data;
         //Set user token in Redux
         store.dispatch(setUserToken(token));
-
         // Request user information from the server
         const userInfoRes = await reqUserInfo(token);
-
         if (!userInfoRes.status) {
             setLoading(false);
             return
         }
         const latestUserInfo = userInfoRes.data;
-        // console.log("latestUserInfo:",latestUserInfo);
         // Set user information in Redux
         store.dispatch(setUserInfo(latestUserInfo));
         // Initialize the local database.

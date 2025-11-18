@@ -8,9 +8,8 @@ import {
 } from "@mui/material";
 import { message } from 'mui-message';
 import { cloneDeep } from 'lodash';
-import jsencrypt from "jsencrypt";
 import { useTranslation } from 'react-i18next';
-import { DateTimeFormat,EpochTime } from "../../../i18n/dayjs";
+import { dayjs,EpochTime } from "../../../i18n/dayjs";
 
 import { Divider } from '../../../component/ScMui/ScMui';
 import ScInput from '../../../component/ScInput';
@@ -21,6 +20,7 @@ import { reqValidateUserCode, reqAddUser, reqEditUser } from '../../../api/user'
 import { reqGetPublicKey } from '../../../api/security';
 import { InitDocCache } from '../../../storage/db/db';
 import { checkVoucherNoBodyErrors } from '../pub/pubFunction';
+import { encryptPassword } from '../../../utils/encrypt';
 
 const initRoles = [{
     id: 10001, name: "public", alluserflag: 1, systemflag: 1, description: "System default"
@@ -29,7 +29,7 @@ const initRoles = [{
 // General initialization data
 const getInitialValues = async (oriUser, isNew, isModify) => {
     const person = await getCurrentPerson();
-    const currentDate = new Date();
+    const currentDate = dayjs(new Date());
     let newUser = {};
     if (isNew) { //Add New or Copy Add new
         if (oriUser) { // Copy Add New
@@ -41,7 +41,7 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
             newUser.name = "";
             newUser.password = "";
             newUser.confirmPassword = "";
-            newUser.creator = person;           
+            newUser.creator = person;
             newUser.createDate = currentDate;
             newUser.modifyDate = EpochTime;
         } else { // Add New
@@ -80,7 +80,7 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
                 newUser.confirmPassword = "";
             } else {// View Detail
                 newUser = cloneDeep(oriUser);
-                newUser.password=""
+                newUser.password = ""
                 newUser.confirmPassword = ""
             }
         }
@@ -88,6 +88,7 @@ const getInitialValues = async (oriUser, isNew, isModify) => {
     return newUser;
 };
 
+// Add or Edit or View User Component
 const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
     const [currentUser, setCurrentUser] = useState(undefined);
     const [errors, setErrors] = useState({});
@@ -159,12 +160,8 @@ const EditUser = ({ isOpen, isNew, isModify, oriUser, onCancel, onOk }) => {
                 return
             }
             const publickey = publicKeyRes.data;
-            // Create a JSEncrypt encryption object instance.
-            let encryptor = new jsencrypt();
-            // Set Public
-            encryptor.setPublicKey(publickey); 
             // Encrypt
-            let rsaPassword = encryptor.encrypt(currentUser.password);
+            let rsaPassword = encryptPassword(publickey, thisUser.password);
             // Replace the content of the password filed with ciphertext
             thisUser.password = rsaPassword;
         }
