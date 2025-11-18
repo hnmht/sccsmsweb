@@ -1,48 +1,32 @@
-import jsSHA from "jssha";
-// import exifr from "exifr";
-
+import forge from "node-forge";
 import exifReader from "exifreader";
-// import dayjs from "dayjs";
-// import customformat from "dayjs/plugin/customParseFormat";
-// dayjs.extend(customformat);
-import dayjs from "./myDayjs";
+import { dayjs } from "../i18n/i18n";
 
-/* const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");  //十六位十六进制数作为密钥
-const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');   //十六位十六进制数作为密钥偏移量 */
-
+// Get FIle Info
 export const getFileInfo = async (file) => {
-    let name = file.name; //获取文件名   
-    let fileType = name.substring(name.lastIndexOf("."), name.length); //获取文件类型
-    const arrayBuffer = await file.arrayBuffer(); //转化为二进制数据流
-    // const fileHash = await sha256(arrayBuffer); //生成fileHash
-    const shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
-    shaObj.update(arrayBuffer);
-    const fileHash = shaObj.getHash("HEX");
-
-    //设定文件属性的默认值
-    let isImage = 0; //是否图片
-    let imageWidth = 0; //图片宽度
-    let imageHeight = 0; //图片高度
-    let Model = "n"; //相机型号,默认为"none"
-    let DateTimeOriginal = dayjs(file.lastModifiedDate).format("YYYYMMDDHHmm"); //最近更新日期
-
-    let latitude = 0.01;  //纬度
-    let longitude = 0.01;//经度
-    //检查文件类型
+    let name = file.name; // Get File Name   
+    let fileType = name.substring(name.lastIndexOf("."), name.length);
+    const arrayBuffer = await file.arrayBuffer();
+    const fileHash = await computeFileHash(arrayBuffer);
+    // Set the file info default values
+    let isImage = 0; 
+    let imageWidth = 0; 
+    let imageHeight = 0; 
+    let Model = "n"; // Camera Model
+    let DateTimeOriginal = dayjs(file.lastModifiedDate).format("YYYYMMDDHHmm");
+    let latitude = 0.01;  
+    let longitude = 0.01;
+    // Check if the file is an image and extract EXIF data
     const uint8Array = new Uint8Array(arrayBuffer);
     const checkRes = checkIsImage(uint8Array);
-    if (checkRes.isImage === 1) { //如果是图片
+    if (checkRes.isImage === 1) { 
         isImage = checkRes.isImage;
-        fileType = checkRes.type //更新真实的文件类型
-        // let exifTags = await exifr.parse(file, ["Model", "DateTimeOriginal", "GPSLatitude", "GPSLongitude"]);
+        fileType = checkRes.type
         const tags = await exifReader.load(arrayBuffer);
-       
-        // console.log("tags:",tags);
-        //如果正确获取了图片的exif信息则修改默认值
+        // Extract relevant EXIF tags
         if (tags) {
-            // if (tags.DateTimeOriginal) { console.log("tags:", dayjs(tags.DateTimeOriginal.description)) } ;
             if (tags.Model) { Model = tags.Model.description };
-            if (tags.DateTimeOriginal) { DateTimeOriginal = dayjs(tags.DateTimeOriginal.description,"YYYY:MM:DD HH:mm").format("YYYYMMDDHHmm") };
+            if (tags.DateTimeOriginal) { DateTimeOriginal = dayjs(tags.DateTimeOriginal.description, "YYYY:MM:DD HH:mm").format("YYYYMMDDHHmm") };
             if (tags.GPSLatitude) { latitude = tags.GPSLatitude.description };
             if (tags.GPSLongitude) { longitude = tags.GPSLongitude.description };
             if (tags["Image Height"]) (imageHeight = tags["Image Height"].value);
@@ -64,6 +48,29 @@ export const getFileInfo = async (file) => {
     };
 };
 
+// Compute file hash
+export const computeFileHash = async (arrayBuffer) => {
+    const startTime = Date.now();
+    let fileHash = "emptyHash";
+    const isHttps = typeof window !== 'undefined' && window.crypto && window.crypto.subtle;
+    if (isHttps) {
+        // Using crypto.subtle
+        const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        fileHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } else {
+        // Using Forge
+        const bufferAdapter = forge.util.createBuffer(arrayBuffer);
+        const byteString = bufferAdapter.bytes();
+        const md = forge.md.sha256.create();
+        md.update(byteString);
+        const fileHash = md.digest().toHex();
+    }
+    console.log("computeFileHash time:", Date.now() - startTime);
+    return fileHash;
+}
+
+// Check if the buffer corresponds to an image file (PNG, JPEG, GIF)
 const checkIsImage = (buf) => {
     const pngMagic = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
     const jpeg_jfif = [0x4a, 0x46, 0x49, 0x46];
