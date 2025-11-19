@@ -49,22 +49,22 @@ function Message({ title, description, image }) {
     <ListItem divider component={Link} to="#">
       <ListItemAvatar>
         <Avatar src={image} alt="Avatar" />
-      </ListItemAvatar>  
+      </ListItemAvatar>
       <ListItemText
         primary={title}
         primaryTypographyProps={{
           variant: "subtitle2",
           color: "textPrimary",
-          component:"span",
+          component: "span",
         }}
         secondary={description}
-        
+
       />
     </ListItem>
   );
 }
 
-function NavbarMessagesDropdown() {
+const NavbarMessagesDropdown = () => {
   const ref = useRef(null);
   const [isOpen, setOpen] = useState(false);
   const messages = useSelector(state => state.dynamicData.messages);
@@ -121,6 +121,6 @@ function NavbarMessagesDropdown() {
       </Popover>
     </React.Fragment>
   );
-}
+};
 
 export default NavbarMessagesDropdown;

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, Fragment } from "react";
 import styled from "@emotion/styled";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,13 +13,11 @@ const IconButton = styled(MuiIconButton)`
     height: 22px;
   }
 `;
-
 const Flag = styled.img`
   border-radius: 50%;
   width: 22px;
   height: 22px;
 `;
-
 const languageOptions = {
   "en-US": {
     icon: "/static/img/flags/us.png",
@@ -28,12 +26,12 @@ const languageOptions = {
   "zh-CN": {
     icon: "/static/img/flags/cn.png",
     name: "简体中文",
-  },  
+  },
 };
 
-function NavbarLanguagesDropdown() {
+const NavbarLanguagesDropdown = () => {
   const { i18n } = useTranslation();
-  const [anchorMenu, setAnchorMenu] = React.useState(null);
+  const [anchorMenu, setAnchorMenu] = useState(null);
 
   const selectedLanguage = languageOptions[i18n.language];
 
@@ -51,7 +49,7 @@ function NavbarLanguagesDropdown() {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Tooltip title="Languages">
         <IconButton
           aria-owns={Boolean(anchorMenu) ? "menu-appbar" : undefined}
@@ -78,8 +76,8 @@ function NavbarLanguagesDropdown() {
           </MenuItem>
         ))}
       </Menu>
-    </React.Fragment>
+    </Fragment>
   );
-}
+};
 
 export default NavbarLanguagesDropdown;

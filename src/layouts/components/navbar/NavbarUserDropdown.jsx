@@ -24,7 +24,7 @@ const IconButton = styled(MuiIconButton)`
 
 function NavbarUserDropdown() {
   const user = useSelector(state => state.user);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [diagStatus, setDiagStatus] = useState({
     isOpen: false
@@ -34,19 +34,19 @@ function NavbarUserDropdown() {
     setAnchorMenu(event.currentTarget);
   };
 
-  //关闭菜单
+  // Close menu 
   const closeMenu = () => {
     setAnchorMenu(null);
   };
 
-  //关闭对话框
+  // Close dialog
   const handleDiagClose = () => {
     setDiagStatus({
       isOpen: false
     })
   };
 
-  //修改密码
+  // Change password
   const handleChangePassword = () => {
     setDiagStatus({
       isOpen: true
@@ -54,15 +54,15 @@ function NavbarUserDropdown() {
     closeMenu();
   };
 
-  //设置
+  // Set profile
   const handleSetProfile = () => {
     navigate("/private/my/profile");
     closeMenu();
   }
 
-  //退出
+  // Exit system
   const handleSignOut = async () => {
-    await logout();    
+    await logout();
     navigate("/");
   };
 
@@ -94,9 +94,9 @@ function NavbarUserDropdown() {
         fullWidth
         onClose={handleDiagClose}
         open={diagStatus.isOpen}
-        Dialog
+        aria-hidden={!diagStatus.isOpen}
       >
-       <ChangePassword user={user} onCancel={handleDiagClose}/>
+        <ChangePassword user={user} onCancel={handleDiagClose} />
       </Dialog>
     </Fragment>
   );

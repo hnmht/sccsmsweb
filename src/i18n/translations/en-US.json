@@ -572,7 +572,14 @@
     "introText":"System Introduction Text",
     "overviewImage":"System Overview Image",
     "imagePreview":"Image Preview",
-
+    "changePassword":"Change Password",
+    "originalPassword":"Original Password",
+    "newPassword":"New Password",
+    "confirmNewPassword":"Confirm New Password",
+    "originalPasswordPlaceholder":"Please enter the original password.",
+    "newPasswordPlaceholder":"Please enter the new password.",
+    "confirmNewPasswordPlaceholder":"Please enter the new password again.",
+    "changePasswordSuccessful":"Password changed successfully",
 
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",

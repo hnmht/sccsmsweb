@@ -571,7 +571,15 @@
     "introText": "系统介绍文本",
     "overviewImage": "系统介绍图片",
     "imagePreview": "图片预览",
-
+    "changePassword": "修改密码",
+    "originalPassword": "原密码",
+    "newPassword": "新密码",
+    "confirmNewPassword": "确认新密码",
+    "originalPasswordPlaceholder": "请输入原密码.",
+    "newPasswordPlaceholder": "请输入新密码.",
+    "confirmNewPasswordPlaceholder": "请再次输入新密码.",
+    "changePasswordSuccessful": "密码修改成功",
+    
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",
     "author": "作者",

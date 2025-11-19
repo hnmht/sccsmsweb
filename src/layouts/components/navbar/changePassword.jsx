@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Stack,
     Avatar,
@@ -9,6 +9,7 @@ import {
     Button
 } from "@mui/material";
 import { message } from "mui-message";
+import { useTranslation } from "react-i18next";
 import { encryptPassword } from "../../../utils/encrypt";
 import { cloneDeep } from "lodash";
 import { Divider } from "../../../component/ScMui/ScMui";
@@ -33,10 +34,11 @@ const ChangePassword = ({ user, onCancel }) => {
         code: user.code,
         name: user.name,
         password: "",
-        newpwd: "",
-        confirmnewpwd: ""
+        newPassword: "",
+        confirmNewPassword: ""
     });
     const [errors, setErrors] = useState({});
+    const { t } = useTranslation();
 
     const handleChangePassword = async () => {
         const resPubKey = await reqGetPublicKey(false);
@@ -44,33 +46,33 @@ const ChangePassword = ({ user, onCancel }) => {
         if (resPubKey.status) {
             publicKey = resPubKey.data;
         } else {
-            message.error("获取公玥失败:" + resPubKey.msg);
-            return;
+            return
         }
-        let thisParams = cloneDeep(params);        
+
+        let thisParams = cloneDeep(params);
         thisParams.password = encryptPassword(publicKey, thisParams.password);
-        thisParams.newpwd = encryptPassword(publicKey, thisParams.newpwd);
-        thisParams.confirmnewpwd = encryptPassword(publicKey, thisParams.confirmnewpwd);
-  
+        thisParams.newPassword = encryptPassword(publicKey, thisParams.newPassword);
+        thisParams.confirmNewPassword = encryptPassword(publicKey, thisParams.confirmNewPassword);
+
         const res = await reqChangePwd(thisParams);
         if (res.status) {
-            message.success("密码修改成功");
+            message.success(t("changePasswordSuccessful"));
             onCancel();
         } else {
-            message.error("修改密码失败:" + res.msg);
+            return
         }
-        return
+
     };
-    //获取值后的操作
+    // Data processing after getting value from ScInput 
     const handleGetValue = (value, itemkey, fieldIndex, rowIndex, errMsg) => {
-        //更新errors
+        // Change the error message state
         setErrors((prevState) => {
             return ({
                 ...prevState,
                 [itemkey]: errMsg,
             });
         });
-        //更新输入的用户信息
+        // Change the parameter state
         setParams((prevState) => {
             return ({
                 ...prevState,
@@ -78,18 +80,18 @@ const ChangePassword = ({ user, onCancel }) => {
             });
         });
     };
-    //检验密码是否一致
+    // Confirm new password validation
     const handleTestConfirmPassword = (value) => {
         let err = { isErr: false, msg: "" };
-        if (value !== params.newpwd) {
-            err = { isErr: true, msg: "必须和新密码一致" };
+        if (value !== params.newPassword) {
+            err = { isErr: true, msg: "passwordsMustMatch" };
         }
         return err;
     };
 
     return (
         <>
-            <DialogTitle>修改密码</DialogTitle>
+            <DialogTitle>{t("changePassword")}</DialogTitle>
             <Divider />
             <DialogContent sx={{ maxHeight: 512 }}>
                 <Stack spacing={2.5} alignItems="center">
@@ -99,11 +101,11 @@ const ChangePassword = ({ user, onCancel }) => {
                         dataType={303}
                         allowNull={false}
                         isEdit={true}
-                        itemShowName="原密码"
+                        itemShowName="originalPassword"
                         itemKey="password"
                         initValue={params.password}
                         pickDone={handleGetValue}
-                        placeholder="请输入用户原密码"
+                        placeholder="originalPasswordPlaceholder"
                         isBackendTest={false}
                         key="password"
                     />
@@ -111,24 +113,24 @@ const ChangePassword = ({ user, onCancel }) => {
                         dataType={303}
                         allowNull={false}
                         isEdit={true}
-                        itemShowName="新密码"
-                        itemKey="newpwd"
-                        initValue={params.newpwd}
+                        itemShowName="newPassword"
+                        itemKey="newPassword"
+                        initValue={params.newPassword}
                         pickDone={handleGetValue}
-                        placeholder="请输入新密码"
+                        placeholder="newPasswordPlaceholder"
                         isBackendTest={false}
-                        key="newpwd"
+                        key="newPassword"
                     />
                     <ScInput
                         dataType={303}
                         allowNull={false}
                         isEdit={true}
-                        itemShowName="确认新密码"
-                        itemKey="confirmnewpwd"
-                        initValue={params.confirmnewpwd}
+                        itemShowName="confirmNewPassword"
+                        itemKey="confirmNewPassword"
+                        initValue={params.confirmNewPassword}
                         pickDone={handleGetValue}
-                        placeholder="请再次输入新密码"
-                        key="confirmnewpwd"
+                        placeholder="confirmNewPasswordPlaceholder"
+                        key="confirmNewPassword"
                         isBackendTest={true}
                         backendTestFunc={(value) => handleTestConfirmPassword(value)}
                     />
@@ -136,11 +138,11 @@ const ChangePassword = ({ user, onCancel }) => {
             </DialogContent>
             <Divider />
             <DialogActions sx={{ p: 2.5 }}>
-                <Button color='error' onClick={onCancel}>取消</Button>
-                <Button variant='contained' disabled={checkError(errors)} onClick={handleChangePassword}>修改</Button>
+                <Button color='error' onClick={onCancel}>{t("cancel")}</Button>
+                <Button variant='contained' disabled={checkError(errors)} onClick={handleChangePassword}>{t("edit")}</Button>
             </DialogActions>
         </>
     );
-}
+};
 
 export default ChangePassword;
