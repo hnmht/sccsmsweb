@@ -579,6 +579,10 @@
     "newPasswordPlaceholder": "请输入新密码.",
     "confirmNewPasswordPlaceholder": "请再次输入新密码.",
     "changePasswordSuccessful": "密码修改成功",
+    "version": "版本",
+    "dbID": "数据库ID",
+    "dbVersion": "数据版本",
+    "openSourceLicense": "开源协议",
     
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",

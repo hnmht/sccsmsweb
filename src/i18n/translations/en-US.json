@@ -581,6 +581,11 @@
     "confirmNewPasswordPlaceholder":"Please enter the new password again.",
     "changePasswordSuccessful":"Password changed successfully",
 
+    "version":"Version",
+    "dbID":"Database ID",
+    "dbVersion":"Data Version",
+    "openSourceLicense":"Open Source License",
+
     "systemName": "SeaCloud Construction Site Management System",
     "introductionContent": "SeaCloud Construction Site Management is a visual ",
     "author": "Author",
