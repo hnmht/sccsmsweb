@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button as MuiButton, Typography, Box } from "@mui/material";
 import { spacing } from "@mui/system";
 import { AndroidIcon, AppleIcon } from "../../component/PubIcon/PubIcon";
+import { useTranslation } from "react-i18next";
 
 const Button = styled(MuiButton)(spacing);
 
@@ -18,11 +19,12 @@ const Wrapper = styled.div`
 
 function DownloadApp() {
     const isWeChat = navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1;
+    const { t } = useTranslation();
 
     return (
         <Wrapper>
             <Typography component="h1" variant="h1" align="center" gutterBottom>
-                下载APP
+                {t("downloadApp")}
             </Typography>
             {isWeChat
                 ? <>
@@ -42,8 +44,8 @@ function DownloadApp() {
                 : null
             }
             <Box style={{ margin: 16 }}>
-                <Button                
-                    size="large"                 
+                <Button
+                    size="large"
                     disabled={isWeChat}
                     href={window.location.origin + "/static/apk/seacloud.apk"}
                     variant="contained"
@@ -51,7 +53,7 @@ function DownloadApp() {
                     startIcon={<AndroidIcon />}
                     style={{ minWidth: 128 }}
                 >
-                    下载安卓
+                    {t("downloadAndroid")}
                 </Button>
             </Box>
             <Box style={{ margin: 16 }}>
@@ -65,7 +67,7 @@ function DownloadApp() {
                     startIcon={<AppleIcon />}
                     style={{ minWidth: 128 }}
                 >
-                    下载IOS
+                    {t("downloadIOS")}
                 </Button>
             </Box>
         </Wrapper>

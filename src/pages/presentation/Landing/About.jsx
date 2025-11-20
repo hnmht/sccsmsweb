@@ -6,13 +6,14 @@ import {
   Stack,
 } from "@mui/material";
 import { useTranslation } from 'react-i18next';
+import { author } from "../../../constants";
 
 function Copyright() {
   const { t } = useTranslation();
   return (
     <Typography variant="body2" color="text.secondary" mt={1}>
       {'Copyright © '}
-      <Link href="https://github.com/hnmht" target="_blank">{t("author")}&nbsp;</Link>
+      <Link href="https://github.com/hnmht" target="_blank">{author}&nbsp;</Link>
       {new Date().getFullYear()}
     </Typography>
   );

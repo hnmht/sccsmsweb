@@ -42,6 +42,10 @@ const About = () => {
                 : null
             }
             <Divider my={2} />
+            <Typography variant="h3" gutterBottom mt={4}>{t("contact")}</Typography>
+            <Typography variant="h5" gutterBottom>{t("email")}: <Link href="mailto:haitao.m@outlook.com" target="_blank">haitao.m@outlook.com</Link></Typography>
+            <Typography variant="h5" gutterBottom>{t("website")}: <Link href="https://github.com/hnmht" target="_blank">https://github.com/hnmht</Link></Typography>
+            <Divider my={2} />
             <Typography variant="h3" gutterBottom mt={4}>{t("openSourceLicense")}</Typography>
             <Typography variant="h5" gutterBottom>
                 <Link href="https://www.gnu.org/licenses/" target="_blank">GNU GPL 3.0 License</Link>

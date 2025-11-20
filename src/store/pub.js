@@ -9,7 +9,7 @@ import { reqUnReadComments, reqUserEORefs, reqUserWORefs } from "../api/message"
 import { setDynamicMessages, setDynamicCSOs, setDynamicEORefs, setDynamicWORefs } from "./slice/dynamicData";
 import { reqGetCSOs } from "../api/cso";
 
-
+// Logout
 export const logout = async () => {
     const res = await reqLogout();
     if (!res.status) {

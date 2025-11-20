@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Container, Typography, Stack } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -25,7 +25,6 @@ const Introduction = () => {
       } else {
         info = zeroInfo;
       }
-     
       setInfo(info);
     }
     initialData();
@@ -54,8 +53,8 @@ const Introduction = () => {
           alignItems: "center",
           width: "100%",
           height: "100%",
-          pt: { xs: 14, sm: 20 },
-          pb: { xs: 8, sm: 12 },
+          pt: { xs: 8, sm: 8 },
+          pb: { xs: 8, sm: 8 },
         }}>
         <Stack
           spacing={2}
@@ -81,7 +80,7 @@ const Introduction = () => {
               width: { sm: '100%', md: '80%' },
             }}
           >
-            {info.introText}
+            {t(info.introText)}
           </Typography>
         </Stack>
         <Stack
@@ -102,7 +101,7 @@ const Introduction = () => {
               outlineColor: "hsla(220,25%,80%,0.2)",
               border: "1px solid",
               borderColor: theme.palette.grey[200],
-              boxShadow: "0 0 12px 8px hsla(220, 25%,80%,0.2)"
+              boxShadow: "0 0 8px 12px hsla(220, 25%,80%,0.2)"
             }} />
         </Stack>
       </Container>

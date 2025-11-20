@@ -583,7 +583,11 @@
     "dbID": "数据库ID",
     "dbVersion": "数据版本",
     "openSourceLicense": "开源协议",
-    
+    "contact": "联系",
+    "website": "网站",
+    "downloadApp": "下载APP",
+    "downloadAndroid": "Android",
+    "downloadIOS": "App Store",    
     "systemName": "海云现场管理系统",
     "introductionContent": "海云现场管理系统是一款针对施工现场进行管理的系统.",
     "author": "作者",
