@@ -15,10 +15,11 @@ import {
     Checkbox,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { cloneDeep } from "lodash";
 import { Divider, List } from "../ScMui/ScMui";
 import { DownOneIcon, UpOneIcon, ToBottomIcon, ToTopIcon } from "../PubIcon/PubIcon";
 import { getSortColumns } from "./tools";
-import { DeepCloneJSON, ArrayElementDownOne, ArrayElementToTop, ArrayElementUpOne, ArrayElementToBottom } from "../../utils/tools";
+import { ArrayElementDownOne, ArrayElementToTop, ArrayElementUpOne, ArrayElementToBottom } from "../../utils/tools";
 
 const SetSortView = ({
     sortColumns,
@@ -32,14 +33,14 @@ const SetSortView = ({
 
     // Actions after click sort label
     const handleSortLabeClick = (sortDirection, column, index) => {
-        let newColumns = DeepCloneJSON(columns);
+        let newColumns = cloneDeep(columns);
         newColumns[index].direction = sortDirection === "asc" ? "desc" : "asc";
         setColumns(newColumns);
     };
     // Actions after click the column item
     const handleColumnClick = (column, index) => {
         setCurrentItem(column);
-        let newColumns = DeepCloneJSON(columns);
+        let newColumns = cloneDeep(columns);
         newColumns[index].sort = !newColumns[index].sort;
         setColumns(newColumns);
     };

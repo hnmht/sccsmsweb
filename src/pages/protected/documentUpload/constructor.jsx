@@ -1,4 +1,4 @@
-import { DateTimeFormat,dayjs } from "../../../i18n/dayjs";
+import { DateTimeFormat } from "../../../i18n/dayjs";
 import store from "../../../store";
 import { CellCreator, CellCreateTime, CellModifyTime, CellModifier,CellDC } from "../pub/pubFunction";
 import { CellDescription } from "../pub/pubComponent";

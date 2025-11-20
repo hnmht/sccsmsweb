@@ -9,7 +9,7 @@ import { MRT_Localization_ZH_HANS } from 'material-react-table/locales/zh-Hans';
 import { MRT_Localization_EN } from "material-react-table/locales/en";
 
 import { utils, writeFileXLSX } from "xlsx";
-import { DateFormat } from "../../utils/tools";
+import { DateTimeFormat } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
 import { excelRows, excelColumns } from "./excelExport";
 
@@ -47,7 +47,7 @@ const ScReport = ({
 
     // Export data in Excel format
     const handleDownloadExcel = () => {
-        const fileName = exportFileName + DateFormat() + ".xlsx";
+        const fileName = exportFileName + DateTimeFormat() + ".xlsx";
         const eHeader = excelColumns(columns);
         const eRows = excelRows(rows, columns);
         let ws = utils.json_to_sheet(eRows, {

@@ -5,7 +5,7 @@ import { spacing } from "@mui/system";
 import styled from "@emotion/styled";
 import { useSelector } from "react-redux";
 import { green, red } from "@mui/material/colors";
-import dayjs from "../../../utils/myDayjs";
+import { dayjs } from "../../../i18n/dayjs";
 import { cloneDeep } from "lodash";
 
 import { Divider } from "../../../component/ScMui/ScMui";

@@ -20,7 +20,8 @@ import { useTranslation } from "react-i18next";
 
 import OperateArea from "../DocList/OperateArea";
 import { getOrderBy, getSortColumns, getColumnsKey, excelColumns, excelRows } from "../DocList/tools";
-import { MultiSortByArr, DateFormat } from "../../utils/tools";
+import { MultiSortByArr} from "../../utils/tools";
+import { DateTimeFormat } from "../../i18n/dayjs";
 
 const Paper = styled(MuiPaper)(spacing);
 const TableHead = styled(MuiTableHead)`
@@ -103,7 +104,7 @@ function DocTable({
 
     // Download Excel file
     const handleDownload = () => {
-        const fileName = docListTitle + DateFormat() + ".xlsx";
+        const fileName = docListTitle + DateTimeFormat() + ".xlsx";
         // Export all data useing xlsx library
         const eHeader = excelColumns(currentColumns);
         const eRows = excelRows(currentRows, currentColumns);

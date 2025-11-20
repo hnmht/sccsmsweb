@@ -14,8 +14,8 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AddCommentIcon } from "../../../../component/PubIcon/PubIcon";
-import { message } from "mui-message"
-import dayjs from "../../../../utils/myDayjs";
+import { message } from "mui-message";
+import { dayjs } from "../../../../i18n/dayjs";
 import { ScVoucherBody, ScVoucherBodyRow } from "../../../../component/ScVoucher";
 import Loader from "../../../../component/Loader/Loader";
 import ScInput from "../../../../component/ScInput";

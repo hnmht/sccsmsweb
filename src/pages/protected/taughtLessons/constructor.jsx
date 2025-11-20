@@ -1,5 +1,5 @@
 
-import dayjs from "../../../utils/myDayjs";
+import { dayjs} from "../../../i18n/dayjs";
 import store from "../../../store";
 import { VoucherStatus } from "../../../storage/dataTypes";
 import { ConvertFloatFormat } from "../../../utils/tools";

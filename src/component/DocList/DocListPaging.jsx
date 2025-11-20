@@ -22,7 +22,8 @@ import OperateArea from "./OperateArea";
 import RowActions from "./RowActions";
 
 import { getOrderBy, getSortColumns, getColumnsKey, excelColumns, excelRows } from "./tools";
-import { MultiSortByArr, DateFormat } from "../../utils/tools";
+import { MultiSortByArr } from "../../utils/tools";
+import { DateTimeFormat } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
 import { useTranslation } from "react-i18next";
 const Paper = styled(MuiPaper)(spacing);
@@ -106,7 +107,7 @@ const DocListPaging = ({
     };
     // Download Excel
     const handleDownload = () => {
-        const fileName = docListTitle + DateFormat() + ".xlsx";
+        const fileName = docListTitle + DateTimeFormat() + ".xlsx";
         const eHeader = excelColumns(currentColumns);
         const eRows = excelRows(currentRows, currentColumns);
         let ws = utils.json_to_sheet(eRows, {
