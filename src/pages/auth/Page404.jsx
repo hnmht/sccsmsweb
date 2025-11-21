@@ -1,11 +1,10 @@
-import React from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 import { Button as MuiButton, Typography } from "@mui/material";
 import { spacing } from "@mui/system";
+import { useTranslation } from "react-i18next";
 
 const Button = styled(MuiButton)(spacing);
-
 const Wrapper = styled.div`
   padding: ${(props) => props.theme.spacing(6)};
   text-align: center;
@@ -16,19 +15,17 @@ const Wrapper = styled.div`
   }
 `;
 
-function Page404() {
+const Page404 = () => {
+  const {t} = useTranslation();
   return (
     <Wrapper>
       <Typography component="h1" variant="h1" align="center" gutterBottom>
         404
       </Typography>
       <Typography component="h2" variant="h5" align="center" gutterBottom>
-        页面没有找到.
+        {t("page404")}
       </Typography>
-      <Typography component="h2" variant="body1" align="center" gutterBottom>
-        The page you are looking for might have been removed.
-      </Typography>
-
+   
       <Button
         component={Link}
         to="/"
@@ -36,10 +33,10 @@ function Page404() {
         color="secondary"
         mt={2}
       >
-        返回首页
+        {t("returnHomepage")}
       </Button>
     </Wrapper>
   );
-}
+};
 
 export default Page404;

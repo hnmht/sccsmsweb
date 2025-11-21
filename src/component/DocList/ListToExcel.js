@@ -8,7 +8,7 @@ const tableStyle = `
             background-color: grey;
             height: 50px;
             font-size: 16px;
-            font-family: '微软雅黑';
+            font-family: 'Times New Roman';
             font-weight: 700;
         }
         

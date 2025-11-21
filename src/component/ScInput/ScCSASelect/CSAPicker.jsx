@@ -63,7 +63,6 @@ const CSAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
         await InitDocCache(CSCName);
         // Get CSC list from front-end cache
         const newCSCs = await GetLocalCache(CSCName);
-        //更新
         setCSCs(newCSCs);
     };
     // Refresh CSA

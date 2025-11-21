@@ -129,7 +129,6 @@ const EditDocument = ({ isOpen, isNew, isModify, oriDoc, DC, onCancel, onOk, t }
 
     // Add or Edit Document
     const handleAddDoc = async () => {
-        // console.log("转换前:",currentDoc);
         let thisDoc = cloneDeep(currentDoc);
         delete thisDoc.createDate;
         delete thisDoc.modifyDate;

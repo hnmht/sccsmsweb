@@ -1,5 +1,5 @@
 import request from "../utils/request";
-//上传文件
+// Upload Files
 export function reqUploadFiles(data,isLoading=true) {
     return request({
         url: "/file/receive",
@@ -9,7 +9,7 @@ export function reqUploadFiles(data,isLoading=true) {
         isLoading
     });
 }
-//根据hash获取文件信息
+// Get file detail by file hash
 export function reqGetFileByHash(data, isLoading = true) {
     return request({
         url: "/file/getfilebyhash",
@@ -19,7 +19,7 @@ export function reqGetFileByHash(data, isLoading = true) {
     });
 }
 
-//根据hash批量获取文件信息
+// Get file details by hash array
 export function reqGetFilesByHash(data, isLoading = true) {
     return request({
         url: "/file/getfilesbyhash",

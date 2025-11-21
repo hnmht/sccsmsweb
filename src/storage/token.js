@@ -1,17 +1,17 @@
 import { storeObject,readObject,removeItem } from "./storage";
 
 const tokenKey = "sccss";
-//从本地存储读取token
+// Read token from local storage
 export const getToken = () => {
     return readObject(tokenKey);
 };
 
-//将token写入本地存储
+// Write token to local storage
 export const setToken = (token) => {
     storeObject(tokenKey,token);
 };
 
-//将token从本地存储移除
+// Remove token from local storage
 export const removeToken = () => {
     removeItem(tokenKey);
 };

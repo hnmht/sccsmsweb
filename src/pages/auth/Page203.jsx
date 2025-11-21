@@ -1,8 +1,8 @@
-import React from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 import { Button as MuiButton, Typography } from "@mui/material";
 import { spacing } from "@mui/system";
+import { useTranslation } from "react-i18next";
 const Button = styled(MuiButton)(spacing);
 
 const Wrapper = styled.div`
@@ -15,19 +15,16 @@ const Wrapper = styled.div`
   }
 `;
 
-function Page203() {
+const Page203 = () => {
+  const {t} = useTranslation();
   return (
     <Wrapper>
       <Typography component="h1" variant="h1" align="center" gutterBottom>
         203
       </Typography>
       <Typography component="h2" variant="h5" align="center" gutterBottom>
-        没有权限.
+        {t("page203")}
       </Typography>
-      <Typography component="h2" variant="body1" align="center" gutterBottom>
-        系统管理员没有给您分配权限,您不能进入系统!
-      </Typography>
-
       <Button
         component={Link}
         to="/"
@@ -35,10 +32,10 @@ function Page203() {
         color="secondary"
         mt={2}
       >
-        返回首页
+        {t("returnHomepage")}
       </Button>
     </Wrapper>
   );
-}
+};
 
 export default Page203;

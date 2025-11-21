@@ -10,7 +10,6 @@ import EditPPEQuota from "./editPPEQuota";
 import { QueryPanel, transConditionsToString } from "../../../component/QueryPanel";
 import { columns, rowActionsDefine, generateConditions, QueryFields } from "./constructor";
 import { reqGetPPEQuotaList, reqGetPPEQuotaDetail, reqDeletePPEQuota, reqConfirmPPEQuota, reqUnconfirmPPEQuota } from "../../../api/ppeQuota";
-import { PeriodDisplay } from "../../../storage/dataTypes";
 
 // Personal Protective Equipment (Position) Quota
 const PPEQuota = () => {
@@ -188,7 +187,6 @@ const PPEQuota = () => {
     };
     // Actions after click unconfirm button in the body row
     const handleCancelConfirmRow = async (item) => {
-        let periodDis = PeriodDisplay.get(item.period);
         let res = await reqUnconfirmPPEQuota(item);
         if (res.status) {
             message.success(t("unconfirmSuccessful"));

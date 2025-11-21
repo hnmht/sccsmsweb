@@ -110,7 +110,6 @@ const RiskLevel = () => {
     }
     // Actions after click ok button in the dialog
     const handelAddRLOk = useCallback(() => {
-        console.log("增加ok")
         setDiagStatus({
             oriRL: undefined,
             isOpen: false,

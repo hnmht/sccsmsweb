@@ -17,13 +17,11 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         setUserToken: (state, action) => {
-            //写入本地存储
             setToken(action.payload);
             state.token = action.payload;
         },
         setUserInfo: (state, action) => {
             let userInfo = action.payload;
-            //修改state内容
             state.id = userInfo.id;
             state.code = userInfo.code;
             state.name = userInfo.name;
@@ -43,9 +41,7 @@ export const userSlice = createSlice({
                 person: {},
                 department: {},
             };
-            //清空本地存储
             removeToken();
-            //修改state内容
             state.id = userInfo.id;
             state.token = userInfo.token;
             state.code = userInfo.code;

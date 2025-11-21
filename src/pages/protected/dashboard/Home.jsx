@@ -117,11 +117,11 @@ const Home = () => {
             </Grid>
             <Grid container spacing={6}>
                 <Grid item xs={12} lg={6}>
-                    {/* 审阅单据时间 */}
+                    {/* Voucher review time */}
                     <Reviewed reviewData={data.reviewedItems} chip={interval.label} t={t} />
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                    {/* 单据被审阅时间 */}
+                    {/* Time voucher reviewed */}
                     <BeReviewed reviewData={data.beReviewedItems} chip={interval.label} t={t} />
                 </Grid>
             </Grid>

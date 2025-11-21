@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
-import { UpIcon,DownIcon } from "../PubIcon/PubIcon";
+import { UpIcon, DownIcon } from "../PubIcon/PubIcon";
 
-function MySortLabel({ active = true, direction = "asc", sortNumber = 0, children }) {
+const MySortLabel = ({ active = true, direction = "asc", sortNumber = 0, children }) => {
     return (
         <Stack sx={{ display: "flex", flexDirection: "row" }}>
             {children}
@@ -15,6 +15,6 @@ function MySortLabel({ active = true, direction = "asc", sortNumber = 0, childre
             }
         </Stack>
     );
-}
+};
 
 export default MySortLabel;

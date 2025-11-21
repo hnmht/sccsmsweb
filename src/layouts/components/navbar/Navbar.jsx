@@ -1,14 +1,12 @@
-import { useEffect, useState, Fragment } from "react";
+import { Fragment } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
-// import { useTranslation } from "react-i18next";
 
 import {
   Grid,
   AppBar as MuiAppBar,
   IconButton as MuiIconButton,
   Toolbar,
-  Typography
 } from "@mui/material";
 
 import { MenuIcon } from "../../../component/PubIcon/PubIcon";
@@ -16,8 +14,6 @@ import NavbarNotificationsDropdown from "./NavbarNotificationsDropdown";
 import NavbarMessagesDropdown from "./NavbarMessagesDropdown";
 import NavbarLanguagesDropdown from "./NavbarLanguagesDropdown";
 import NavbarUserDropdown from "./NavbarUserDropdown";
-
-import { reqPubSysInfo } from "../../../api/pub";
 
 const AppBar = styled(MuiAppBar)`
   background: ${(props) => props.theme.header.background};
@@ -32,21 +28,6 @@ const IconButton = styled(MuiIconButton)`
 `;
 
 const Navbar = ({ onDrawerToggle }) => {
-  // const { t } = useTranslation();
-  const [sysInfo, setSysInfo] = useState(undefined);
-
-  useEffect(() => {
-    async function getSysInfo() {
-      const res = await reqPubSysInfo();
-      let newSysInfo = undefined;
-      if (res.status) {
-        newSysInfo = res.data.data;
-      }
-      setSysInfo(newSysInfo);
-    }
-    getSysInfo();
-  }, []);
-
   return (
     <Fragment>
       <AppBar position="sticky" elevation={0}>
@@ -61,12 +42,6 @@ const Navbar = ({ onDrawerToggle }) => {
               >
                 <MenuIcon />
               </IconButton>
-            </Grid>
-            <Grid item>
-              {sysInfo !== undefined
-                ? <Typography variant="h3">{sysInfo.organization.registerflag === 0 ? "未注册单位" : sysInfo.organization.organizationname}</Typography>
-                : null
-              }
             </Grid>
             <Grid item xs />
             <Grid item>

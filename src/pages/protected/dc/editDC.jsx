@@ -151,7 +151,7 @@ const EditDC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
                 message.success(t("modifySuccessful"));
                 onOk();
             }
-        } else {//增加  
+        } else {// Add  
             const addRes = await reqAddDC(thisDoc);
             if (addRes.status) {
                 message.success(t("addSuccessful"));

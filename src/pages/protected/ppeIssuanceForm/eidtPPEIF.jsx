@@ -184,7 +184,7 @@ const EditPPEIF = ({ isOpen, isNew, isModify, oriPPEIF, onCancel, onOk, t }) => 
         const newVoucherData = cloneDeep(voucherData);
         let newRow = cloneDeep(voucherRow);
         // Automaticaly generate row number
-        if (newVoucherData.body.length === 1) { //如果表体只有一行
+        if (newVoucherData.body.length === 1) { 
             newRow.rowNumber = newVoucherData.body[0].rowNumber + 10;
         } else {
             newVoucherData.body.sort(MultiSortByArr([{ field: "rowNumber", order: "asc" }]));
@@ -220,12 +220,11 @@ const EditPPEIF = ({ isOpen, isNew, isModify, oriPPEIF, onCancel, onOk, t }) => 
         setErrors(newErrors);
         setVoucherData(newVoucherData);
     };
-    //打印签字表
+
     const handlePrintClick = useReactToPrint({
         content: () => printAreaRef.current,
     });
 
-    //打印出库单
     const handlePrintDeliveryClick = useReactToPrint({
         content: () => printAreaRefb.current,
     });

@@ -68,7 +68,7 @@ const getInitialValue = async (isNew, isModify, oriTr) => {
                 newTr.tcFiles = newTr.tc.files;
                 newTr.modifier = person;
                 newTr.modifyDate = currentTime;
-            } else {//查看
+            } else {// View
                 newTr = cloneDeep(oriTr);
                 newTr.tcFiles = newTr.tc.files;
             }
@@ -195,8 +195,6 @@ const EditTrainingRecord = ({ isOpen, isNew, isModify, oriTr, onCancel, onOk, t 
             }
             return newErrors;
         });
-
-        // console.log("更新", itemKey, ",耗时:", new Date() - startTime, "ms");
     };
     // Add && Modify Training Record
     const handleAddTR = async () => {

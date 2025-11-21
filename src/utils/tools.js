@@ -51,9 +51,7 @@ export function ArrayElementToTop(arr, element, elementKey) {
     let newArr = cloneDeep(arr);
     let index = newArr.findIndex((value) => value[elementKey] === element[elementKey]);
     if (index > 0) {
-        //将当前元素加入到数组顶部
         newArr.unshift(newArr[index]);
-        //数组增加了一个元素，删除原有元素
         newArr.splice(index + 1, 1);
     }
     return newArr;
@@ -63,9 +61,7 @@ export function ArrayElementToBottom(arr, element, elementKey) {
     let newArr = cloneDeep(arr);
     let index = newArr.findIndex((value) => value[elementKey] === element[elementKey]);
     if (index < arr.length - 1 && index >= 0) {
-        //将当前元素推入数组底部
         newArr.push(newArr[index]);
-        //删除原有元素
         newArr.splice(index, 1);
     }
     return newArr;

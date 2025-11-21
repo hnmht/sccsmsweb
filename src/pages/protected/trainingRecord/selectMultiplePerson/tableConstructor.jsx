@@ -1,7 +1,7 @@
 
 import { CellStatus,CellGender,CellSystemFlag } from "../../pub/pubFunction";
 
-//显示列定义
+// Define Training Record list columns
 export const columns = [
     { id: "id", label: "id", alignment: "left", minWidth: 100, visible: false, sort: true, sortField: "id", display: { type: 0, cell1: null } },
     { id: "code", label: "code", alignment: "center", minWidth: 100, visible: true, sort: true, sortField: "code", display: { type: 0, cell1: null } },

@@ -32,7 +32,7 @@ const OnlineUser = () => {
         if (delRes.status) {
             message.success("successful");
         }
-        //刷新数据
+        // Get Online user list from backend
         await handleGetOnlineUsers();
     };
 

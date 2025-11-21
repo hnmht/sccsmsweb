@@ -14,7 +14,7 @@ import ScUDDSelectIcon from '@mui/icons-material/SnippetFolderOutlined';
 import ScDeptSelectIcon from "@mui/icons-material/Apartment";//520
 import ScEICSelectIcon from "@mui/icons-material/Widgets";//540
 import ScSicSelectIcon from '@mui/icons-material/HolidayVillage';//525
-//Sc数据类型图标
+// Data Type Icon map
 const dataIconMap = new Map([
     [301, ScTextInputIcon],
     [302, ScNumberInputIcon],
@@ -78,7 +78,7 @@ export const GetDataTypeDefaultValue = (typeid) => {
     }
 };
 
-//获取Sc数据类型图标函数
+// Get Icon
 export const DataIcon = (props) => {
     const { datacode, ...otherPorps } = props;
     const Icon = dataIconMap.get(datacode);
@@ -87,18 +87,6 @@ export const DataIcon = (props) => {
 
 // Voucher status
 export const VoucherStatus = ["free", "confirmed", "executing", "completed"];
-
-//周期显示
-export const PeriodDisplay = new Map([
-    ["month", "月"],
-    ["day", "日"],
-    ["week", "周"],
-    ["meadow", "旬"],
-    ["halfmoon", "半月"],
-    ["quarter", "季"],
-    ["halfayear", "半年"],
-    ["year", "年"],
-]);
 
 // Get Period's StartDate and EndDate
 export const PeriodStartandEnd = (period) => {

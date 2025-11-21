@@ -78,10 +78,10 @@ const ScAvatarUpload = (props) => {
             formData.append("fileName", file.name);
             formData.append("fileType", fileInfo.fileType);
             formData.append("isImage", fileInfo.isImage);
-            formData.append("model", fileInfo.Model); //相机型号
-            formData.append("DateTimeOriginal", fileInfo.DateTimeOriginal); //初始拍摄时间
-            formData.append("latitude", fileInfo.latitude);//纬度
-            formData.append("longitude", fileInfo.longitude);//经度 
+            formData.append("model", fileInfo.Model); 
+            formData.append("DateTimeOriginal", fileInfo.DateTimeOriginal);
+            formData.append("latitude", fileInfo.latitude);
+            formData.append("longitude", fileInfo.longitude);
             formData.append("source", "browser");
             // Upload the file to server
             const uploadRes = await reqUploadFiles(formData, false);

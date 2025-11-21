@@ -1,20 +1,16 @@
 import { lazy } from "react";
 import Loadable from "./component/Loadable";
 
-// Layouts
-import AuthLayout from "./layouts/Auth";
-import DashboardLayout from "./layouts/Dashboard";
-import PresentationLayout from "./layouts/Presentation";
-// Intro Page
-import Landing from "./pages/presentation/Landing";
-// Landing Page
-import SignIn from "./pages/auth/SignIn";
-import AuthGuard from "./layouts/components/guards/AuthGuard";
-import Page404 from "./pages/auth/Page404";
-import Page203 from "./pages/auth/Page203";
-import ProtectedPage from "./pages/protected/ProtectedPage";
-import DownloadApp from "./pages/downloadApp/downloadApp";
-
+const PresentationLayout = Loadable(lazy(() => import("./layouts/Presentation"))); 
+const Landing = Loadable(lazy(() => import("./pages/presentation/Landing")));
+const Page404 = Loadable(lazy(() => import("./pages/auth/Page404"))); 
+const Page203 = Loadable(lazy(() => import("./pages/auth/Page203"))); 
+const ProtectedPage = Loadable(lazy(() => import("./pages/protected/ProtectedPage"))); 
+const AuthGuard = Loadable(lazy(() => import("./layouts/components/guards/AuthGuard"))); 
+const AuthLayout = Loadable(lazy(() => import("./layouts/Auth")));
+const DownloadApp = Loadable(lazy(() => import("./pages/downloadApp/downloadApp"))); 
+const DashboardLayout = Loadable(lazy(() => import("./layouts/Dashboard")));
+const SignIn = Loadable(lazy(() => import("./pages/auth/SignIn")));
 const Home = Loadable(lazy(() => import("./pages/protected/dashboard/Home"))); // Dashboard
 const Calendar = Loadable(lazy(() => import("./pages/protected/calendar/Calendar"))); // Calendar
 const AddressBook = Loadable(lazy(() => import("./pages/protected/addressBook/AddressBook")));  // Address Book
