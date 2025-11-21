@@ -21,7 +21,8 @@ export const readString = (storageKey) => {
         const value = localStorage.getItem(storageKey);
         return value !== null  ? value : null;
     } catch(err) {
-        console.log("readString error:",err);
+        console.err("readString error:",err);
+        return null;
     }
 };
 
@@ -30,7 +31,8 @@ export const readObject = (storageKey) => {
         const jsonValue = localStorage.getItem(storageKey);
         return jsonValue !== null ? JSON.parse(jsonValue) :null;
     } catch(err) {
-        console.log("readObject error:",err);
+        console.err("readObject error:",err);
+        return null;
     }
 };
 

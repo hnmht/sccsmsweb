@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import  { Fragment, forwardRef,useState } from "react";
 import styled from "@emotion/styled";
 import { NavLink } from "react-router-dom";
 import { rgba, darken } from "polished";
@@ -94,7 +94,7 @@ const SidebarNavListItem = (props) => {
   } = props;
 
 
-  const [open, setOpen] = React.useState(openProp);
+  const [open, setOpen] = useState(openProp);
 
   const handleToggle = () => {
     setOpen((state) => !state);
@@ -102,7 +102,7 @@ const SidebarNavListItem = (props) => {
 
   if (children) {
     return (
-      <React.Fragment>
+      <Fragment>
         <Item depth={depth} onClick={handleToggle}>
           {Icon && <Icon />}
           <Title depth={depth}>
@@ -112,12 +112,12 @@ const SidebarNavListItem = (props) => {
           {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </Item>
         <Collapse in={open}>{children}</Collapse>
-      </React.Fragment>
+      </Fragment>
     );
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Item
         depth={depth}
         component={CustomRouterLink}
@@ -130,7 +130,7 @@ const SidebarNavListItem = (props) => {
           {badge && <Badge label={badge} />}
         </Title>
       </Item>
-    </React.Fragment>
+    </Fragment>
   );
 };
 

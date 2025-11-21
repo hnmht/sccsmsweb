@@ -62,6 +62,7 @@ const Profile = Loadable(lazy(() => import("./pages/protected/profile/profile"))
 const About = Loadable(lazy(() => import("./pages/protected/about/about")));
 const Message = Loadable(lazy(() => import("./pages/protected/message/message")));
 
+
 const routes = [
     {
         path: "/",

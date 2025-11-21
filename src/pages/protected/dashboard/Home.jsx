@@ -20,7 +20,6 @@ import { reqGetDashboardData } from "../../../api/dashboard";
 import { initDateIntervals } from "./constructor";
 
 const Typography = styled(MuiTypography)(spacing);
-
 const Home = () => {
     const [data, setData] = useState(undefined);
     const user = useSelector((state) => state.user);

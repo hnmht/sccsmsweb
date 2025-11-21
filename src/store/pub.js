@@ -21,8 +21,7 @@ export const logout = async () => {
 export const getUserInfo = async () => {
     const token = getToken();
     if (!token) {
-        console.error("Token not found")
-        return
+        return false;
     }
     const userInfoRes = await reqUserInfo(token, false);
     if (!userInfoRes.status) {

@@ -12,7 +12,6 @@ import {
   ListItemButton,
   Typography,
 } from "@mui/material";
-
 import { THEMES } from "../../constants";
 import useTheme from "../../hooks/useTheme";
 
@@ -29,9 +28,9 @@ const DemoButton = styled.div`
   position: relative;
   border: 1px solid
     ${(props) =>
-      !props.active
-        ? props.theme.palette.action.selected
-        : props.theme.palette.action.active};
+    !props.active
+      ? props.theme.palette.action.selected
+      : props.theme.palette.action.active};
 `;
 
 const DemoButtonInner = styled.div`
@@ -100,9 +99,8 @@ const Heading = styled(ListItemButton)`
   }
 `;
 
-function Demo({ title, themeVariant }) {
+const Demo = ({ title, themeVariant }) => {
   const { theme, setTheme } = useTheme();
-
   return (
     <Grid item xs={6}>
       <DemoButton
@@ -116,13 +114,13 @@ function Demo({ title, themeVariant }) {
       </DemoTitle>
     </Grid>
   );
-}
+};
 
-function Demos() {
-  const {t} = useTranslation();
+const Demos = () => {
+  const { t } = useTranslation();
   return (
     <Wrapper>
-      <Heading>{t("labelChooseTheme")}</Heading> 
+      <Heading>{t("labelChooseTheme")}</Heading>
       <Box px={4} my={3}>
         <Grid container spacing={3}>
           <Demo title={t("labelThemeDark")} themeVariant={THEMES.DARK} />
@@ -132,12 +130,12 @@ function Demos() {
           <Demo title={t("labelThemeGreen")} themeVariant={THEMES.GREEN} />
           <Demo title={t("labelThemeIndigo")} themeVariant={THEMES.INDIGO} />
         </Grid>
-      </Box> 
+      </Box>
     </Wrapper>
   );
-}
+};
 
-function Settings() {
+const Settings = () => {
   const [state, setState] = useState({
     isOpen: false,
   });
@@ -156,6 +154,6 @@ function Settings() {
       </Drawer>
     </React.Fragment>
   );
-}
+};
 
 export default Settings;

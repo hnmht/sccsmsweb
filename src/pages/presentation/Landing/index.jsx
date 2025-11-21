@@ -1,13 +1,13 @@
-import { Fragment } from "react";
+import { Fragment,useEffect } from "react";
 import { useSelector } from "react-redux";
 import DownloadQR from "./DownloadQR";
 import AppBar from "./AppBar";
 import Introduction from "./Introduction";
 import About from "./About";
 
-function Presentation() {
+const Presentation = () => {
   const user = useSelector(state => state.user);
-  const isLogin = (user !== undefined && JSON.stringify(user) !== '{}' && user.name !== '');
+  const isLogin = (user !== undefined && JSON.stringify(user) !== '{}' && user.id !== 0);
   return (
     <Fragment>
       <DownloadQR />
@@ -16,6 +16,5 @@ function Presentation() {
       <About />
     </Fragment>
   );
-}
-
+};
 export default Presentation;

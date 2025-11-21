@@ -12,13 +12,13 @@ const logoStyle = {
     cursor: 'pointer',
 };
 
-function AIAppBar({ user, isLogin }) {
+const AIAppBar = ({ user, isLogin }) => {
     const { t } = useTranslation();
 
     const handleSignout = async () => {
         logout();
     };
-    
+
     return (
         <div>
             <AppBar

@@ -1,17 +1,16 @@
-import * as React from "react";
+import { Fragment } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-function hasAuth(path, menuList) {
+const hasAuth = (path, menuList) => {
   return menuList.some(menu => menu.path === path);
-}
+};
 
 // Only allow users to access authorized pages.
-function AuthGuard(props) {
+const AuthGuard = (props) => {
   const { children } = props;
   const location = useLocation();
   const user = useSelector(state => state.user);
-
   // If user Object is empty, it means the user isn't logged in,
   // so navigate to the login interface
   if (!user || JSON.stringify(user) === '{}' || user.id === 0) {
@@ -23,6 +22,7 @@ function AuthGuard(props) {
     }
   }
 
-  return <React.Fragment>{children}</React.Fragment>;
-}
+  return <Fragment>{children}</Fragment>;
+};
+
 export default AuthGuard;

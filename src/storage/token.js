@@ -1,6 +1,6 @@
 import { storeObject,readObject,removeItem } from "./storage";
 
-const tokenKey = "sccss";
+const tokenKey = "sccsToken";
 // Read token from local storage
 export const getToken = () => {
     return readObject(tokenKey);
