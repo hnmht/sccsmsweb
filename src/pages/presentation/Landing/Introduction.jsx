@@ -9,7 +9,7 @@ const zeroInfo = {
   introText: "An open-source construction site management system that helps managers effectively implement on-site management measures.",
   file: {
     "id": 0,
-    "fileUrl": `/static/img/screenshots/dashboard.jpg`,
+    "fileUrl": `/static/img/brands/introduce.jpg`,
   }
 };
 
@@ -91,11 +91,12 @@ const Introduction = () => {
         >
           <img
             src={info.file.fileUrl}
-            alt="controduce"
+            alt="introduce"
             style={{
               alignSelf: "center",
               marginTop: theme.spacing(8),
               width: "75%",
+              transform:"perspective(1920px) rotateX(25deg)",
               borderRadius: theme.shape.borderRadius,
               outline: "6px solid",
               outlineColor: "hsla(220,25%,80%,0.2)",

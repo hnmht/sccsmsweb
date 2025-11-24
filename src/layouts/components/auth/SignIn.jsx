@@ -45,7 +45,7 @@ const SignIn = () => {
         if (!keyRes.status) {
             setLoading(false);
             return
-        }        
+        } 
         const publicKey = keyRes.data;
         // Encrypt the password using the RSA public key.
         let rsaPassword = encryptPassword(publicKey, password);      

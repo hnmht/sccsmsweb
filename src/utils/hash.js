@@ -9,17 +9,17 @@ export const getFileInfo = async (file) => {
     const arrayBuffer = await file.arrayBuffer();
     const fileHash = await computeFileHash(arrayBuffer);
     // Set the file info default values
-    let isImage = 0; 
-    let imageWidth = 0; 
-    let imageHeight = 0; 
+    let isImage = 0;
+    let imageWidth = 0;
+    let imageHeight = 0;
     let Model = "n"; // Camera Model
     let DateTimeOriginal = dayjs(file.lastModifiedDate).format("YYYYMMDDHHmm");
-    let latitude = 0.01;  
+    let latitude = 0.01;
     let longitude = 0.01;
     // Check if the file is an image and extract EXIF data
     const uint8Array = new Uint8Array(arrayBuffer);
     const checkRes = checkIsImage(uint8Array);
-    if (checkRes.isImage === 1) { 
+    if (checkRes.isImage === 1) {
         isImage = checkRes.isImage;
         fileType = checkRes.type
         const tags = await exifReader.load(arrayBuffer);
@@ -50,7 +50,6 @@ export const getFileInfo = async (file) => {
 
 // Compute file hash
 export const computeFileHash = async (arrayBuffer) => {
-    const startTime = Date.now();
     let fileHash = "emptyHash";
     const isHttps = typeof window !== 'undefined' && window.crypto && window.crypto.subtle;
     if (isHttps) {
@@ -64,9 +63,8 @@ export const computeFileHash = async (arrayBuffer) => {
         const byteString = bufferAdapter.bytes();
         const md = forge.md.sha256.create();
         md.update(byteString);
-        const fileHash = md.digest().toHex();
+        fileHash = md.digest().toHex();
     }
-    console.log("computeFileHash time:", Date.now() - startTime);
     return fileHash;
 }
 

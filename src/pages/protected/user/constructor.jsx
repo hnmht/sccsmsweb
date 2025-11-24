@@ -35,7 +35,7 @@ const rowStopDisabled = (row) => {
 
 // Is operator
 const CellIsOperator = (row) => {
-    return row.isoperator === 1 ? "Y" : "N";
+    return row.isOperator === 1 ? "Y" : "N";
 };
 
 // Is the batch delete button disible

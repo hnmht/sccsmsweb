@@ -13,7 +13,8 @@ import {
     Box,
     Input,
     IconButton,
-    Tooltip
+    Tooltip,
+    Link
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { EmailIcon, PhoneIcon, RefreshIcon } from "../../../component/PubIcon/PubIcon";
@@ -107,7 +108,7 @@ function AddressBook() {
                                                                             <ListItemIcon>
                                                                                 <EmailIcon />
                                                                             </ListItemIcon>
-                                                                            <ListItemText primary={<Typography color="secondary" fontSize={16}>{person.email}</Typography>} />
+                                                                            <ListItemText primary={<Typography color="secondary" fontSize={16}><Link href={`mailto:${person.email}`} target="_blank">{person.email}</Link></Typography>} />
                                                                         </ListItem>
                                                                     </List>
                                                                 </Grid>
