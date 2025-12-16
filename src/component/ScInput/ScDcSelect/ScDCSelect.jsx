@@ -89,7 +89,7 @@ const ScDCSelect = (props) => {
                     id={id}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={isEdit ? placeholder : null}
+                    placeholder={t(isEdit ? placeholder : "")}
                     value={currentDoc.name}
                     onBlur={() => handleOnBlur()}
                     error={errInfo.isErr}
@@ -124,7 +124,7 @@ const ScDCSelect = (props) => {
                     id={id}
                     disabled={!isEdit}
                     name={itemKey}
-                    placeholder={isEdit ? placeholder : null}
+                    placeholder={t(isEdit ? placeholder : "")}
                     value={currentDoc.name}
                     onBlur={() => handleOnBlur()}
                     error={errInfo.isErr}

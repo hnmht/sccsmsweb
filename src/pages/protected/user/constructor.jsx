@@ -9,6 +9,7 @@ import {
     CellPosition,
     CellSystemFlag
 } from "../pub/pubFunction";
+import { CellDescription } from "../pub/pubComponent";
 
 const rowCopyAddDisabled = (row) => {
     return row.systemFlag === 1;
@@ -106,7 +107,7 @@ export const columns = [
     { id: "isOperator", label: "isOperator", alignment: "center", minWidth: 60, visible: true, sortField: "isOperator", sort: true, display: { type: 1, cell1: CellIsOperator } },
     { id: "position", label: "position", alignment: "center", minWidth: 60, visible: true, sortField: "position.name", sort: true, display: { type: 1, cell1: CellPosition } },
     { id: "department", label: "department", alignment: "center", minWidth: 60, visible: true, sortField: "department.name", sort: true, display: { type: 1, cell1: CellDept } },
-    { id: "description", label: "description", alignment: "center", minWidth: 240, visible: false, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "description", alignment: "center", minWidth: 240, visible: false, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "gender", label: "gender", alignment: "center", minWidth: 60, visible: true, sortField: "gender", sort: true, display: { type: 1, cell1: CellGender } },
     { id: "status", label: "status", alignment: "center", minWidth: 60, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
     { id: "systemFlag", label: "systemFlag", alignment: "center", minWidth: 60, visible: true, sortField: "systemFlag", sort: true, display: { type: 1, cell1: CellSystemFlag } },

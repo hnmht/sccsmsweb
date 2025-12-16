@@ -243,12 +243,12 @@ const DocList = ({
                                     if (!column.visible) {
                                         return undefined;
                                     }
-                                    return (<TableCell key={"head" + column.id} align={column.alignment} style={{ minWidth: column.minWidth, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    return (<TableCell key={"head" + column.id} align={column.alignment} style={{ minWidth: column.minWidth, maxWidth:150,overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                         {t(column.label)}
                                     </TableCell>);
                                 })
                             }
-                            <TableCell key={"headActons"} align={"center"} style={{ minwidth: 200 }}>{t("action")}</TableCell>
+                            <TableCell key={"headActons"} align={"center"} style={{ minWidth: 200 }}>{t("action")}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -2,6 +2,7 @@ import {
     Typography,
 } from "@mui/material";
 import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus } from "../pub/pubFunction";
+import { CellDescription } from "../pub/pubComponent";
 
 
 // Execution Projcet Category display content
@@ -114,7 +115,7 @@ export const columns = [
     { id: "id", label: "ID", alignment: "left", minWidth: 30, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
     { id: "code", label: "code", alignment: "center", minWidth: 60, visible: true, sortField: "code", sort: true, display: { type: 0, cell1: null } },
     { id: "name", label: "name", alignment: "center", minWidth: 60, visible: true, sortField: "name", sort: true, display: { type: 1, cell1: CellName } },
-    { id: "description", label: "description", alignment: "center", minWidth: 160, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "description", alignment: "center", minWidth: 160, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "status", label: "status", alignment: "center", minWidth: 60, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
     { id: "epc", label: "epc", alignment: "center", minWidth: 60, visible: false, sortField: "epc.name", sort: true, display: { type: 1, cell1: CellEPCName } },
     { id: "resultType", label: "resultType", alignment: "center", minWidth: 60, visible: true, sortField: "resultType.name", sort: true, display: { type: 1, cell1: CellResultType } },

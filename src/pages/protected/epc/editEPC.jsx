@@ -143,13 +143,13 @@ const EditEPC = ({ isOpen, isNew, isModify, oriDoc, onCancel, onOk }) => {
         if (isModify) {// Edit EPC            
             const editRes = await reqEditEPC(thisDoc);
             if (editRes.status) {
-                message.success("modifySuccessful");
+                message.success(t("modifySuccessful"));
                 onOk();
             }
         } else {// Add EPC            
             const addRes = await reqAddEPC(thisDoc);
             if (addRes.status) {
-                message.success("addSuccessful");
+                message.success(t("addSuccessful"));
                 onOk();
             }
         }

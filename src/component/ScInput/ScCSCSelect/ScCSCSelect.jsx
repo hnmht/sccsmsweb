@@ -88,7 +88,7 @@ const ScCSCSelect = (props) => {
                     fullWidth
                     type="text"
                     id={id}
-                    disabled={!isEdit}
+                    disabled={true}
                     name={itemKey}
                     placeholder={isEdit ? t(placeholder) : null}
                     value={currentDoc.name}
@@ -123,7 +123,7 @@ const ScCSCSelect = (props) => {
                     fullWidth
                     type="text"
                     id={id}
-                    disabled={!isEdit}
+                    disabled={false}
                     name={id}
                     placeholder={isEdit ? t(placeholder) : null}
                     value={currentDoc.name}

@@ -41,7 +41,7 @@ const detectorLanguage = () => {
     try {
         lang = localStorage.getItem("sccsmsLanguage");
     } catch (err) {
-        console.err(err);
+        console.error(err);
     }
     // Check if the language is supported
     if (lang && Object.keys(resources).includes(lang)) {
@@ -70,10 +70,10 @@ i18n
         interpolation: {
             escapeValue: false,
         },
-        detection: {
-            orderBy: ["localStorage", "navigator"],
-            caches: ["localStorage"]
-        }
+        // detection: {
+        //     orderBy: ["localStorage", "navigator"],
+        //     caches: ["localStorage"]
+        // }
     });
 
 i18n.on("languageChanged", (lng) => {
