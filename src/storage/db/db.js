@@ -20,12 +20,13 @@ import { reqGetPPEList, reqGetPPECache } from "../../api/ppe";
 import { reqPubSysInfo, reqGenerateFrontDBID, reqGetFrontDBID } from "../../api/pub";
 import { dbName, table, tableEncrypted } from "./schema";
 import { importCryptoKey, encryptData, decryptDataArr, decryptData } from "./encrypt";
+import { getToken } from "../token";
 
 const db = new Dexie(dbName);
 db.version(1).stores(table);
 
 // Get Archive by ID
-export const GetCacheDocById = async (archive, id) => {
+export const GetCacheDocById = async (archive, id) => {      
     let value = await db[archive].get(id);
     if (tableEncrypted[archive]) {
         value = decryptData(value);
@@ -151,6 +152,10 @@ export const docTable = new Map([
 
 // Initialize indexedDB database
 export const initLocalDb = async () => {
+    const token = getToken();
+    if (!token || token === null || token === "") {
+        return
+    }
     // Request the server to get the DBID
     let newDbid;
     const res = await reqPubSysInfo(false);

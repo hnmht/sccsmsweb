@@ -1,4 +1,5 @@
 import { CellCreator, CellCreateTime, CellModifyTime, CellModifier,CellStatus } from "../pub/pubFunction";
+import { CellDescription } from "../pub/pubComponent";
 
 const rowCopyAddDisabled = (row) => {
     return false;
@@ -77,7 +78,7 @@ export const columns = [
     { id: "id", label: "ID", alignment: "left", minWidth: 20, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
     { id: "code", label: "code", alignment: "left", minWidth: 40, visible: true, sortField: "code", sort: true, display: { type: 0, cell1: null } },
     { id: "name", label: "name", alignment: "center", minWidth: 100, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
-    { id: "description", label: "description", alignment: "center", minWidth: 300, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "description", alignment: "center", minWidth: 396, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "status", label: "status", alignment: "center", minWidth: 80, visible: true, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
     { id: "creator", label: "creator", alignment: "center", minWidth: 30, visible: true, sortField: "creator.name", sort: true, display: { type: 1, cell1: CellCreator } },
     { id: "createDate", label: "createDate", alignment: "center", minWidth: 30, visible: true, sortField: "createDate", sort: true, display: { type: 1, cell1: CellCreateTime } },

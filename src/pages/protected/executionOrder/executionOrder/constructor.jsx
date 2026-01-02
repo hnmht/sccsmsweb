@@ -424,8 +424,8 @@ export const transEODetailToFrontEnd = async (edDetail) => {
                 case 530:
                 case 540:
                 case 550:
-                    row.executionValue = row.executionValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontdb, parseInt(row.executionValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
-                    row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontdb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
+                    row.executionValue = row.executionValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontDb, parseInt(row.executionValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
+                    row.errorValue = row.errorValue !== "0" ? await GetCacheDocById(row.epa.resultType.frontDb, parseInt(row.errorValue)) : GetDataTypeDefaultValue(row.epa.resultType.id);
                     break;
                 default:
                     console.error("No matching DataType");

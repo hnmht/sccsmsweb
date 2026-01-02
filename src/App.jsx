@@ -8,6 +8,7 @@ import createTheme from "./theme";
 import useTheme from "./hooks/useTheme";
 import routes from "./routes.jsx";
 import store from "./store";
+import { initLocalDb } from "./storage/db/db.js";
 import { getUserInfo } from "./store/pub.js";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,6 +21,7 @@ function App({ emotionCache = clientSideEmotionCache }) {
   const { theme } = useTheme();
   useEffect(()=> {
     getUserInfo();
+    initLocalDb();
   },[]);
   return (
     <CacheProvider value={emotionCache}>

@@ -12,7 +12,7 @@ export const getFileInfo = async (file) => {
     let isImage = 0;
     let imageWidth = 0;
     let imageHeight = 0;
-    let Model = "n"; // Camera Model
+    let Model = "unknown"; // Camera Model
     let DateTimeOriginal = dayjs(file.lastModifiedDate).format("YYYYMMDDHHmm");
     let latitude = 0.01;
     let longitude = 0.01;

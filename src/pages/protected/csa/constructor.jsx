@@ -1,5 +1,6 @@
 import { cloneDeep } from "lodash";
 import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus } from "../pub/pubFunction";
+import { CellDescription } from "../pub/pubComponent";
 
 const rowCopyAddDisabled = (row) => {
     return false;
@@ -90,7 +91,7 @@ export const columns = [
     { id: "id", label: "ID", alignment: "left", minWidth: 20, visible: false, sortField: "id", sort: true, display: { type: 0, cell1: null } },
     { id: "code", label: "code", alignment: "center", minWidth: 40, visible: true, sortField: "code", sort: true, display: { type: 0, cell1: null } },
     { id: "name", label: "name", alignment: "center", minWidth: 60, visible: true, sortField: "name", sort: true, display: { type: 0, cell1: null } },
-    { id: "description", label: "description", alignment: "center", minWidth: 100, visible: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
+    { id: "description", label: "description", alignment: "center", minWidth: 100, visible: true, sortField: "description", sort: true, display: { type: 1, cell1: CellDescription } },
     { id: "status", label: "status", alignment: "center", minWidth: 30, visible: false, sortField: "status", sort: true, display: { type: 1, cell1: CellStatus } },
     { id: "subDept", label: "subDept", alignment: "center", minWidth: 30, visible: false, sortField: "subDept.name", sort: true, display: { type: 1, cell1: CellDept } },
     { id: "respDept", label: "respDept", alignment: "center", minWidth: 30, visible: true, sortField: "respDept.name", sort: true, display: { type: 1, cell1: CellRespDept } },
