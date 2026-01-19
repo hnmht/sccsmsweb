@@ -1,4 +1,4 @@
-import { ConvertToUnixSecond } from "../../i18n/dayjs";
+import { ConvertToUnixSecond,dayjs } from "../../i18n/dayjs";
 export const Comparisons = [
     { id: "equal", label: 'equal', value: '=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },
     { id: "notequal", label: 'notEqual', value: '!=', addCharacter: false, needInput: true, applicable: ["object", "string", "int", "number", "date", "dateTime"] },

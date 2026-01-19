@@ -28,7 +28,7 @@ export function generateDocReportDefaultCons() {
             logic: "and",
             field: { id: 1, value: "d.uploaddate", label: "uploadDate", inputType: 306, resultType: "date", resultfield: "" },
             compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
-            value: dayjs().weekday(0),
+            value: dayjs().weekday(0).startOf("day"),
             isNecessary: true
         },
         {

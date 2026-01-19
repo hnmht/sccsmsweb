@@ -135,7 +135,7 @@ export function generatePPEIFConditions() {
             logic: "and",
             field: { id: 1, value: "h.billdate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
             compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
-            value: dayjs().weekday(0),
+            value: dayjs().weekday(0).startOf("day"),
             isNecessary: true
         },
         {
