@@ -324,7 +324,7 @@ const EditWorkOrder = ({ isOpen, isNew, isModify, oriWO, onCancel, onOk }) => {
                             dataType={306}
                             allowNull={false}
                             isEdit={isEdit}
-                            itemShowName="workDate"
+                            itemShowName="operationDate"
                             itemKey="workDate"
                             initValue={voucherData.workDate}
                             pickDone={handleGetValue}
