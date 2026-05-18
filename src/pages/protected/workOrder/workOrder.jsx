@@ -30,6 +30,7 @@ const WorkOrder = () => {
             // Convert the query conditions to a string
             let queryString = transConditionsToString(generateConditions());
             let wosRes = await reqGetWOList({ queryString: queryString });
+
             let newWos = [];
             if (wosRes.status) {
                 newWos = wosRes.data;

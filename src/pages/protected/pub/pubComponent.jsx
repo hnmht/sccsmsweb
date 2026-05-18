@@ -10,3 +10,9 @@ export const CellRiskLevel = (row, column) => {
         <Typography variant="body1" style={{ padding: 4 }}>{row.riskLevel.name}</Typography>
     </div>);
 };
+
+// Display Name Cell content
+export const CellName = (row,column) => {
+    return <span style={{ width: column.minWidth, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>{row.name}</span>;
+
+}
