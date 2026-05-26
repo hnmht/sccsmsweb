@@ -140,6 +140,7 @@ export const bodyColumns = [
     { id: "action", label: "action", alignment: "center", width: 80, maxWidth: 80, minWidth: 80, visible: true, allowNul: true, sortField: "action", sort: true, display: { type: 0, cell1: null } },
     { id: "rowNumber", label: "rowNumber", alignment: "left", width: 60, maxWidth: 60, minWidth: 60, visible: true, allowNul: true, sortField: "rowNumber", sort: true, display: { type: 0, cell1: null } },
     { id: "ppe", label: "ppe", alignment: "left", width: 256, maxWidth: 512, minWidth: 80, visible: true, allowNul: false, sortField: "ppe.name", sort: true, display: { type: 0, cell1: null } },
+    { id: "unit", label: "unit", alignment: "left", width: 64, maxWidth: 256, minWidth: 80, visible: true, allowNul: true, sortField: "ppe.unit", sort: true, display: { type: 0, cell1: null } },
     { id: "quantity", label: "quantity", alignment: "left", width: 128, maxWidth: 256, minWidth: 60, visible: true, allowNul: false, sortField: "quantity", sort: true, display: { type: 0, cell1: null } },
     { id: "description", label: "description", alignment: "left", width: 256, maxWidth: 512, minWidth: 80, visible: true, allowNul: true, sortField: "description", sort: true, display: { type: 0, cell1: null } },
     { id: "status", label: "status", alignment: "left", width: 80, maxWidth: 128, minWidth: 20, visible: true, allowNul: true, sortField: "status", sort: true, display: { type: 0, cell1: null } },

@@ -384,6 +384,21 @@ const EditPPEQuota = ({ isOpen, isNew, isModify, oriPPEQuota, onCancel, onOk, t 
                                 </td>
                                 <td>
                                     <ScInput
+                                        dataType={301}
+                                        allowNull={false}
+                                        isEdit={false}
+                                        itemShowName="unit"
+                                        itemKey="unit"
+                                        initValue={row.ppe.unit}
+                                        pickDone={handleGetValue}
+                                        isBackendTest={false}
+                                        key="unit"
+                                        positionID={1}
+                                        rowIndex={index}
+                                    />
+                                </td>
+                                <td>
+                                    <ScInput
                                         dataType={302}
                                         allowNull={false}
                                         isEdit={isEdit}
