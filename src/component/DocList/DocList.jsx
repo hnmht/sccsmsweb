@@ -24,7 +24,7 @@ import RowActions from "./RowActions";
 
 import { getOrderBy, getSortColumns, getColumnsKey, excelColumns, excelRows } from "./tools";
 import { MultiSortByArr } from "../../utils/tools";
-import { DateTimeFormat } from "../../i18n/dayjs";
+import { dayjs } from "../../i18n/dayjs";
 import useContentHeight from "../../hooks/useContentHeight";
 const Paper = styled(MuiPaper)(spacing);
 const emptyFunc = () => { };
@@ -127,7 +127,7 @@ const DocList = ({
 
     // Download Excel file
     const handleDownload = () => {
-        const fileName = docListTitle + DateTimeFormat("LLLL") + ".xlsx";
+        const fileName = docListTitle + "_" + dayjs().toISOString() + ".xlsx";
         // Export all data using xlsx library
         const eHeader = excelColumns(currentColumns);
         const eRows = excelRows(currentRows, currentColumns);
@@ -243,7 +243,7 @@ const DocList = ({
                                     if (!column.visible) {
                                         return undefined;
                                     }
-                                    return (<TableCell key={"head" + column.id} align={column.alignment} style={{ minWidth: column.minWidth, maxWidth:150,overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    return (<TableCell key={"head" + column.id} align={column.alignment} style={{ minWidth: column.minWidth, maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                         {t(column.label)}
                                     </TableCell>);
                                 })

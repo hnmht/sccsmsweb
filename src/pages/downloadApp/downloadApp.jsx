@@ -47,7 +47,7 @@ function DownloadApp() {
                 <Button
                     size="large"
                     disabled={isWeChat}
-                    href={window.location.origin + "/static/apk/seacloud.apk"}
+                    href={window.location.origin + "/static/apk/sccsmsmob.apk"}
                     variant="contained"
                     color="primary"
                     startIcon={<AndroidIcon />}

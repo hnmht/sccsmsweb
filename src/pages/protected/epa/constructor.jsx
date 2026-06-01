@@ -3,6 +3,7 @@ import {
 } from "@mui/material";
 import { CellCreator, CellCreateTime, CellModifyTime, CellModifier, CellStatus } from "../pub/pubFunction";
 import { CellDescription,CellName } from "../pub/pubComponent";
+import { i18n } from "../../../i18n/i18n";
 
 
 // Execution Projcet Category display content
@@ -12,7 +13,7 @@ const CellEPCName = (row) => {
 
 // ResultType display content
 const CellResultType = (row) => {
-    return row.resultType.name;
+    return i18n.t(row.resultType.name);
 };
 // isCheckError display content
 const CellIsCheckError = (row) => {
