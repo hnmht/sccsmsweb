@@ -38,7 +38,6 @@ const EOStatus = () => {
     const handleFilterAction = async () => {
         setDiagOpen(true);
     };
-
     return (<>
         <PageTitle pageName={t("MenuEOStatus")} displayHelp={false} helpUrl="#" />
         <Divider my={2} />

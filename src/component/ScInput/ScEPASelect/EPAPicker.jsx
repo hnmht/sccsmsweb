@@ -100,7 +100,7 @@ const EPAPicker = ({ clickItemAction, doubleClickItemAction, cancelClickAction, 
                         sx={{ width: "100%", height: 700, overflow: "auto", p: 0, borderStyle: "solid", borderWidth: 1, borderColor: "divider", bgcolor: "background.paper" }}
                     >
                         <PubTree
-                            docName="EPCCategory"
+                            docName={t("epc")}
                             isDisplayAll={true}
                             oriDocs={epcs}
                             onDocClick={handleEicClick}

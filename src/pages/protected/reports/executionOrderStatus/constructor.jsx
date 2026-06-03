@@ -1,4 +1,4 @@
-import { DateTimeFormat,dayjs,CheckTimeZero } from "../../../../i18n/dayjs";
+import { DateTimeFormat, dayjs, CheckTimeZero } from "../../../../i18n/dayjs";
 import store from "../../../../store";
 import { i18n } from "../../../../i18n/i18n";
 import { VoucherStatus } from "../../../../storage/dataTypes";
@@ -55,7 +55,7 @@ export function generateEODefaultCons() {
         {
             logic: "and",
             field: { id: 1, value: "h.billDate", label: "billDate", inputType: 306, resultType: "date", resultfield: "" },
-            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date","object", "string", "int", "number"] },
+            compare: { id: "greaterthanequal", label: 'greaterThanEqual', value: '>=', addCharacter: false, needInput: true, applicable: ["date", "object", "string", "int", "number"] },
             value: dayjs().weekday(0).startOf("day"),
             isNecessary: true
         },
@@ -82,7 +82,7 @@ export const columnDef = () => {
         { accessorKey: 'billNumber', header: 'billNumber', size: 160 },
         {
             accessorKey: "billDate", header: "billDate", size: 140,
-            Cell: (({ cell }) => <span>{DateTimeFormat(cell.getValue(),"L")}</span>)
+            Cell: (({ cell }) => <span>{DateTimeFormat(cell.getValue(), "L")}</span>)
         },
         { accessorKey: 'hDeptCode', header: 'deptCode', size: 160 },
         { accessorKey: 'hDeptName', header: 'deptName', size: 160 },
@@ -93,11 +93,11 @@ export const columnDef = () => {
         { accessorKey: 'sourceRowNumber', header: 'sourceRowNumber', size: 140 },
         {
             accessorKey: 'hStartTime', header: 'startTime', size: 160,
-            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL") }</span>)
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
         },
         {
             accessorKey: 'hEndTime', header: 'endTime', size: 160,
-            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL")}</span>)
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
         },
         { accessorKey: 'csaCode', header: 'csaCode', size: 200 },
         { accessorKey: 'csaName', header: 'csaName', size: 260 },
@@ -129,23 +129,25 @@ export const columnDef = () => {
         { accessorKey: 'issueOwnerName', header: 'issueOwnerName', size: 140 },
         {
             accessorKey: 'handleStartTime', header: 'handleStartTime', size: 160,
-            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL")}</span>)
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
         },
         {
             accessorKey: 'handleEndTime', header: 'handleEndTime', size: 160,
-            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(),"LLL")}</span>)
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
         },
         { accessorKey: 'bStatus', header: 'bStatus', size: 160, Cell: (({ cell }) => <span>{i18n.t(VoucherStatus[cell.getValue()])}</span>) },
         { accessorKey: 'isFinish', header: 'isFinish', size: 160, Cell: (({ cell }) => <span>{yesOrNo[cell.getValue()]}</span>) },
         { accessorKey: 'irfNumber', header: 'irfNumber', size: 160 },
-        { accessorKey: 'createDate', header: 'createDate', size: 160,
+        {
+            accessorKey: 'createDate', header: 'createDate', size: 160,
             Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
-         },
+        },
         { accessorKey: 'creatorCode', header: 'creatorCode', size: 160 },
         { accessorKey: 'creatorName', header: 'creatorName', size: 160 },
         {
             accessorKey: 'confirmDate', header: 'confirmDate', size: 160,
-            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>) },
+            Cell: (({ cell }) => <span>{CheckTimeZero(cell.getValue()) ? "" : DateTimeFormat(cell.getValue(), "LLL")}</span>)
+        },
         { accessorKey: 'confirmerCode', header: 'confirmerCode', size: 160 },
         { accessorKey: 'confirmerName', header: 'confirmerName', size: 160 }
     ];
@@ -157,10 +159,11 @@ export const columnDef = () => {
     });
     // Add CSA option columns
     const options = store.getState().dynamicData.csos;
+    console.log("options:", options);
     options.forEach(option => {
         if (option.enable === 1) {
             let field = {
-                accessorKey: option.code + "name",
+                accessorKey: option.code + "Name",
                 header: option.displayName,
                 size: 140,
             }

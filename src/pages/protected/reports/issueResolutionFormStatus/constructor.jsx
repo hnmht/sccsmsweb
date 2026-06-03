@@ -184,7 +184,7 @@ export const columnDef = () => {
     options.forEach(option => {
         if (option.enable === 1) {
             let field = {
-                accessorKey: option.code + "name",
+                accessorKey: option.code + "Name",
                 header: option.displayName,
                 size: 140,
             }
