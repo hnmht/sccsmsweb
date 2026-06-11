@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 
+public/static/apk
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
